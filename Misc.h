@@ -10,7 +10,7 @@ enum Direction
     DIRECTION_N = 0,
     DIRECTION_E = 1,
     DIRECTION_S = 2,
-    DIRECTION_W = 3   
+    DIRECTION_W = 3
 };
 
 class Rand

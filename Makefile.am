@@ -2,7 +2,8 @@ bin_PROGRAMS = pressure
 pressure_SOURCES =  GameState.cpp GameState.h \
                     main.cpp \
                     Misc.cpp Misc.h \
-                    SaveState.cpp SaveState.h
+                    SaveState.cpp SaveState.h \
+                    Circuit.cpp Circuit.h
 
 pressure_LDADD = texture_png.o
 

@@ -27,6 +27,8 @@ GameState::GameState(const char* filename):
         return;
 
     SaveObjectMap* omap = SaveObject::load(loadfile)->get_map();
+    
+    current_circuit = new Circuit();
 
 
     delete omap;
@@ -65,6 +67,12 @@ SDL_Texture* GameState::loadTexture()
 
 void GameState::advance()
 {
+    Pressure N = 90 * PRESSURE_SCALAR;
+    Pressure E = 80 * PRESSURE_SCALAR;
+    Pressure S = 70 * PRESSURE_SCALAR;
+    Pressure W = 60 * PRESSURE_SCALAR;
+    current_circuit->sim_pre(PressureAdjacent(N, E, S, W));
+    current_circuit->sim_post(PressureAdjacent(N, E, S, W));
 }
 
 void GameState::draw_char(XYPos& pos, char c)
@@ -86,21 +94,9 @@ void GameState::render()
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        GridSquare::State state = squares[pos.x][pos.y].state;
-        if (state == GridSquare::STATE_PIPE)
-        {
-            GridSquare::Connections con = squares[pos.x][pos.y].connections;
-            SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
-            SDL_Rect dst_rect = {pos.x * 32 * scale, pos.y * 32 * scale, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        }
-        else if (state == GridSquare::STATE_VALVE)
-        {
-            Direction dir = squares[pos.x][pos.y].direction;
-            SDL_Rect src_rect = {dir * 32, (4) * 32, 32, 32};
-            SDL_Rect dst_rect = {pos.x * 32 * scale, pos.y * 32 * scale, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        }
+        SDL_Rect src_rect = current_circuit->elements[pos.y][pos.x]->getimage();
+        SDL_Rect dst_rect = {pos.x * 32 * scale, pos.y * 32 * scale, 32 * scale, 32 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
 
     if (mouse_state == MOUSE_STATE_PIPE)
@@ -113,30 +109,30 @@ void GameState::render()
             XYPos mouse_grid = (mouse / scale) / 32;
             if (mouse_grid.y >= pipe_start_grid_pos.y)   //north - southwards
             {
-                    GridSquare::Connections con;
+                    Connections con;
                     XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
                     mouse_rel.x -= 16;
                     if (mouse_rel.y > abs(mouse_rel.x))     // south
-                        con = GridSquare::CONNECTIONS_NS;
+                        con = CONNECTIONS_NS;
                     else if (mouse_rel.x >= 0)               // east
-                        con = GridSquare::CONNECTIONS_NE;
+                        con = CONNECTIONS_NE;
                     else                                    // west
-                        con = GridSquare::CONNECTIONS_NW;
+                        con = CONNECTIONS_NW;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                     SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale, pipe_start_grid_pos.y * 32 * scale, 32 * scale, 32 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
             else                                        //south - northwards
             {
-                    GridSquare::Connections con;
+                    Connections con;
                     XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
                     mouse_rel.x -= 16;
                     if (-mouse_rel.y > abs(mouse_rel.x))    // north
-                        con = GridSquare::CONNECTIONS_NS;
+                        con = CONNECTIONS_NS;
                     else if (mouse_rel.x >= 0)               // east
-                        con = GridSquare::CONNECTIONS_ES;
+                        con = CONNECTIONS_ES;
                     else                                    // west
-                        con = GridSquare::CONNECTIONS_WS;
+                        con = CONNECTIONS_WS;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                     SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale, (pipe_start_grid_pos.y - 1) * 32 * scale, 32 * scale, 32 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
@@ -150,30 +146,30 @@ void GameState::render()
             XYPos mouse_grid = (mouse / scale) / 32;
             if (mouse_grid.x >= pipe_start_grid_pos.x)   //west - eastwards
             {
-                    GridSquare::Connections con;
+                    Connections con;
                     XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
                     mouse_rel.y -= 16;
                     if (mouse_rel.x > abs(mouse_rel.y))     // west
-                        con = GridSquare::CONNECTIONS_EW;
+                        con = CONNECTIONS_EW;
                     else if (mouse_rel.y >= 0)               // south
-                        con = GridSquare::CONNECTIONS_WS;
+                        con = CONNECTIONS_WS;
                     else                                    // north
-                        con = GridSquare::CONNECTIONS_NW;
+                        con = CONNECTIONS_NW;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                     SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale, pipe_start_grid_pos.y * 32 * scale, 32 * scale, 32 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
             else                                        //east - westwards
             {
-                    GridSquare::Connections con;
+                    Connections con;
                     XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
                     mouse_rel.y -= 16;
                     if (-mouse_rel.x > abs(mouse_rel.y))    // east
-                        con = GridSquare::CONNECTIONS_EW;
+                        con = CONNECTIONS_EW;
                     else if (mouse_rel.y >= 0)               // south
-                        con = GridSquare::CONNECTIONS_ES;
+                        con = CONNECTIONS_ES;
                     else                                    // north
-                        con = GridSquare::CONNECTIONS_NE;
+                        con = CONNECTIONS_NE;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                     SDL_Rect dst_rect = {(pipe_start_grid_pos.x - 1) * 32 * scale, pipe_start_grid_pos.y * 32 * scale, 32 * scale, 32 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
@@ -187,6 +183,33 @@ void GameState::render()
         SDL_Rect dst_rect = {mouse_grid.x * 32 * scale, mouse_grid.y * 32 * scale, 32 * scale, 32 * scale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
+
+    for (pos.y = 0; pos.y < 10; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        Pressure value = (current_circuit->connections_ns[pos.y][pos.x] + PRESSURE_SCALAR/2) / PRESSURE_SCALAR;
+
+        SDL_Rect src_rect = {(value / 10) * 4, 161, 4, 5};
+        SDL_Rect dst_rect = {(pos.x * 32  + 12) * scale, (pos.y * 32 - 3) * scale, 4 * scale, 5 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        src_rect.x = (value % 10) * 4;
+        dst_rect.x += 4 * scale;
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    }
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 10; pos.x++)
+    {
+        Pressure value = (current_circuit->connections_ew[pos.y][pos.x] + PRESSURE_SCALAR/2) / PRESSURE_SCALAR;
+
+        SDL_Rect src_rect = {(value / 10) * 4, 161, 4, 5};
+        SDL_Rect dst_rect = {(pos.x * 32  - 4) * scale, (pos.y * 32 + 13) * scale, 4 * scale, 5 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        src_rect.x = (value % 10) * 4;
+        dst_rect.x += 4 * scale;
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    }
+
+
     SDL_RenderPresent(sdl_renderer);
 }
 
@@ -233,8 +256,7 @@ bool GameState::events()
                 if (mouse_state == MOUSE_STATE_DELETING)
                 {
                     XYPos grid = (mouse / scale) / 32;
-                    squares[grid.x][grid.y].connections = GridSquare::CONNECTIONS_NONE;
-                    squares[grid.x][grid.y].state = GridSquare::STATE_PIPE;
+                    current_circuit->set_element_pipe(grid, CONNECTIONS_NONE);
                 }
                 break;
             }
@@ -309,19 +331,19 @@ bool GameState::events()
                             if (mouse_rel.y < 0)    //south - northwards
                             {
                                 pipe_start_grid_pos.y--;
-                                GridSquare::Connections con;
+                                Connections con;
                                 if (-mouse_rel.y > abs(mouse_rel.x))    // north
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_NS;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_NS);
                                 }
                                 else if (mouse_rel.x < 0)               // west
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_WS;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_WS);
                                     pipe_start_ns = false;
                                 }
                                 else                                    // east
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_ES;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_ES);
                                     pipe_start_ns = false;
                                     pipe_start_grid_pos.x++;
                                 }
@@ -329,21 +351,21 @@ bool GameState::events()
                             }
                             else
                             {
-                                GridSquare::Connections con;
+                                Connections con;
                                 if (mouse_rel.y > abs(mouse_rel.x))    // north
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_NS;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_NS);
                                     pipe_start_grid_pos.y++;
 
                                 }
                                 else if (mouse_rel.x < 0)               // west
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_NW;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_NW);
                                     pipe_start_ns = false;
                                 }
                                 else                                    // east
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_NE;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_NE);
                                     pipe_start_ns = false;
                                     pipe_start_grid_pos.x++;
                                 }
@@ -357,19 +379,19 @@ bool GameState::events()
                             if (mouse_rel.x < 0)    //east - westwards
                             {
                                 pipe_start_grid_pos.x--;
-                                GridSquare::Connections con;
+                                Connections con;
                                 if (-mouse_rel.x > abs(mouse_rel.y))    // west
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_EW;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_EW);
                                 }
                                 else if (mouse_rel.y < 0)               // north
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_NE;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_NE);
                                     pipe_start_ns = true;
                                 }
                                 else                                    // south
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_ES;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_ES);
                                     pipe_start_ns = true;
                                     pipe_start_grid_pos.y++;
                                 }
@@ -377,21 +399,21 @@ bool GameState::events()
                             }
                             else                    //west - eastwards
                             {
-                                GridSquare::Connections con;
+                                Connections con;
                                 if (mouse_rel.x > abs(mouse_rel.y))    // west
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_EW;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_EW);
                                     pipe_start_grid_pos.x++;
 
                                 }
                                 else if (mouse_rel.y < 0)               // north
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_NW;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_NW);
                                     pipe_start_ns = true;
                                 }
                                 else                                    // south
                                 {
-                                    squares[pipe_start_grid_pos.x][pipe_start_grid_pos.y].connections = GridSquare::CONNECTIONS_WS;
+                                    current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_WS);
                                     pipe_start_ns = true;
                                     pipe_start_grid_pos.y++;
                                 }
@@ -402,8 +424,7 @@ bool GameState::events()
                     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
                     {
                         XYPos mouse_grid = (mouse / scale) / 32;
-                        squares[mouse_grid.x][mouse_grid.y].state = GridSquare::STATE_VALVE;
-                        squares[mouse_grid.x][mouse_grid.y].direction = direction;
+                        current_circuit->set_element_valve(mouse_grid, direction);
                     }
 
                 }
@@ -415,8 +436,7 @@ bool GameState::events()
                     if (mouse_state == MOUSE_STATE_NONE)
                     {
                         XYPos grid = (mouse / scale) / 32;
-                        squares[grid.x][grid.y].connections = GridSquare::CONNECTIONS_NONE;
-                        squares[grid.x][grid.y].state = GridSquare::STATE_PIPE;
+                        current_circuit->set_element_pipe(grid, CONNECTIONS_NONE);
                         mouse_state = MOUSE_STATE_DELETING;
                     }
                     else

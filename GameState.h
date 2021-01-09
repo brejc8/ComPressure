@@ -1,44 +1,12 @@
 #pragma once
 #include "Misc.h"
+#include "Circuit.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <map>
 #include <list>
 
-class GridSquare
-{
-public:
-    enum State
-    {
-        STATE_PIPE,
-        STATE_VALVE,
-    } state = STATE_PIPE;
-
-    enum Connections
-    {
-        CONNECTIONS_NONE,
-        CONNECTIONS_NW,
-        CONNECTIONS_NE,
-        CONNECTIONS_NS,
-        CONNECTIONS_EW,
-        CONNECTIONS_ES,
-        CONNECTIONS_WS,
-        CONNECTIONS_NWE,
-        CONNECTIONS_NES,
-        CONNECTIONS_NWS,
-        CONNECTIONS_EWS,
-        CONNECTIONS_NS_WE,
-        CONNECTIONS_NW_ES,
-        CONNECTIONS_NE_WS,
-        CONNECTIONS_ALL,
-    } connections = CONNECTIONS_NONE;
-
-    Direction direction = DIRECTION_N;
-
-    GridSquare()
-    {
-    }
-};
+#define PRESSURE_SCALAR 1024
 
 class GameState
 {
@@ -57,7 +25,7 @@ class GameState
     Direction direction = DIRECTION_N;
 
     int scale = 3;
-    GridSquare squares[9][9];
+    Circuit* current_circuit;
     XYPos mouse;
     
     XYPos pipe_start_grid_pos;
