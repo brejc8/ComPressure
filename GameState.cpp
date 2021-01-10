@@ -17,21 +17,35 @@ GameState::GameState(const char* filename):
     mouse_button_right(false)
 {
     sdl_window = SDL_CreateWindow( "Junk", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, 0);
-    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
+    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	sdl_texture = loadTexture();
     SDL_SetRenderDrawColor(sdl_renderer, 0x0, 0x0, 0x0, 0xFF);
 	assert(sdl_texture);
 
     std::ifstream loadfile(filename);
     if (loadfile.fail() || loadfile.eof())
-        return;
+    {
+        for (int i = 0; i < LEVEL_COUNT; i++)
+        {
+            levels[i] = new Level(i);
+        }
+//        current_circuit = new Circuit();
+    }
+    else
+    {
+        SaveObjectMap* omap = SaveObject::load(loadfile)->get_map();
+        SaveObjectList* slist = omap->get_item("levels")->get_list();
+        
+        for (int i = 0; i < LEVEL_COUNT; i++)
+        {
+            levels[i] = new Level(i, slist->get_item(i));
+        }
 
-    SaveObjectMap* omap = SaveObject::load(loadfile)->get_map();
-    
-    current_circuit = new Circuit();
+//        current_circuit = new Circuit(omap->get_item("current_circuit")->get_map());
+        delete omap;
+    }
+    current_circuit = levels[0]->circuit;
 
-
-    delete omap;
 }
 
 void GameState::save(const char*  filename)
@@ -39,6 +53,16 @@ void GameState::save(const char*  filename)
     std::ofstream outfile (filename);
     outfile << std::setprecision(std::numeric_limits<double>::digits);
     SaveObjectMap omap;
+    
+    omap.add_item("current_circuit", current_circuit->save());
+
+    SaveObjectList* slist = new SaveObjectList;
+    
+    for (int i = 0; i < LEVEL_COUNT; i++)
+    {
+        slist->add_item(levels[i]->save());
+    }
+    omap.add_item("levels", slist);
     omap.save(outfile);
 }
 
@@ -67,12 +91,18 @@ SDL_Texture* GameState::loadTexture()
 
 void GameState::advance()
 {
-    Pressure N = 90 * PRESSURE_SCALAR;
-    Pressure E = 80 * PRESSURE_SCALAR;
-    Pressure S = 70 * PRESSURE_SCALAR;
-    Pressure W = 60 * PRESSURE_SCALAR;
-    current_circuit->sim_pre(PressureAdjacent(N, E, S, W));
-    current_circuit->sim_post(PressureAdjacent(N, E, S, W));
+    static int val = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        CircuitPressure N(10 * PRESSURE_SCALAR);
+        CircuitPressure E = 20 * PRESSURE_SCALAR;
+        CircuitPressure S = 30 * PRESSURE_SCALAR;
+        CircuitPressure W = (val > 50 * PRESSURE_SCALAR) ? 25 * PRESSURE_SCALAR : 35 * PRESSURE_SCALAR;
+        val+=5;
+        if (val > 100 * PRESSURE_SCALAR) val = 0;
+        current_circuit->sim_pre(PressureAdjacent(N, E, S, W));
+        current_circuit->sim_post(PressureAdjacent(N, E, S, W));
+    }
 }
 
 void GameState::draw_char(XYPos& pos, char c)
@@ -84,18 +114,50 @@ void GameState::draw_char(XYPos& pos, char c)
 
 }
 
+
 void GameState::render()
 {
     SDL_RenderClear(sdl_renderer);
     XYPos window_size;
     SDL_GetWindowSize(sdl_window, &window_size.x, &window_size.y);
-    
     XYPos pos;
+    
+    {
+        SDL_Rect src_rect = {0, 32, 32, 32};
+        SDL_Rect dst_rect = {-32 * scale + grid_offset.x, (4 * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        dst_rect.x = (9 * 32) * scale + grid_offset.x;
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        
+        src_rect = {96, 0, 32, 32};
+        dst_rect = {(4 * 32) * scale + grid_offset.x, -32 * scale + grid_offset.y, 32 * scale, 32 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        dst_rect.y = (9 * 32) * scale + grid_offset.y;
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    }
+
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        SDL_Rect src_rect = {256+32, 32, 16, 16};
+        if (pos.y > 0)
+            src_rect.y += 16;
+        if (pos.y == 8)
+            src_rect.y += 16;
+        if (pos.x > 0)
+            src_rect.x += 16;
+        if (pos.x == 8)
+            src_rect.x += 16;
+            
+        SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    }
+    
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
         SDL_Rect src_rect = current_circuit->elements[pos.y][pos.x]->getimage();
-        SDL_Rect dst_rect = {pos.x * 32 * scale, pos.y * 32 * scale, 32 * scale, 32 * scale};
+        SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
 
@@ -104,13 +166,13 @@ void GameState::render()
         if (pipe_start_ns)
         {
             SDL_Rect src_rect = {0, 0, 1, 1};
-            SDL_Rect dst_rect = {(pipe_start_grid_pos.x * 32 + 16 - 4)  * scale, (pipe_start_grid_pos.y * 32 - 4) * scale, 8 * scale, 8 * scale};
+            SDL_Rect dst_rect = {(pipe_start_grid_pos.x * 32 + 16 - 4)  * scale + grid_offset.x, (pipe_start_grid_pos.y * 32 - 4) * scale + grid_offset.y, 8 * scale, 8 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-            XYPos mouse_grid = (mouse / scale) / 32;
+            XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
             if (mouse_grid.y >= pipe_start_grid_pos.y)   //north - southwards
             {
                     Connections con;
-                    XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
+                    XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
                     mouse_rel.x -= 16;
                     if (mouse_rel.y > abs(mouse_rel.x))     // south
                         con = CONNECTIONS_NS;
@@ -119,13 +181,13 @@ void GameState::render()
                     else                                    // west
                         con = CONNECTIONS_NW;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
-                    SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale, pipe_start_grid_pos.y * 32 * scale, 32 * scale, 32 * scale};
+                    SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale + grid_offset.x, pipe_start_grid_pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
             else                                        //south - northwards
             {
                     Connections con;
-                    XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
+                    XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
                     mouse_rel.x -= 16;
                     if (-mouse_rel.y > abs(mouse_rel.x))    // north
                         con = CONNECTIONS_NS;
@@ -134,20 +196,20 @@ void GameState::render()
                     else                                    // west
                         con = CONNECTIONS_WS;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
-                    SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale, (pipe_start_grid_pos.y - 1) * 32 * scale, 32 * scale, 32 * scale};
+                    SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale + grid_offset.x, (pipe_start_grid_pos.y - 1) * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
         }
         else
         {
             SDL_Rect src_rect = {0, 0, 1, 1};
-            SDL_Rect dst_rect = {(pipe_start_grid_pos.x * 32 - 4)  * scale, (pipe_start_grid_pos.y * 32 + 16 - 4) * scale, 8 * scale, 8 * scale};
+            SDL_Rect dst_rect = {(pipe_start_grid_pos.x * 32 - 4)  * scale + grid_offset.x, (pipe_start_grid_pos.y * 32 + 16 - 4) * scale + grid_offset.y, 8 * scale, 8 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-            XYPos mouse_grid = (mouse / scale) / 32;
+            XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
             if (mouse_grid.x >= pipe_start_grid_pos.x)   //west - eastwards
             {
                     Connections con;
-                    XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
+                    XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
                     mouse_rel.y -= 16;
                     if (mouse_rel.x > abs(mouse_rel.y))     // west
                         con = CONNECTIONS_EW;
@@ -156,13 +218,13 @@ void GameState::render()
                     else                                    // north
                         con = CONNECTIONS_NW;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
-                    SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale, pipe_start_grid_pos.y * 32 * scale, 32 * scale, 32 * scale};
+                    SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale + grid_offset.x, pipe_start_grid_pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
             else                                        //east - westwards
             {
                     Connections con;
-                    XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
+                    XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
                     mouse_rel.y -= 16;
                     if (-mouse_rel.x > abs(mouse_rel.y))    // east
                         con = CONNECTIONS_EW;
@@ -171,42 +233,88 @@ void GameState::render()
                     else                                    // north
                         con = CONNECTIONS_NE;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
-                    SDL_Rect dst_rect = {(pipe_start_grid_pos.x - 1) * 32 * scale, pipe_start_grid_pos.y * 32 * scale, 32 * scale, 32 * scale};
+                    SDL_Rect dst_rect = {(pipe_start_grid_pos.x - 1) * 32 * scale + grid_offset.x, pipe_start_grid_pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
     {
-        XYPos mouse_grid = (mouse / scale) / 32;
+        XYPos mouse_grid = ((mouse - grid_offset)/ scale) / 32;
         SDL_Rect src_rect = {direction * 32, 4 * 32, 32, 32};
-        SDL_Rect dst_rect = {mouse_grid.x * 32 * scale, mouse_grid.y * 32 * scale, 32 * scale, 32 * scale};
+        SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    }
+    else if (mouse_state == MOUSE_STATE_PLACING_SOURCE)
+    {
+        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+        SDL_Rect src_rect = {(4 + direction) * 32, 0, 32, 32};
+        SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
 
     for (pos.y = 0; pos.y < 10; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        Pressure value = (current_circuit->connections_ns[pos.y][pos.x] + PRESSURE_SCALAR/2) / PRESSURE_SCALAR;
-
-        SDL_Rect src_rect = {(value / 10) * 4, 161, 4, 5};
-        SDL_Rect dst_rect = {(pos.x * 32  + 12) * scale, (pos.y * 32 - 3) * scale, 4 * scale, 5 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        src_rect.x = (value % 10) * 4;
-        dst_rect.x += 4 * scale;
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        if (!current_circuit->connections_ns[pos.y][pos.x].touched)
+            continue;
+        Pressure vented = (current_circuit->connections_ns[pos.y][pos.x].vented);
+        Pressure value = (current_circuit->connections_ns[pos.y][pos.x].value + PRESSURE_SCALAR/2) / PRESSURE_SCALAR;
+        
+        if (vented > 2)
+        {
+            SDL_Rect src_rect = {16*int(rand & 3), 166, 16, 16};
+            SDL_Rect dst_rect = {(pos.x * 32  + 7 + int(rand % 3)) * scale + grid_offset.x, (pos.y * 32 - 9  + int(rand % 3)) * scale + grid_offset.y, 16 * scale, 16 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        if (value == 100)
+        {
+            SDL_Rect src_rect = {40, 161, 9, 5};
+            SDL_Rect dst_rect = {(pos.x * 32  + 11) * scale + grid_offset.x, (pos.y * 32 - 3) * scale + grid_offset.y, 9 * scale, 5 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        else
+        {
+            SDL_Rect src_rect = {(value / 10) * 4, 161, 4, 5};
+            SDL_Rect dst_rect = {(pos.x * 32  + 11) * scale + grid_offset.x, (pos.y * 32 - 3) * scale + grid_offset.y, 4 * scale, 5 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            src_rect.w = 5;
+            src_rect.x = (value % 10) * 4;
+            dst_rect.w = 5 * scale;
+            dst_rect.x += 4 * scale;
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
     }
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 10; pos.x++)
     {
-        Pressure value = (current_circuit->connections_ew[pos.y][pos.x] + PRESSURE_SCALAR/2) / PRESSURE_SCALAR;
-
-        SDL_Rect src_rect = {(value / 10) * 4, 161, 4, 5};
-        SDL_Rect dst_rect = {(pos.x * 32  - 4) * scale, (pos.y * 32 + 13) * scale, 4 * scale, 5 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        src_rect.x = (value % 10) * 4;
-        dst_rect.x += 4 * scale;
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        if (!current_circuit->connections_ew[pos.y][pos.x].touched)
+            continue;
+        Pressure vented = (current_circuit->connections_ew[pos.y][pos.x].vented);
+        Pressure value = (current_circuit->connections_ew[pos.y][pos.x].value + PRESSURE_SCALAR/2) / PRESSURE_SCALAR;
+        if (vented > 2)
+        {
+            SDL_Rect src_rect = {16*int(rand & 3), 166, 16, 16};
+            SDL_Rect dst_rect = {(pos.x * 32  - 9) * scale + int(rand % 3 * scale) + grid_offset.x, (pos.y * 32 + 7 ) * scale + int(rand % 3 * scale) + grid_offset.y, 16 * scale, 16 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        if (value == 100)
+        {
+            SDL_Rect src_rect = {40, 161, 9, 5};
+            SDL_Rect dst_rect = {(pos.x * 32  - 5) * scale + grid_offset.x, (pos.y * 32 + 13) * scale + grid_offset.y, 9 * scale, 5 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        else
+        {
+            SDL_Rect src_rect = {(value / 10) * 4, 161, 4, 5};
+            SDL_Rect dst_rect = {(pos.x * 32  - 5) * scale + grid_offset.x, (pos.y * 32 + 13) * scale + grid_offset.y, 4 * scale, 5 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            src_rect.w = 5;
+            src_rect.x = (value % 10) * 4;
+            dst_rect.w = 5 * scale;
+            dst_rect.x += 4 * scale;
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
     }
 
 
@@ -233,7 +341,10 @@ bool GameState::events()
                         return true;
                     else if (e.key.keysym.scancode == SDL_SCANCODE_TAB)
                     {
-                        mouse_state = MOUSE_STATE_PLACING_VALVE;
+                        if (mouse_state == MOUSE_STATE_PLACING_VALVE)
+                            mouse_state = MOUSE_STATE_PLACING_SOURCE;
+                        else
+                            mouse_state = MOUSE_STATE_PLACING_VALVE;
                     }
                     else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
                         direction = Direction((int(direction) + 4 - 1) % 4);
@@ -255,7 +366,9 @@ bool GameState::events()
                 mouse.y = e.motion.y;
                 if (mouse_state == MOUSE_STATE_DELETING)
                 {
-                    XYPos grid = (mouse / scale) / 32;
+                    XYPos grid = ((mouse - grid_offset) / scale) / 32;
+                    if (grid.x >= 9 || grid.y >= 9)
+                        break;
                     current_circuit->set_element_pipe(grid, CONNECTIONS_NONE);
                 }
                 break;
@@ -281,7 +394,7 @@ bool GameState::events()
                 mouse.x = e.button.x;
                 mouse.y = e.button.y;
                 {
-                        XYPos pos = mouse / scale;
+                        XYPos pos = (mouse - grid_offset) / scale;
                         XYPos grid = pos / 32;
                         if (grid.x >= 9 || grid.y >= 9)
                             break;
@@ -292,7 +405,7 @@ bool GameState::events()
                     if (mouse_state == MOUSE_STATE_NONE)
                     {
                         mouse_state = MOUSE_STATE_PIPE;
-                        XYPos pos = mouse / scale;
+                        XYPos pos = (mouse - grid_offset) / scale;
                         XYPos grid = pos / 32;
                         pos -= grid * 32;
                         pipe_start_grid_pos = grid;
@@ -323,8 +436,8 @@ bool GameState::events()
                     }
                     else if (mouse_state == MOUSE_STATE_PIPE)
                     {
-                        XYPos mouse_grid = (mouse / scale) / 32;
-                        XYPos mouse_rel = (mouse / scale) - (pipe_start_grid_pos * 32);
+                        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+                        XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
                         if (pipe_start_ns)
                         {
                             mouse_rel.x -= 16;
@@ -423,8 +536,13 @@ bool GameState::events()
                     }
                     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
                     {
-                        XYPos mouse_grid = (mouse / scale) / 32;
+                        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
                         current_circuit->set_element_valve(mouse_grid, direction);
+                    }
+                    else if (mouse_state == MOUSE_STATE_PLACING_SOURCE)
+                    {
+                        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+                        current_circuit->set_element_source(mouse_grid, direction);
                     }
 
                 }
@@ -435,7 +553,7 @@ bool GameState::events()
                     mouse_button_right = true;
                     if (mouse_state == MOUSE_STATE_NONE)
                     {
-                        XYPos grid = (mouse / scale) / 32;
+                        XYPos grid = ((mouse - grid_offset) / scale) / 32;
                         current_circuit->set_element_pipe(grid, CONNECTIONS_NONE);
                         mouse_state = MOUSE_STATE_DELETING;
                     }
@@ -451,7 +569,6 @@ bool GameState::events()
         }
     }
 
-    XYPos pos = mouse / scale;
     if (mouse_button_left)
     {
     }

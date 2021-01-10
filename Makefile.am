@@ -3,7 +3,8 @@ pressure_SOURCES =  GameState.cpp GameState.h \
                     main.cpp \
                     Misc.cpp Misc.h \
                     SaveState.cpp SaveState.h \
-                    Circuit.cpp Circuit.h
+                    Circuit.cpp Circuit.h \
+                    Level.cpp Level.h
 
 pressure_LDADD = texture_png.o
 

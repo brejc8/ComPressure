@@ -1,12 +1,11 @@
 #pragma once
 #include "Misc.h"
 #include "Circuit.h"
+#include "Level.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <map>
 #include <list>
-
-#define PRESSURE_SCALAR 1024
 
 class GameState
 {
@@ -14,17 +13,22 @@ class GameState
     SDL_Renderer* sdl_renderer;
     SDL_Texture* sdl_texture;
 
+    Rand rand = 3;
     enum MouseState
     {
         MOUSE_STATE_NONE,
         MOUSE_STATE_PIPE,
         MOUSE_STATE_DELETING,
         MOUSE_STATE_PLACING_VALVE,
+        MOUSE_STATE_PLACING_SOURCE,
     } mouse_state = MOUSE_STATE_NONE;
 
     Direction direction = DIRECTION_N;
 
-    int scale = 3;
+    const int scale = 3;
+    const XYPos grid_offset = XYPos(32 * scale, 32 * scale);
+    
+    Level* levels[LEVEL_COUNT];
     Circuit* current_circuit;
     XYPos mouse;
     
