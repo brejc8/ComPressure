@@ -243,6 +243,12 @@ void CircuitElementValve::save(SaveObjectMap* omap)
     omap->add_num("direction", direction);
 }
 
+void CircuitElementValve::reset()
+{
+    pos_charge = 0;
+    neg_charge = 0;
+}
+
 SDL_Rect CircuitElementValve::getimage(void)
 {
     return SDL_Rect{direction * 32, 4 * 32, 32, 32};
@@ -253,22 +259,20 @@ void CircuitElementValve::sim_pre(PressureAdjacent adj_)
     PressureAdjacent adj(adj_, direction);
     Pressure mov;
 
-    mov = (pos_charge / capacity - adj.N.value) / 2;
+    int64_t mul = (pos_charge - neg_charge);
+    if (mul < 0)
+        mul = 0;
+
+    mov = (pos_charge - adj.N.value * capacity) / (2 * capacity);
     pos_charge -= mov;
     adj.N.move(mov);
     
-    mov = (neg_charge / capacity - adj.S.value) / 2;
+    mov = (neg_charge - adj.S.value * capacity) / (2 * capacity);
     neg_charge -= mov;
     adj.S.move(mov);
     
     
-    int mul = ((pos_charge - neg_charge) / capacity) / PRESSURE_SCALAR;
-    if (mul < 0)
-        mul = 0;
-    
-    
-    mov = ((adj.W.value - adj.E.value) * mul) / 2000;
-
+    mov = (int64_t(adj.W.value - adj.E.value) * mul) / (int64_t(2000) * capacity * PRESSURE_SCALAR);
     adj.W.move(-mov);
     adj.E.move(mov);
 }
@@ -363,6 +367,12 @@ void Circuit::reset(void)
         connections_ns[pos.y][pos.x] = 0;
         connections_ew[pos.y][pos.x] = 0;
     }
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        elements[pos.y][pos.x]->reset();
+    }
+
 }
 
 void Circuit::sim_pre(PressureAdjacent adj)

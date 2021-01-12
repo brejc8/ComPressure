@@ -4,10 +4,15 @@
 
 #include <SDL.h>
 
-#define PRESSURE_SCALAR 1024
+#define PRESSURE_SCALAR (65536)
 
 
 typedef int Pressure;
+
+static unsigned pressure_as_percent(Pressure p)
+{
+    return (p + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR;
+}
 
 class CircuitPressure
 {
@@ -16,6 +21,11 @@ public:
     Pressure move_next = 0;
     Pressure vented = 0;
     bool touched = false;
+
+    void apply(Pressure vol, Pressure drive)
+    {
+        move_next += (int64_t(vol * PRESSURE_SCALAR - value) * drive) / 2000;
+    }
 
     void move(Pressure vol)
     {
@@ -104,10 +114,11 @@ public:
 class CircuitElement
 {
 public:
-    SaveObject* save();
+    SaveObject* save(void);
     virtual void save(SaveObjectMap*) = 0;
     static CircuitElement* load(SaveObjectMap*);
 
+    virtual void reset(void) {};
     virtual SDL_Rect getimage(void) = 0;
     virtual void sim_pre(PressureAdjacent adj) = 0;
     virtual void sim_post(PressureAdjacent adj) = 0;
@@ -155,6 +166,7 @@ public:
     CircuitElementValve(SaveObjectMap*);
 
     void save(SaveObjectMap*);
+    void reset();
     SDL_Rect getimage(void);
     void sim_pre(PressureAdjacent adj);
     void sim_post(PressureAdjacent adj);
@@ -191,7 +203,7 @@ public:
     Circuit(SaveObjectMap* omap);
     Circuit();
 
-    SaveObject* save();
+    SaveObject* save(void);
     
     void set_element_pipe(XYPos pos, Connections con);
     void set_element_valve(XYPos pos, Direction direction);

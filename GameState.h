@@ -23,21 +23,26 @@ class GameState
         MOUSE_STATE_PLACING_SOURCE,
     } mouse_state = MOUSE_STATE_NONE;
 
+    enum PanelState
+    {
+        PANEL_STATE_LEVEL_SELECT,
+        PANEL_STATE_MONITOR
+    } panel_state = PANEL_STATE_LEVEL_SELECT;
+
     Direction direction = DIRECTION_N;
 
     const int scale = 3;
     const XYPos grid_offset = XYPos(32 * scale, 32 * scale);
-    
+    const XYPos panel_offset = XYPos((16 + 32 * 11) * scale, (16 + 8 + 32) * scale);
+
     Level* levels[LEVEL_COUNT];
     Circuit* current_circuit;
+    unsigned current_level = 0;
+    unsigned selected_monitor = 0;
     XYPos mouse;
     
     XYPos pipe_start_grid_pos;
     bool pipe_start_ns;
-    
-    bool mouse_button_left;
-    bool mouse_button_middle;
-    bool mouse_button_right;
 
 public:
     GameState(const char* filename);
@@ -47,6 +52,9 @@ public:
 
     void render();
     void advance();
+    void set_level(unsigned level_index);
+    void mouse_click_in_grid();
+    void mouse_click_in_panel();
     bool events();
 private:
     void draw_char(XYPos& pos, char c);
