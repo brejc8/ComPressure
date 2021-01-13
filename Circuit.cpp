@@ -2,6 +2,7 @@
 #include "GameState.h"
 
 #include "SaveState.h"
+#include "Level.h"
 #include "Misc.h"
 
 
@@ -24,6 +25,8 @@ CircuitElement* CircuitElement::load(SaveObjectMap* omap)
             return new CircuitElementValve(omap);
         case CIRCUIT_ELEMENT_TYPE_SOURCE:
             return new CircuitElementSource(omap);
+        case CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT:
+            return new CircuitElementSubCircuit(omap);
         default:
             assert(0);        
     }
@@ -243,7 +246,7 @@ void CircuitElementValve::save(SaveObjectMap* omap)
     omap->add_num("direction", direction);
 }
 
-void CircuitElementValve::reset()
+void CircuitElementValve::reset(LevelSet* level_set)
 {
     pos_charge = 0;
     neg_charge = 0;
@@ -294,7 +297,7 @@ void CircuitElementSource::save(SaveObjectMap* omap)
 
 SDL_Rect CircuitElementSource::getimage(void)
 {
-    return SDL_Rect{(direction + 4) * 32, 0, 32, 32};
+    return SDL_Rect{128 + direction * 32, 0, 32, 32};
 }
 
 void CircuitElementSource::sim_pre(PressureAdjacent adj_)
@@ -310,6 +313,59 @@ void CircuitElementSource::sim_pre(PressureAdjacent adj_)
 void CircuitElementSource::sim_post(PressureAdjacent adj_)
 {
 }
+CircuitElementSubCircuit::CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set):
+    direction(direction_),
+    level_index(level_index_)
+{
+    level = level_set->levels[level_index];
+}
+
+CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
+{
+    direction = Direction(omap->get_num("direction"));
+    level_index = Direction(omap->get_num("level_index"));
+    level = NULL;
+
+}
+
+void CircuitElementSubCircuit::save(SaveObjectMap* omap)
+{
+    omap->add_num("direction", direction);
+    omap->add_num("level_index", level_index);
+}
+
+void CircuitElementSubCircuit::reset(LevelSet* level_set)
+{
+    level = level_set->levels[level_index];
+}
+
+void CircuitElementSubCircuit::retire()
+{
+    level = NULL;
+}
+
+SDL_Rect CircuitElementSubCircuit::getimage(void)
+{
+    assert(level);
+    return level->getimage(direction);
+}
+
+SDL_Rect CircuitElementSubCircuit::getimage_fg(void)
+{
+    assert(level);
+    return level->getimage_fg(direction);
+}
+
+
+void CircuitElementSubCircuit::sim_pre(PressureAdjacent adj_)
+{
+    PressureAdjacent adj(adj_, direction);
+}
+
+void CircuitElementSubCircuit::sim_post(PressureAdjacent adj_)
+{
+    PressureAdjacent adj(adj_, direction);
+}
 
 Circuit::Circuit(SaveObjectMap* omap)
 {
@@ -324,7 +380,6 @@ Circuit::Circuit(SaveObjectMap* omap)
             elements[pos.y][pos.x] = CircuitElement::load(smap);
         }
     }
-    reset();
 }
 
 Circuit::Circuit()
@@ -335,7 +390,6 @@ Circuit::Circuit()
     {
         elements[pos.y][pos.x] = new CircuitElementPipe();
     }
-    reset();
 }
 
 SaveObject* Circuit::save()
@@ -358,7 +412,7 @@ SaveObject* Circuit::save()
     return omap;
 }
 
-void Circuit::reset(void)
+void Circuit::reset(LevelSet* level_set)
 {
     XYPos pos;
     for (pos.y = 0; pos.y < 10; pos.y++)
@@ -370,7 +424,18 @@ void Circuit::reset(void)
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        elements[pos.y][pos.x]->reset();
+        elements[pos.y][pos.x]->reset(level_set);
+    }
+
+}
+
+void Circuit::retire()
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        elements[pos.y][pos.x]->retire();
     }
 
 }
@@ -460,4 +525,10 @@ void Circuit::set_element_source(XYPos pos, Direction direction)
 {
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementSource(direction);
+}
+
+void Circuit::set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set)
+{
+    delete elements[pos.y][pos.x];
+    elements[pos.y][pos.x] = new CircuitElementSubCircuit(direction, level_index, level_set);
 }

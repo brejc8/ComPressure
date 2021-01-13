@@ -22,28 +22,20 @@ GameState::GameState(const char* filename)
     std::ifstream loadfile(filename);
     if (loadfile.fail() || loadfile.eof())
     {
-        for (int i = 0; i < LEVEL_COUNT; i++)
-        {
-            levels[i] = new Level(i);
-        }
-        current_level = 0;
+        level_set = new LevelSet();
+        current_level_index = 0;
     }
     else
     {
         SaveObjectMap* omap = SaveObject::load(loadfile)->get_map();
+        level_set = new LevelSet(omap->get_item("levels"));
+
         SaveObjectList* slist = omap->get_item("levels")->get_list();
         
-        for (int i = 0; i < LEVEL_COUNT; i++)
-        {
-            if (i < slist->get_count())
-                levels[i] = new Level(i, slist->get_item(i));
-            else
-                levels[i] = new Level(i);
-        }
-        current_level = omap->get_num("current_level");
+        current_level_index = omap->get_num("current_level_index");
         delete omap;
     }
-    set_level(current_level);
+    set_level(current_level_index);
 }
 
 void GameState::save(const char*  filename)
@@ -52,14 +44,8 @@ void GameState::save(const char*  filename)
     outfile << std::setprecision(std::numeric_limits<double>::digits);
     SaveObjectMap omap;
     
-    SaveObjectList* slist = new SaveObjectList;
-    
-    for (int i = 0; i < LEVEL_COUNT; i++)
-    {
-        slist->add_item(levels[i]->save());
-    }
-    omap.add_item("levels", slist);
-    omap.add_num("current_level", current_level);
+    omap.add_item("levels", level_set->save());
+    omap.add_num("current_level_index", current_level_index);
     omap.save(outfile);
 }
 
@@ -88,7 +74,7 @@ SDL_Texture* GameState::loadTexture()
 
 void GameState::advance()
 {
-    levels[current_level]->advance(10);
+    current_level->advance(30);
 }
 
 void GameState::draw_char(XYPos& pos, char c)
@@ -108,11 +94,31 @@ void GameState::render()
     SDL_GetWindowSize(sdl_window, &window_size.x, &window_size.y);
     XYPos pos;
     
+    frame_index++;
+    
     {
         SDL_Rect src_rect = {280, 240, 360, 240};       // Background
         SDL_Rect dst_rect = {0, 0, 1920, 1080};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
+    {                                               // Input pipe background
+        SDL_Rect src_rect = {400, 112, 48, 48};       // W
+        SDL_Rect dst_rect = {(-32 - 16) * scale + grid_offset.x, (4 * 32 - 8) * scale + grid_offset.y, 48 * scale, 48 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        src_rect = {304, 112, 48, 48};                // E
+        dst_rect = {(9 * 32 - 0) * scale + grid_offset.x, (4 * 32 - 8) * scale + grid_offset.y, 48 * scale, 48 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        src_rect = {256, 112, 48, 48};                // N
+        dst_rect = {(4 * 32 - 8) * scale + grid_offset.x, (-32 - 16) * scale + grid_offset.y, 48 * scale, 48 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        src_rect = {352, 112, 48, 48};                // S
+        dst_rect = {(4 * 32 - 8) * scale + grid_offset.x, (9 * 32 - 0) * scale + grid_offset.y, 48 * scale, 48 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    }
+
     {                                               // Input pipes
         SDL_Rect src_rect = {160, 0, 32, 32};       // W
         SDL_Rect dst_rect = {-32 * scale + grid_offset.x, (4 * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
@@ -154,6 +160,11 @@ void GameState::render()
         SDL_Rect src_rect = current_circuit->elements[pos.y][pos.x]->getimage();
         SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        src_rect = current_circuit->elements[pos.y][pos.x]->getimage_fg();
+        dst_rect = {(pos.x * 32 + 4) * scale + grid_offset.x, (pos.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
+        if (src_rect.w)
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
 
     if (mouse_state == MOUSE_STATE_PIPE)
@@ -248,9 +259,24 @@ void GameState::render()
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         if (mouse_grid.inside(XYPos(9,9)))
         {
-            SDL_Rect src_rect = {(4 + direction) * 32, 0, 32, 32};
+            SDL_Rect src_rect = {128 + direction * 32, 0, 32, 32};
             SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+    }
+    else if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
+    {
+        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+        if (mouse_grid.inside(XYPos(9,9)))
+        {
+            SDL_Rect src_rect = level_set->levels[placing_subcircuit_level]->getimage(direction);
+            SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+            src_rect = level_set->levels[placing_subcircuit_level]->getimage_fg(direction);
+            dst_rect = {(mouse_grid.x * 32 + 4) * scale + grid_offset.x, (mouse_grid.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
         }
     }
 
@@ -329,9 +355,14 @@ void GameState::render()
                 case PANEL_STATE_LEVEL_SELECT:
                     panel_colour = 4;
                     break;
+                case PANEL_STATE_EDITOR:
+                    panel_colour = 0;
+                    break;
                 case PANEL_STATE_MONITOR:
                     panel_colour = 2;
                     break;
+                default:
+                    assert(0);
             }
             
             
@@ -368,28 +399,95 @@ void GameState::render()
             if (level_index >= LEVEL_COUNT)
                 break;
             SDL_Rect src_rect = {256, 80, 32, 32};
-            if (level_index == current_level)
+            if (level_index == current_level_index)
                 src_rect = {288, 80, 32, 32};
             SDL_Rect dst_rect = {pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y, 32 * scale, 32 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
-            src_rect = {0, 230 + (int(level_index) * 24), 24, 24};
+            src_rect = {0, 182 + (int(level_index) * 24), 24, 24};
             dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             level_index++;
         }
+    } else if (panel_state == PANEL_STATE_EDITOR)
+    {
+        pos = XYPos(0,0);
+        for (int i = 0; i < 4; i++)
+        {
+            SDL_Rect src_rect = {256, 80, 32, 32};
+            SDL_Rect dst_rect = {panel_offset.x + i * 32 * scale, panel_offset.y, 32 * scale, 32 * scale};
+            if (i == 0 && mouse_state == MOUSE_STATE_PLACING_VALVE)
+                src_rect.x = 256 + 32;
+            if (i == 1 && mouse_state == MOUSE_STATE_PLACING_SOURCE)
+                src_rect.x = 256 + 32;
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            SDL_Rect src_rect = {544 + direction * 24, 160 + i * 24, 24, 24};
+            SDL_Rect dst_rect = {(i * 32 + 4) * scale + panel_offset.x, (4) * scale + panel_offset.y, 24 * scale, 24 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        {
+            SDL_Rect src_rect = {640-64, 208, 64, 32};
+            SDL_Rect dst_rect = {64 * scale + panel_offset.x, panel_offset.y, 64 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+
+        unsigned level_index = 0;
+
+        for (pos.y = 0; pos.y < 8; pos.y++)
+        for (pos.x = 0; pos.x < 7; pos.x++)
+        {
+            if (level_index >= LEVEL_COUNT)
+                break;
+            SDL_Rect src_rect = {256, 80, 32, 32};
+            if (level_index == placing_subcircuit_level && mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
+                src_rect.x = 256 + 32;
+
+//            if (level_index == current_level_index)
+//                src_rect = {288, 80, 32, 32};
+            SDL_Rect dst_rect = {pos.x * 32 * scale + panel_offset.x, (1 + pos.y) * 32 * scale + panel_offset.y, 32 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+            src_rect = {direction * 24, 182 + (int(level_index) * 24), 24, 24};
+            dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, ((1 + pos.y) * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            level_index++;
+        }
+
+
+        XYPos panel_pos = ((mouse - panel_offset) / scale);
+        if (panel_pos.y >= 0 && panel_pos.x >= 0)
+        {
+            XYPos panel_grid_pos = panel_pos / 32;
+            if (panel_grid_pos.y == 0 &&  panel_grid_pos.x < 4)
+            {
+                SDL_Rect src_rect = {496, 124 + panel_grid_pos.x * 12, 28, 12};
+                SDL_Rect dst_rect = {(panel_pos.x - 28)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 28 * scale, 12 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                printf("%d %d\n", panel_grid_pos.x , panel_grid_pos.y);
+            }
+            
+        }
+
+
+
 
     } else if (panel_state == PANEL_STATE_MONITOR)
     {
         int mon_offset = 0;
         for (unsigned mon_index = 0; mon_index < 4; mon_index++)
         {
+            int color_table = 256 + (mon_index > 2 ? mon_index + 1: mon_index) * 48;
+            color_table = 256 + mon_index * 48;
             unsigned graph_size;
             if (mon_index == selected_monitor)
             {
                 for (int x = 0; x < 7; x++)
                 {
-                    SDL_Rect src_rect = {448, 112, 32, 32};
+                    SDL_Rect src_rect = {color_table, 112, 32, 32};
                     SDL_Rect dst_rect = {x * 32 * scale + panel_offset.x, mon_offset * scale + panel_offset.y, 32 * scale, 32 * scale};
                     if (x > 0)
                         src_rect.x += 8;
@@ -409,15 +507,15 @@ void GameState::render()
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
                 }
                 {
-                    SDL_Rect src_rect = {84, 166, 1, 1};
-                    SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 5) * scale + panel_offset.y, 200 * scale, 101 * scale};
+                    SDL_Rect src_rect = {503, 86, 1, 1};
+                    SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 200 * scale, 101 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
                 }
                 for (int x = 0; x < 10; x++)
                 {
-                    SDL_Rect src_rect = {105, 160, 11, 101};
-                    SDL_Rect dst_rect = {(x * 20 + 5) * scale + panel_offset.x, (mon_offset + 5) * scale + panel_offset.y, 11 * scale, 101 * scale};
+                    SDL_Rect src_rect = {524, 80, 11, 101};
+                    SDL_Rect dst_rect = {(x * 20 + 6) * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 11 * scale, 101 * scale};
                     if (x != 0)
                     {
                         src_rect.w = 4;
@@ -430,7 +528,7 @@ void GameState::render()
             {
                 for (int x = 0; x < 7; x++)
                 {
-                    SDL_Rect src_rect = {448, 112, 32, 48};
+                    SDL_Rect src_rect = {color_table, 112, 32, 48};
                     SDL_Rect dst_rect = {x * 32 * scale + panel_offset.x, mon_offset * scale + panel_offset.y, 32 * scale, 48 * scale};
                     if (x > 0)
                         src_rect.x += 8;
@@ -440,15 +538,15 @@ void GameState::render()
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
                 }
                 {
-                    SDL_Rect src_rect = {84, 166, 1, 1};
-                    SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 5) * scale + panel_offset.y, 200 * scale, 35 * scale};
+                    SDL_Rect src_rect = {503, 86, 1, 1};
+                    SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 200 * scale, 35 * scale};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
                 }
                 for (int x = 0; x < 10; x++)
                 {
-                    SDL_Rect src_rect = {85, 160, 11, 35};
-                    SDL_Rect dst_rect = {(x * 20 + 5) * scale + panel_offset.x, (mon_offset + 5) * scale + panel_offset.y, 11 * scale, 35 * scale};
+                    SDL_Rect src_rect = {504, 80, 11, 35};
+                    SDL_Rect dst_rect = {(x * 20 + 6) * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 11 * scale, 35 * scale};
                     if (x != 0)
                     {
                         src_rect.w = 4;
@@ -457,47 +555,90 @@ void GameState::render()
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
                 }
             }
-
-            unsigned width = 200 / levels[current_level]->sim_point_count;
-            assert (width);
-            for (int x = 0; x < levels[current_level]->sim_point_count; x++)
-            {
-
-                IOValue& io_val = levels[current_level]->sim_points[x].get(mon_index);
-
-                if (!io_val.observed)
                 {
-                    SDL_Rect src_rect = {84, 161, 1, 1};
-                    int offset = 100 - io_val.in_value;
-                    if (mon_index != selected_monitor)
-                        offset = (offset + 2) / 3;
-
-                    SDL_Rect dst_rect = {(x * int(width) + 5) * scale + panel_offset.x, (mon_offset + 5 + offset) * scale + panel_offset.y, int(width) * scale, 1 * scale};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-                }
-                else
-                {
-                    int offset = 100 - io_val.recorded;
-                    if (mon_index != selected_monitor)
-                        offset = (offset + 2) / 3;
-
+                    SDL_Rect src_rect;
+                    switch (mon_index)
                     {
-                        SDL_Rect src_rect = {84, 161, 1, 1};
-                        int t_offset = 100 - io_val.in_value;
-                        if (mon_index != selected_monitor)
-                            t_offset = (t_offset + 2) / 3;
+                        case 0:
+                            src_rect = {256+80, 0+16, 16, 16}; break;
+                        case 1:
+                            src_rect = {352+80, 0+16, 16, 16}; break;
+                        case 2:
+                            src_rect = {448+80, 0+16, 16, 16}; break;
+                        case 3:
+                            src_rect = {544+80, 0+16, 16, 16}; break;
+                        default:
+                            assert (0);
+                    }
                         
-                        int size = abs(offset - t_offset) + 1;
-                        int top = offset < t_offset ? offset : t_offset;
+                    SDL_Rect dst_rect = {(200 + 5) * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 16 * scale, 16 * scale};
+                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                
+                }
+            if (current_level->sim_point_count)
+            {
+                unsigned width = 200 / current_level->sim_point_count;
+                assert (width);
+                for (int x = 0; x < current_level->sim_point_count; x++)
+                {
+                    bool current_point = (x == current_level->sim_point_index);
 
-                        SDL_Rect dst_rect = {(x * int(width) + 5) * scale + panel_offset.x, (mon_offset + 5 + top) * scale + panel_offset.y, int(width) * scale, size * scale};
-                        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                    IOValue& io_val = current_level->sim_points[x].get(mon_index);
+                    int rec_val = io_val.recorded;
+                    if (current_point)
+                    {
+                        switch (mon_index)
+                        {
+                        case 0:
+                            rec_val = pressure_as_percent(current_level->N.value);
+                            break;
+                        case 1:
+                            rec_val = pressure_as_percent(current_level->E.value);
+                            break;
+                        case 2:
+                            rec_val = pressure_as_percent(current_level->S.value);
+                            break;
+                        case 3:
+                            rec_val = pressure_as_percent(current_level->W.value);
+                            break;
+                        }
                     }
 
-                    SDL_Rect src_rect = {84, 160, 1, 1};
+                    if (!io_val.observed && !current_point)
+                    {
+                        SDL_Rect src_rect = {503, 81, 1, 1};
+                        int offset = 100 - io_val.in_value;
+                        if (mon_index != selected_monitor)
+                            offset = (offset + 2) / 3;
 
-                    SDL_Rect dst_rect = {(x * int(width) + 5) * scale + panel_offset.x, (mon_offset + 5 + offset) * scale + panel_offset.y, int(width) * scale, 1 * scale};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                        SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + offset) * scale + panel_offset.y, int(width) * scale, 1 * scale};
+                        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                    }
+                    else
+                    {
+                        int offset = 100 - rec_val;
+                        if (mon_index != selected_monitor)
+                            offset = (offset + 2) / 3;
+
+                        {
+                            SDL_Rect src_rect = {503, 81, 1, 1};
+                            int t_offset = 100 - io_val.in_value;
+                            if (mon_index != selected_monitor)
+                                t_offset = (t_offset + 2) / 3;
+
+                            int size = abs(offset - t_offset) + 1;
+                            int top = offset < t_offset ? offset : t_offset;
+
+                            SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + top) * scale + panel_offset.y, int(width) * scale, size * scale};
+                            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                        }
+                        if (!current_point || (frame_index % 20 > 10))
+                        {
+                            SDL_Rect src_rect = {503, 80, 1, 1};
+                            SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + offset) * scale + panel_offset.y, int(width) * scale, 1 * scale};
+                            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                        }
+                    }
                 }
             }
             
@@ -517,9 +658,15 @@ void GameState::render()
 
 void GameState::set_level(unsigned level_index)
 {
-    current_level = level_index;
-    current_circuit = levels[current_level]->circuit;
-    levels[current_level]->reset();
+    if (level_index < LEVEL_COUNT)
+    {
+        if (current_circuit)
+            current_circuit->retire();
+        current_level_index = level_index;
+        current_level = level_set->levels[current_level_index];
+        current_circuit = current_level->circuit;
+        current_level->reset(level_set);
+    }
 }
 
 void GameState::mouse_click_in_grid()
@@ -670,6 +817,11 @@ void GameState::mouse_click_in_grid()
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         current_circuit->set_element_source(mouse_grid, direction);
     }
+    else if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
+    {
+        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+        current_circuit->set_element_subcircuit(mouse_grid, direction, placing_subcircuit_level, level_set);
+    }
 }
 
 void GameState::mouse_click_in_panel()
@@ -687,6 +839,9 @@ void GameState::mouse_click_in_panel()
                 case 0:
                     panel_state = PANEL_STATE_LEVEL_SELECT;
                     break;
+                case 1:
+                    panel_state = PANEL_STATE_EDITOR;
+                    break;
                 case 4:
                     panel_state = PANEL_STATE_MONITOR;
                     break;
@@ -696,7 +851,6 @@ void GameState::mouse_click_in_panel()
     }
     
     XYPos panel_pos = ((mouse - panel_offset) / scale);
-    XYPos panel_grid_pos = panel_pos / 32;
     if (panel_pos.y < 0 || panel_pos.x < 0)
         return;
 
@@ -705,10 +859,53 @@ void GameState::mouse_click_in_panel()
     
     if (panel_state == PANEL_STATE_LEVEL_SELECT)
     {
+        XYPos panel_grid_pos = panel_pos / 32;
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 7;
         set_level(level_index);
         return;
+    } else if (panel_state == PANEL_STATE_EDITOR)
+    {
+        XYPos panel_grid_pos = panel_pos / 32;
+        if (panel_grid_pos.y == 0)
+        {
+            if (panel_grid_pos.x == 0)
+                mouse_state = MOUSE_STATE_PLACING_VALVE;
+            else if (panel_grid_pos.x == 1)
+                mouse_state = MOUSE_STATE_PLACING_SOURCE;
+            else if (panel_grid_pos.x == 2)
+                direction = Direction((int(direction) + 4 - 1) % 4);
+            else if (panel_grid_pos.x == 3)
+                direction = Direction((int(direction) + 1) % 4);
+            return;
+        }
+        panel_grid_pos.y -= 1;
+        unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 7;
+        if (level_index < LEVEL_COUNT)
+        {
+            mouse_state = MOUSE_STATE_PLACING_SUBCIRCUIT;
+            placing_subcircuit_level = level_index;
+        }
+        return;
+    } else if (panel_state == PANEL_STATE_MONITOR)
+    {
+        int mon_offset = 0;
+        for (unsigned mon_index = 0; mon_index < 4; mon_index++)
+        {
+            XYPos button_offset = panel_pos - XYPos(200 + 6, mon_offset + 6);
+            if (button_offset.inside(XYPos(16, 16)))
+            {
+                selected_monitor = mon_index;
+            }
+            
+            if (mon_index == selected_monitor)
+                mon_offset += 112 + 4;
+            else
+                mon_offset += 48 + 4;
+        }
+       
+        return;
     }
+
 }
 
 bool GameState::events()

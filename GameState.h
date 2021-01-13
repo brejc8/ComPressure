@@ -21,11 +21,13 @@ class GameState
         MOUSE_STATE_DELETING,
         MOUSE_STATE_PLACING_VALVE,
         MOUSE_STATE_PLACING_SOURCE,
+        MOUSE_STATE_PLACING_SUBCIRCUIT,
     } mouse_state = MOUSE_STATE_NONE;
 
     enum PanelState
     {
         PANEL_STATE_LEVEL_SELECT,
+        PANEL_STATE_EDITOR,
         PANEL_STATE_MONITOR
     } panel_state = PANEL_STATE_LEVEL_SELECT;
 
@@ -35,10 +37,14 @@ class GameState
     const XYPos grid_offset = XYPos(32 * scale, 32 * scale);
     const XYPos panel_offset = XYPos((16 + 32 * 11) * scale, (16 + 8 + 32) * scale);
 
-    Level* levels[LEVEL_COUNT];
-    Circuit* current_circuit;
-    unsigned current_level = 0;
+    LevelSet* level_set;
+    Level* current_level;
+
+    Circuit* current_circuit = NULL;
+    unsigned current_level_index = 0;
+    unsigned placing_subcircuit_level;
     unsigned selected_monitor = 0;
+    unsigned frame_index = 0;
     XYPos mouse;
     
     XYPos pipe_start_grid_pos;

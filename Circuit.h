@@ -6,6 +6,8 @@
 
 #define PRESSURE_SCALAR (65536)
 
+class LevelSet;
+class Level;
 
 typedef int Pressure;
 
@@ -87,6 +89,7 @@ enum CircuitElementType
     CIRCUIT_ELEMENT_TYPE_PIPE,
     CIRCUIT_ELEMENT_TYPE_VALVE,
     CIRCUIT_ELEMENT_TYPE_SOURCE,
+    CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT,
 };
 class PressureAdjacent
 {
@@ -118,8 +121,10 @@ public:
     virtual void save(SaveObjectMap*) = 0;
     static CircuitElement* load(SaveObjectMap*);
 
-    virtual void reset(void) {};
+    virtual void reset(LevelSet* level_set) {};
+    virtual void retire() {};
     virtual SDL_Rect getimage(void) = 0;
+    virtual SDL_Rect getimage_fg(void)  {return SDL_Rect{0, 0, 0, 0};}
     virtual void sim_pre(PressureAdjacent adj) = 0;
     virtual void sim_post(PressureAdjacent adj) = 0;
     
@@ -166,7 +171,7 @@ public:
     CircuitElementValve(SaveObjectMap*);
 
     void save(SaveObjectMap*);
-    void reset();
+    void reset(LevelSet* level_set);
     SDL_Rect getimage(void);
     void sim_pre(PressureAdjacent adj);
     void sim_post(PressureAdjacent adj);
@@ -192,6 +197,30 @@ public:
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SOURCE;}
 };
 
+class Circuit;
+
+class CircuitElementSubCircuit : public CircuitElement
+{
+private:
+//    CircuitElementSubCircuit(){};
+public:
+    Direction direction;
+    unsigned level_index;
+    Level* level;
+    Circuit* circuit;
+
+    CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set);
+    CircuitElementSubCircuit(SaveObjectMap*);
+
+    void save(SaveObjectMap*);
+    void reset(LevelSet* level_set);
+    void retire();
+    SDL_Rect getimage(void);
+    SDL_Rect getimage_fg(void);
+    void sim_pre(PressureAdjacent adj);
+    void sim_post(PressureAdjacent adj);
+    CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
+};
 
 class Circuit
 {
@@ -208,8 +237,10 @@ public:
     void set_element_pipe(XYPos pos, Connections con);
     void set_element_valve(XYPos pos, Direction direction);
     void set_element_source(XYPos pos, Direction direction);
+    void set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set);
 
-    void reset(void);
+    void reset(LevelSet* level_set);
+    void retire();
     void sim_pre(PressureAdjacent);
     void sim_post(PressureAdjacent);
 

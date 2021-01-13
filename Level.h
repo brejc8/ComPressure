@@ -83,14 +83,18 @@ public:
 
 class Level
 {
+public:
     CircuitPressure N;
     CircuitPressure E;
     CircuitPressure S;
     CircuitPressure W;
 
-public:
     unsigned level_index;
     Circuit* circuit;
+    unsigned connection_mask = 0;
+
+    
+    unsigned substep_count = 2000;
     unsigned sim_point_count = 0;
     std::vector<SimPoint> sim_points;
 
@@ -103,8 +107,21 @@ public:
     SaveObject* save();
 
     void add_sim_point(SimPoint point, unsigned count);
-    
+    SDL_Rect getimage(Direction direction);
+    SDL_Rect getimage_fg(Direction direction);
+
     void init();
-    void reset();
+    void reset(LevelSet* level_set);
     void advance(unsigned ticks);
+};
+
+
+class LevelSet
+{
+public:
+    Level* levels[LEVEL_COUNT];
+    LevelSet(SaveObject* sobj);
+    LevelSet();
+    SaveObject* save();
+
 };
