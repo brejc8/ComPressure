@@ -123,6 +123,7 @@ public:
 
     virtual void reset(LevelSet* level_set) {};
     virtual void retire() {};
+    virtual bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set) {return false;}
     virtual SDL_Rect getimage(void) = 0;
     virtual SDL_Rect getimage_fg(void)  {return SDL_Rect{0, 0, 0, 0};}
     virtual void sim_pre(PressureAdjacent adj) = 0;
@@ -215,6 +216,7 @@ public:
     void save(SaveObjectMap*);
     void reset(LevelSet* level_set);
     void retire();
+    bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
     SDL_Rect getimage(void);
     SDL_Rect getimage_fg(void);
     void sim_pre(PressureAdjacent adj);
@@ -243,5 +245,7 @@ public:
     void retire();
     void sim_pre(PressureAdjacent);
     void sim_post(PressureAdjacent);
+    
+    bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
 
 };

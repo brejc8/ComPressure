@@ -407,6 +407,30 @@ void GameState::render()
             src_rect = {0, 182 + (int(level_index) * 24), 24, 24};
             dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            
+            unsigned score = level_set->levels[level_index]->best_score;
+            printf("%d\n", score);
+            if (score == 100)
+            {
+                SDL_Rect src_rect = {40, 161, 9, 5};
+                SDL_Rect dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y, 9 * scale, 5 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+            else
+            {
+                SDL_Rect src_rect = {(int(score) / 10) * 4, 161, 4, 5};
+                SDL_Rect dst_rect = {(pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y, 4 * scale, 5 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                src_rect.w = 5;
+                src_rect.x = (score % 10) * 4;
+                dst_rect.w = 5 * scale;
+                dst_rect.x += 4 * scale;
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+
+
+
+
             level_index++;
         }
     } else if (panel_state == PANEL_STATE_EDITOR)
@@ -443,13 +467,12 @@ void GameState::render()
             if (level_index >= LEVEL_COUNT)
                 break;
             SDL_Rect src_rect = {256, 80, 32, 32};
-            if (level_index == placing_subcircuit_level && mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
+            if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level)
                 src_rect.x = 256 + 32;
 
-//            if (level_index == current_level_index)
-//                src_rect = {288, 80, 32, 32};
             SDL_Rect dst_rect = {pos.x * 32 * scale + panel_offset.x, (1 + pos.y) * 32 * scale + panel_offset.y, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            if (level_index != current_level_index && !level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, level_set))
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
             src_rect = {direction * 24, 182 + (int(level_index) * 24), 24, 24};
             dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, ((1 + pos.y) * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};
@@ -880,7 +903,7 @@ void GameState::mouse_click_in_panel()
         }
         panel_grid_pos.y -= 1;
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 7;
-        if (level_index < LEVEL_COUNT)
+        if (level_index < LEVEL_COUNT && level_index != current_level_index)
         {
             mouse_state = MOUSE_STATE_PLACING_SUBCIRCUIT;
             placing_subcircuit_level = level_index;
@@ -905,7 +928,6 @@ void GameState::mouse_click_in_panel()
        
         return;
     }
-
 }
 
 bool GameState::events()

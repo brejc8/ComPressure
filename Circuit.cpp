@@ -317,7 +317,9 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(Direction direction_, unsigne
     direction(direction_),
     level_index(level_index_)
 {
-    level = level_set->levels[level_index];
+    level = NULL;
+    circuit = NULL;
+    reset(level_set);
 }
 
 CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
@@ -325,6 +327,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
     direction = Direction(omap->get_num("direction"));
     level_index = Direction(omap->get_num("level_index"));
     level = NULL;
+    circuit = NULL;
 
 }
 
@@ -337,11 +340,23 @@ void CircuitElementSubCircuit::save(SaveObjectMap* omap)
 void CircuitElementSubCircuit::reset(LevelSet* level_set)
 {
     level = level_set->levels[level_index];
+    if (circuit)
+        delete circuit;
+    circuit = new Circuit(*level->circuit);
+    circuit->reset(level_set);
 }
 
 void CircuitElementSubCircuit::retire()
 {
     level = NULL;
+    circuit = NULL;
+}
+
+bool CircuitElementSubCircuit::contains_subcircuit_level(unsigned level_index_q, LevelSet* level_set)
+{
+    if (level_index_q == level_index)
+        return true;
+    return level_set->levels[level_index]->circuit->contains_subcircuit_level(level_index_q, level_set);
 }
 
 SDL_Rect CircuitElementSubCircuit::getimage(void)
@@ -360,11 +375,15 @@ SDL_Rect CircuitElementSubCircuit::getimage_fg(void)
 void CircuitElementSubCircuit::sim_pre(PressureAdjacent adj_)
 {
     PressureAdjacent adj(adj_, direction);
+    assert(circuit);
+    circuit->sim_pre(adj);
 }
 
 void CircuitElementSubCircuit::sim_post(PressureAdjacent adj_)
 {
     PressureAdjacent adj(adj_, direction);
+    assert(circuit);
+    circuit->sim_post(adj);
 }
 
 Circuit::Circuit(SaveObjectMap* omap)
@@ -440,13 +459,8 @@ void Circuit::retire()
 
 }
 
-void Circuit::sim_pre(PressureAdjacent adj)
+void Circuit::sim_pre(PressureAdjacent adj_)
 {
-    connections_ns[0][4].value = adj.N.value;
-    connections_ew[4][9].value = adj.E.value;
-    connections_ns[9][4].value = adj.S.value;
-    connections_ew[4][0].value = adj.W.value;
-
     XYPos pos;
     for (pos.y = 0; pos.y < 10; pos.y++)
     for (pos.x = 0; pos.x < 10; pos.x++)
@@ -459,29 +473,25 @@ void Circuit::sim_pre(PressureAdjacent adj)
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        PressureAdjacent adj(connections_ns[pos.y][pos.x],
-                             connections_ew[pos.y][pos.x+1],
-                             connections_ns[pos.y+1][pos.x],
-                             connections_ew[pos.y][pos.x]);
+        PressureAdjacent adj(pos == XYPos(4,0) ? adj_.N : connections_ns[pos.y][pos.x],
+                             pos == XYPos(8,4) ? adj_.E : connections_ew[pos.y][pos.x+1],
+                             pos == XYPos(4,8) ? adj_.S : connections_ns[pos.y+1][pos.x],
+                             pos == XYPos(0,4) ? adj_.W : connections_ew[pos.y][pos.x]);
         elements[pos.y][pos.x]->sim_pre(adj);
     }
 }
 
-void Circuit::sim_post(PressureAdjacent adj)
+void Circuit::sim_post(PressureAdjacent adj_)
 {
-    connections_ns[0][4].value = adj.N.value;
-    connections_ew[4][9].value = adj.E.value;
-    connections_ns[9][4].value = adj.S.value;
-    connections_ew[4][0].value = adj.W.value;
 
     XYPos pos;
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        PressureAdjacent adj(connections_ns[pos.y][pos.x],
-                             connections_ew[pos.y][pos.x+1],
-                             connections_ns[pos.y+1][pos.x],
-                             connections_ew[pos.y][pos.x]);
+        PressureAdjacent adj(pos == XYPos(4,0) ? adj_.N : connections_ns[pos.y][pos.x],
+                             pos == XYPos(8,4) ? adj_.E : connections_ew[pos.y][pos.x+1],
+                             pos == XYPos(4,8) ? adj_.S : connections_ns[pos.y+1][pos.x],
+                             pos == XYPos(0,4) ? adj_.W : connections_ew[pos.y][pos.x]);
         elements[pos.y][pos.x]->sim_post(adj);
     }
 
@@ -491,14 +501,6 @@ void Circuit::sim_post(PressureAdjacent adj)
         connections_ns[pos.y][pos.x].post();
         connections_ew[pos.y][pos.x].post();
     }
-
-
-
-    adj.N.value = connections_ns[0][4].value;
-    adj.E.value = connections_ew[4][9].value;
-    adj.S.value = connections_ns[9][4].value;
-    adj.W.value = connections_ew[4][0].value;
-
 }
 
 
@@ -531,4 +533,16 @@ void Circuit::set_element_subcircuit(XYPos pos, Direction direction, unsigned le
 {
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementSubCircuit(direction, level_index, level_set);
+}
+
+bool Circuit::contains_subcircuit_level(unsigned level_index, LevelSet* level_set)
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        if (elements[pos.y][pos.x]->contains_subcircuit_level(level_index, level_set))
+            return true;
+    }
+    return false;
 }

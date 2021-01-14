@@ -2,6 +2,7 @@
 #include "Misc.h"
 #include "SaveState.h"
 #include "Circuit.h"
+#include <stdlib.h>
 
 #define LEVEL_COUNT 10
 
@@ -38,6 +39,13 @@ public:
         recorded = p;
         observed = true;
     }
+    unsigned get_error()
+    {
+        if (observed)
+            return abs(recorded - in_value);
+        return 100;
+    }
+
 };
 
 class SimPoint
@@ -97,6 +105,8 @@ public:
     unsigned substep_count = 2000;
     unsigned sim_point_count = 0;
     std::vector<SimPoint> sim_points;
+    unsigned score_base = 100;
+    unsigned best_score = 0;
 
     
     unsigned sim_point_index;
@@ -113,6 +123,9 @@ public:
     void init();
     void reset(LevelSet* level_set);
     void advance(unsigned ticks);
+
+    unsigned get_score();
+
 };
 
 

@@ -5,7 +5,7 @@ pressure_SOURCES =  GameState.cpp GameState.h \
                     SaveState.cpp SaveState.h \
                     Circuit.cpp Circuit.h \
                     Level.cpp Level.h
-
+EXTRA_DIST = texture.png
 pressure_LDADD = texture_png.o
 
 CLEANFILES = texture_png.o
