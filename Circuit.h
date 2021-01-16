@@ -3,6 +3,7 @@
 #include "SaveState.h"
 
 #include <SDL.h>
+#include <vector>
 
 #define PRESSURE_SCALAR (65536)
 
@@ -27,6 +28,7 @@ public:
     void apply(Pressure vol, Pressure drive)
     {
         move_next += (int64_t(vol * PRESSURE_SCALAR - value) * drive) / 2000;
+        touched = true;
     }
 
     void move(Pressure vol)
@@ -37,10 +39,11 @@ public:
     
     void vent(void)
     {
-        move_next -= value / 2;
-        vented += value / 2;
-        if (vented)
-            touched = true;
+        if (value)
+        {
+            move_next -= value / 2;
+            vented += value / 2;
+        }
     }
 
     void pre(void)
@@ -51,10 +54,13 @@ public:
     
     void post(void)
     {
-        value += move_next;
-        move_next = 0;
-        if (value > 100 * PRESSURE_SCALAR)
-            value = 100 * PRESSURE_SCALAR;
+        if (move_next)
+        {
+            value += move_next;
+            move_next = 0;
+            if (value > 100 * PRESSURE_SCALAR)
+                value = 100 * PRESSURE_SCALAR;
+        }
     }
     
     CircuitPressure(Pressure value_):
@@ -120,14 +126,17 @@ public:
     SaveObject* save(void);
     virtual void save(SaveObjectMap*) = 0;
     static CircuitElement* load(SaveObjectMap*);
+    virtual CircuitElement* copy() = 0;
+
 
     virtual void reset(LevelSet* level_set) {};
     virtual void retire() {};
     virtual bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set) {return false;}
-    virtual SDL_Rect getimage(void) = 0;
-    virtual SDL_Rect getimage_fg(void)  {return SDL_Rect{0, 0, 0, 0};}
+    virtual XYPos getimage(void) = 0;
+    virtual XYPos getimage_fg(void)  {return XYPos(0,0);}
+    virtual SDL_Rect getimage_bg(void)  {return SDL_Rect{0, 0, 0, 0};}
     virtual void sim_pre(PressureAdjacent adj) = 0;
-    virtual void sim_post(PressureAdjacent adj) = 0;
+    virtual void sim_post(PressureAdjacent adj) {};
     
     virtual CircuitElementType get_type() = 0;
     virtual void extend_pipe(Connections con){assert(0);}
@@ -138,6 +147,9 @@ class CircuitElementPipe : public CircuitElement
 {
 public:
     Connections connections = CONNECTIONS_NONE;
+    Pressure pressure = 0;
+    Pressure moved = 0;
+    int moved_pos = 0;
 
     CircuitElementPipe(){}
     CircuitElementPipe(Connections connections_):
@@ -146,9 +158,10 @@ public:
     CircuitElementPipe(SaveObjectMap*);
 
     void save(SaveObjectMap*);
-    SDL_Rect getimage(void);
+    virtual CircuitElement* copy() { return new CircuitElementPipe(connections);}
+    XYPos getimage(void);
+    SDL_Rect getimage_bg(void);
     void sim_pre(PressureAdjacent adj);
-    void sim_post(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_PIPE;}
 
     void extend_pipe(Connections con);
@@ -172,10 +185,10 @@ public:
     CircuitElementValve(SaveObjectMap*);
 
     void save(SaveObjectMap*);
+    virtual CircuitElement* copy() { return new CircuitElementValve(direction);}
     void reset(LevelSet* level_set);
-    SDL_Rect getimage(void);
+    XYPos getimage(void);
     void sim_pre(PressureAdjacent adj);
-    void sim_post(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_VALVE;}
 };
 
@@ -192,9 +205,9 @@ public:
     CircuitElementSource(SaveObjectMap*);
 
     void save(SaveObjectMap*);
-    SDL_Rect getimage(void);
+    virtual CircuitElement* copy() { return new CircuitElementSource(direction);}
+    XYPos getimage(void);
     void sim_pre(PressureAdjacent adj);
-    void sim_post(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SOURCE;}
 };
 
@@ -210,15 +223,16 @@ public:
     Level* level;
     Circuit* circuit;
 
-    CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set);
+    CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set = NULL);
     CircuitElementSubCircuit(SaveObjectMap*);
 
     void save(SaveObjectMap*);
+    virtual CircuitElement* copy() { return new CircuitElementSubCircuit(direction, level_index);}
     void reset(LevelSet* level_set);
     void retire();
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
-    SDL_Rect getimage(void);
-    SDL_Rect getimage_fg(void);
+    XYPos getimage(void);
+    XYPos getimage_fg(void);
     void sim_pre(PressureAdjacent adj);
     void sim_post(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
@@ -227,11 +241,27 @@ public:
 class Circuit
 {
 public:
+    class FastFunc
+    {
+    public:
+        CircuitElement* element;
+        PressureAdjacent adj;
+        FastFunc(CircuitElement* element_, PressureAdjacent adj_):
+            element(element_),
+            adj(adj_)
+        {}
+    };
     CircuitElement* elements[9][9];
 
     CircuitPressure connections_ns[10][10];
     CircuitPressure connections_ew[10][10];
+
+    bool fast_prepped = false;
+    std::vector<FastFunc> fast_funcs;
+    std::vector<CircuitPressure*> fast_pressures;
+
     Circuit(SaveObjectMap* omap);
+    Circuit(Circuit& other);
     Circuit();
 
     SaveObject* save(void);
@@ -245,7 +275,8 @@ public:
     void retire();
     void sim_pre(PressureAdjacent);
     void sim_post(PressureAdjacent);
-    
+    void ammended(){fast_prepped = false;}
+
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
 
 };

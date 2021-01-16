@@ -4,7 +4,7 @@
 #include "Circuit.h"
 #include <stdlib.h>
 
-#define LEVEL_COUNT 10
+#define LEVEL_COUNT 9
 
 
 class IOValue
@@ -41,9 +41,11 @@ public:
     }
     unsigned get_error()
     {
-        if (observed)
-            return abs(recorded - in_value);
-        return 100;
+        if (in_value < 0)
+            return 0;
+        if (!observed)
+            return 100;
+        return abs(recorded - in_value);
     }
 
 };
@@ -106,8 +108,10 @@ public:
     unsigned sim_point_count = 0;
     std::vector<SimPoint> sim_points;
     unsigned score_base = 100;
+    
     unsigned best_score = 0;
-
+    unsigned last_score = 0;
+    bool enabled = false;
     
     unsigned sim_point_index;
     unsigned substep_index;
@@ -117,12 +121,13 @@ public:
     SaveObject* save();
 
     void add_sim_point(SimPoint point, unsigned count);
-    SDL_Rect getimage(Direction direction);
-    SDL_Rect getimage_fg(Direction direction);
+    XYPos getimage(Direction direction);
+    XYPos getimage_fg(Direction direction);
 
     void init();
     void reset(LevelSet* level_set);
     void advance(unsigned ticks);
+    void enable_levels();
 
     unsigned get_score();
 

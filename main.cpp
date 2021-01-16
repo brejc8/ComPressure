@@ -15,9 +15,9 @@ void mainloop()
     GameState* game_state = new GameState("pressure.save");
 	while(true)
 	{
+        game_state->advance();
 		if (game_state->events())
             break;
-        game_state->advance();
         game_state->render();
 	}
     game_state->save("pressure.save");

@@ -42,21 +42,22 @@ void Level::add_sim_point(SimPoint point, unsigned count)
     }
 }
 
-SDL_Rect Level::getimage(Direction direction)
+XYPos Level::getimage(Direction direction)
 {
     int mask = connection_mask << direction | connection_mask >> (4 - direction) & 0xF;
-    return SDL_Rect{128 + (mask & 0x3) * 32, 32 + ((mask >> 2) & 0x3) * 32, 32, 32};
+    return XYPos(128 + (mask & 0x3) * 32, 32 + ((mask >> 2) & 0x3) * 32);
 }
 
-SDL_Rect Level::getimage_fg(Direction direction)
+XYPos Level::getimage_fg(Direction direction)
 {
-    return SDL_Rect{direction * 24, 182 + (int(level_index) * 24), 24, 24};
+    return XYPos(direction * 24, 182 + (int(level_index) * 24));
 }
 
 
 void Level::init(void)
 {
 #define DRIVE(a)   IOValue(a, 100, a)
+#define SHORT(a)   IOValue(a, 100, -1)
 #define FLOAT(A)   IOValue(0, 0, A)
 
 //                          N E S W
@@ -88,9 +89,9 @@ void Level::init(void)
             add_sim_point(SimPoint(   FLOAT(100)  ,FLOAT(50)    ,FLOAT(100)  ,DRIVE(50)   ),     1);
             add_sim_point(SimPoint(   DRIVE(100)  ,DRIVE(100)   ,DRIVE(100)  ,DRIVE(100)  ),     1);
             
-            substep_count = 2000;
+            substep_count = 1500;
             connection_mask = CONMASK_ALL;
-            score_base = 3764;
+            score_base = 1000;
             break;
 
         case 1:              //       N            E             S            W                  time
@@ -106,7 +107,7 @@ void Level::init(void)
                                                  
             substep_count = 3000;
             connection_mask = CONMASK_WES;
-            score_base = 1210;
+            score_base = 1000;
             break;
 
 
@@ -123,14 +124,27 @@ void Level::init(void)
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(80)    ,DRIVE(0)    ,DRIVE(80)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(90)    ,DRIVE(0)    ,DRIVE(90)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(100)   ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(100)   ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(80)    ,DRIVE(0)    ,DRIVE(80)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(50)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(90)    ,DRIVE(0)    ,DRIVE(90)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
+            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
 
             substep_count = 5000;
             connection_mask = CONMASK_WE;
-            score_base = 1546;
+            score_base = 1000;
             break;
 
         case 3:              //       N            E             S            W                  time
@@ -153,7 +167,7 @@ void Level::init(void)
 
             substep_count = 5000;
             connection_mask = CONMASK_WE;
-            score_base = 1517;
+            score_base = 1000;
             break;
 
         case 4:              //       N            E             S            W                  time
@@ -166,7 +180,7 @@ void Level::init(void)
 
             substep_count = 5000;
             connection_mask = CONMASK_NES;
-            score_base = 655;
+            score_base = 1000;
 
             break;
 
@@ -182,7 +196,7 @@ void Level::init(void)
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
             substep_count = 5000;
             connection_mask = CONMASK_WE;
-            score_base = 690;
+            score_base = 1000;
             break;
 
         case 6:              //       N            E             S            W                  time
@@ -197,9 +211,9 @@ void Level::init(void)
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(20)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(20)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(10)    ),     1);
-            substep_count = 5000;
+            substep_count = 8000;
             connection_mask = CONMASK_WE;
-            score_base = 798;
+            score_base = 1000;
             break;
 
         case 7:              //       N            E             S            W                  time
@@ -219,9 +233,9 @@ void Level::init(void)
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(25)    ,DRIVE(50)   ,DRIVE(0)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
 
-            substep_count = 5000;
+            substep_count = 8000;
             connection_mask = CONMASK_NES;
-            score_base = 1972;
+            score_base = 1000;
             break;
         case 8:              //       N            E             S            W                  time
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
@@ -246,9 +260,9 @@ void Level::init(void)
             add_sim_point(SimPoint(   DRIVE(25)   ,FLOAT(50)    ,DRIVE(25)   ,DRIVE(0)    ),     1);
             add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(25)    ,DRIVE(25)   ,DRIVE(0)    ),     1);
 
-            substep_count = 7000;
+            substep_count = 10000;
             connection_mask = CONMASK_NES;
-            score_base = 2003;
+            score_base = 1000;
             break;
 
 
@@ -306,7 +320,9 @@ void Level::advance(unsigned ticks)
             sim_point_index++;
             if (sim_point_index >= sim_point_count)
                 sim_point_index = 0;
-            int score = get_score();
+            unsigned score = get_score();
+            last_score = score;
+
             if (score > best_score)
                 best_score = score;
         }
@@ -322,6 +338,9 @@ unsigned Level::get_score()
             error += sim_points[i].get(j).get_error();
     }
     int score = 100 - (error * 100 + error / 2) / score_base;
+    if (score < 0)
+        return 0;
+    assert(score <= 100);
     return score;
 }
 
