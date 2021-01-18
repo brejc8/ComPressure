@@ -4,7 +4,7 @@
 #include "Circuit.h"
 #include <stdlib.h>
 
-#define LEVEL_COUNT 9
+#define LEVEL_COUNT 10
 
 
 class IOValue

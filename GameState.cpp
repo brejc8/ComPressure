@@ -37,6 +37,7 @@ GameState::GameState(const char* filename)
             current_level_index = 0;
         game_speed = omap->get_num("game_speed");
         show_debug = omap->get_num("show_debug");
+        show_help = omap->get_num("show_help");
         delete omap;
     }
     set_level(current_level_index);
@@ -52,6 +53,7 @@ void GameState::save(const char*  filename)
     omap.add_num("current_level_index", current_level_index);
     omap.add_num("game_speed", game_speed);
     omap.add_num("show_debug", show_debug);
+    omap.add_num("show_help", show_help);
     omap.save(outfile);
 }
 
@@ -145,7 +147,7 @@ void GameState::advance()
                     test_pressure_histroy[test_pressure_histroy_index].values[3] = pressure_as_percent(test_W.value);
                     test_pressure_histroy[test_pressure_histroy_index].set = true;
 
-                    test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 123;
+                    test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 192;
                     
                 }
                 test_pressure_histroy_sample_downcounter--;
@@ -268,7 +270,7 @@ void GameState::render()
     debug_frames++;
     
     {
-        SDL_Rect src_rect = {280, 240, 360, 240};       // Background
+        SDL_Rect src_rect = {320, 300, 320, 180};       // Background
         SDL_Rect dst_rect = {0, 0, 1920, 1080};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
@@ -300,15 +302,15 @@ void GameState::render()
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        SDL_Rect src_rect = {256+32, 32, 16, 16};
+        SDL_Rect src_rect = {352, 144, 32, 32};
         if (pos.y > 0)
-            src_rect.y += 16;
+            src_rect.y += 32;
         if (pos.y == 8)
-            src_rect.y += 16;
+            src_rect.y += 32;
         if (pos.x > 0)
-            src_rect.x += 16;
+            src_rect.x += 32;
         if (pos.x == 8)
-            src_rect.x += 16;
+            src_rect.x += 32;
             
         SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
@@ -348,15 +350,21 @@ void GameState::render()
 
     if (mouse_state == MOUSE_STATE_PIPE && (frame_index % 20 < 10))
     {
+        Connections con;
+        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+        XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
         if (pipe_start_ns)
         {
-            XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-            if (mouse_grid.y >= pipe_start_grid_pos.y)   //north - southwards
+            mouse_rel.x -= 16;
+            if (mouse_rel.y < 0 && pipe_start_grid_pos.y == 0)
+                mouse_rel.y = -mouse_rel.y;
+            if (mouse_rel.y >= 0 && pipe_start_grid_pos.y == 9)
+                mouse_rel.y = -mouse_rel.y - 1;
+
+
+            if (mouse_rel.y >= 0)   //north - southwards
             {
-                    Connections con;
-                    XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
-                    mouse_rel.x -= 16;
-                    if (mouse_rel.y > abs(mouse_rel.x))     // south
+                    if (mouse_rel.y > abs(mouse_rel.x) + 16)     // south
                         con = CONNECTIONS_NS;
                     else if (mouse_rel.x >= 0)               // east
                         con = CONNECTIONS_NE;
@@ -368,10 +376,7 @@ void GameState::render()
             }
             else                                        //south - northwards
             {
-                    Connections con;
-                    XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
-                    mouse_rel.x -= 16;
-                    if (-mouse_rel.y > abs(mouse_rel.x))    // north
+                    if (-mouse_rel.y > abs(mouse_rel.x) + 16)    // north
                         con = CONNECTIONS_NS;
                     else if (mouse_rel.x >= 0)               // east
                         con = CONNECTIONS_ES;
@@ -387,13 +392,14 @@ void GameState::render()
         }
         else
         {
-            XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-            if (mouse_grid.x >= pipe_start_grid_pos.x)   //west - eastwards
+            mouse_rel.y -= 16;
+            if (mouse_rel.x < 0 && pipe_start_grid_pos.x == 0)
+                mouse_rel.x = -mouse_rel.x;
+            if (mouse_rel.x >= 0 && pipe_start_grid_pos.x == 9)
+                mouse_rel.x = -mouse_rel.x - 1;
+            if (mouse_rel.x >= 0)   //west - eastwards
             {
-                    Connections con;
-                    XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
-                    mouse_rel.y -= 16;
-                    if (mouse_rel.x > abs(mouse_rel.y))     // west
+                    if (mouse_rel.x > abs(mouse_rel.y) + 16)     // west
                         con = CONNECTIONS_EW;
                     else if (mouse_rel.y >= 0)               // south
                         con = CONNECTIONS_WS;
@@ -405,10 +411,7 @@ void GameState::render()
             }
             else                                        //east - westwards
             {
-                    Connections con;
-                    XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
-                    mouse_rel.y -= 16;
-                    if (-mouse_rel.x > abs(mouse_rel.y))    // east
+                    if (-mouse_rel.x > abs(mouse_rel.y) + 16)    // east
                         con = CONNECTIONS_EW;
                     else if (mouse_rel.y >= 0)               // south
                         con = CONNECTIONS_ES;
@@ -525,7 +528,7 @@ void GameState::render()
             render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 16, 11*32 + 8), panel_colour);
         }
         {                                                                                               // Top Menu
-            SDL_Rect src_rect = {256, 160, 32 * 7, 32};
+            SDL_Rect src_rect = {256, 112, 32 * 7, 32};
             SDL_Rect dst_rect = {(8 + 32 * 11) * scale, (8) * scale, 32 * 7 * scale, 32 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
@@ -536,6 +539,12 @@ void GameState::render()
         }
         {                                                                                               // Current Score
             render_number_2digit(XYPos((8 + 32 * 11 + 32 * 4 + 3) * scale, (8 + 8) * scale), current_level->last_score, 3);
+        }
+        {                                                                                               // Help Button
+            render_box(XYPos((8 + 32 * 11 + 7 * 32) * scale, (8) * scale), XYPos(32, 32), 0);
+            SDL_Rect src_rect = {640-96, 208, 32, 32};
+            SDL_Rect dst_rect = {(8 + 32 * 11 + 7 * 32) * scale, (8) * scale, 32 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
 
     }
@@ -568,6 +577,16 @@ void GameState::render()
             render_number_2digit(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), score);
             level_index++;
         }
+
+        {
+            SDL_Rect src_rect = {(current_level_index % 2) * 256, 2402 + (current_level_index / 2) * 128    , 256, 128};
+            SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+
+
+
+
     } else if (panel_state == PANEL_STATE_EDITOR)
     {
         pos = XYPos(0,0);
@@ -639,27 +658,8 @@ void GameState::render()
             unsigned graph_size;
             if (mon_index == selected_monitor)
             {
-                for (int x = 0; x < 7; x++)
-                {
-                    SDL_Rect src_rect = {color_table, 112, 32, 32};
-                    SDL_Rect dst_rect = {x * 32 * scale + panel_offset.x, mon_offset * scale + panel_offset.y, 32 * scale, 32 * scale};
-                    if (x > 0)
-                        src_rect.x += 8;
-                    if (x == 6)
-                        src_rect.x += 8;
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_box(XYPos(panel_offset.x, mon_offset * scale + panel_offset.y), XYPos(7*32, 112), mon_index);
 
-                    src_rect.y += 16;
-                    src_rect.h = 1;
-                    dst_rect.y += 32 * scale;
-                    dst_rect.h = 48 * scale;
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-                    
-                    src_rect.h = 32;
-                    dst_rect.h = 32 * scale;
-                    dst_rect.y += 48 * scale;
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-                }
                 {
                     SDL_Rect src_rect = {503, 86, 1, 1};
                     SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 200 * scale, 101 * scale};
@@ -680,17 +680,7 @@ void GameState::render()
             }
             else
             {
-                for (int x = 0; x < 7; x++)
-                {
-                    SDL_Rect src_rect = {color_table, 112, 32, 48};
-                    SDL_Rect dst_rect = {x * 32 * scale + panel_offset.x, mon_offset * scale + panel_offset.y, 32 * scale, 48 * scale};
-                    if (x > 0)
-                        src_rect.x += 8;
-                    if (x == 6)
-                        src_rect.x += 8;
-
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-                }
+                render_box(XYPos(panel_offset.x, mon_offset * scale + panel_offset.y), XYPos(7*32, 48), mon_index);
                 {
                     SDL_Rect src_rect = {503, 86, 1, 1};
                     SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 200 * scale, 35 * scale};
@@ -833,7 +823,7 @@ void GameState::render()
                 SDL_Rect dst_rect = {(port_index * 48 + int(test_drive[port_index])) * scale + panel_offset.x, (101 + 16 + 7) * scale + panel_offset.y, 16 * scale, 16 * scale};
                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
-            render_number_2digit(XYPos((port_index * 48 + test_drive[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), test_drive[port_index]*3);
+            //render_number_2digit(XYPos((port_index * 48 + test_drive[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), test_drive[port_index]*3);
 
             
         }
@@ -845,14 +835,14 @@ void GameState::render()
                 SDL_Rect dst_rect = {0 + graph_pos.x, graph_pos.y, 13 * scale, 101 * scale};
                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
-            for (int i = 0; i < 122; i++)
+            for (int i = 0; i < 192-1; i++)
             {
-                PressureRecord* rec1 = &test_pressure_histroy[(test_pressure_histroy_index + i) % 123];
-                PressureRecord* rec2 = &test_pressure_histroy[(test_pressure_histroy_index + i + 1) % 123];
+                PressureRecord* rec1 = &test_pressure_histroy[(test_pressure_histroy_index + i) % 192];
+                PressureRecord* rec2 = &test_pressure_histroy[(test_pressure_histroy_index + i + 1) % 192];
                 if (rec1->set && rec2->set)
                     for (int port = 0; port < 4; port++)
                     {
-                        int myport = ((test_pressure_histroy_index + i) % 123 + port) % 4;
+                        int myport = ((test_pressure_histroy_index + i) % 192 + port) % 4;
                         int v1 = rec1->values[myport];
                         int v2 = rec2->values[myport];
                         int top = 100 - std::max(v1, v2);
@@ -868,11 +858,88 @@ void GameState::render()
         
     }
 
-
     if (show_debug)
     {
         render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
         render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
+    }
+
+
+    if (show_help == 1)
+    {
+        render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 328), 0);
+        unsigned frame = (SDL_GetTicks() / 1000);
+        int x = frame % 5;
+        int y = frame / 5;
+
+        render_box(XYPos((16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        
+        SDL_Rect src_rect = {x * 128, 480 + 128 * (y % 2), 128, 128};
+        SDL_Rect dst_rect = {32 * scale, 32 * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        
+        render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {x * 128, (480 + 2 * 128), 128, 128};
+        dst_rect = {((128 +16) * 1 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        
+        render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {x * 128, (480 + 3 * 128), 128, 128};
+        dst_rect = {((128 +16) * 2 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {x * 128, (480 + 4 * 128)  + 128 * (y % 3), 128, 128};
+        dst_rect = {((128 +16) * 3 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        
+        render_box(XYPos((0 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (480 + 7 * 128), 128, 128};
+        dst_rect = {((128 +16) * 0 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {x * 128, (480 + 8 * 128), 128, 128};
+        dst_rect = {((128 +16) * 1 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (480 + 9 * 128), 128, 128};
+        dst_rect = {((128 +16) * 2 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (480 + 10 * 128), 128, 128};
+        dst_rect = {((128 +16) * 3 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    }
+
+    if (show_help == 2)
+    {
+        render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 328), 0);
+        unsigned frame = (SDL_GetTicks() / 700);
+        int x = frame % 5;
+        int y = frame / 5;
+
+        render_box(XYPos((0 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        SDL_Rect src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (480 + 11 * 128), 128, 128};
+        SDL_Rect dst_rect = {((128 +16) * 0 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (480 + 12 * 128), 128, 128};
+        dst_rect = {((128 +16) * 1 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {x * 128, (480 + 13 * 128), 128, 128};
+        dst_rect = {((128 +16) * 2 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+        render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        src_rect = {x * 128, (480 + 14 * 128), 128, 128};
+        dst_rect = {((128 +16) * 3 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
     }
 
@@ -896,10 +963,10 @@ void GameState::mouse_click_in_grid()
 {
     XYPos pos = (mouse - grid_offset) / scale;
     XYPos grid = pos / 32;
-    if (grid.x >= 9 || grid.y >= 9)
-        return;
     if (mouse_state == MOUSE_STATE_NONE)
     {
+        if (grid.x >= 9 || grid.y >= 9)
+            return;
         mouse_state = MOUSE_STATE_PIPE;
         XYPos pos = (mouse - grid_offset) / scale;
         XYPos grid = pos / 32;
@@ -937,11 +1004,15 @@ void GameState::mouse_click_in_grid()
         if (pipe_start_ns)
         {
             mouse_rel.x -= 16;
+            if (mouse_rel.y < 0 && pipe_start_grid_pos.y == 0)
+                mouse_rel.y = -mouse_rel.y;
+            if (mouse_rel.y >= 0 && pipe_start_grid_pos.y == 9)
+                mouse_rel.y = -mouse_rel.y;
             if (mouse_rel.y < 0)    //south - northwards
             {
                 pipe_start_grid_pos.y--;
                 Connections con;
-                if (-mouse_rel.y > abs(mouse_rel.x))    // north
+                if (-mouse_rel.y > abs(mouse_rel.x) + 16)    // north
                 {
                     current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_NS);
                 }
@@ -961,7 +1032,7 @@ void GameState::mouse_click_in_grid()
             else
             {
                 Connections con;
-                if (mouse_rel.y > abs(mouse_rel.x))    // north
+                if (mouse_rel.y > abs(mouse_rel.x) + 16)    // north
                 {
                     current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_NS);
                     pipe_start_grid_pos.y++;
@@ -985,11 +1056,15 @@ void GameState::mouse_click_in_grid()
         else
         {
             mouse_rel.y -= 16;
+            if (mouse_rel.x < 0 && pipe_start_grid_pos.x == 0)
+                mouse_rel.x = -mouse_rel.x;
+            if (mouse_rel.x >= 0 && pipe_start_grid_pos.x == 9)
+                mouse_rel.x = -mouse_rel.x;
             if (mouse_rel.x < 0)    //east - westwards
             {
                 pipe_start_grid_pos.x--;
                 Connections con;
-                if (-mouse_rel.x > abs(mouse_rel.y))    // west
+                if (-mouse_rel.x > abs(mouse_rel.y) + 16)    // west
                 {
                     current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_EW);
                 }
@@ -1009,7 +1084,7 @@ void GameState::mouse_click_in_grid()
             else                    //west - eastwards
             {
                 Connections con;
-                if (mouse_rel.x > abs(mouse_rel.y))    // west
+                if (mouse_rel.x > abs(mouse_rel.y) + 16)    // west
                 {
                     current_circuit->set_element_pipe(pipe_start_grid_pos, CONNECTIONS_EW);
                     pipe_start_grid_pos.x++;
@@ -1092,7 +1167,7 @@ void GameState::mouse_click_in_panel()
                         test_drive[3] = simp.W.out_drive/3;
                         test_pressure_histroy_index = 0;
                         test_pressure_histroy_sample_downcounter = 0;
-                        for (int i = 0; i < 123; i++)
+                        for (int i = 0; i < 192; i++)
                         {
                             test_pressure_histroy[i].values[0]=0;
                             test_pressure_histroy[i].values[1]=2;
@@ -1111,6 +1186,12 @@ void GameState::mouse_click_in_panel()
                     slider_pos = panel_offset.x + (5 * 32 + 8) * scale;
                     slider_value_tgt = &game_speed;
                     mouse_motion();
+                    break;
+                }
+                case 7:
+                {
+                    show_help = 1;
+                    break;
                 }
             }
             return;
@@ -1277,6 +1358,8 @@ bool GameState::events()
                         direction = Direction((int(direction) + 4 - 1) % 4);
                     else if (e.key.keysym.scancode == SDL_SCANCODE_E)
                         direction = Direction((int(direction) + 1) % 4);
+                    else if (e.key.keysym.scancode == SDL_SCANCODE_F1)
+                        show_help = 1;
                     else if (e.key.keysym.scancode == SDL_SCANCODE_F5)
                         show_debug = !show_debug;
                     else printf("Uncaught key: %d\n", e.key.keysym);
@@ -1316,6 +1399,15 @@ bool GameState::events()
             {
                 mouse.x = e.button.x;
                 mouse.y = e.button.y;
+                if (show_help)
+                {
+                    if (show_help == 1)
+                        show_help = 2;
+                    else
+                        show_help = 0;
+                    break;
+                }
+                    
                 if (e.button.button == SDL_BUTTON_LEFT)
                 {
                     if (mouse.x < panel_offset.x)

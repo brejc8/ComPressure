@@ -14,7 +14,7 @@ typedef int Pressure;
 
 static unsigned pressure_as_percent(Pressure p)
 {
-    return (p + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR;
+    return std::min(std::max((p + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR, 0), 100);
 }
 
 class CircuitPressure
@@ -27,12 +27,13 @@ public:
 
     void apply(Pressure vol, Pressure drive)
     {
-        move_next += (int64_t(vol * PRESSURE_SCALAR - value) * drive) / 2000;
+        move_next += (int64_t(vol * PRESSURE_SCALAR - value) * drive) / 100;
         touched = true;
     }
 
     void move(Pressure vol)
     {
+//        assert (vol > -(PRESSURE_SCALAR * 100));
         move_next += vol;
         touched = true;
     }
@@ -41,8 +42,8 @@ public:
     {
         if (value)
         {
-            move_next -= value / 2;
-            vented += value / 2;
+            move_next -= value / 4;
+            vented += value / 4;
         }
     }
 
@@ -57,6 +58,7 @@ public:
         if (move_next)
         {
             value += move_next;
+//            assert(value >= 0);
             move_next = 0;
             if (value > 100 * PRESSURE_SCALAR)
                 value = 100 * PRESSURE_SCALAR;
@@ -172,9 +174,15 @@ public:
 class CircuitElementValve : public CircuitElement
 {
     const int capacity = 10;
+    const int resistence = 5;
 
     Pressure pos_charge = 0;
     Pressure neg_charge = 0;
+
+    Pressure pressure = 0;
+    Pressure moved = 0;
+    int moved_pos = 0;
+
 public:
     Direction direction = DIRECTION_N;
 
@@ -188,6 +196,9 @@ public:
     virtual CircuitElement* copy() { return new CircuitElementValve(direction);}
     void reset(LevelSet* level_set);
     XYPos getimage(void);
+    SDL_Rect getimage_bg(void);
+    XYPos getimage_fg(void);
+
     void sim_pre(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_VALVE;}
 };

@@ -69,14 +69,11 @@ class GameState
     public:
         unsigned values[4];
         bool set;
-    } test_pressure_histroy[123];
+    } test_pressure_histroy[192];
     unsigned test_pressure_histroy_index;
     unsigned test_pressure_histroy_sample_downcounter;
     unsigned test_pressure_histroy_sample_frequency = 100;
 
-
-
-    
     bool show_debug = false;
     unsigned debug_last_time = 0;
     unsigned debug_frames = 0;
@@ -84,6 +81,8 @@ class GameState
 
     unsigned debug_last_second_frames = 0;
     unsigned debug_last_second_simticks = 0;
+    
+    unsigned show_help = 1;
 
     XYPos mouse;
     
