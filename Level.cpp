@@ -1,45 +1,104 @@
 #include "Level.h"
 
-Level::Level(unsigned level_index_):
-    level_index(level_index_),
-    sim_points(128)
+Test::Test()
 {
+        for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+        {
+            last_pressure_log[i] = 0;
+            best_pressure_log[i] = 0;
+        }
+        last_pressure_index = 0;
+
+}
+
+void Test::load(SaveObject* sobj)
+{
+    if (!sobj)
+        return;
+    SaveObjectMap* omap = sobj->get_map();
+    last_score = omap->get_num("last_score");
+    best_score = omap->get_num("best_score");
+
+    {
+        SaveObjectList* slist = omap->get_item("best_pressure_log")->get_list();
+        for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+            best_pressure_log[i] = slist->get_num(i);
+    }
+
+    {
+        SaveObjectList* slist = omap->get_item("last_pressure_log")->get_list();
+        for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+            last_pressure_log[i] = slist->get_num(i);
+    }
+    last_pressure_index = omap->get_num("last_pressure_index");
+}
+
+SaveObject* Test::save()
+{
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_num("last_score", last_score);
+    omap->add_num("best_score", best_score);
+
+    {
+        SaveObjectList* slist = new SaveObjectList;
+            for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+                slist->add_num(best_pressure_log[i]);
+        omap->add_item("best_pressure_log", slist);
+    }
+
+    {
+        SaveObjectList* slist = new SaveObjectList;
+            for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+                slist->add_num(last_pressure_log[i]);
+        omap->add_item("last_pressure_log", slist);
+    }
+        
+    omap->add_num("last_pressure_index", last_pressure_index);
+
+    
+    return omap;
+}
+
+Level::Level(unsigned level_index_):
+    level_index(level_index_)
+{
+    pin_order[0] = 0; pin_order[1] = 1; pin_order[2] = 2; pin_order[3] = 3;
     circuit = new Circuit;
-    init();
+    init_tests();
 }
 
 Level::Level(unsigned level_index_, SaveObject* sobj):
-    level_index(level_index_),
-    sim_points(128)
+    level_index(level_index_)
 {
+    pin_order[0] = 0; pin_order[1] = 1; pin_order[2] = 2; pin_order[3] = 3;
     if (sobj)
     {
         SaveObjectMap* omap = sobj->get_map();
         circuit = new Circuit(omap->get_item("circuit")->get_map());
-        best_score = omap->get_num("best_score");
+        int level_version = omap->get_num("level_version");
+
+        init_tests(omap);
     }
     else
+    {
         circuit = new Circuit;
-    init();
+        init_tests();
+    }
 }
 
 SaveObject* Level::save()
 {
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_item("circuit", circuit->save());
+    omap->add_num("level_version", level_version);
     omap->add_num("best_score", best_score);
+
+    SaveObjectList* slist = new SaveObjectList;
+    unsigned test_count = tests.size();
+    for (unsigned i = 0; i < test_count; i++)
+        slist->add_item(tests[i].save());
+    omap->add_item("tests", slist);
     return omap;
-}
-
-void Level::add_sim_point(SimPoint point, unsigned count)
-{
-    for (unsigned i = 0; i < count; i++)
-    {
-        sim_points[sim_point_count] = point;
-
-        sim_point_count++;
-        assert(sim_point_count <  128);
-    }
 }
 
 XYPos Level::getimage(Direction direction)
@@ -50,298 +109,529 @@ XYPos Level::getimage(Direction direction)
 
 XYPos Level::getimage_fg(Direction direction)
 {
-    return XYPos(direction * 24, 182 + (int(level_index) * 24));
+    return XYPos(direction * 24, 184 + (int(level_index) * 24));
 }
 
 
-void Level::init(void)
+void Level::init_tests(SaveObjectMap* omap)
 {
-#define DRIVE(a)   IOValue(a, 100, a)
-#define SHORT(a)   IOValue(a, 100, -1)
-#define FLOAT(A)   IOValue(0, 0, A)
+#define CONMASK_N          (1)
+#define CONMASK_E          (2)
+#define CONMASK_S          (4)
+#define CONMASK_W          (8)
 
-//                          N E S W
-#define CONMASK_ALL        (1|2|4|8)
-#define CONMASK_WE         (  2|  8)
-#define CONMASK_WES        (  2|4|8)
-#define CONMASK_NES        (1|2|4  )
+#define NEW_TEST do {tests.push_back({}); if (loaded_level_version == level_version && slist && slist->get_count() > tests.size()-1) tests.back().load(slist->get_item(tests.size()-1));} while (false)
+#define NEW_POINT(a, b, c, d) tests.back().sim_points.push_back(SimPoint(a, b, c, d))
+#define NEW_POINT_F(a, b, c, d, f) tests.back().sim_points.push_back(SimPoint(a, b, c, d, f))
+
+    SaveObjectList* slist = omap ? omap->get_item("tests")->get_list() : NULL;
+    unsigned loaded_level_version = omap ? omap->get_num("level_version") : 0;
 
     switch(level_index)
     {
-        case 0:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,FLOAT(0)     ,FLOAT(100)  ,FLOAT(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   FLOAT(100)  ,FLOAT(0)     ,DRIVE(100)  ,FLOAT(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   FLOAT(0)    ,DRIVE(100)   ,FLOAT(0)    ,FLOAT(100)  ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   FLOAT(0)    ,FLOAT(100)   ,FLOAT(0)    ,DRIVE(100)  ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
+        case 0:
+            connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
+            pin_order[0] = 3; pin_order[1] = 0; pin_order[2] = 1; pin_order[3] = 2;
+            substep_count = 2000;
 
-            add_sim_point(SimPoint(   DRIVE(100)  ,DRIVE(100)   ,DRIVE(100)  ,DRIVE(100)  ),     1);
-            add_sim_point(SimPoint(   DRIVE(50)   ,FLOAT(100)   ,FLOAT(50)   ,FLOAT(100)  ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,DRIVE(100)   ,DRIVE(100)  ,DRIVE(100)  ),     1);
-            add_sim_point(SimPoint(   FLOAT(50)   ,FLOAT(100)   ,DRIVE(50)   ,FLOAT(100)  ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,DRIVE(100)   ,DRIVE(100)  ,DRIVE(100)  ),     1);
-            add_sim_point(SimPoint(   FLOAT(100)  ,DRIVE(50)    ,FLOAT(100)  ,FLOAT(50)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,DRIVE(100)   ,DRIVE(100)  ,DRIVE(100)  ),     1);
-            add_sim_point(SimPoint(   FLOAT(100)  ,FLOAT(50)    ,FLOAT(100)  ,DRIVE(50)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,DRIVE(100)   ,DRIVE(100)  ,DRIVE(100)  ),     1);
-            
-            substep_count = 1500;
-            connection_mask = CONMASK_ALL;
-            score_base = 1000;
-            break;
+            NEW_TEST; tests.back().tested_direction = DIRECTION_S;
+            NEW_POINT(0  ,  0,  0,  0);
+            NEW_POINT(100,  0,100,  0);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_S;
+            NEW_POINT(100,  0,100,  0);
+            NEW_POINT( 50,  0, 50,  0);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_S;
+            NEW_POINT( 50,  0, 50,  0);
+            NEW_POINT(  0,  0,  0,  0);
 
-        case 1:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(100)  ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(100)  ,DRIVE(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(100)  ,FLOAT(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(100)   ,DRIVE(100)  ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(100)   ,DRIVE(100)  ,FLOAT(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(100)   ,DRIVE(0)    ,FLOAT(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(0)    ,FLOAT(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
-                                                 
-            substep_count = 3000;
-            connection_mask = CONMASK_WES;
-            score_base = 1000;
-            break;
-
-
-        case 2:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(10)    ,DRIVE(0)    ,DRIVE(10)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(20)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(30)    ,DRIVE(0)    ,DRIVE(30)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(50)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(60)    ,DRIVE(0)    ,DRIVE(60)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(70)    ,DRIVE(0)    ,DRIVE(70)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(80)    ,DRIVE(0)    ,DRIVE(80)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(90)    ,DRIVE(0)    ,DRIVE(90)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(0)     ,DRIVE(0)    ,FLOAT(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(80)    ,DRIVE(0)    ,DRIVE(80)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(50)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(90)    ,DRIVE(0)    ,DRIVE(90)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,SHORT(100)   ,DRIVE(0)    ,FLOAT(0)     ),     1);
-
-            substep_count = 5000;
-            connection_mask = CONMASK_WE;
-            score_base = 1000;
-            break;
-
-        case 3:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,DRIVE(100)   ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(90)    ,DRIVE(0)    ,DRIVE(10)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(80)    ,DRIVE(0)    ,DRIVE(20)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(70)    ,DRIVE(0)    ,DRIVE(30)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(60)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(50)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(60)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(30)    ,DRIVE(0)    ,DRIVE(70)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(80)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(10)    ,DRIVE(0)    ,DRIVE(90)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(80)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(50)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(10)    ,DRIVE(0)    ,DRIVE(90)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(60)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
-
-            substep_count = 5000;
-            connection_mask = CONMASK_WE;
-            score_base = 1000;
-            break;
-
-        case 4:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(100)  ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,FLOAT(100)   ,DRIVE(100)  ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(100)  ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
-
-            substep_count = 5000;
-            connection_mask = CONMASK_NES;
-            score_base = 1000;
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,100,  0,100);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,100);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0,  0,  0,  0);
 
             break;
 
-        case 5:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(10)    ,DRIVE(0)    ,DRIVE(20)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(30)    ,DRIVE(0)    ,DRIVE(60)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(80)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(25)    ,DRIVE(0)    ,DRIVE(50)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(100)   ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
-            substep_count = 5000;
-            connection_mask = CONMASK_WE;
-            score_base = 1000;
+        case 1:
+            connection_mask = CONMASK_E;
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0,  0);
             break;
 
-        case 6:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)     ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(10)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(20)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(60)    ,DRIVE(0)    ,DRIVE(30)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(80)    ,DRIVE(0)    ,DRIVE(40)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(50)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(25)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(50)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(20)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(20)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(10)    ),     1);
-            substep_count = 8000;
-            connection_mask = CONMASK_WE;
-            score_base = 1000;
+        case 2:
+            connection_mask = CONMASK_N | CONMASK_W | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(100,  0,  0,  0);
+            NEW_POINT(100, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(100, 50,  0, 50);
+            NEW_POINT(100,100,  0,100);
+            NEW_TEST;
+            NEW_POINT(100,100,  0,100);
+            NEW_POINT(  0,100,  0,100);
+            NEW_POINT(  0,100,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 50);
+            NEW_POINT(  0,100,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,  0);
+            NEW_POINT(100, 50,  0, 50);
             break;
 
-        case 7:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(20)   ,FLOAT(20)    ,DRIVE(20)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(40)   ,FLOAT(40)    ,DRIVE(40)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(60)   ,FLOAT(60)    ,DRIVE(60)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(80)   ,FLOAT(80)    ,DRIVE(80)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,FLOAT(100)   ,DRIVE(100)  ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(50)   ,FLOAT(25)    ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,FLOAT(50)    ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,FLOAT(75)    ,DRIVE(50)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,FLOAT(100)   ,DRIVE(100)  ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(50)   ,FLOAT(75)    ,DRIVE(100)  ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(50)    ,DRIVE(100)  ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(25)    ,DRIVE(50)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
+        case 3:
+            connection_mask = CONMASK_S | CONMASK_W | CONMASK_E;
 
-            substep_count = 8000;
-            connection_mask = CONMASK_NES;
-            score_base = 1000;
-            break;
-        case 8:              //       N            E             S            W                  time
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(20)    ,DRIVE(20)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(40)    ,DRIVE(40)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(60)    ,DRIVE(60)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(80)    ,DRIVE(80)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(100)   ,DRIVE(100)  ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(100)  ,FLOAT(100)   ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(80)   ,FLOAT(80)    ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(60)   ,FLOAT(60)    ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(40)   ,FLOAT(40)    ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(20)   ,FLOAT(20)    ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(0)     ,DRIVE(0)    ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(10)   ,FLOAT(20)    ,DRIVE(10)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(20)   ,FLOAT(40)    ,DRIVE(20)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(30)   ,FLOAT(60)    ,DRIVE(30)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(40)   ,FLOAT(80)    ,DRIVE(40)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(50)   ,FLOAT(100)   ,DRIVE(50)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(25)   ,FLOAT(75)    ,DRIVE(50)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(25)   ,FLOAT(50)    ,DRIVE(25)   ,DRIVE(0)    ),     1);
-            add_sim_point(SimPoint(   DRIVE(0)    ,FLOAT(25)    ,DRIVE(25)   ,DRIVE(0)    ),     1);
-
-            substep_count = 10000;
-            connection_mask = CONMASK_NES;
-            score_base = 1000;
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0,100,  0,100);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,100);
+            NEW_POINT(  0,100,100,100);
+            NEW_POINT(  0,100,100, 50);
+            NEW_TEST;
+            NEW_POINT(  0,100,100, 50);
+            NEW_POINT(  0,100,100,  0);
+            NEW_TEST;
+            NEW_POINT(  0,100,100,  0);
+            NEW_POINT(  0, 50,  0, 50);
             break;
 
+        case 4:
+            connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
+            level_version = 2;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,100,100,  0);
+            NEW_TEST;
+            NEW_POINT(  0,100,100,  0);
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_POINT(  0,  0, 50,100);
+            NEW_TEST;
+            NEW_POINT(  0,  0, 50,100);
+            NEW_POINT(100,100, 50,100);
+            NEW_TEST;
+            NEW_POINT(100,100,  0,100);
+            NEW_POINT(100, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(100, 50,  0, 50);
+            NEW_POINT(  0, 50,100, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,100, 50);
+            NEW_POINT( 20, 40, 60, 50);
+            NEW_TEST;
+            NEW_POINT( 20, 40, 60, 50);
+            NEW_POINT(100,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(100,  0,  0,  0);
+            NEW_POINT(100,100,  0,100);
+            NEW_TEST;
+            NEW_POINT(100,100,  0,100);
+            NEW_POINT( 40, 40,  0,100);
+            NEW_TEST;
+            NEW_POINT( 40, 40,  0,100);
+            NEW_POINT(  0,  0,  0,  0);
+            break;
 
 
+        case 5:
+            connection_mask = CONMASK_W | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,100,  0,  0);
+            NEW_POINT(  0,100,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,  0);
+            NEW_POINT(  0, 90,  0, 10);
+            NEW_TEST;
+            NEW_POINT(  0, 90,  0, 10);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0, 40,  0, 60);
+            NEW_TEST;
+            NEW_POINT(  0, 40,  0, 60);
+            NEW_POINT(  0, 10,  0, 90);
+            NEW_TEST;
+            NEW_POINT(  0, 10,  0, 90);
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,100);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0,100,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,  0);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0,100,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,  0);
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,100);
+            NEW_POINT(  0,100,  0,  0);
+            break;
+
+
+        case 6:
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,100,  0);
+            NEW_POINT(  0,  0,100,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,100,  0);
+            NEW_POINT(100,100,  0,  0);
+            NEW_TEST;
+            NEW_POINT(100,100,  0,  0);
+            NEW_POINT( 10,  0, 90,  0);
+            NEW_TEST;
+            NEW_POINT( 10,  0, 90,  0);
+            NEW_POINT( 80,100, 20,  0);
+            NEW_TEST;
+            NEW_POINT( 10,  0, 90,  0);
+            NEW_POINT( 80,100, 20,  0);
+            NEW_TEST;
+            NEW_POINT( 80,100, 20,  0);
+            NEW_POINT( 30,  0, 70,  0);
+            NEW_TEST;
+            NEW_POINT( 30,  0, 70,  0);
+            NEW_POINT( 60,100, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 60,100, 40,  0);
+            NEW_POINT( 20,  0, 30,  0);
+            NEW_TEST;
+            NEW_POINT( 20,  0, 30,  0);
+            NEW_POINT( 80,100, 70,  0);
+            NEW_TEST;
+            NEW_POINT( 80,100, 70,  0);
+            NEW_POINT( 40,  0, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 40,  0, 50,  0);
+            NEW_POINT( 55,100, 50,  0);
+            break;
+
+        case 7:
+            connection_mask = CONMASK_W | CONMASK_E;
+            level_version = 1;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT_F(  0,  0,  0,  0, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50);
+            NEW_TEST;
+            NEW_POINT_F(  0,  0,  0,  0, 80);
+            NEW_POINT_F(  0, 50,  0,100, 80);
+            NEW_TEST;
+            NEW_POINT_F(  0, 50,  0,100, 40);
+            NEW_POINT_F(  0, 40,  0, 80, 40);
+            NEW_TEST;
+            NEW_POINT_F(  0, 40,  0, 80, 50);
+            NEW_POINT_F(  0, 30,  0, 60, 50);
+            NEW_TEST;
+            NEW_POINT_F(  0, 30,  0, 60,100);
+            NEW_POINT_F(  0, 25,  0, 50,100);
+            NEW_TEST;
+            NEW_POINT_F(  0, 25,  0, 50, 60);
+            NEW_POINT_F(  0, 20,  0, 40, 60);
+            NEW_TEST;
+            NEW_POINT_F(  0, 20,  0, 40, 80);
+            NEW_POINT_F(  0, 10,  0, 20, 80);
+            NEW_TEST;
+            NEW_POINT_F(  0, 10,  0, 20, 40);
+            NEW_POINT_F(  0, 25,  0, 50, 40);
+            NEW_TEST;
+            NEW_POINT_F(  0, 25,  0, 50, 60);
+            NEW_POINT_F(  0, 50,  0,100, 60);
+            NEW_TEST;
+            NEW_POINT_F(  0, 50,  0,100, 40);
+            NEW_POINT_F(  0,  0,  0,  0, 40);
+            NEW_TEST;
+            NEW_POINT_F(  0,  0,  0,  0, 50);
+            NEW_POINT_F(  0, 50,  0,100, 50);
+            break;
+
+
+        case 8:
+            connection_mask = CONMASK_W | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,100,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 50);
+            NEW_POINT(  0, 80,  0, 40);
+            NEW_TEST;
+            NEW_POINT(  0, 80,  0, 40);
+            NEW_POINT(  0, 60,  0, 30);
+            NEW_TEST;
+            NEW_POINT(  0, 60,  0, 30);
+            NEW_POINT(  0, 40,  0, 20);
+            NEW_TEST;
+            NEW_POINT(  0, 40,  0, 20);
+            NEW_POINT(  0, 20,  0, 10);
+            NEW_TEST;
+            NEW_POINT(  0, 20,  0, 10);
+            NEW_POINT(  0, 50,  0, 25);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 25);
+            NEW_POINT(  0,  0,  0,  0);
+            break;
+
+
+        case 9:
+            substep_count = 30000;
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT( 50, 50, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 50, 50, 50,  0);
+            NEW_POINT(100,100,100,  0);
+            NEW_TEST;
+            NEW_POINT(100,100,100,  0);
+            NEW_POINT(  0, 50,100,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50,100,  0);
+            NEW_POINT(100, 50,  0,  0);
+            NEW_TEST;
+            NEW_POINT(100, 50,  0,  0);
+            NEW_POINT( 40, 20,  0,  0);
+            NEW_TEST;
+            NEW_POINT( 40, 20,  0,  0);
+            NEW_POINT(  0, 30, 60,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 30, 60,  0);
+            NEW_POINT(100, 80, 60,  0);
+            NEW_TEST;
+            NEW_POINT(100, 80, 60,  0);
+            NEW_POINT(50,  55, 60,  0);
+            NEW_TEST;
+            NEW_POINT(50,  55, 60,  0);
+            NEW_POINT(10,  5,  0,  0);
+            break;
+
+
+        case 10:
+            substep_count = 30000;
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT( 10, 20, 10,  0);
+            NEW_TEST;
+            NEW_POINT( 10, 20, 10,  0);
+            NEW_POINT( 20, 40, 20,  0);
+            NEW_TEST;
+            NEW_POINT( 20, 40, 20,  0);
+            NEW_POINT( 30, 60, 30,  0);
+            NEW_TEST;
+            NEW_POINT( 30, 60, 30,  0);
+            NEW_POINT( 40, 80, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 40, 80, 40,  0);
+            NEW_POINT( 50,100, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 50,100, 50,  0);
+            NEW_POINT( 25, 75, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 25, 75, 50,  0);
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_POINT(  0, 10, 10,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 10, 10,  0);
+            NEW_POINT( 80, 90, 10,  0);
+            NEW_TEST;
+            NEW_POINT( 80, 90, 10,  0);
+            NEW_POINT( 20,100, 80,  0);
+            break;
+
+
+        case 11:
+            substep_count = 30000;
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT( 10, 10,  0,  0);
+            NEW_TEST;
+            NEW_POINT( 10, 10,  0,  0);
+            NEW_POINT(100,100,  0,  0);
+            NEW_TEST;
+            NEW_POINT(100,100,  0,  0);
+            NEW_POINT(100, 10, 90,  0);
+            NEW_TEST;
+            NEW_POINT(100, 10, 90,  0);
+            NEW_POINT( 80, 40, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 80, 40, 40,  0);
+            NEW_POINT( 50, 10, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 50, 10, 40,  0);
+            NEW_POINT( 90, 50, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 90, 50, 40,  0);
+            NEW_POINT( 50,  0, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 50,  0, 50,  0);
+            NEW_POINT( 70, 20, 50,  0);
 
         default:
             printf("no level %d\n", level_index);
             break;
     }
+
+    if (loaded_level_version == level_version)
+        best_score = omap ? omap->get_num("best_score") : 0;
 }
 
 void Level::reset(LevelSet* level_set)
 {
+    test_index = 0;
     sim_point_index = 0;
     substep_index = 0;
+    in_range_count = 0;
+    touched = false;
 
-    circuit->reset(level_set);
-    N=0;
-    S=0;
-    E=0;
-    W=0;
+    circuit->elaborate(level_set);
+    circuit->reset();
+    for (int i = 0; i < 4; i++)
+        ports[i] = 0;
 }
 
-void Level::advance(unsigned ticks)
+void Level::advance(unsigned ticks, TestExecType type)
 {
     static int val = 0;
-    for (int i = 0; i < ticks; i++)
+    for (int tick = 0; tick < ticks; tick++)
     {
-        SimPoint& simp = sim_points[sim_point_index];
-        N.apply(simp.N.out_value, simp.N.out_drive);
-        E.apply(simp.E.out_value, simp.E.out_drive);
-        S.apply(simp.S.out_value, simp.S.out_drive);
-        W.apply(simp.W.out_value, simp.W.out_drive);
-        
-        N.pre();
-        E.pre();
-        S.pre();
-        W.pre();
+        SimPoint& simp = tests[test_index].sim_points[sim_point_index];
 
-        circuit->sim_pre(PressureAdjacent(N, E, S, W));
-        circuit->sim_post(PressureAdjacent(N, E, S, W));
+        for (int p = 0; p < 4; p++)
+            ports[p].pre();
 
-        N.post();
-        E.post();
-        S.post();
-        W.post();
-        
+        circuit->sim_pre(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
+        for (int p = 0; p < 4; p++)
+        {
+            if (((connection_mask >> p) & 1) && p != tests[test_index].tested_direction)
+                ports[p].apply(simp.values[p], simp.force);
+        }
+        circuit->sim_post(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
+
+        for (int p = 0; p < 4; p++)
+            ports[p].post();
+
+        if (sim_point_index == tests[test_index].sim_points.size() - 1)
+        {
+            Pressure value = ports[tests[test_index].tested_direction].value;
+            unsigned index = (substep_index * HISTORY_POINT_COUNT) / substep_count;
+            tests[test_index].last_pressure_log[index] = value;
+            tests[test_index].last_pressure_index = index + 1;
+        }
+
         substep_index++;
+
         if (substep_index >= substep_count)
         {
-            substep_index = 0;
-            simp.record(N.value, E.value, S.value, W.value);
-//            printf("%d %d %d %d\n", pressure_as_percent(N.value), pressure_as_percent(E.value), pressure_as_percent(S.value), pressure_as_percent(W.value));
-            
-            sim_point_index++;
-            if (sim_point_index >= sim_point_count)
-                sim_point_index = 0;
-            unsigned score = get_score();
-            last_score = score;
-
-            if (score > best_score)
-                best_score = score;
+            substep_index  = 0;
+            if (sim_point_index == tests[test_index].sim_points.size() - 1)
+            {
+                {
+                    Direction p = tests[test_index].tested_direction;
+                    Pressure score = percent_as_pressure(25) - abs(percent_as_pressure(simp.values[p]) - ports[p].value) * 100;
+                    if (score < 0)
+                        score /= 2;
+                    score += percent_as_pressure(25);
+                    if (score < 0)
+                        score /= 2;
+                    score += percent_as_pressure(25);
+                    if (score < 0)
+                        score /= 2;
+                    score += percent_as_pressure(25);
+                    if (score < 0)
+                        score = 0;
+                    tests[test_index].last_score = score;
+                    sim_point_index = 0;
+                    substep_index = 0;
+                    if (type == MONITOR_STATE_PLAY_ALL)
+                    {
+                        test_index++;
+                        if (test_index == tests.size())
+                        {
+                            update_score();
+                            test_index = 0;
+                            circuit->reset();
+                            touched = false;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                sim_point_index++;
+            }
         }
     }
 }
 
-unsigned Level::get_score()
+void Level::select_test(unsigned t)
 {
-    unsigned error = 0; 
-    for (unsigned i = 0; i < sim_point_count; i++)
+    if (t >= tests.size())
+        return;
+    sim_point_index = 0;
+    substep_index = 0;
+    test_index = t;
+}
+
+void Level::update_score()
+{
+    unsigned test_count = tests.size();
+    Pressure score = 0;
+    for (unsigned i = 0; i < test_count; i++)
     {
-        for (int j = 0; j < 4; j++)
-            error += sim_points[i].get(j).get_error();
+        score += tests[i].last_score;
     }
-    int score = 100 - (error * 100 + error / 2) / score_base;
-    if (score < 0)
-        return 0;
-    assert(score <= 100);
-    return score;
+    score /= test_count;
+    last_score = score;
+    if (score > best_score)
+    {
+        best_score = score;
+        for (unsigned t = 0; t < test_count; t++)
+        {
+            tests[t].best_score = tests[t].last_score;
+            for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+                tests[t].best_pressure_log[i] = tests[t].last_pressure_log[i];
+        }
+    }
+    return;
 }
 
 LevelSet::LevelSet(SaveObject* sobj)

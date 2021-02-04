@@ -12,6 +12,8 @@ class GameState
     SDL_Window* sdl_window;
     SDL_Renderer* sdl_renderer;
     SDL_Texture* sdl_texture;
+    SDL_Texture* sdl_tutorial_texture;
+    SDL_Texture* sdl_levels_texture;
 
     Rand rand = 3;
     enum MouseState
@@ -35,9 +37,10 @@ class GameState
 
     Direction direction = DIRECTION_N;
 
-    const int scale = 3;
-    const XYPos grid_offset = XYPos(32 * scale, 32 * scale);
-    const XYPos panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
+    bool full_screen = false;
+    int scale = 0;
+    XYPos grid_offset = XYPos(32 * scale, 32 * scale);
+    XYPos panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
 
     LevelSet* level_set;
     Level* current_level;
@@ -46,6 +49,11 @@ class GameState
     unsigned current_level_index = 0;
     unsigned placing_subcircuit_level;
     unsigned selected_monitor = 0;
+    
+    TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
+
+
+
     unsigned frame_index = 0;
 
     unsigned game_speed = 10;
@@ -59,10 +67,7 @@ class GameState
     unsigned test_value[4] = {0};
     unsigned test_drive[4] = {0};
     
-    CircuitPressure test_N;
-    CircuitPressure test_E;
-    CircuitPressure test_S;
-    CircuitPressure test_W;
+    CircuitPressure test_pressures[4];
     
     class PressureRecord
     {
@@ -83,6 +88,10 @@ class GameState
     unsigned debug_last_second_simticks = 0;
     
     unsigned show_help = 1;
+    
+    bool show_main_menu = false;
+    unsigned sound_volume = 100;
+    unsigned music_volume = 100;
 
     XYPos mouse;
     
@@ -93,9 +102,11 @@ public:
     GameState(const char* filename);
     void save(const char* filename);
     ~GameState();
-    SDL_Texture* loadTexture();
+    SDL_Texture* loadTexture(const char* filename);
 
-    void render_number_2digit(XYPos pos, unsigned value, unsigned scale_mul = 1, unsigned colour = 9);
+    void audio();
+    void render_number_2digit(XYPos pos, unsigned value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
+    void render_number_pressure(XYPos pos, Pressure value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_long(XYPos pos, unsigned value, unsigned scale_mul = 1);
     void render_box(XYPos pos, XYPos size, unsigned colour);
     void render();

@@ -1,4 +1,7 @@
 #pragma once
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <iostream>
 #include <math.h>
 #include <assert.h>

@@ -20,13 +20,18 @@ CircuitElement* CircuitElement::load(SaveObjectMap* omap)
     switch (type)
     {
         case CIRCUIT_ELEMENT_TYPE_PIPE:
-            return new CircuitElementPipe(omap);
+            if (omap->get_num("connections") == 0)
+                return new CircuitElementEmpty(omap);
+            else
+                return new CircuitElementPipe(omap);
         case CIRCUIT_ELEMENT_TYPE_VALVE:
             return new CircuitElementValve(omap);
         case CIRCUIT_ELEMENT_TYPE_SOURCE:
             return new CircuitElementSource(omap);
         case CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT:
             return new CircuitElementSubCircuit(omap);
+        case CIRCUIT_ELEMENT_TYPE_EMPTY:
+            return new CircuitElementEmpty(omap);
         default:
             assert(0);        
     }
@@ -52,9 +57,9 @@ SDL_Rect CircuitElementPipe::getimage_bg(void)
         move_by = std::max(move_by, -100);
         moved_pos += move_by;
         unsigned offset = unsigned(moved_pos / 10) % (48 - 14);
-        return SDL_Rect{256 + x, 144 + int(offset), 6, 14};
+        return SDL_Rect{352 + x, 240 + int(offset), 6, 14};
     }
-    if (connections == CONNECTIONS_EW)
+    if (connections == CONNECTIONS_EW || connections == CONNECTIONS_NS_WE)
     {
         int y = (pressure_as_percent(pressure) * (48 - 6)) / 101;
         int move_by = moved/100;
@@ -62,7 +67,7 @@ SDL_Rect CircuitElementPipe::getimage_bg(void)
         move_by = std::max(move_by, -1000);
         moved_pos += move_by;
         unsigned offset = unsigned(moved_pos / 100) % (48 - 14);
-        return SDL_Rect{304 + int(offset), 144 + y, 14, 6};
+        return SDL_Rect{400 + int(offset), 240 + y, 14, 6};
     }
     return SDL_Rect{0, 0, 0, 0};
 }
@@ -74,7 +79,7 @@ XYPos CircuitElementPipe::getimage(void)
 
 static void sim_pre_2links(CircuitPressure& a, CircuitPressure& b)
 {
-    Pressure mov = (a.value - b.value) / 4;
+    Pressure mov = (a.value - b.value) / 2;
     a.move(-mov);
     b.move(mov);
 }
@@ -82,15 +87,15 @@ static void sim_pre_2links(CircuitPressure& a, CircuitPressure& b)
 
 static void sim_pre_3links(CircuitPressure& a, CircuitPressure& b, CircuitPressure& c)
 {
-    Pressure mov = (a.value - b.value) / 4;
+    Pressure mov = (a.value - b.value) / 3;
     a.move(-mov);
     b.move(mov);
 
-    mov = (a.value - c.value) / 4;
+    mov = (a.value - c.value) / 3;
     a.move(-mov);
     c.move(mov);
 
-    mov = (b.value - c.value) / 4;
+    mov = (b.value - c.value) / 3;
     b.move(-mov);
     c.move(mov);
 }
@@ -135,7 +140,7 @@ void CircuitElementPipe::sim_pre(PressureAdjacent adj)
             sim_pre_2links(adj.N, adj.E); adj.W.vent(); adj.S.vent(); break;
         case CONNECTIONS_NS:
         {
-            Pressure mov = (adj.S.value - adj.N.value) / 4;
+            Pressure mov = (adj.S.value - adj.N.value) / 2;
             pressure = (adj.S.value + adj.N.value) / 2;
             adj.S.move(-mov);
             adj.N.move(mov);
@@ -144,10 +149,10 @@ void CircuitElementPipe::sim_pre(PressureAdjacent adj)
         }
         case CONNECTIONS_EW:
         {
-            Pressure mov = (adj.E.value - adj.W.value) / 4;
+            Pressure mov = (adj.E.value - adj.W.value) / 2;
+            pressure = (adj.E.value + adj.W.value) / 2;
             adj.E.move(-mov);
             adj.W.move(mov);
-            pressure = (adj.E.value + adj.W.value) / 2;
             moved = mov;
             adj.N.vent(); adj.S.vent(); break;
         }
@@ -166,7 +171,14 @@ void CircuitElementPipe::sim_pre(PressureAdjacent adj)
         case CONNECTIONS_EWS:
             sim_pre_3links(adj.E, adj.W, adj.S); adj.N.vent(); break;
         case CONNECTIONS_NS_WE:
-            sim_pre_2links(adj.N, adj.S); sim_pre_2links(adj.E, adj.W); break;
+        {
+            Pressure mov = (adj.E.value - adj.W.value) / 2;
+            pressure = (adj.E.value + adj.W.value) / 2;
+            adj.E.move(-mov);
+            adj.W.move(mov);
+            moved = mov;
+            sim_pre_2links(adj.N, adj.S); break;
+        }
         case CONNECTIONS_NW_ES:
             sim_pre_2links(adj.N, adj.W); sim_pre_2links(adj.E, adj.S); break;
         case CONNECTIONS_NE_WS:
@@ -251,7 +263,7 @@ void CircuitElementValve::save(SaveObjectMap* omap)
     omap->add_num("direction", direction);
 }
 
-void CircuitElementValve::reset(LevelSet* level_set)
+void CircuitElementValve::reset()
 {
     pos_charge = 0;
     neg_charge = 0;
@@ -269,7 +281,7 @@ SDL_Rect CircuitElementValve::getimage_bg(void)
         move_by = std::max(move_by, -100);
         moved_pos += move_by;
         unsigned offset = unsigned(moved_pos / 10) % (48 - 14);
-        return SDL_Rect{256 + x, 144 + int(offset), 6, 14};
+        return SDL_Rect{352 + x, 240 + int(offset), 6, 14};
     }
     else
     {
@@ -282,7 +294,7 @@ SDL_Rect CircuitElementValve::getimage_bg(void)
         move_by = std::max(move_by, -1000);
         moved_pos += move_by;
         unsigned offset = unsigned(moved_pos / 100) % (48 - 14);
-        return SDL_Rect{304 + int(offset), 144 + y, 14, 6};
+        return SDL_Rect{400 + int(offset), 240 + y, 14, 6};
     }
 }
 
@@ -362,7 +374,28 @@ void CircuitElementSource::sim_pre(PressureAdjacent adj_)
 {
     PressureAdjacent adj(adj_, direction);
     
-    adj.N.move((100 * PRESSURE_SCALAR - adj.N.value) / 4);
+    adj.N.move((100 * PRESSURE_SCALAR - adj.N.value) / 2);
+    adj.E.vent();
+    adj.S.vent();
+    adj.W.vent();
+}
+
+CircuitElementEmpty::CircuitElementEmpty(SaveObjectMap* omap)
+{
+}
+
+void CircuitElementEmpty::save(SaveObjectMap* omap)
+{
+}
+
+XYPos CircuitElementEmpty::getimage(void)
+{
+    return XYPos(0, 0);
+}
+
+void CircuitElementEmpty::sim_pre(PressureAdjacent adj)
+{
+    adj.N.vent();
     adj.E.vent();
     adj.S.vent();
     adj.W.vent();
@@ -375,7 +408,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(Direction direction_, unsigne
     level = NULL;
     circuit = NULL;
     if (level_set)
-        reset(level_set);
+        elaborate(level_set);
 }
 
 CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
@@ -393,14 +426,19 @@ void CircuitElementSubCircuit::save(SaveObjectMap* omap)
     omap->add_num("level_index", level_index);
 }
 
-void CircuitElementSubCircuit::reset(LevelSet* level_set)
+void CircuitElementSubCircuit::reset()
+{
+    circuit->reset();
+};
+
+void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
 {
     level = level_set->levels[level_index];
     if (circuit)
         delete circuit;
     circuit = new Circuit(*level->circuit);
-    circuit->reset(level_set);
-}
+    circuit->elaborate(level_set);
+};
 
 void CircuitElementSubCircuit::retire()
 {
@@ -463,7 +501,7 @@ Circuit::Circuit()
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        elements[pos.y][pos.x] = new CircuitElementPipe();
+        elements[pos.y][pos.x] = new CircuitElementEmpty();
     }
 }
 
@@ -497,7 +535,7 @@ SaveObject* Circuit::save()
     return omap;
 }
 
-void Circuit::reset(LevelSet* level_set)
+void Circuit::reset()
 {
     XYPos pos;
     for (pos.y = 0; pos.y < 10; pos.y++)
@@ -509,7 +547,18 @@ void Circuit::reset(LevelSet* level_set)
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        elements[pos.y][pos.x]->reset(level_set);
+        elements[pos.y][pos.x]->reset();
+    }
+
+}
+
+void Circuit::elaborate(LevelSet* level_set)
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        elements[pos.y][pos.x]->elaborate(level_set);
     }
 
 }
@@ -527,10 +576,6 @@ void Circuit::retire()
 
 void Circuit::sim_pre(PressureAdjacent adj_)
 {
-    connections_ns[0][4] = adj_.N;
-    connections_ew[4][9] = adj_.E;
-    connections_ns[9][4] = adj_.S;
-    connections_ew[4][0] = adj_.W;
 
     if (!fast_prepped)
     {
@@ -545,6 +590,11 @@ void Circuit::sim_pre(PressureAdjacent adj_)
             connections_ew[pos.y][pos.x].pre();
         }
 
+//     connections_ns[0][4] = adj_.N;
+//     connections_ew[4][9] = adj_.E;
+//     connections_ns[9][4] = adj_.S;
+//     connections_ew[4][0] = adj_.W;
+
         for (pos.y = 0; pos.y < 9; pos.y++)
         for (pos.x = 0; pos.x < 9; pos.x++)
         {
@@ -554,6 +604,11 @@ void Circuit::sim_pre(PressureAdjacent adj_)
                                  connections_ew[pos.y][pos.x]);
             elements[pos.y][pos.x]->sim_pre(adj);
         }
+
+        sim_pre_2links(connections_ns[0][4], adj_.N);
+        sim_pre_2links(connections_ew[4][9], adj_.E);
+        sim_pre_2links(connections_ns[9][4], adj_.S);
+        sim_pre_2links(connections_ew[4][0], adj_.W);
 
         for (pos.y = 0; pos.y < 9; pos.y++)
         for (pos.x = 0; pos.x < 9; pos.x++)
@@ -579,7 +634,7 @@ void Circuit::sim_pre(PressureAdjacent adj_)
                 connections_ew[pos.y][pos.x] = CircuitPressure();
         }
 
-//    fast_prepped = true;
+    fast_prepped = true;
     }
     else
     {
@@ -587,28 +642,38 @@ void Circuit::sim_pre(PressureAdjacent adj_)
         {
             con->pre();
         }
+        sim_pre_2links(connections_ns[0][4], adj_.N);
+        sim_pre_2links(connections_ew[4][9], adj_.E);
+        sim_pre_2links(connections_ns[9][4], adj_.S);
+        sim_pre_2links(connections_ew[4][0], adj_.W);
 
+//     connections_ns[0][4] = adj_.N;
+//     connections_ew[4][9] = adj_.E;
+//     connections_ns[9][4] = adj_.S;
+//     connections_ew[4][0] = adj_.W;
         for (FastFunc& fast_func : fast_funcs)
         {
             fast_func.element->sim_pre(fast_func.adj);
         }
     }
 
-    adj_.N = connections_ns[0][4];
-    adj_.E = connections_ew[4][9];
-    adj_.S = connections_ns[9][4];
-    adj_.W = connections_ew[4][0];
+//     adj_.N = connections_ns[0][4];
+//     adj_.E = connections_ew[4][9];
+//     adj_.S = connections_ns[9][4];
+//     adj_.W = connections_ew[4][0];
 
 }
 
 void Circuit::sim_post(PressureAdjacent adj_)
 {
-    connections_ns[0][4] = adj_.N;
-    connections_ew[4][9] = adj_.E;
-    connections_ns[9][4] = adj_.S;
-    connections_ew[4][0] = adj_.W;
+    last_vented = 0;
+    last_moved = 0;
+//     connections_ns[0][4] = adj_.N;
+//     connections_ew[4][9] = adj_.E;
+//     connections_ns[9][4] = adj_.S;
+//     connections_ew[4][0] = adj_.W;
 
-//    assert(fast_prepped);
+    assert(fast_prepped);
     if (!fast_prepped)
     {
         XYPos pos;
@@ -625,6 +690,11 @@ void Circuit::sim_post(PressureAdjacent adj_)
         for (pos.y = 0; pos.y < 10; pos.y++)
         for (pos.x = 0; pos.x < 10; pos.x++)
         {
+            last_vented += connections_ns[pos.y][pos.x].vented;
+            last_vented += connections_ew[pos.y][pos.x].vented;
+            last_moved += abs(connections_ns[pos.y][pos.x].move_next);
+            last_moved += abs(connections_ew[pos.y][pos.x].move_next);
+
             connections_ns[pos.y][pos.x].post();
             connections_ew[pos.y][pos.x].post();
         }
@@ -637,14 +707,16 @@ void Circuit::sim_post(PressureAdjacent adj_)
         }
         for (CircuitPressure* con : fast_pressures)
         {
+            last_vented += con->vented;
+            last_moved += abs(con->move_next);
             con->post();
         }
     }
 
-    adj_.N = connections_ns[0][4];
-    adj_.E = connections_ew[4][9];
-    adj_.S = connections_ns[9][4];
-    adj_.W = connections_ew[4][0];
+//     adj_.N = connections_ns[0][4];
+//     adj_.E = connections_ew[4][9];
+//     adj_.S = connections_ns[9][4];
+//     adj_.W = connections_ew[4][0];
 }
 
 

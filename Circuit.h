@@ -17,6 +17,12 @@ static unsigned pressure_as_percent(Pressure p)
     return std::min(std::max((p + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR, 0), 100);
 }
 
+static Pressure percent_as_pressure(unsigned p)
+{
+    return p * PRESSURE_SCALAR;
+}
+
+
 class CircuitPressure
 {
 public:
@@ -27,7 +33,7 @@ public:
 
     void apply(Pressure vol, Pressure drive)
     {
-        move_next += (int64_t(vol * PRESSURE_SCALAR - value) * drive) / 100;
+        move_next += ((int64_t(vol * PRESSURE_SCALAR - value) * drive) / 100) / 2;
         touched = true;
     }
 
@@ -42,8 +48,8 @@ public:
     {
         if (value)
         {
-            move_next -= value / 4;
-            vented += value / 4;
+            move_next -= value / 2;
+            vented += value / 2;
         }
     }
 
@@ -98,6 +104,7 @@ enum CircuitElementType
     CIRCUIT_ELEMENT_TYPE_VALVE,
     CIRCUIT_ELEMENT_TYPE_SOURCE,
     CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT,
+    CIRCUIT_ELEMENT_TYPE_EMPTY
 };
 class PressureAdjacent
 {
@@ -131,7 +138,8 @@ public:
     virtual CircuitElement* copy() = 0;
 
 
-    virtual void reset(LevelSet* level_set) {};
+    virtual void elaborate(LevelSet* level_set) {};
+    virtual void reset() {};
     virtual void retire() {};
     virtual bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set) {return false;}
     virtual XYPos getimage(void) = 0;
@@ -169,12 +177,10 @@ public:
     void extend_pipe(Connections con);
 };
 
-
-
 class CircuitElementValve : public CircuitElement
 {
-    const int capacity = 10;
-    const int resistence = 5;
+    const int capacity = 2;
+    const int resistence = 4;
 
     Pressure pos_charge = 0;
     Pressure neg_charge = 0;
@@ -194,7 +200,7 @@ public:
 
     void save(SaveObjectMap*);
     virtual CircuitElement* copy() { return new CircuitElementValve(direction);}
-    void reset(LevelSet* level_set);
+    void reset();
     XYPos getimage(void);
     SDL_Rect getimage_bg(void);
     XYPos getimage_fg(void);
@@ -222,6 +228,19 @@ public:
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SOURCE;}
 };
 
+class CircuitElementEmpty : public CircuitElement
+{
+public:
+    CircuitElementEmpty(){}
+    CircuitElementEmpty(SaveObjectMap*);
+
+    void save(SaveObjectMap*);
+    virtual CircuitElement* copy() { return new CircuitElementEmpty();}
+    XYPos getimage(void);
+    void sim_pre(PressureAdjacent adj);
+    CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_EMPTY;}
+};
+
 class Circuit;
 
 class CircuitElementSubCircuit : public CircuitElement
@@ -239,7 +258,8 @@ public:
 
     void save(SaveObjectMap*);
     virtual CircuitElement* copy() { return new CircuitElementSubCircuit(direction, level_index);}
-    void reset(LevelSet* level_set);
+    void reset();
+    void elaborate(LevelSet* level_set);
     void retire();
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
     XYPos getimage(void);
@@ -271,6 +291,9 @@ public:
     std::vector<FastFunc> fast_funcs;
     std::vector<CircuitPressure*> fast_pressures;
 
+    Pressure last_vented;
+    Pressure last_moved;
+
     Circuit(SaveObjectMap* omap);
     Circuit(Circuit& other);
     Circuit();
@@ -282,7 +305,8 @@ public:
     void set_element_source(XYPos pos, Direction direction);
     void set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set);
 
-    void reset(LevelSet* level_set);
+    void reset();
+    void elaborate(LevelSet* level_set);
     void retire();
     void sim_pre(PressureAdjacent);
     void sim_post(PressureAdjacent);
