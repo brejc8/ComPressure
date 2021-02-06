@@ -4,8 +4,11 @@
 #include "Level.h"
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
+
 #include <map>
 #include <list>
+#include <set>
 
 class GameState
 {
@@ -25,6 +28,7 @@ class GameState
         MOUSE_STATE_PLACING_SOURCE,
         MOUSE_STATE_PLACING_SUBCIRCUIT,
         MOUSE_STATE_SPEED_SLIDER,
+        MOUSE_STATE_AREA_SELECT,
     } mouse_state = MOUSE_STATE_NONE;
 
     enum PanelState
@@ -52,10 +56,7 @@ class GameState
     
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
 
-
-
     unsigned frame_index = 0;
-
     unsigned game_speed = 10;
 
     unsigned slider_pos;
@@ -63,7 +64,9 @@ class GameState
     unsigned slider_max;
     unsigned* slider_value_tgt;
     
-    
+    std::set<XYPos> selected_elements;
+    XYPos select_area_pos;
+
     unsigned test_value[4] = {0};
     unsigned test_drive[4] = {0};
     
@@ -92,8 +95,14 @@ class GameState
     bool show_main_menu = false;
     unsigned sound_volume = 100;
     unsigned music_volume = 100;
-
+    Mix_Chunk *vent_steam_wav;
+    Mix_Chunk *move_steam_wav;
+    Mix_Music *music;
+    
     XYPos mouse;
+    
+    bool keyboard_shift = false;
+    bool keyboard_ctrl = false;
     
     XYPos pipe_start_grid_pos;
     bool pipe_start_ns;

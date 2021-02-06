@@ -60,16 +60,16 @@ GameState::GameState(const char* filename)
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_AllocateChannels(16);
     
-    Mix_Chunk *wave = Mix_LoadWAV("vent_steam.wav");
-    Mix_PlayChannel(0, wave, -1);
+    vent_steam_wav = Mix_LoadWAV("vent_steam.wav");
+    Mix_PlayChannel(0, vent_steam_wav, -1);
     Mix_Volume(0, 0);
     
-    wave = Mix_LoadWAV("move_steam.wav");
-    Mix_PlayChannel(1, wave, -1);
+    move_steam_wav = Mix_LoadWAV("move_steam.wav");
+    Mix_PlayChannel(1, move_steam_wav, -1);
     Mix_Volume(1, 0);
     
     Mix_VolumeMusic(music_volume);
-    Mix_Music *music = Mix_LoadMUS("music.ogg");
+    music = Mix_LoadMUS("music.ogg");
     Mix_PlayMusic(music, -1);
 
     
@@ -99,9 +99,14 @@ void GameState::save(const char*  filename)
 
 GameState::~GameState()
 {
+    Mix_FreeChunk(vent_steam_wav);
+    Mix_FreeChunk(move_steam_wav);
+    Mix_FreeMusic(music);
+
 	SDL_DestroyTexture(sdl_texture);
 	SDL_DestroyRenderer(sdl_renderer);
 	SDL_DestroyWindow(sdl_window);
+    delete level_set;
 }
 
 extern const char embedded_data_binary_texture_png_start;
@@ -203,8 +208,8 @@ void GameState::advance()
 
 void GameState::audio()
 {
-    Mix_Volume(0, pressure_as_percent(current_circuit->last_vented*20) * sound_volume / 100);
-    Mix_Volume(1, pressure_as_percent(current_circuit->last_moved*20) * sound_volume / 100);
+    Mix_Volume(0, pressure_as_percent(current_circuit->last_vented*40) * sound_volume / 100 / 5);
+    Mix_Volume(1, pressure_as_percent(current_circuit->last_moved*20) * sound_volume / 100/ 2);
     Mix_VolumeMusic(music_volume);
 }
 
@@ -398,7 +403,7 @@ void GameState::render()
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
     
-    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.y = 0; pos.y < 9; pos.y++)                                         // Draw elements
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
         {
@@ -428,6 +433,37 @@ void GameState::render()
             SDL_Rect dst_rect = {(pos.x * 32 + 4) * scale + grid_offset.x, (pos.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
+        bool selected = false;
+        selected = selected_elements.find(pos) != selected_elements.end();
+        
+        if (mouse_state == MOUSE_STATE_AREA_SELECT)
+        {
+            XYPos tl = ((mouse - grid_offset) / scale) / 32;
+            XYPos br = select_area_pos / 32;
+
+            if (tl.x > br.x)
+            {
+                int t = tl.x;
+                tl.x = br.x;
+                br.x = t;
+            }
+            if (tl.y > br.y)
+            {
+                int t = tl.y;
+                tl.y = br.y;
+                br.y = t;
+            }
+            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty())
+                selected = true;
+        }
+        
+        if (selected)                     //selected
+        {
+            SDL_Rect src_rect =  {256, 176, 32, 32};
+            SDL_Rect dst_rect = {(pos.x * 32) * scale + grid_offset.x, (pos.y * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+
     }
 
     if (mouse_state == MOUSE_STATE_PIPE && (frame_index % 20 < 10))
@@ -552,8 +588,49 @@ void GameState::render()
 
         }
     }
+    else if (mouse_state == MOUSE_STATE_AREA_SELECT)
+    {
+        XYPos mouse_pos = ((mouse - grid_offset) / scale);
+        
+        XYPos tl = mouse_pos;
+        XYPos br = select_area_pos;
+        
+        if (tl.x > br.x)
+        {
+            int t = tl.x;
+            tl.x = br.x;
+            br.x = t;
+        }
+        if (tl.y > br.y)
+        {
+            int t = tl.y;
+            tl.y = br.y;
+            br.y = t;
+        }
+        XYPos size = br - tl;
+        
+        {
+            SDL_Rect src_rect = {503, 80, 1, 1};
+            {
+                SDL_Rect dst_rect = {tl.x * scale + grid_offset.x, tl.y * scale + grid_offset.y, size.x * scale, 1 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+            {
+                SDL_Rect dst_rect = {tl.x * scale + grid_offset.x, (tl.y + size.y) * scale + grid_offset.y, (size.x + 1) * scale, 1 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+            {
+                SDL_Rect dst_rect = {tl.x * scale + grid_offset.x, tl.y * scale + grid_offset.y, 1 * scale, size.y * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+            {
+                SDL_Rect dst_rect = {(tl.x + size.x) * scale + grid_offset.x, tl.y * scale + grid_offset.y, 1 * scale, (size.y + 1) * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+        }
+    }
 
-    for (pos.y = 0; pos.y < 10; pos.y++)
+    for (pos.y = 0; pos.y < 10; pos.y++)                        // Print pressure numbers
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
         if (!current_circuit->connections_ns[pos.y][pos.x].touched)
@@ -569,7 +646,7 @@ void GameState::render()
         }
         render_number_2digit(XYPos((pos.x * 32  + 11) * scale + grid_offset.x, (pos.y * 32 - 3) * scale + grid_offset.y), value, 1, 6);
     }
-    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.y = 0; pos.y < 9; pos.y++)                         // Show venting pipes
     for (pos.x = 0; pos.x < 10; pos.x++)
     {
         if (!current_circuit->connections_ew[pos.y][pos.x].touched)
@@ -1190,13 +1267,13 @@ void GameState::render()
 
         {
             SDL_Rect src_rect = {526, 80, 12, 101};
-            SDL_Rect dst_rect = {(160 + 32 + 128 + 16) * scale, (90 + 32 + 6)  * scale, 12 * scale, 101 * scale};
+            SDL_Rect dst_rect = {(160 + 32 + 128 + 16) * scale, (90 + 32 + 6 + 6)  * scale, 12 * scale, 101 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
 
         {
             SDL_Rect src_rect = {256 + 80 + 96, 16, 16, 16};
-            SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 32 + int(100 - sound_volume))  * scale, 16 * scale, 16 * scale};
+            SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 32 + 6 + int(100 - sound_volume))  * scale, 16 * scale, 16 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
 
@@ -1208,13 +1285,13 @@ void GameState::render()
         }
         {
             SDL_Rect src_rect = {526, 80, 12, 101};
-            SDL_Rect dst_rect = {(160 + 32 + 192 + 16) * scale, (90 + 32 + 6)  * scale, 12 * scale, 101 * scale};
+            SDL_Rect dst_rect = {(160 + 32 + 192 + 16) * scale, (90 + 32 + 6 + 6)  * scale, 12 * scale, 101 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
 
         {
             SDL_Rect src_rect = {256 + 80 + 192, 16, 16, 16};
-            SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 32 + int(100 - music_volume))  * scale, 16 * scale, 16 * scale};
+            SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 32 + 6 + int(100 - music_volume))  * scale, 16 * scale, 16 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
 
@@ -1244,13 +1321,40 @@ void GameState::mouse_click_in_grid()
 {
     XYPos pos = (mouse - grid_offset) / scale;
     XYPos grid = pos / 32;
+    if (keyboard_shift)
+    {
+        select_area_pos = pos;
+        mouse_state = MOUSE_STATE_AREA_SELECT;
+        return;
+    }
+    if (keyboard_ctrl)
+    {
+        if (pos.x < 0 || pos.y < 0)
+            return;
+        if (grid.x > 8 || grid.y > 8)
+            return;
+        if (current_circuit->elements[grid.y][grid.x]->is_empty())
+            return;
+        if (selected_elements.find(grid) == selected_elements.end())
+            selected_elements.insert(grid);
+        else
+            selected_elements.erase(grid);
+        
+        return;
+    }
+    if (!selected_elements.empty())
+    {
+        selected_elements.clear();
+        return;
+    }
     if (mouse_state == MOUSE_STATE_NONE)
     {
-        if (grid.x >= 9 || grid.y >= 9)
-            return;
+        if (grid.x > 8)
+            grid.x = 8;
+        if (grid.y > 8)
+            grid.y = 8;
         mouse_state = MOUSE_STATE_PIPE;
         XYPos pos = (mouse - grid_offset) / scale;
-        XYPos grid = pos / 32;
         pos -= grid * 32;
         pipe_start_grid_pos = grid;
         if (pos.x > pos.y)      // upper right
@@ -1631,7 +1735,7 @@ void GameState::mouse_motion()
         XYPos grid = ((mouse - grid_offset) / scale) / 32;
         if (grid.x >= 9 || grid.y >= 9)
             return;
-        current_circuit->set_element_pipe(grid, CONNECTIONS_NONE);
+        current_circuit->set_element_empty(grid);
         current_level->touched = true;
 
     }
@@ -1679,35 +1783,43 @@ bool GameState::events()
 		        return true;
             case SDL_KEYDOWN:
             {
-                bool down = (e.type == SDL_KEYDOWN);
-                if (down)
+                if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+                    show_main_menu = !show_main_menu;
+                else if (e.key.keysym.scancode == SDL_SCANCODE_TAB)
                 {
-                    if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-                        show_main_menu = !show_main_menu;
-                    else if (e.key.keysym.scancode == SDL_SCANCODE_TAB)
-                    {
-                        if (mouse_state == MOUSE_STATE_PLACING_VALVE)
-                            mouse_state = MOUSE_STATE_PLACING_SOURCE;
-                        else
-                            mouse_state = MOUSE_STATE_PLACING_VALVE;
-                    }
-                    else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
-                        direction = Direction((int(direction) + 4 - 1) % 4);
-                    else if (e.key.keysym.scancode == SDL_SCANCODE_E)
-                        direction = Direction((int(direction) + 1) % 4);
-                    else if (e.key.keysym.scancode == SDL_SCANCODE_F1)
-                        show_help = 1;
-                    else if (e.key.keysym.scancode == SDL_SCANCODE_F5)
-                        show_debug = !show_debug;
-                    else printf("Uncaught key: %d\n", e.key.keysym);
+                    if (mouse_state == MOUSE_STATE_PLACING_VALVE)
+                        mouse_state = MOUSE_STATE_PLACING_SOURCE;
+                    else
+                        mouse_state = MOUSE_STATE_PLACING_VALVE;
                 }
-                break;
-            }
-            case SDL_TEXTINPUT:
-            {
+                else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
+                    direction = Direction((int(direction) + 4 - 1) % 4);
+                else if (e.key.keysym.scancode == SDL_SCANCODE_E)
+                    direction = Direction((int(direction) + 1) % 4);
+                else if (e.key.keysym.scancode == SDL_SCANCODE_W)
+                    current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
+                else if (e.key.keysym.scancode == SDL_SCANCODE_A)
+                    current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
+                else if (e.key.keysym.scancode == SDL_SCANCODE_S)
+                    current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
+                else if (e.key.keysym.scancode == SDL_SCANCODE_D)
+                    current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                else if (e.key.keysym.scancode == SDL_SCANCODE_F1)
+                    show_help = 1;
+                else if (e.key.keysym.scancode == SDL_SCANCODE_F5)
+                    show_debug = !show_debug;
+                else if (e.key.keysym.scancode == SDL_SCANCODE_LSHIFT)
+                    keyboard_shift = true;
+                else if (e.key.keysym.scancode == SDL_SCANCODE_LCTRL)
+                    keyboard_ctrl = true;
+                else printf("Uncaught key: %d\n", e.key.keysym);
                 break;
             }
             case SDL_KEYUP:
+                    if (e.key.keysym.scancode == SDL_SCANCODE_LSHIFT)
+                        keyboard_shift = false;
+                    else if (e.key.keysym.scancode == SDL_SCANCODE_LCTRL)
+                        keyboard_ctrl = false;
                 break;
             case SDL_MOUSEMOTION:
             {
@@ -1724,6 +1836,31 @@ bool GameState::events()
                 {
                     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
                         mouse_state = MOUSE_STATE_NONE;
+                    if (mouse_state == MOUSE_STATE_AREA_SELECT)
+                    {
+                        XYPos tl = ((mouse - grid_offset) / scale) / 32;
+                        XYPos br = select_area_pos / 32;
+                        if (tl.x > br.x)
+                        {
+                            int t = tl.x;
+                            tl.x = br.x;
+                            br.x = t;
+                        }
+                        if (tl.y > br.y)
+                        {
+                            int t = tl.y;
+                            tl.y = br.y;
+                            br.y = t;
+                        }
+                        XYPos pos;
+                        for (pos.y = 0; pos.y < 9; pos.y++)
+                        for (pos.x = 0; pos.x < 9; pos.x++)
+                        {
+                            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty())
+                                selected_elements.insert(pos);
+                        }
+                        mouse_state = MOUSE_STATE_NONE;
+                    }
                 }
                 if (e.button.button == SDL_BUTTON_RIGHT)
                 {
@@ -1744,7 +1881,7 @@ bool GameState::events()
                         show_help = 0;
                     break;
                 }
-                    
+
                 if (e.button.button == SDL_BUTTON_LEFT)
                 {
                     if (show_main_menu)
@@ -1787,6 +1924,7 @@ bool GameState::events()
                 }
                 else if (e.button.button == SDL_BUTTON_RIGHT)
                 {
+                    selected_elements.clear();
                     if (mouse_state == MOUSE_STATE_NONE)
                     {
                         mouse_state = MOUSE_STATE_DELETING;

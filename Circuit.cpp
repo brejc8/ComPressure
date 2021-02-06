@@ -401,6 +401,12 @@ void CircuitElementEmpty::sim_pre(PressureAdjacent adj)
     adj.W.vent();
 }
 
+CircuitElementSubCircuit::~CircuitElementSubCircuit()
+{
+    if (circuit)
+        delete circuit;
+}
+
 CircuitElementSubCircuit::CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set):
     direction(direction_),
     level_index(level_index_)
@@ -442,6 +448,8 @@ void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
 
 void CircuitElementSubCircuit::retire()
 {
+    if (circuit)
+        delete circuit;
     level = NULL;
     circuit = NULL;
 }
@@ -512,6 +520,16 @@ Circuit::Circuit(Circuit& other)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
         elements[pos.y][pos.x] = other.elements[pos.y][pos.x]->copy();
+    }
+}
+
+Circuit::~Circuit()
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        delete elements[pos.y][pos.x];
     }
 }
 
@@ -590,11 +608,6 @@ void Circuit::sim_pre(PressureAdjacent adj_)
             connections_ew[pos.y][pos.x].pre();
         }
 
-//     connections_ns[0][4] = adj_.N;
-//     connections_ew[4][9] = adj_.E;
-//     connections_ns[9][4] = adj_.S;
-//     connections_ew[4][0] = adj_.W;
-
         for (pos.y = 0; pos.y < 9; pos.y++)
         for (pos.x = 0; pos.x < 9; pos.x++)
         {
@@ -605,10 +618,26 @@ void Circuit::sim_pre(PressureAdjacent adj_)
             elements[pos.y][pos.x]->sim_pre(adj);
         }
 
-        sim_pre_2links(connections_ns[0][4], adj_.N);
-        sim_pre_2links(connections_ew[4][9], adj_.E);
-        sim_pre_2links(connections_ns[9][4], adj_.S);
-        sim_pre_2links(connections_ew[4][0], adj_.W);
+        
+        if (connections_ns[0][4].touched || adj_.N.touched)
+            sim_pre_2links(connections_ns[0][4], adj_.N);
+        if (connections_ew[4][9].touched || adj_.E.touched)
+            sim_pre_2links(connections_ew[4][9], adj_.E);
+        if (connections_ns[9][4].touched || adj_.S.touched)
+            sim_pre_2links(connections_ns[9][4], adj_.S);
+        if (connections_ew[4][0].touched || adj_.W.touched)
+            sim_pre_2links(connections_ew[4][0], adj_.W);
+        
+        for (int i = 0; i < 9; i++)
+        {
+            if (i != 4){
+                connections_ns[0][i].vent();
+                connections_ew[i][9].vent();
+                connections_ns[9][i].vent();
+                connections_ew[i][0].vent();
+            }
+        }
+
 
         for (pos.y = 0; pos.y < 9; pos.y++)
         for (pos.x = 0; pos.x < 9; pos.x++)
@@ -642,36 +671,39 @@ void Circuit::sim_pre(PressureAdjacent adj_)
         {
             con->pre();
         }
-        sim_pre_2links(connections_ns[0][4], adj_.N);
-        sim_pre_2links(connections_ew[4][9], adj_.E);
-        sim_pre_2links(connections_ns[9][4], adj_.S);
-        sim_pre_2links(connections_ew[4][0], adj_.W);
 
-//     connections_ns[0][4] = adj_.N;
-//     connections_ew[4][9] = adj_.E;
-//     connections_ns[9][4] = adj_.S;
-//     connections_ew[4][0] = adj_.W;
         for (FastFunc& fast_func : fast_funcs)
         {
             fast_func.element->sim_pre(fast_func.adj);
         }
+
+        for (int i = 0; i < 9; i++)
+        {
+            if (i != 4){
+                connections_ns[0][i].vent();
+                connections_ew[i][9].vent();
+                connections_ns[9][i].vent();
+                connections_ew[i][0].vent();
+            }
+        }
+
+
+        if (connections_ns[0][4].touched || adj_.N.touched)
+            sim_pre_2links(connections_ns[0][4], adj_.N);
+        if (connections_ew[4][9].touched || adj_.E.touched)
+            sim_pre_2links(connections_ew[4][9], adj_.E);
+        if (connections_ns[9][4].touched || adj_.S.touched)
+            sim_pre_2links(connections_ns[9][4], adj_.S);
+        if (connections_ew[4][0].touched || adj_.W.touched)
+            sim_pre_2links(connections_ew[4][0], adj_.W);
+
     }
-
-//     adj_.N = connections_ns[0][4];
-//     adj_.E = connections_ew[4][9];
-//     adj_.S = connections_ns[9][4];
-//     adj_.W = connections_ew[4][0];
-
 }
 
 void Circuit::sim_post(PressureAdjacent adj_)
 {
     last_vented = 0;
     last_moved = 0;
-//     connections_ns[0][4] = adj_.N;
-//     connections_ew[4][9] = adj_.E;
-//     connections_ns[9][4] = adj_.S;
-//     connections_ew[4][0] = adj_.W;
 
     assert(fast_prepped);
     if (!fast_prepped)
@@ -712,13 +744,15 @@ void Circuit::sim_post(PressureAdjacent adj_)
             con->post();
         }
     }
-
-//     adj_.N = connections_ns[0][4];
-//     adj_.E = connections_ew[4][9];
-//     adj_.S = connections_ns[9][4];
-//     adj_.W = connections_ew[4][0];
 }
 
+
+void Circuit::set_element_empty(XYPos pos)
+{
+    delete elements[pos.y][pos.x];
+    elements[pos.y][pos.x] = new CircuitElementEmpty();
+    ammended();
+}
 
 void Circuit::set_element_pipe(XYPos pos, Connections con)
 {
@@ -754,6 +788,48 @@ void Circuit::set_element_subcircuit(XYPos pos, Direction direction, unsigned le
     elements[pos.y][pos.x] = new CircuitElementSubCircuit(direction, level_index, level_set);
     ammended();
 }
+
+void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Direction d)
+{
+    XYPos mov(d);
+    std::map<XYPos, CircuitElement*> elems;
+    if (selected_elements.empty())
+        return;
+    
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = old + mov;
+        if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
+            return;
+        if (selected_elements.find(pos) == selected_elements.end() && !elements[pos.y][pos.x]->is_empty())
+            return;
+    }
+
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = old + mov;
+        elems[pos] = elements[old.y][old.x];
+        elements[old.y][old.x] = new CircuitElementEmpty();
+    }
+    
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = old + mov;
+        delete elements[pos.y][pos.x];
+        elements[pos.y][pos.x] = elems[pos];
+    }
+    
+    std::set<XYPos> new_sel;
+    for (const XYPos& old: selected_elements)
+    {
+        new_sel.insert(old + mov);
+    }
+    selected_elements.clear();
+    selected_elements = new_sel;
+    ammended();
+}
+
+
 
 bool Circuit::contains_subcircuit_level(unsigned level_index, LevelSet* level_set)
 {

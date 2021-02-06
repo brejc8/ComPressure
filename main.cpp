@@ -57,5 +57,10 @@ int main( int argc, char* argv[] )
 	IMG_Quit();
 	SDL_Quit();
 
+
+#ifdef STEAM
+    SteamAPI_Shutdown();
+#endif
+
 	return 0;
 }

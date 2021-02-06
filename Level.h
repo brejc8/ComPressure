@@ -91,6 +91,7 @@ public:
     
     Level(unsigned level_index_, SaveObject* sobj);
     Level(unsigned level_index_);
+    ~Level();
     SaveObject* save();
 
     XYPos getimage(Direction direction);
@@ -112,6 +113,7 @@ public:
     Level* levels[LEVEL_COUNT];
     LevelSet(SaveObject* sobj);
     LevelSet();
+    ~LevelSet();
     SaveObject* save();
 
 };

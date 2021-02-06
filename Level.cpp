@@ -86,6 +86,11 @@ Level::Level(unsigned level_index_, SaveObject* sobj):
     }
 }
 
+Level::~Level()
+{
+    delete circuit;
+}
+
 SaveObject* Level::save()
 {
     SaveObjectMap* omap = new SaveObjectMap;
@@ -651,6 +656,14 @@ LevelSet::LevelSet()
         for (int i = 0; i < LEVEL_COUNT; i++)
         {
             levels[i] = new Level(i);
+        }
+}
+
+LevelSet::~LevelSet()
+{
+        for (int i = 0; i < LEVEL_COUNT; i++)
+        {
+            delete levels[i];
         }
 }
 

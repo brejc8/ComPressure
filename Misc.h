@@ -56,7 +56,7 @@ public:
 
     XYPos(Direction dir)
     {
-        static const XYPos dirpos[4] = {{0,-1}, {-1,0}, {0,1}, {1,0}};
+        static const XYPos dirpos[4] = {{0,-1}, {1,0}, {0,1}, {-1,0}};
         *this = dirpos[dir%4];
     }
 

@@ -4,6 +4,7 @@
 
 #include <SDL.h>
 #include <vector>
+#include <set>
 
 #define PRESSURE_SCALAR (65536)
 
@@ -68,6 +69,8 @@ public:
             move_next = 0;
             if (value > 100 * PRESSURE_SCALAR)
                 value = 100 * PRESSURE_SCALAR;
+            if (value < 0)
+                value = 0;
         }
     }
     
@@ -136,6 +139,7 @@ public:
     virtual void save(SaveObjectMap*) = 0;
     static CircuitElement* load(SaveObjectMap*);
     virtual CircuitElement* copy() = 0;
+    virtual ~CircuitElement(){};
 
 
     virtual void elaborate(LevelSet* level_set) {};
@@ -147,7 +151,8 @@ public:
     virtual SDL_Rect getimage_bg(void)  {return SDL_Rect{0, 0, 0, 0};}
     virtual void sim_pre(PressureAdjacent adj) = 0;
     virtual void sim_post(PressureAdjacent adj) {};
-    
+    virtual bool is_empty() {return false;};
+
     virtual CircuitElementType get_type() = 0;
     virtual void extend_pipe(Connections con){assert(0);}
 
@@ -239,6 +244,8 @@ public:
     XYPos getimage(void);
     void sim_pre(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_EMPTY;}
+    virtual bool is_empty() {return true;};
+
 };
 
 class Circuit;
@@ -246,15 +253,15 @@ class Circuit;
 class CircuitElementSubCircuit : public CircuitElement
 {
 private:
-//    CircuitElementSubCircuit(){};
 public:
     Direction direction;
     unsigned level_index;
-    Level* level;
-    Circuit* circuit;
+    Level* level = NULL;;
+    Circuit* circuit = NULL;;
 
     CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set = NULL);
     CircuitElementSubCircuit(SaveObjectMap*);
+    ~CircuitElementSubCircuit();
 
     void save(SaveObjectMap*);
     virtual CircuitElement* copy() { return new CircuitElementSubCircuit(direction, level_index);}
@@ -291,19 +298,22 @@ public:
     std::vector<FastFunc> fast_funcs;
     std::vector<CircuitPressure*> fast_pressures;
 
-    Pressure last_vented;
-    Pressure last_moved;
+    Pressure last_vented = 0;
+    Pressure last_moved = 0;
 
     Circuit(SaveObjectMap* omap);
     Circuit(Circuit& other);
     Circuit();
+    ~Circuit();
 
     SaveObject* save(void);
     
+    void set_element_empty(XYPos pos);
     void set_element_pipe(XYPos pos, Connections con);
     void set_element_valve(XYPos pos, Direction direction);
     void set_element_source(XYPos pos, Direction direction);
     void set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set);
+    void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
 
     void reset();
     void elaborate(LevelSet* level_set);
