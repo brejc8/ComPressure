@@ -67,6 +67,7 @@ public:
 
     unsigned level_index;
     Circuit* circuit;
+    bool blocked[9][9] = {false};
     
     unsigned pin_order[4];
 

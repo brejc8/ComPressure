@@ -158,7 +158,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
             NEW_POINT(  0,  0,  0,  0);
-
+            
             break;
 
         case 1:
