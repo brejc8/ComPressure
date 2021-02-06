@@ -47,6 +47,11 @@ void CircuitElementPipe::save(SaveObjectMap* omap)
     omap->add_num("connections", connections);
 }
 
+uint16_t CircuitElementPipe::get_desc()
+{
+    return connections;
+}
+
 SDL_Rect CircuitElementPipe::getimage_bg(void)
 {
     if (connections == CONNECTIONS_NS)
@@ -263,6 +268,11 @@ void CircuitElementValve::save(SaveObjectMap* omap)
     omap->add_num("direction", direction);
 }
 
+uint16_t CircuitElementValve::get_desc()
+{
+    return direction;
+}
+
 void CircuitElementValve::reset()
 {
     pos_charge = 0;
@@ -365,6 +375,11 @@ void CircuitElementSource::save(SaveObjectMap* omap)
     omap->add_num("direction", direction);
 }
 
+uint16_t CircuitElementSource::get_desc()
+{
+    return direction;
+}
+
 XYPos CircuitElementSource::getimage(void)
 {
     return XYPos(128 + direction * 32, 0);
@@ -386,6 +401,11 @@ CircuitElementEmpty::CircuitElementEmpty(SaveObjectMap* omap)
 
 void CircuitElementEmpty::save(SaveObjectMap* omap)
 {
+}
+
+uint16_t CircuitElementEmpty::get_desc()
+{
+    return 0;
 }
 
 XYPos CircuitElementEmpty::getimage(void)
@@ -430,6 +450,11 @@ void CircuitElementSubCircuit::save(SaveObjectMap* omap)
 {
     omap->add_num("direction", direction);
     omap->add_num("level_index", level_index);
+}
+
+uint16_t CircuitElementSubCircuit::get_desc()
+{
+    return (level_index << 2) | direction;
 }
 
 void CircuitElementSubCircuit::reset()
@@ -531,6 +556,10 @@ Circuit::~Circuit()
     {
         delete elements[pos.y][pos.x];
     }
+    for (const Circuit* c: undo_list)
+        delete c;
+    for (const Circuit* c: redo_list)
+        delete c;
 }
 
 SaveObject* Circuit::save()
@@ -551,6 +580,21 @@ SaveObject* Circuit::save()
     }
     omap->add_item("elements", slist_y);
     return omap;
+}
+
+void Circuit::copy_elements(Circuit& other)
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        if (elements[pos.y][pos.x]->get_type() != other.elements[pos.y][pos.x]->get_type()
+         || elements[pos.y][pos.x]->get_desc() != other.elements[pos.y][pos.x]->get_desc())
+        {
+            delete elements[pos.y][pos.x];
+            elements[pos.y][pos.x] = other.elements[pos.y][pos.x]->copy();
+        }
+    }
 }
 
 void Circuit::reset()
@@ -749,13 +793,16 @@ void Circuit::sim_post(PressureAdjacent adj_)
 
 void Circuit::set_element_empty(XYPos pos)
 {
+    if (elements[pos.y][pos.x]->is_empty())
+        return;
+    ammend();
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementEmpty();
-    ammended();
 }
 
 void Circuit::set_element_pipe(XYPos pos, Connections con)
 {
+    ammend();
     if (elements[pos.y][pos.x]->get_type() == CIRCUIT_ELEMENT_TYPE_PIPE)
     {
         elements[pos.y][pos.x]->extend_pipe(con);
@@ -765,32 +812,32 @@ void Circuit::set_element_pipe(XYPos pos, Connections con)
         delete elements[pos.y][pos.x];
         elements[pos.y][pos.x] = new CircuitElementPipe(con);
     }
-    ammended();
 }
 
 void Circuit::set_element_valve(XYPos pos, Direction direction)
 {
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementValve(direction);
-    ammended();
+    ammend();
 }
 
 void Circuit::set_element_source(XYPos pos, Direction direction)
 {
+    ammend();
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementSource(direction);
-    ammended();
 }
 
 void Circuit::set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set)
 {
+    ammend();
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementSubCircuit(direction, level_index, level_set);
-    ammended();
 }
 
 void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Direction d)
 {
+    ammend();
     XYPos mov(d);
     std::map<XYPos, CircuitElement*> elems;
     if (selected_elements.empty())
@@ -826,8 +873,45 @@ void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Directi
     }
     selected_elements.clear();
     selected_elements = new_sel;
-    ammended();
 }
+
+void Circuit::ammend()
+{
+    fast_prepped = false;
+    undo_list.push_front(new Circuit(*this));
+    for (const Circuit* c: redo_list)
+        delete c;
+    redo_list.clear();
+}
+
+void Circuit::undo(LevelSet* level_set)
+{
+    if (!undo_list.empty())
+    {
+        fast_prepped = false;
+        redo_list.push_front(new Circuit(*this));
+        Circuit* to = undo_list.front();
+        undo_list.pop_front();
+        copy_elements(*to);
+        delete to;
+        elaborate(level_set);
+    }
+}
+
+void Circuit::redo(LevelSet* level_set)
+{
+    if (!redo_list.empty())
+    {
+        fast_prepped = false;
+        undo_list.push_front(new Circuit(*this));
+        Circuit* to = redo_list.front();
+        redo_list.pop_front();
+        copy_elements(*to);
+        delete to;
+        elaborate(level_set);
+    }
+}
+
 
 
 

@@ -1535,7 +1535,7 @@ void GameState::mouse_click_in_panel()
                 case 0:
                     if (panel_state = PANEL_STATE_TEST)
                     {
-                        current_circuit->ammended();
+                        current_circuit->updated_ports();
                         current_level->touched = true;
                     }
                     panel_state = PANEL_STATE_LEVEL_SELECT;
@@ -1543,7 +1543,7 @@ void GameState::mouse_click_in_panel()
                 case 1:
                     if (panel_state = PANEL_STATE_TEST)
                     {
-                        current_circuit->ammended();
+                        current_circuit->updated_ports();
                         current_level->touched = true;
                     }
                     panel_state = PANEL_STATE_EDITOR;
@@ -1551,13 +1551,13 @@ void GameState::mouse_click_in_panel()
                 case 2:
                     if (panel_state = PANEL_STATE_TEST)
                     {
-                        current_circuit->ammended();
+                        current_circuit->updated_ports();
                         current_level->touched = true;
                     }
                     panel_state = PANEL_STATE_MONITOR;
                     break;
                 case 3:
-                    current_circuit->ammended();
+                    current_circuit->updated_ports();
                     current_level->touched = true;
                     panel_state = PANEL_STATE_TEST;
                     {
@@ -1604,14 +1604,11 @@ void GameState::mouse_click_in_panel()
             return;
         }
     }
-    
+
     XYPos panel_pos = ((mouse - panel_offset) / scale);
     if (panel_pos.y < 0 || panel_pos.x < 0)
         return;
 
-//    printf("%d %d\n", panel_grid_pos.x, panel_grid_pos.y);
-    
-    
     if (panel_state == PANEL_STATE_LEVEL_SELECT)
     {
         XYPos panel_grid_pos = panel_pos / 32;
@@ -1804,6 +1801,15 @@ bool GameState::events()
                     current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
                 else if (e.key.keysym.scancode == SDL_SCANCODE_D)
                     current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                else if (e.key.keysym.scancode == SDL_SCANCODE_Z)
+                {
+                    if (!keyboard_shift)
+                        current_circuit->undo(level_set);
+                    else
+                        current_circuit->redo(level_set);
+                }
+                else if (e.key.keysym.scancode == SDL_SCANCODE_Y)
+                    current_circuit->redo(level_set);
                 else if (e.key.keysym.scancode == SDL_SCANCODE_F1)
                     show_help = 1;
                 else if (e.key.keysym.scancode == SDL_SCANCODE_F5)

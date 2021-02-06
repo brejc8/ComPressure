@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include <vector>
 #include <set>
+#include <list>
 
 #define PRESSURE_SCALAR (65536)
 
@@ -142,6 +143,7 @@ public:
     virtual ~CircuitElement(){};
 
 
+    virtual uint16_t get_desc() = 0;
     virtual void elaborate(LevelSet* level_set) {};
     virtual void reset() {};
     virtual void retire() {};
@@ -173,6 +175,7 @@ public:
     CircuitElementPipe(SaveObjectMap*);
 
     void save(SaveObjectMap*);
+    virtual uint16_t get_desc();
     virtual CircuitElement* copy() { return new CircuitElementPipe(connections);}
     XYPos getimage(void);
     SDL_Rect getimage_bg(void);
@@ -204,6 +207,7 @@ public:
     CircuitElementValve(SaveObjectMap*);
 
     void save(SaveObjectMap*);
+    virtual uint16_t get_desc();
     virtual CircuitElement* copy() { return new CircuitElementValve(direction);}
     void reset();
     XYPos getimage(void);
@@ -227,6 +231,7 @@ public:
     CircuitElementSource(SaveObjectMap*);
 
     void save(SaveObjectMap*);
+    virtual uint16_t get_desc();
     virtual CircuitElement* copy() { return new CircuitElementSource(direction);}
     XYPos getimage(void);
     void sim_pre(PressureAdjacent adj);
@@ -240,6 +245,7 @@ public:
     CircuitElementEmpty(SaveObjectMap*);
 
     void save(SaveObjectMap*);
+    virtual uint16_t get_desc();
     virtual CircuitElement* copy() { return new CircuitElementEmpty();}
     XYPos getimage(void);
     void sim_pre(PressureAdjacent adj);
@@ -264,6 +270,7 @@ public:
     ~CircuitElementSubCircuit();
 
     void save(SaveObjectMap*);
+    virtual uint16_t get_desc();
     virtual CircuitElement* copy() { return new CircuitElementSubCircuit(direction, level_index);}
     void reset();
     void elaborate(LevelSet* level_set);
@@ -297,6 +304,10 @@ public:
     bool fast_prepped = false;
     std::vector<FastFunc> fast_funcs;
     std::vector<CircuitPressure*> fast_pressures;
+    
+    std::list<Circuit*> undo_list;
+    std::list<Circuit*> redo_list;
+
 
     Pressure last_vented = 0;
     Pressure last_moved = 0;
@@ -307,7 +318,9 @@ public:
     ~Circuit();
 
     SaveObject* save(void);
-    
+    void copy_elements(Circuit& other);
+
+
     void set_element_empty(XYPos pos);
     void set_element_pipe(XYPos pos, Connections con);
     void set_element_valve(XYPos pos, Direction direction);
@@ -320,7 +333,10 @@ public:
     void retire();
     void sim_pre(PressureAdjacent);
     void sim_post(PressureAdjacent);
-    void ammended(){fast_prepped = false;}
+    void updated_ports() {fast_prepped = false;};
+    void ammend();
+    void undo(LevelSet* level_set);
+    void redo(LevelSet* level_set);
 
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
 

@@ -23,9 +23,9 @@ void mainloop()
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
-        game_state->advance();
 		if (game_state->events())
             break;
+        game_state->advance();
         game_state->audio();
 #ifdef STEAM
         SteamGameServer_RunCallbacks();
