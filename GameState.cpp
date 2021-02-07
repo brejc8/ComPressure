@@ -36,6 +36,7 @@ GameState::GameState(const char* filename)
         game_speed = omap->get_num("game_speed");
         show_debug = omap->get_num("show_debug");
         show_help = omap->get_num("show_help");
+        show_help_page = omap->get_num("show_help_page");
         
         sound_volume = omap->get_num("sound_volume");
         music_volume = omap->get_num("music_volume");
@@ -54,6 +55,7 @@ GameState::GameState(const char* filename)
 	sdl_texture = loadTexture("texture.png");
 	sdl_tutorial_texture = loadTexture("tutorial.png");
 	sdl_levels_texture = loadTexture("levels.png");
+	sdl_font_texture = loadTexture("font.png");
     SDL_SetRenderDrawColor(sdl_renderer, 0x0, 0x0, 0x0, 0xFF);
     scale = 0;
     
@@ -88,6 +90,7 @@ void GameState::save(const char*  filename)
     omap.add_num("game_speed", game_speed);
     omap.add_num("show_debug", show_debug);
     omap.add_num("show_help", show_help);
+    omap.add_num("show_help_page", show_help_page);
     omap.add_num("scale", scale);
     omap.add_num("full_screen", full_screen);
     omap.add_num("sound_volume", sound_volume);
@@ -104,6 +107,8 @@ GameState::~GameState()
     Mix_FreeMusic(music);
 
 	SDL_DestroyTexture(sdl_texture);
+	SDL_DestroyTexture(sdl_tutorial_texture);
+	SDL_DestroyTexture(sdl_levels_texture);
 	SDL_DestroyRenderer(sdl_renderer);
 	SDL_DestroyWindow(sdl_window);
     delete level_set;
@@ -323,6 +328,32 @@ void GameState::render_box(XYPos pos, XYPos size, unsigned colour)
     src_rect = {color_table + 16, 80 + 16, 16, 16};
     dst_rect = {pos.x + (size.x - 16) * scale, pos.y + (size.y - 16) * scale, 16 * scale, 16 * scale};
     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Bottom Right
+}
+
+
+void GameState::render_text(XYPos tl, const char* string)
+{
+    XYPos pos;
+    while (*string)
+    {
+        int c = *string;
+        
+        if (c == '\n')
+        {
+            pos.y++;
+            pos.x = 0;
+        }
+        else
+        {
+            c -= 0x20;
+            SDL_Rect src_rect = {(c % 16) * 7, (c / 16) * 9, 7, 9};
+            SDL_Rect dst_rect = {(tl.x + pos.x * 7) * scale, (tl.y + pos.y * 9) * scale, 7 * scale, 9 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_font_texture, &src_rect, &dst_rect);
+            pos.x++;
+        }
+        
+        string++;
+    }
 }
 
 void GameState::render()
@@ -1165,83 +1196,137 @@ void GameState::render()
     }
 
 
-    if (show_help == 1)
+    if (show_help)
     {
         render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 328), 0);
-        unsigned frame = (SDL_GetTicks() / 1000);
-        int x = frame % 5;
-        int y = frame / 5;
 
-        render_box(XYPos((16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+        {
+            SDL_Rect src_rect = {464, 144, 16, 16};
+            SDL_Rect dst_rect = {(32 + 512 + 32 + 8) * scale, (16 + 8) * scale, 16 * scale, 16 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            render_box(XYPos((16 + 8 + i * 48) * scale, (i * (128 +16) + 16 + 8) * scale), XYPos(512+16, 128+16), 4);
+            unsigned anim_src_pos = 0;
+            unsigned anim_frames = 5;
+            const char* text="";
+            switch (show_help_page * 2 + i)
+            {
+                case 0:
+                    anim_src_pos = 0;
+                    anim_frames = 10;
+                    text = "Use left mouse button to place pipes. The pipe will\nextend in the direction of the mouse. Right click to\nend exit from pipe laying mode.";
+                    break;
+                case 1:
+                    anim_src_pos = 2;
+                    text = "Hold Right mouse button to delete pipes and other\nelements.";
+                    break;
+            }
+            
+            int frame = (SDL_GetTicks() / 1000);
+            frame %= anim_frames;
+            int x = frame % 5;
+            int y = frame / 5;
+
+
+            SDL_Rect src_rect = {x * 128, ((anim_src_pos + y) * 128), 128, 128};
+            SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+            
+            render_text(XYPos(32 + 128 + 8 + i * 48, i * (128 +16) + 32), text);
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            SDL_Rect src_rect = {272, 16, 16, 16};
+            SDL_Rect dst_rect = {(32 + 48 + i * 16) * scale, (2 * (128 + 16) + 28) * scale, 16 * scale, 16 * scale};
+            if (i == show_help_page)
+                src_rect.x += 96;
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
         
-        SDL_Rect src_rect = {x * 128, 128 * (y % 2), 128, 128};
-        SDL_Rect dst_rect = {32 * scale, 32 * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-        
-        render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {x * 128, (2 * 128), 128, 128};
-        dst_rect = {((128 +16) * 1 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-        
-        render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {x * 128, (3 * 128), 128, 128};
-        dst_rect = {((128 +16) * 2 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+        }
 
-        render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {x * 128, (4 * 128)  + 128 * (y % 3), 128, 128};
-        dst_rect = {((128 +16) * 3 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-        
-        render_box(XYPos((0 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (7 * 128), 128, 128};
-        dst_rect = {((128 +16) * 0 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
 
-        render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {x * 128, (8 * 128), 128, 128};
-        dst_rect = {((128 +16) * 1 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-
-        render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (9 * 128), 128, 128};
-        dst_rect = {((128 +16) * 2 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-
-        render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (10 * 128), 128, 128};
-        dst_rect = {((128 +16) * 3 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
     }
 
-    if (show_help == 2)
-    {
-        render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 328), 0);
-        unsigned frame = (SDL_GetTicks() / 1000);
-        int x = frame % 5;
-        int y = frame / 5;
 
-        render_box(XYPos((0 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        SDL_Rect src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (11 * 128), 128, 128};
-        SDL_Rect dst_rect = {((128 +16) * 0 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-
-        render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (12 * 128), 128, 128};
-        dst_rect = {((128 +16) * 1 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-
-        render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {x * 128, (13 * 128), 128, 128};
-        dst_rect = {((128 +16) * 2 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-
-        render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-        src_rect = {x * 128, (14 * 128), 128, 128};
-        dst_rect = {((128 +16) * 3 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-
-    }
+//         unsigned frame = (SDL_GetTicks() / 1000);
+//         int x = frame % 5;
+//         int y = frame / 5;
+// 
+//         render_box(XYPos((16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         
+//         SDL_Rect src_rect = {x * 128, 128 * (y % 2), 128, 128};
+//         SDL_Rect dst_rect = {32 * scale, 32 * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+//         
+//         render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {x * 128, (2 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 1 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+//         
+//         render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {x * 128, (3 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 2 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+// 
+//         render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {x * 128, (4 * 128)  + 128 * (y % 3), 128, 128};
+//         dst_rect = {((128 +16) * 3 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+//         
+//         render_box(XYPos((0 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (7 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 0 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+// 
+//         render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {x * 128, (8 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 1 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+// 
+//         render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (9 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 2 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+// 
+//         render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (10 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 3 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+//     }
+// 
+//     if (show_help == 2)
+//     {
+//         render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 328), 0);
+//         unsigned frame = (SDL_GetTicks() / 1000);
+//         int x = frame % 5;
+//         int y = frame / 5;
+// 
+//         render_box(XYPos((0 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         SDL_Rect src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (11 * 128), 128, 128};
+//         SDL_Rect dst_rect = {((128 +16) * 0 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+// 
+//         render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (12 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 1 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+// 
+//         render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {x * 128, (13 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 2 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+// 
+//         render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+//         src_rect = {x * 128, (14 * 128), 128, 128};
+//         dst_rect = {((128 +16) * 3 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+// 
+//     }
     
     if (show_main_menu)
     {
@@ -1299,7 +1384,6 @@ void GameState::render()
 
 
     }
-
     SDL_RenderPresent(sdl_renderer);
 }
 
@@ -1603,7 +1687,7 @@ void GameState::mouse_click_in_panel()
                 }
                 case 7:
                 {
-                    show_help = 1;
+                    show_help = true;
                     break;
                 }
             }
@@ -1786,45 +1870,67 @@ bool GameState::events()
 		        return true;
             case SDL_KEYDOWN:
             {
-                if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-                    show_main_menu = !show_main_menu;
-                else if (e.key.keysym.scancode == SDL_SCANCODE_TAB)
+                switch (e.key.keysym.scancode)
                 {
-                    if (mouse_state == MOUSE_STATE_PLACING_VALVE)
-                        mouse_state = MOUSE_STATE_PLACING_SOURCE;
-                    else
-                        mouse_state = MOUSE_STATE_PLACING_VALVE;
-                }
-                else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
-                    direction = Direction((int(direction) + 4 - 1) % 4);
-                else if (e.key.keysym.scancode == SDL_SCANCODE_E)
-                    direction = Direction((int(direction) + 1) % 4);
-                else if (e.key.keysym.scancode == SDL_SCANCODE_W)
-                    current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
-                else if (e.key.keysym.scancode == SDL_SCANCODE_A)
-                    current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
-                else if (e.key.keysym.scancode == SDL_SCANCODE_S)
-                    current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
-                else if (e.key.keysym.scancode == SDL_SCANCODE_D)
-                    current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
-                else if (e.key.keysym.scancode == SDL_SCANCODE_Z)
-                {
-                    if (!keyboard_shift)
-                        current_circuit->undo(level_set);
-                    else
+                    case SDL_SCANCODE_ESCAPE:
+                        show_main_menu = !show_main_menu;
+                        break;
+                    case SDL_SCANCODE_TAB:
+                    {
+                        if (mouse_state == MOUSE_STATE_PLACING_VALVE)
+                            mouse_state = MOUSE_STATE_PLACING_SOURCE;
+                        else
+                            mouse_state = MOUSE_STATE_PLACING_VALVE;
+                        break;
+                    }
+                    case SDL_SCANCODE_Q:
+                        direction = Direction((int(direction) + 4 - 1) % 4);
+                        break;
+                    case SDL_SCANCODE_E:
+                        direction = Direction((int(direction) + 1) % 4);
+                        break;
+                    case SDL_SCANCODE_W:
+                        current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
+                        break;
+                    case SDL_SCANCODE_A:
+                        current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
+                        break;
+                    case SDL_SCANCODE_S:
+                        current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
+                        break;
+                    case SDL_SCANCODE_D:
+                        current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                        break;
+                    case SDL_SCANCODE_X:
+                    case SDL_SCANCODE_DELETE:
+                        current_circuit->delete_selected_elements(selected_elements);
+                        selected_elements.clear();
+                        break;
+                    case SDL_SCANCODE_Z:
+                        if (!keyboard_shift)
+                            current_circuit->undo(level_set);
+                        else
+                            current_circuit->redo(level_set);
+                        break;
+                    case SDL_SCANCODE_Y:
                         current_circuit->redo(level_set);
+                        break;
+                    case SDL_SCANCODE_F1:
+                        show_help = !show_help;
+                        break;
+                    case SDL_SCANCODE_F5:
+                        show_debug = !show_debug;
+                        break;
+                    case SDL_SCANCODE_LSHIFT:
+                        keyboard_shift = true;
+                        break;
+                    case SDL_SCANCODE_LCTRL:
+                        keyboard_ctrl = true;
+                        break;
+                    default:
+                        printf("Uncaught key: %d\n", e.key.keysym.scancode);
+                        break;
                 }
-                else if (e.key.keysym.scancode == SDL_SCANCODE_Y)
-                    current_circuit->redo(level_set);
-                else if (e.key.keysym.scancode == SDL_SCANCODE_F1)
-                    show_help = 1;
-                else if (e.key.keysym.scancode == SDL_SCANCODE_F5)
-                    show_debug = !show_debug;
-                else if (e.key.keysym.scancode == SDL_SCANCODE_LSHIFT)
-                    keyboard_shift = true;
-                else if (e.key.keysym.scancode == SDL_SCANCODE_LCTRL)
-                    keyboard_ctrl = true;
-                else printf("Uncaught key: %d\n", e.key.keysym);
                 break;
             }
             case SDL_KEYUP:
@@ -1885,15 +1991,6 @@ bool GameState::events()
             {
                 mouse.x = e.button.x;
                 mouse.y = e.button.y;
-                if (show_help)
-                {
-                    if (show_help == 1)
-                        show_help = 2;
-                    else
-                        show_help = 0;
-                    break;
-                }
-
                 if (e.button.button == SDL_BUTTON_LEFT)
                 {
                     if (show_main_menu)
@@ -1926,6 +2023,23 @@ bool GameState::events()
                             slider_pos = (90 + 32 + 100 + 8) * scale;
                             slider_value_tgt = &music_volume;
                             mouse_motion();
+                        }
+                        break;
+                    }
+                    else if (show_help)
+                    {
+                        XYPos pos = (mouse / scale) - XYPos(32 + 512 + 32 + 8, 16 + 8);
+                        if (pos.inside(XYPos(16, 16)))
+                        {
+                            show_help = false;
+                            break;
+                        }
+                        pos = (mouse / scale) - XYPos(32 + 48, 2 * (128 + 16) + 28);
+                        if (pos.y < 16 && pos.y >=0)
+                        {
+                            int x = pos.x / 16;
+                            if (x < 10)
+                                show_help_page = x;
                         }
                         break;
                     }

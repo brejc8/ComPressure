@@ -327,6 +327,7 @@ public:
     void set_element_source(XYPos pos, Direction direction);
     void set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set);
     void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
+    void delete_selected_elements(std::set<XYPos> &selected_elements);
 
     void reset();
     void elaborate(LevelSet* level_set);

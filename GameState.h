@@ -17,6 +17,7 @@ class GameState
     SDL_Texture* sdl_texture;
     SDL_Texture* sdl_tutorial_texture;
     SDL_Texture* sdl_levels_texture;
+    SDL_Texture* sdl_font_texture;
 
     Rand rand = 3;
     enum MouseState
@@ -90,8 +91,9 @@ class GameState
     unsigned debug_last_second_frames = 0;
     unsigned debug_last_second_simticks = 0;
     
-    unsigned show_help = 1;
-    
+    bool show_help = true;
+    int show_help_page = 0;
+
     bool show_main_menu = false;
     unsigned sound_volume = 100;
     unsigned music_volume = 100;
@@ -118,6 +120,7 @@ public:
     void render_number_pressure(XYPos pos, Pressure value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_long(XYPos pos, unsigned value, unsigned scale_mul = 1);
     void render_box(XYPos pos, XYPos size, unsigned colour);
+    void render_text(XYPos pos, const char* string);
     void render();
     void advance();
     void set_level(unsigned level_index);

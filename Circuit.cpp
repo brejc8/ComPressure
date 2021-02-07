@@ -875,6 +875,22 @@ void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Directi
     selected_elements = new_sel;
 }
 
+void Circuit::delete_selected_elements(std::set<XYPos> &selected_elements)
+{
+    bool all_empty = true;
+    for (const XYPos& pos: selected_elements)
+        if (!elements[pos.y][pos.x]->is_empty())
+            all_empty = false;
+    if (all_empty)
+        return;
+    ammend();
+    for (const XYPos& pos: selected_elements)
+    {
+        delete elements[pos.y][pos.x];
+        elements[pos.y][pos.x] = new CircuitElementEmpty();
+    }
+}
+
 void Circuit::ammend()
 {
     fast_prepped = false;

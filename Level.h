@@ -4,7 +4,7 @@
 #include "Circuit.h"
 #include <stdlib.h>
 
-#define LEVEL_COUNT 11
+#define LEVEL_COUNT 12
 #define HISTORY_POINT_COUNT 200
 
 
