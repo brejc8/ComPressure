@@ -31,6 +31,7 @@ public:
     Pressure value = 0;
     Pressure move_next = 0;
     Pressure vented = 0;
+    Pressure moved = 0;
     bool touched = false;
 
     void apply(Pressure vol, Pressure drive)
@@ -43,6 +44,7 @@ public:
     {
 //        assert (vol > -(PRESSURE_SCALAR * 100));
         move_next += vol;
+        moved += abs(vol);
         touched = true;
     }
     
@@ -51,6 +53,7 @@ public:
         if (value)
         {
             move_next -= value / 2;
+            moved += abs(value / 2);
             vented += value / 2;
         }
     }
@@ -58,6 +61,7 @@ public:
     void pre(void)
     {
         vented = 0;
+        moved = 0;
         touched = false;
     }
     
@@ -66,7 +70,6 @@ public:
         if (move_next)
         {
             value += move_next;
-//            assert(value >= 0);
             move_next = 0;
             if (value > 100 * PRESSURE_SCALAR)
                 value = 100 * PRESSURE_SCALAR;

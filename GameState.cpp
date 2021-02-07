@@ -214,7 +214,7 @@ void GameState::advance()
 void GameState::audio()
 {
     Mix_Volume(0, pressure_as_percent(current_circuit->last_vented*40) * sound_volume / 100 / 5);
-    Mix_Volume(1, pressure_as_percent(current_circuit->last_moved*20) * sound_volume / 100/ 2);
+    Mix_Volume(1, pressure_as_percent(current_circuit->last_moved*1) * sound_volume / 100/ 2);
     Mix_VolumeMusic(music_volume);
 }
 
@@ -334,10 +334,8 @@ void GameState::render_box(XYPos pos, XYPos size, unsigned colour)
 void GameState::render_text(XYPos tl, const char* string)
 {
     XYPos pos;
-    while (*string)
+    while (int c = (unsigned char)*string)
     {
-        int c = *string;
-        
         if (c == '\n')
         {
             pos.y++;
@@ -346,12 +344,13 @@ void GameState::render_text(XYPos tl, const char* string)
         else
         {
             c -= 0x20;
+            if (c >= 128)
+                c-= 32;
             SDL_Rect src_rect = {(c % 16) * 7, (c / 16) * 9, 7, 9};
             SDL_Rect dst_rect = {(tl.x + pos.x * 7) * scale, (tl.y + pos.y * 9) * scale, 7 * scale, 9 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_font_texture, &src_rect, &dst_rect);
             pos.x++;
         }
-        
         string++;
     }
 }
@@ -1198,7 +1197,7 @@ void GameState::render()
 
     if (show_help)
     {
-        render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 328), 0);
+        render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 344), 0);
 
         {
             SDL_Rect src_rect = {464, 144, 16, 16};
@@ -1208,25 +1207,65 @@ void GameState::render()
 
         for (int i = 0; i < 2; i++)
         {
-            render_box(XYPos((16 + 8 + i * 48) * scale, (i * (128 +16) + 16 + 8) * scale), XYPos(512+16, 128+16), 4);
+            render_box(XYPos((16 + 8 + i * 48) * scale, (i * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
+            render_box(XYPos((128 + 16 + 16 + 8 + i * 48) * scale, (i * (128 +16) + 16 + 8) * scale), XYPos(384, 128+16), 4);
             unsigned anim_src_pos = 0;
             unsigned anim_frames = 5;
             const char* text="";
-            switch (show_help_page * 2 + i)
-            {
-                case 0:
-                    anim_src_pos = 0;
-                    anim_frames = 10;
-                    text = "Use left mouse button to place pipes. The pipe will\nextend in the direction of the mouse. Right click to\nend exit from pipe laying mode.";
-                    break;
-                case 1:
-                    anim_src_pos = 2;
-                    text = "Hold Right mouse button to delete pipes and other\nelements.";
-                    break;
-            }
             
-            int frame = (SDL_GetTicks() / 1000);
-            frame %= anim_frames;
+            struct HelpPage
+            {
+                XYPos src_pos;
+                int frame_count;
+                float fps;
+                const char* text;
+            }
+            pages[] =
+            {
+                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier."},
+                {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next\ndesign becomes available. You can always come back\nto refine your solution."},
+                {XYPos(0,0), 10, 1, "Use left mouse button to place pipes. The pipe will\nextend in the direction of the mouse. Right click to\nexit pipe laying mode."},
+                {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and\nother elements."},
+                {XYPos(0,4), 15, 1, "The build menu allows you to add components into\nyour design. Select the steam inlet component and\nhover over your design. The arrow buttons change\nthe orientation. This can also be done using keys Q\nand E. Clicking the left mouse button will place the\ncomponent. Right click to exit steam inlet placing\nmode."},
+                {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab\nis a shortcut to enter valve placement mode.\nPressing Tab again switches to steam inlet placement."},
+                {XYPos(0,7),  5,10, "A steam inlet will supply steam at pressure 100. Any\npipes with open ends will vent the steam to the\natmosphere at pressure 0."},
+                {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe\nconnections."},
+                {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the\n(+) side of the valve is at a higher pressure than\nthe (-) side. The higher it is, the more the valve\nis open. Steam on the (+) and (-) sides is not\nconsumed. Here, the (-) side is vented to atmosphere\nand thus at 0 pressure."},
+                {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower\nthan the (-) side, the valve becomes closed and no\nsteam will pass through."},
+                {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the\nvalve will become open only if the pressure on the\n(-) side is low."},
+                {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close\nthe valve."},
+                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your\ndesign is performing. The first set of buttons\npauses the testing, repeatedly runs a single test or\nruns all tests.\n\n"
+                                    "The current scores for individual tests are shown\nwith the scores of best design seen below. On the\nright is the final score formed from the average of\nall tests.\n\n"
+                                    "The next panel shows the sequence of inputs and\nexpected outputs for the current test. The current\nphase is highlighted. The output recorded on the\nlast run is show to the right."},
+                {XYPos(2,12), 3, 1, "The score is based on how close the output is to the\ntarget value. The graph shows the output value\nduring the final stage of the test. The faded line\nin the graph shows the path of the best design so\nfar."},
+                {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the\nports and examine your design's operation. The\nvertical sliders set the desired value. The\nhorizontal sliders below set force of the input.\nSetting the slider all the way left makes it an\noutput. Initial values are set from the current\ntest."},
+                {XYPos(0,0),  0, 1, ""},
+                
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,0),  0, 1, ""},
+            };
+            
+
+            HelpPage* page = &pages[show_help_page * 2 + i];
+
+            if (page->frame_count == 0)
+                continue;
+            int frame = (SDL_GetTicks() * page->fps / 1000);
+            frame %= page->frame_count;
+            frame += page->src_pos.x + page->src_pos.y * 5;
             int x = frame % 5;
             int y = frame / 5;
 
@@ -1235,15 +1274,18 @@ void GameState::render()
             SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
             
-            render_text(XYPos(32 + 128 + 8 + i * 48, i * (128 +16) + 32), text);
+            render_text(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 32), page->text);
         }
 
         for (int i = 0; i < 10; i++)
         {
-            SDL_Rect src_rect = {272, 16, 16, 16};
-            SDL_Rect dst_rect = {(32 + 48 + i * 16) * scale, (2 * (128 + 16) + 28) * scale, 16 * scale, 16 * scale};
+            SDL_Rect src_rect = {256, 80, 32, 32};
+            SDL_Rect dst_rect = {(32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale, 32 * scale, 32 * scale};
             if (i == show_help_page)
-                src_rect.x += 96;
+                src_rect.x += 32;
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            src_rect = {352 + (i % 5) * 24, 240 + (i / 5) * 24, 24, 24};
+            dst_rect = {(32 + 48 + 4 + i * 32) * scale, (2 * (128 + 16) + 4 + 28) * scale, 24 * scale, 24 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
         
@@ -2035,9 +2077,9 @@ bool GameState::events()
                             break;
                         }
                         pos = (mouse / scale) - XYPos(32 + 48, 2 * (128 + 16) + 28);
-                        if (pos.y < 16 && pos.y >=0)
+                        if (pos.y < 32 && pos.y >=0)
                         {
-                            int x = pos.x / 16;
+                            int x = pos.x / 32;
                             if (x < 10)
                                 show_help_page = x;
                         }

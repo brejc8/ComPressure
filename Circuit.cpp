@@ -784,7 +784,7 @@ void Circuit::sim_post(PressureAdjacent adj_)
         for (CircuitPressure* con : fast_pressures)
         {
             last_vented += con->vented;
-            last_moved += abs(con->move_next);
+            last_moved += abs(con->moved);
             con->post();
         }
     }
