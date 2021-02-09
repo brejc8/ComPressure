@@ -350,16 +350,16 @@ void CircuitElementValve::sim_pre(PressureAdjacent adj_)
 
     pressure = (adj.E.value + adj.W.value) / 2;
 
-    mov = (pos_charge - adj.N.value * capacity) / (4 * capacity);
+    mov = (pos_charge - adj.N.value * capacity) / (2 * capacity);
     pos_charge -= mov;
     adj.N.move(mov);
     
-    mov = (neg_charge - adj.S.value * capacity) / (4 * capacity);
+    mov = (neg_charge - adj.S.value * capacity) / (2 * capacity);
     neg_charge -= mov;
     adj.S.move(mov);
     
                                                             // base resistence is 10 pipes
-    mov = (int64_t(adj.W.value - adj.E.value) * mul) / (int64_t(100) * 4 * resistence * capacity * PRESSURE_SCALAR);
+    mov = (int64_t(adj.W.value - adj.E.value) * mul) / (int64_t(100) * 2 * resistence * capacity * PRESSURE_SCALAR);
     adj.W.move(-mov);
     adj.E.move(mov);
     moved = mov;

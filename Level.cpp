@@ -135,7 +135,7 @@ void Level::init_tests(SaveObjectMap* omap)
     switch(level_index)
     {
         case 0:
-            connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
+            connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;            // Cross
             pin_order[0] = 3; pin_order[1] = 0; pin_order[2] = 1; pin_order[3] = 2;
             substep_count = 2000;
 
@@ -160,7 +160,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,  0,  0,  0);
             break;
 
-        case 1:
+        case 1:                                                                     // 50
             connection_mask = CONMASK_E;
             substep_count = 2000;
             NEW_TEST;
@@ -173,7 +173,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 50,  0,  0);
             break;
 
-        case 2:
+        case 2:                                                                     // NPN
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E;
             substep_count = 3000;
 
@@ -195,7 +195,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(100, 50,  0, 50);
             break;
 
-        case 3:
+        case 3:                                                                     // PNP
             connection_mask = CONMASK_S | CONMASK_W | CONMASK_E;
             substep_count = 2000;
 
@@ -217,7 +217,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 50,  0, 50);
             break;
 
-        case 4:
+        case 4:                                                                     // select
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
             level_version = 2;
 
@@ -257,7 +257,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
 
-        case 5:
+        case 5:                                                                     // Inv
             connection_mask = CONMASK_W | CONMASK_E;
 
             NEW_TEST;// N   E   S   W
@@ -299,7 +299,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
 
-        case 6:
+        case 6:                                                                 // Buf
             connection_mask = CONMASK_W | CONMASK_E;
 
             NEW_TEST;// N   E   S   W
@@ -343,7 +343,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,100,  0,  0);
             break;
 
-        case 7:
+        case 7:                                                                 // amp
             connection_mask = CONMASK_W | CONMASK_E;
 
             NEW_TEST;// N   E   S   W
@@ -378,7 +378,39 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,100,  0, 60);
             break;
 
-        case 8:
+        case 8:                                                             // amp inv
+            connection_mask = CONMASK_W | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,100);
+            NEW_POINT(  0,100,  0, 10);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 10);
+            NEW_POINT(  0,  0,  0, 90);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0, 90);
+            NEW_POINT(  0,100,  0, 20);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 20);
+            NEW_POINT(  0,  0,  0, 80);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0, 80);
+            NEW_POINT(  0,100,  0, 30);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 30);
+            NEW_POINT(  0,  0,  0, 70);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0, 70);
+            NEW_POINT(  0,100,  0, 40);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 40);
+            NEW_POINT(  0,  0,  0, 60);
+            break;
+
+        case 9:                                                             // op amp
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
             level_version = 1;
 
@@ -420,7 +452,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(100,100, 95,  0);
             break;
 
-        case 9:
+        case 10:                                                        // div 2
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 2;
 
@@ -463,7 +495,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
 
-        case 10:
+        case 11:                                                        // mul 2
             connection_mask = CONMASK_W | CONMASK_E;
 
             NEW_TEST;// N   E   S   W
@@ -492,8 +524,49 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,  0,  0,  0);
             break;
 
+        case 12:                                                    // zoom amplify
+            substep_count = 30000;
+            connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
 
-        case 11:
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(100,  0,  0,  0);
+            NEW_POINT(100,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(100,  0,  0,  0);
+            NEW_POINT(100,100,  0,100);
+            NEW_TEST;
+            NEW_POINT(100,100,  0,100);
+            NEW_POINT(100,  0, 50, 50);
+            NEW_TEST;
+            NEW_POINT(100,  0, 50, 50);
+            NEW_POINT( 90,100, 50, 80);
+            NEW_TEST;
+            NEW_POINT( 90,100, 50, 80);
+            NEW_POINT( 90,  0, 50, 60);
+            NEW_TEST;
+            NEW_POINT( 90,  0, 50, 60);
+            NEW_POINT( 80,100, 20, 60);
+            NEW_TEST;
+            NEW_POINT( 80,100, 20, 60);
+            NEW_POINT( 80,  0, 20, 40);
+            NEW_TEST;
+            NEW_POINT( 80,  0, 20, 40);
+            NEW_POINT( 80,100, 30, 60);
+            NEW_TEST;
+            NEW_POINT( 80,100, 30, 60);
+            NEW_POINT(100,  0,  0, 45);
+            NEW_TEST;
+            NEW_POINT(100,  0,  0, 45);
+            NEW_POINT(100,100,  0, 55);
+            NEW_TEST;
+            NEW_POINT(100,100,  0, 55);
+            NEW_POINT( 60,100, 45, 55);
+            NEW_TEST;
+            NEW_POINT( 60,100, 45, 55);
+            NEW_POINT( 60,  0, 45, 50);
+            break;
+
+        case 13:
             substep_count = 30000;
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
 
@@ -530,7 +603,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
 
-        case 12:
+        case 14:
             substep_count = 30000;
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
 
@@ -575,7 +648,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT( 10, 10,  0,  0);
             break;
 
-        case 13:
+        case 15:
             substep_count = 50000;
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
             NEW_TEST;// N   E   S   W

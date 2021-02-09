@@ -191,7 +191,7 @@ public:
 class CircuitElementValve : public CircuitElement
 {
     const int capacity = 2;
-    const int resistence = 4;
+    const int resistence = 8;
 
     Pressure pos_charge = 0;
     Pressure neg_charge = 0;
