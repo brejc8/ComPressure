@@ -162,6 +162,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
         case 1:
             connection_mask = CONMASK_E;
+            substep_count = 2000;
             NEW_TEST;
             NEW_POINT(  0, 50,  0,  0);
             NEW_TEST;
@@ -174,6 +175,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
         case 2:
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E;
+            substep_count = 3000;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(100,  0,  0,  0);
@@ -195,6 +197,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
         case 3:
             connection_mask = CONMASK_S | CONMASK_W | CONMASK_E;
+            substep_count = 2000;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -297,7 +300,87 @@ void Level::init_tests(SaveObjectMap* omap)
 
 
         case 6:
+            connection_mask = CONMASK_W | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 10,  0, 10);
+            NEW_TEST;
+            NEW_POINT(  0, 10,  0, 10);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0, 90,  0, 90);
+            NEW_TEST;
+            NEW_POINT(  0, 90,  0, 90);
+            NEW_POINT(  0,100,  0,100);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT(  0, 50,  0,100);
+            NEW_POINT(  0, 50,  0,100);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT(  0,  0,  0,100);
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,100);
+            NEW_POINT(  0, 90,  0, 90);
+            NEW_TEST;
+            NEW_POINT(  0, 90,  0, 90);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0, 20,  0, 20);
+            NEW_TEST;
+            NEW_POINT(  0, 20,  0, 20);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT(  0, 50,  0,  0);
+            NEW_POINT(  0, 50,  0,  0);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT(  0,100,  0,  0);
+            NEW_POINT(  0,100,  0,  0);
+            break;
+
+        case 7:
+            connection_mask = CONMASK_W | CONMASK_E;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,100,  0,100);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,100);
+            NEW_POINT(  0,  0,  0, 10);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0, 10);
+            NEW_POINT(  0,100,  0, 90);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 90);
+            NEW_POINT(  0,  0,  0, 20);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0, 20);
+            NEW_POINT(  0,100,  0, 80);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 80);
+            NEW_POINT(  0,  0,  0, 30);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0, 30);
+            NEW_POINT(  0,100,  0, 70);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0, 70);
+            NEW_POINT(  0,  0,  0, 40);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0, 40);
+            NEW_POINT(  0,100,  0, 60);
+            break;
+
+        case 8:
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+            level_version = 1;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,100,  0);
@@ -308,9 +391,6 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT(100,100,  0,  0);
             NEW_POINT( 10,  0, 90,  0);
-            NEW_TEST;
-            NEW_POINT( 10,  0, 90,  0);
-            NEW_POINT( 80,100, 20,  0);
             NEW_TEST;
             NEW_POINT( 10,  0, 90,  0);
             NEW_POINT( 80,100, 20,  0);
@@ -332,11 +412,17 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT( 40,  0, 50,  0);
             NEW_POINT( 55,100, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 55,100, 50,  0);
+            NEW_POINT( 55,  0, 60,  0);
+            NEW_TEST;
+            NEW_POINT( 55,  0, 60,  0);
+            NEW_POINT(100,100, 95,  0);
             break;
 
-        case 7:
+        case 9:
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 1;
+            level_version = 2;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT_F(  0,  0,  0,  0, 50);
@@ -346,9 +432,6 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT_F(  0, 50,  0,100, 80);
             NEW_TEST;
             NEW_POINT_F(  0, 50,  0,100, 40);
-            NEW_POINT_F(  0, 40,  0, 80, 40);
-            NEW_TEST;
-            NEW_POINT_F(  0, 40,  0, 80, 50);
             NEW_POINT_F(  0, 30,  0, 60, 50);
             NEW_TEST;
             NEW_POINT_F(  0, 30,  0, 60,100);
@@ -371,10 +454,16 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT_F(  0,  0,  0,  0, 50);
             NEW_POINT_F(  0, 50,  0,100, 50);
+            NEW_TEST;
+            NEW_POINT_F(  0, 50,  0,100, 40);
+            NEW_POINT_F(  0,  0,  0,  0, 40);
+            NEW_TEST;
+            NEW_POINT_F(  0,  0,  0,  0, 50);
+            NEW_POINT_F(  0, 50,  0,100, 50);
             break;
 
 
-        case 8:
+        case 10:
             connection_mask = CONMASK_W | CONMASK_E;
 
             NEW_TEST;// N   E   S   W
@@ -404,7 +493,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
 
-        case 9:
+        case 11:
             substep_count = 30000;
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
 
@@ -441,7 +530,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
 
-        case 10:
+        case 12:
             substep_count = 30000;
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
 
@@ -450,21 +539,18 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
-            NEW_POINT( 10, 20, 10,  0);
+            NEW_POINT( 40, 50, 10,  0);
             NEW_TEST;
-            NEW_POINT( 10, 20, 10,  0);
-            NEW_POINT( 20, 40, 20,  0);
-            NEW_TEST;
-            NEW_POINT( 20, 40, 20,  0);
-            NEW_POINT( 30, 60, 30,  0);
-            NEW_TEST;
-            NEW_POINT( 30, 60, 30,  0);
+            NEW_POINT( 40, 50, 10,  0);
             NEW_POINT( 40, 80, 40,  0);
             NEW_TEST;
             NEW_POINT( 40, 80, 40,  0);
             NEW_POINT( 50,100, 50,  0);
             NEW_TEST;
             NEW_POINT( 50,100, 50,  0);
+            NEW_POINT( 70,100, 30,  0);
+            NEW_TEST;
+            NEW_POINT( 70,100, 30,  0);
             NEW_POINT( 25, 75, 50,  0);
             NEW_TEST;
             NEW_POINT( 25, 75, 50,  0);
@@ -478,37 +564,50 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT( 80, 90, 10,  0);
             NEW_POINT( 20,100, 80,  0);
+            NEW_TEST;
+            NEW_POINT( 20,100, 80,  0);
+            NEW_POINT( 60,100, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 60,100, 40,  0);
+            NEW_POINT(  0,100,100,  0);
+            NEW_TEST;
+            NEW_POINT(  0,100,100,  0);
+            NEW_POINT( 10, 10,  0,  0);
             break;
 
-
-        case 11:
-            substep_count = 30000;
-            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+        case 13:
+            substep_count = 50000;
+            connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
-            NEW_POINT( 10, 10,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
-            NEW_POINT( 10, 10,  0,  0);
-            NEW_POINT(100,100,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 40, 50, 90);
             NEW_TEST;
-            NEW_POINT(100,100,  0,  0);
-            NEW_POINT(100, 10, 90,  0);
+            NEW_POINT(  0, 40, 50, 90);
+            NEW_POINT(  0, 50, 20, 70);
             NEW_TEST;
-            NEW_POINT(100, 10, 90,  0);
-            NEW_POINT( 80, 40, 40,  0);
+            NEW_POINT(  0, 50, 20, 70);
+            NEW_POINT(  0,  0, 70, 70);
             NEW_TEST;
-            NEW_POINT( 80, 40, 40,  0);
-            NEW_POINT( 50, 10, 40,  0);
+            NEW_POINT(  0,  0, 70, 70);
+            NEW_POINT(  0, 25, 25, 50);
             NEW_TEST;
-            NEW_POINT( 50, 10, 40,  0);
-            NEW_POINT( 90, 50, 40,  0);
+            NEW_POINT(  0, 25, 25, 50);
+            NEW_POINT(  0, 50, 20, 70);
             NEW_TEST;
-            NEW_POINT( 90, 50, 40,  0);
-            NEW_POINT( 50,  0, 50,  0);
+            NEW_POINT(  0, 50, 20, 70);
+            NEW_POINT(  0, 20, 20, 40);
             NEW_TEST;
-            NEW_POINT( 50,  0, 50,  0);
-            NEW_POINT( 70, 20, 50,  0);
-
+            NEW_POINT(  0, 20, 20, 40);
+            NEW_POINT(  0, 40,  0, 40);
+            NEW_TEST;
+            NEW_POINT(  0, 40,  0, 40);
+            NEW_POINT(  0,  0, 40, 40);
+            NEW_TEST;
+            NEW_POINT(  0,  0, 40, 40);
+            NEW_POINT(  0, 50, 50,100);
         default:
             printf("no level %d\n", level_index);
             break;
@@ -675,4 +774,22 @@ SaveObject* LevelSet::save()
         slist->add_item(levels[i]->save());
     }
     return slist;
+}
+bool LevelSet::is_playable(unsigned level)
+{
+    for (int i = 0; i < level; i++)
+    {
+        if (levels[i]->best_score < percent_as_pressure(75))
+            return false;
+    }
+    return true;
+}
+int LevelSet::top_playable()
+{
+    for (int i = 0; i < LEVEL_COUNT; i++)
+    {
+        if (levels[i]->best_score < percent_as_pressure(75))
+            return i;
+    }
+    return LEVEL_COUNT - 1;
 }

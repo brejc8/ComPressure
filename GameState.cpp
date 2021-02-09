@@ -73,7 +73,8 @@ GameState::GameState(const char* filename)
     Mix_VolumeMusic(music_volume);
     music = Mix_LoadMUS("music.ogg");
     Mix_PlayMusic(music, -1);
-
+    
+    top_level_allowed = level_set->top_playable();
     
     
 }
@@ -149,7 +150,7 @@ void GameState::advance()
     }
 
     int count = pow(1.2, game_speed) * 2;
-    if (panel_state != PANEL_STATE_TEST)
+    if (monitor_state != MONITOR_STATE_PAUSE)
     {
         while (count)
         {
@@ -163,6 +164,28 @@ void GameState::advance()
                 break;
             }
         }
+        {
+            SimPoint& simp = current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index];
+            for (int p = 0; p < 4; p++)
+            {
+                test_value[p] = simp.values[p];
+                test_drive[p] = simp.force/3;
+            }
+            test_drive[current_level->tests[current_level->test_index].tested_direction] = 0;
+            test_pressure_histroy_index = 0;
+            test_pressure_histroy_sample_downcounter = 0;
+            for (int i = 0; i < 192; i++)
+            {
+                test_pressure_histroy[i].values[0]=0;
+                test_pressure_histroy[i].values[1]=0;
+                test_pressure_histroy[i].values[2]=0;
+                test_pressure_histroy[i].values[3]=0;
+                test_pressure_histroy[i].set = false;
+            }
+        }
+
+
+
     }
     else
     {
@@ -170,7 +193,7 @@ void GameState::advance()
         {
             int subcount = count < 100 ? count : 100;
             for (int i = 0; i < subcount; i++)
-            {   
+            {
                 for (int p = 0; p < 4; p++)
                 {
                     test_pressures[p].apply(test_value[p], test_drive[p] * 3);
@@ -375,9 +398,15 @@ void GameState::render()
     }
     
     XYPos pos;
-    
     frame_index++;
     debug_frames++;
+    
+    if (top_level_allowed != level_set->top_playable())
+    {
+        top_level_allowed = level_set->top_playable();
+        level_win_animation = 100;
+    
+    }
     
     {
         SDL_Rect src_rect = {320, 300, 320, 180};       // Background
@@ -719,8 +748,28 @@ void GameState::render()
             render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 16, 11*32 + 8), panel_colour);
         }
         {                                                                                               // Top Menu
-            SDL_Rect src_rect = {256, 112, 32 * 7, 32};
-            SDL_Rect dst_rect = {(8 + 32 * 11) * scale, (8) * scale, 32 * 7 * scale, 32 * scale};
+            SDL_Rect src_rect = {256, 112, 32, 32};
+            SDL_Rect dst_rect = {(8 + 32 * 11) * scale, (8) * scale, 32 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        if (level_set->is_playable(1)){
+            SDL_Rect src_rect = {256+32, 112, 32, 32};
+            SDL_Rect dst_rect = {(8 + 32 * 12) * scale, (8) * scale, 32 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        if (level_set->is_playable(3)){
+            SDL_Rect src_rect = {256+64, 112, 32, 32};
+            SDL_Rect dst_rect = {(8 + 32 * 13) * scale, (8) * scale, 32 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        if (level_set->is_playable(5)){
+            SDL_Rect src_rect = {256+96, 112, 32, 32};
+            SDL_Rect dst_rect = {(8 + 32 * 14) * scale, (8) * scale, 32 * scale, 32 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        {
+            SDL_Rect src_rect = {256+128, 112, 96, 32};
+            SDL_Rect dst_rect = {(8 + 32 * 15) * scale, (8) * scale, 96 * scale, 32 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
         {                                                                                               // Speed slider
@@ -751,7 +800,7 @@ void GameState::render()
         {
             if (level_index >= LEVEL_COUNT)
                 break;
-            if (level_index > 0 && level_set->levels[level_index - 1]->best_score < percent_as_pressure(75))
+            if (!level_set->is_playable(level_index))
                 break;
             SDL_Rect src_rect = {256, 80, 32, 32};
             if (level_index == current_level_index)
@@ -772,7 +821,7 @@ void GameState::render()
         }
 
         {
-            SDL_Rect src_rect = {int(current_level_index % 2) * 256, int(current_level_index / 2) * 128, 256, 128};
+            SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};
             SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_levels_texture, &src_rect, &dst_rect);
         }
@@ -813,7 +862,7 @@ void GameState::render()
         {
             if (level_index >= LEVEL_COUNT)
                 break;
-            if (level_index > 0 && level_set->levels[level_index - 1]->best_score < percent_as_pressure(75))
+            if (!level_set->is_playable(level_index))
                 break;
             SDL_Rect src_rect = {256, 80, 32, 32};
             if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level)
@@ -1193,23 +1242,41 @@ void GameState::render()
         render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
         render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
     }
-
+    if (level_win_animation)
+    {
+        int size = 360 - level_win_animation * 3;
+        SDL_Rect src_rect = {336, 32, 16, 16};
+        SDL_Rect dst_rect = {(320 - size / 2) * scale, (180 - size / 2) * scale, size * scale, size * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        level_win_animation--;
+    }
 
     if (show_help)
     {
-        render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 344), 0);
+        render_box(XYPos(16 * scale, 0 * scale), XYPos(592, 360), 0);
+
+        render_box(XYPos(16 * scale, 0 * scale), XYPos(592, (128+16)*2+20), 1);
+        for (int i = 0; i < 10; i++)
+        {
+            if (i == show_help_page)
+                render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 0) * scale), XYPos(32, 32+28), 1);
+            else
+                render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale), XYPos(32, 32), 0);
+            SDL_Rect src_rect = {352 + (i % 5) * 24, 240 + (i / 5) * 24, 24, 24};
+            SDL_Rect dst_rect = {(32 + 48 + 4 + i * 32) * scale, (2 * (128 + 16) + 4 + 28) * scale, 24 * scale, 24 * scale};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
 
         {
             SDL_Rect src_rect = {464, 144, 16, 16};
-            SDL_Rect dst_rect = {(32 + 512 + 32 + 8) * scale, (16 + 8) * scale, 16 * scale, 16 * scale};
+            SDL_Rect dst_rect = {(32 + 512 + 32 + 8) * scale, (8) * scale, 16 * scale, 16 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
 
         for (int i = 0; i < 2; i++)
         {
-            render_box(XYPos((16 + 8 + i * 48) * scale, (i * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-            render_box(XYPos((128 + 16 + 16 + 8 + i * 48) * scale, (i * (128 +16) + 16 + 8) * scale), XYPos(384, 128+16), 4);
-            unsigned anim_src_pos = 0;
+            render_box(XYPos((16 + 8 + i * 48) * scale, (i * (128 +16) + 8) * scale), XYPos(128+16, 128+16), 4);
+            render_box(XYPos((128 + 16 + 16 + 8 + i * 48) * scale, (i * (128 +16) + 8) * scale), XYPos(384, 128+16), 4);
             unsigned anim_frames = 5;
             const char* text="";
             
@@ -1223,37 +1290,27 @@ void GameState::render()
             pages[] =
             {
                 {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier."},
-                {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next\ndesign becomes available. You can always come back\nto refine your solution."},
+                {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next\ndesign becomes available. You can always come back\nto refine your solution.\n\nPress the pipe button below to continue the\ntutorial. You can return to the help by pressing F1."},
                 {XYPos(0,0), 10, 1, "Use left mouse button to place pipes. The pipe will\nextend in the direction of the mouse. Right click to\nexit pipe laying mode."},
                 {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and\nother elements."},
                 {XYPos(0,4), 15, 1, "The build menu allows you to add components into\nyour design. Select the steam inlet component and\nhover over your design. The arrow buttons change\nthe orientation. This can also be done using keys Q\nand E. Clicking the left mouse button will place the\ncomponent. Right click to exit steam inlet placing\nmode."},
                 {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab\nis a shortcut to enter valve placement mode.\nPressing Tab again switches to steam inlet placement."},
                 {XYPos(0,7),  5,10, "A steam inlet will supply steam at pressure 100. Any\npipes with open ends will vent the steam to the\natmosphere at pressure 0."},
-                {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe\nconnections."},
+                {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe\nconnections. Note how each pope has a little resistance. "},
                 {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the\n(+) side of the valve is at a higher pressure than\nthe (-) side. The higher it is, the more the valve\nis open. Steam on the (+) and (-) sides is not\nconsumed. Here, the (-) side is vented to atmosphere\nand thus at 0 pressure."},
                 {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower\nthan the (-) side, the valve becomes closed and no\nsteam will pass through."},
                 {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the\nvalve will become open only if the pressure on the\n(-) side is low."},
                 {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close\nthe valve."},
-                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your\ndesign is performing. The first set of buttons\npauses the testing, repeatedly runs a single test or\nruns all tests.\n\n"
+                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your\ndesign is performing. The first three buttons\npause the testing, repeatedly run a single test and\nrun all tests respectively.\n\n"
                                     "The current scores for individual tests are shown\nwith the scores of best design seen below. On the\nright is the final score formed from the average of\nall tests.\n\n"
                                     "The next panel shows the sequence of inputs and\nexpected outputs for the current test. The current\nphase is highlighted. The output recorded on the\nlast run is show to the right."},
                 {XYPos(2,12), 3, 1, "The score is based on how close the output is to the\ntarget value. The graph shows the output value\nduring the final stage of the test. The faded line\nin the graph shows the path of the best design so\nfar."},
                 {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the\nports and examine your design's operation. The\nvertical sliders set the desired value. The\nhorizontal sliders below set force of the input.\nSetting the slider all the way left makes it an\noutput. Initial values are set from the current\ntest."},
-                {XYPos(0,0),  0, 1, ""},
+                {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the\nport values."},
                 
                 {XYPos(0,0),  0, 1, ""},
                 {XYPos(0,0),  0, 1, ""},
                 
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
                 {XYPos(0,0),  0, 1, ""},
                 {XYPos(0,0),  0, 1, ""},
             };
@@ -1270,25 +1327,11 @@ void GameState::render()
             int y = frame / 5;
 
 
-            SDL_Rect src_rect = {x * 128, ((anim_src_pos + y) * 128), 128, 128};
-            SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
+            SDL_Rect src_rect = {x * 128, (y * 128), 128, 128};
+            SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 16) * scale, 128 * scale, 128 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
             
-            render_text(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 32), page->text);
-        }
-
-        for (int i = 0; i < 10; i++)
-        {
-            SDL_Rect src_rect = {256, 80, 32, 32};
-            SDL_Rect dst_rect = {(32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale, 32 * scale, 32 * scale};
-            if (i == show_help_page)
-                src_rect.x += 32;
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-            src_rect = {352 + (i % 5) * 24, 240 + (i / 5) * 24, 24, 24};
-            dst_rect = {(32 + 48 + 4 + i * 32) * scale, (2 * (128 + 16) + 4 + 28) * scale, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-
-        
+            render_text(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 16), page->text);
         }
 
 
@@ -1442,6 +1485,7 @@ void GameState::set_level(unsigned level_index)
         current_level = level_set->levels[current_level_index];
         current_circuit = current_level->circuit;
         current_level->reset(level_set);
+        show_hint = false;
     }
 }
 
@@ -1646,6 +1690,10 @@ void GameState::mouse_click_in_grid()
             current_level->touched = true;
         }
     }
+    else if (mouse_state == MOUSE_STATE_DELETING)
+    {
+        current_circuit->undo(level_set);
+    }
     else
     {
         assert(0);
@@ -1665,56 +1713,22 @@ void GameState::mouse_click_in_panel()
             switch (sel)
             {
                 case 0:
-                    if (panel_state = PANEL_STATE_TEST)
-                    {
-                        current_circuit->updated_ports();
-                        current_level->touched = true;
-                    }
                     panel_state = PANEL_STATE_LEVEL_SELECT;
                     break;
                 case 1:
-                    if (panel_state = PANEL_STATE_TEST)
-                    {
-                        current_circuit->updated_ports();
-                        current_level->touched = true;
-                    }
+                    if (!level_set->is_playable(1))
+                        break;
                     panel_state = PANEL_STATE_EDITOR;
                     break;
                 case 2:
-                    if (panel_state = PANEL_STATE_TEST)
-                    {
-                        current_circuit->updated_ports();
-                        current_level->touched = true;
-                    }
+                    if (!level_set->is_playable(3))
+                        break;
                     panel_state = PANEL_STATE_MONITOR;
                     break;
                 case 3:
-                    current_circuit->updated_ports();
-                    current_level->touched = true;
+                    if (!level_set->is_playable(5))
+                        break;
                     panel_state = PANEL_STATE_TEST;
-                    {
-                         SimPoint& simp = current_level->tests[current_level->test_index].sim_points.back();
-                        for (int p = 0; p < 4; p++)
-                        {
-                            test_value[p] = simp.values[p];
-                            test_drive[p] = simp.force/3;
-                        }
-                        test_drive[current_level->tests[current_level->test_index].tested_direction] = 0;
-//                         test_drive[0] = simp.N.out_drive/3;
-//                         test_drive[1] = simp.E.out_drive/3;
-//                         test_drive[2] = simp.S.out_drive/3;
-//                         test_drive[3] = simp.W.out_drive/3;
-                        test_pressure_histroy_index = 0;
-                        test_pressure_histroy_sample_downcounter = 0;
-                        for (int i = 0; i < 192; i++)
-                        {
-                            test_pressure_histroy[i].values[0]=0;
-                            test_pressure_histroy[i].values[1]=0;
-                            test_pressure_histroy[i].values[2]=0;
-                            test_pressure_histroy[i].values[3]=0;
-                            test_pressure_histroy[i].set = false;
-                        }
-                    }
                     break;
                 case 5:
                 case 6:
@@ -1745,10 +1759,14 @@ void GameState::mouse_click_in_panel()
     {
         XYPos panel_grid_pos = panel_pos / 32;
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
-        if (level_index < LEVEL_COUNT && (level_index == 0 || level_set->levels[level_index - 1]->best_score >= percent_as_pressure(75)))
+        if (level_index < LEVEL_COUNT && level_set->is_playable(level_index))
         {
             set_level(level_index);
             mouse_state = MOUSE_STATE_NONE;
+        }
+        else if (panel_pos.y > 176)
+        {
+            show_hint = !show_hint;
         }
         return;
     } else if (panel_state == PANEL_STATE_EDITOR)
@@ -1770,7 +1788,7 @@ void GameState::mouse_click_in_panel()
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
 
         if (level_index < LEVEL_COUNT && level_index != current_level_index && !level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, level_set)
-                   && (level_index == 0 || level_set->levels[level_index - 1]->best_score >= percent_as_pressure(75)))
+                   && level_set->is_playable(level_index))
         {
             mouse_state = MOUSE_STATE_PLACING_SUBCIRCUIT;
             placing_subcircuit_level = level_index;
@@ -1784,14 +1802,22 @@ void GameState::mouse_click_in_panel()
             if (panel_grid_pos.x == 0)
             {
                 monitor_state = MONITOR_STATE_PAUSE;
+                current_circuit->updated_ports();
+                current_level->touched = true;
+
             }
             else if (panel_grid_pos.x == 1)
             {
                 monitor_state = MONITOR_STATE_PLAY_1;
+                current_circuit->updated_ports();
+                current_level->touched = true;
+
             }
             else if (panel_grid_pos.x == 2)
             {
                 monitor_state = MONITOR_STATE_PLAY_ALL;
+                current_circuit->updated_ports();
+                current_level->touched = true;
                 current_level->reset(level_set);
             }
             return;
@@ -1806,6 +1832,8 @@ void GameState::mouse_click_in_panel()
             {
                 current_level->select_test(t);
                 monitor_state = MONITOR_STATE_PLAY_1;
+                current_circuit->updated_ports();
+                current_level->touched = true;
             }
                 
 
@@ -1831,6 +1859,10 @@ void GameState::mouse_click_in_panel()
             return;
         if (panel_pos.y <= (101 + 16))
         {
+            monitor_state = MONITOR_STATE_PAUSE;
+            current_circuit->updated_ports();
+            current_level->touched = true;
+
             mouse_state = MOUSE_STATE_SPEED_SLIDER;
             slider_direction = DIRECTION_N;
             slider_max = 100;
@@ -1841,6 +1873,10 @@ void GameState::mouse_click_in_panel()
         }
         else if (panel_pos.y <= (101 + 16 + 7 + 16))
         {
+            monitor_state = MONITOR_STATE_PAUSE;
+            current_circuit->updated_ports();
+            current_level->touched = true;
+
             mouse_state = MOUSE_STATE_SPEED_SLIDER;
             slider_direction = DIRECTION_E;
             slider_max = 33;
@@ -2045,6 +2081,7 @@ bool GameState::events()
                         {
                             full_screen = !full_screen;
                             SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+                            SDL_SetWindowBordered(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
                         }
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 128)))
@@ -2070,7 +2107,7 @@ bool GameState::events()
                     }
                     else if (show_help)
                     {
-                        XYPos pos = (mouse / scale) - XYPos(32 + 512 + 32 + 8, 16 + 8);
+                        XYPos pos = (mouse / scale) - XYPos(32 + 512 + 32 + 8, 8);
                         if (pos.inside(XYPos(16, 16)))
                         {
                             show_help = false;
@@ -2082,7 +2119,9 @@ bool GameState::events()
                             int x = pos.x / 32;
                             if (x < 10)
                                 show_help_page = x;
+                            break;
                         }
+                        show_help_page = (show_help_page + 1) % 10;
                         break;
                     }
                     else if (mouse.x < panel_offset.x)
@@ -2100,6 +2139,14 @@ bool GameState::events()
                     }
                     else
                         mouse_state = MOUSE_STATE_NONE;
+                }
+                else if (e.button.button == SDL_BUTTON_MIDDLE)
+                {
+                        if (mouse_state == MOUSE_STATE_PLACING_VALVE)
+                            mouse_state = MOUSE_STATE_PLACING_SOURCE;
+                        else
+                            mouse_state = MOUSE_STATE_PLACING_VALVE;
+                        break;
                 }
                 break;
             }

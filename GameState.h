@@ -24,6 +24,7 @@ class GameState
     {
         MOUSE_STATE_NONE,
         MOUSE_STATE_PIPE,
+        MOUSE_STATE_PIPE_DRAGGING,
         MOUSE_STATE_DELETING,
         MOUSE_STATE_PLACING_VALVE,
         MOUSE_STATE_PLACING_SOURCE,
@@ -58,7 +59,7 @@ class GameState
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
 
     unsigned frame_index = 0;
-    unsigned game_speed = 10;
+    unsigned game_speed = 20;
 
     unsigned slider_pos;
     Direction slider_direction;
@@ -93,6 +94,9 @@ class GameState
     
     bool show_help = true;
     int show_help_page = 0;
+    int top_level_allowed = 0;
+    int level_win_animation = 0;
+    bool show_hint = false;
 
     bool show_main_menu = false;
     unsigned sound_volume = 100;

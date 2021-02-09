@@ -4,7 +4,7 @@
 #include "Circuit.h"
 #include <stdlib.h>
 
-#define LEVEL_COUNT 12
+#define LEVEL_COUNT 14
 #define HISTORY_POINT_COUNT 200
 
 
@@ -41,7 +41,6 @@ enum TestExecType
     MONITOR_STATE_PLAY_1,
     MONITOR_STATE_PLAY_ALL
 };
-
 
 class Test
 {
@@ -116,5 +115,8 @@ public:
     LevelSet();
     ~LevelSet();
     SaveObject* save();
+    bool is_playable(unsigned level);
+    int top_playable();
+
 
 };
