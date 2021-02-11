@@ -1,0 +1,162 @@
+#                               PipeCross
+!CHARLES
+Greetings Gertrude! My name is Charles Chavvington, the proprietor of these here General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.
+
+My dearly departed wife, Ada, stipulated that her research into the mathematical properties of steam should continue beyond her natural life. Which leads us to the reason for you coming into my employ. Your undertaking shall be to preserve her legacy and continue these scientific inquiries.
+
+!CHARLES
+I trust you have mastered elementary steam engineering in your prior studies, but before we allow you access to her laboratory, you must first demonstrate you are adept at basic steam pipe construction.
+
+Connect the West generator to the East facilities, and the North generator to the South facilities. Under no circumstance should you connect the pipes together! Doing so will deliver free steam to the South facilities, and they never pay their bills on time!
+
+If you are unfamiliar with our High Pressure Steam pipes, there is an engineering manual available up on the top right with the "?" symbol. 
+!END
+
+#                               50
+!CHARLES
+Darn it! The secure door to Ada's laboratory is operated with Low Pressure Steam! I could never figure out how she would get this blasted thing open.
+
+Here at General High Pressure Steam Works we generate steam at 100 Pounds per Square Inch. The door uses Moorhouse's low pressure steam which operates at 50 Pounds per Square Inch (PSI). I'll be dammed if I pipe that degenerate Moorhouse steam onto my property!
+
+Unless you can magic up a supply of low pressure steam at 50 PSI, we might as well give up. In the build menu, you will find a steam inlet which can supply you plenty of High Pressure Steam at 100 PSI.
+!END
+
+#					NPN
+!CHARLES
+By Jove! You did it! Terrible waste of good steam, but it got the job done.
+
+In this laboratory, my dearest Ada conducted experiments on the valves I constructed to her exact specifications. By applying a good dose of High Pressure Steam to the port marked with a "+", we can open the valve, allowing steam to pass freely between the two unmarked ends.
+
+Give it a try. Connect West and East, but only when North is at a High Pressure. 
+!END
+
+#					PNP
+!NICOLA
+Impressive!
+!CHARLES
+Ah, Nicola, you are just in time. Gertrude, Nicola will be your assistant. He has already begun studying the notes Ada left. Now, the next bit is a little more challenging for the old grey matter.
+
+While applying steam to the "+" port opens the valve, applying steam to the "-" side closes it. The valve is only open when "+" is under a Higher Pressure than the "-" side.
+
+Ada asked me to add this so she could make a valve that closes upon application of High Pressure to the control pipe. Let's see if these valves still operate correctly.
+
+!CHARLES
+Connect the East and West, but only when the pressure coming from the South is lower than 100 PSI.
+!END
+
+#					Switch
+!CHARLES
+Excellent! Now, combining these two designs, we can construct a component that switches between two ports.
+
+When the West control house supplies 100 PSI High Pressure Steam, the North generator should be connected to the East facilities. But when the West control house is at 0 PSI atmospheric pressure, the South generator should be connected to the East facilities.
+!NICOLA
+What happens when the control house supplies a pressure between 0 and 100?
+!CHARLES
+What!?! That would be low pressure steam! We do not work with low pressure steam! I did not make my fortune by supplying the people low pressure steam!
+
+Never mind all that low pressure nonsense. When West control is High Pressure, connect the North generator, otherwise connect the South generator
+!END
+
+#                           Buffer
+!NICOLA
+Lady Chavvington's notes talk about a steam connection between the Laboratory and the Lady Easley's residence that was used for communication.
+!CHARLES
+Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these here walls.
+!NICOLA
+I think we can still establish a connection without delivering any steam out. According to these notes...
+!CHARLES
+Hah! Impossible! This is elementary steamology my dear boy! In any case, I am needed elsewhere. These High Pressure Steam Works do not run themselves.
+!NICOLA
+...
+
+According to Lady Chavvington, Charles was not known as the greatest listener. It appears some of parts of the original design still remain installed in the wall. So long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint.
+!END
+
+#                           Inverter
+!NICOLA
+Not perfect, but we can always come back and improve it. Fascinating, is it not?. The combination of valves reproduces any pressure value. The incoming pressure opens the steam inlet and the atmosphere venting valves the exact levels to correctly reproduce the pressure in the output pipe.
+
+Let's send our first message and visit Lady Easley to see if it works.
+!ANNIE
+[Some time later]
+You gave me such a scare! For a minute I thought it was Ada talking to me from beyond the grave.
+!NICOLA
+Our apologies Lady Easley. We are attempting to continue Lady Chavvington's research. We were trying to send 80 PSI which according to our codebook means "Hello".
+
+!ANNIE
+No! 80 PSI means, "Help! I am trapped in the afterlife!". It is 20 PSI that means "Hello".
+
+When Ada installed the system she made a mistake on the valves and all the pressures were received upside down. It was when investigating the issue she got her epiphany on the possibilities of steam. We never fixed it, and instead I inverted all the the pressure values in my codebook.
+!NICOLA
+Interesting. Perhaps we should see if we can make the same mistake.
+!END
+
+#                           Op Amp
+!CHARLES
+Drat! For the life of me I cannot find the pressure comparator Ada made. Every year, the highly prestigious High Pressure Steam society compares the pressures provided by all the High Pressure Steam Works to determine the supplier of the Highest Pressure Steam. Without an accurate comparator, we will have to cancel this year's competition.
+
+My five year winning record will be ruined! I am sure she had another one around here somewhere...
+!NICOLA
+We should try and make it, otherwise he will just keep interfering...
+!CHARLES
+What was that you say boy?
+!NICOLA
+I said we could make one, sir.
+!END
+!CHARLES
+#                           Amp
+Excellent! Such precision! I am sure it could detect the pressure of a feather on a cricket pitch.
+
+I need but one more device before I shall leave you to your investigations. In order to be admitted to the High Pressure Steam society, one must show their steam works produce High Pressure Steam.
+
+!CHARLES
+Here at General High Pressure Steam Works, we produce High Pressure Steam at 100 PSI, the only pressure I would consider as true High Pressure Steam. But technically any steam pressure above 50 PSI is considered High Pressure Steam. As the chair of the High Pressure Steam society, it is my responsibility to make sure inferior low pressure steam producing deviants are not permitted to join.
+
+I require a device to correctly determine the quality of the applicants steam.
+!NICOLA
+We still have your design for the 50 PSI steam generator in the tool box.
+!END
+#                           div 2
+!CHARLES
+Bravo! With this contraption I will keep those low pressure steam producers out of our exclusive society.
+!NICOLA
+How many members are there so far?
+!CHARLES
+Well... One... As I said "Very Exclusive".
+
+In any case, I must be off lest I miss the reception drinks!
+!NICOLA
+Finally?
+
+According to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of non other than Lord Moorhouse! Charles would not have been happy if he found it. Look.
+!ADA
+June 17th
+
+With the pipeline to Lord Moorhouse's estate complete, I am beginning work on a device to compact the our high range of pressure values (0-100), to ones acceptable by the low pressure system (0-50). To my complete surprise, when powered by Lord Moorhouse's low pressure steam, but still using 100 PSI as the reference input, the pressure buffer was able to scale the input pressure to precisely one half.
+
+These properties could have wondrous uses in the field of mathematics.
+!NICOLA
+Really! How can that possibly work?
+!END
+#                           mul 2
+!NICOLA
+Astonishing! Well, that got us half way there. We can send, but now we need to receive. All we need is to amplify their steam pressure to our range. According to  Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure.
+!END
+!ADA
+Alas our journey must stop somewhere. Be sure to join our discord group to drive the direction of our adventure.
+
+To be Continued... 
+
+
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END

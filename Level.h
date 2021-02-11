@@ -4,7 +4,7 @@
 #include "Circuit.h"
 #include <stdlib.h>
 
-#define LEVEL_COUNT 14
+#define LEVEL_COUNT 12
 #define HISTORY_POINT_COUNT 200
 
 
@@ -66,7 +66,6 @@ public:
 
     unsigned level_index;
     Circuit* circuit;
-    bool blocked[9][9] = {false};
     
     unsigned pin_order[4];
 

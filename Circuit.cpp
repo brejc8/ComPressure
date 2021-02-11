@@ -793,6 +793,8 @@ void Circuit::sim_post(PressureAdjacent adj_)
 
 void Circuit::set_element_empty(XYPos pos)
 {
+    if (is_blocked(pos))
+        return;
     if (elements[pos.y][pos.x]->is_empty())
         return;
     ammend();
@@ -802,6 +804,8 @@ void Circuit::set_element_empty(XYPos pos)
 
 void Circuit::set_element_pipe(XYPos pos, Connections con)
 {
+    if (is_blocked(pos))
+        return;
     ammend();
     if (elements[pos.y][pos.x]->get_type() == CIRCUIT_ELEMENT_TYPE_PIPE)
     {
@@ -816,13 +820,17 @@ void Circuit::set_element_pipe(XYPos pos, Connections con)
 
 void Circuit::set_element_valve(XYPos pos, Direction direction)
 {
+    if (is_blocked(pos))
+        return;
+    ammend();
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementValve(direction);
-    ammend();
 }
 
 void Circuit::set_element_source(XYPos pos, Direction direction)
 {
+    if (is_blocked(pos))
+        return;
     ammend();
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementSource(direction);
@@ -830,6 +838,8 @@ void Circuit::set_element_source(XYPos pos, Direction direction)
 
 void Circuit::set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set)
 {
+    if (is_blocked(pos))
+        return;
     ammend();
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementSubCircuit(direction, level_index, level_set);
@@ -837,7 +847,6 @@ void Circuit::set_element_subcircuit(XYPos pos, Direction direction, unsigned le
 
 void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Direction d)
 {
-    ammend();
     XYPos mov(d);
     std::map<XYPos, CircuitElement*> elems;
     if (selected_elements.empty())
@@ -846,12 +855,15 @@ void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Directi
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = old + mov;
+        if (is_blocked(pos))
+            return;
         if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
             return;
         if (selected_elements.find(pos) == selected_elements.end() && !elements[pos.y][pos.x]->is_empty())
             return;
     }
 
+    ammend();
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = old + mov;
@@ -889,6 +901,20 @@ void Circuit::delete_selected_elements(std::set<XYPos> &selected_elements)
         delete elements[pos.y][pos.x];
         elements[pos.y][pos.x] = new CircuitElementEmpty();
     }
+}
+
+void Circuit::force_element(XYPos pos, CircuitElement* element)
+{
+    delete elements[pos.y][pos.x];
+    elements[pos.y][pos.x] = element;
+    blocked[pos.y][pos.x] = true;
+}
+
+bool Circuit::is_blocked(XYPos pos)
+{
+    if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
+        return false;
+    return blocked[pos.y][pos.x];
 }
 
 void Circuit::ammend()

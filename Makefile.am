@@ -4,13 +4,13 @@ ComPressure_SOURCES =  GameState.cpp GameState.h \
                     Misc.cpp Misc.h \
                     SaveState.cpp SaveState.h \
                     Circuit.cpp Circuit.h \
-                    Level.cpp Level.h
-EXTRA_DIST = texture.png
+                    Level.cpp Level.h \
+                    Dialogue.cpp Dialogue.h
+EXTRA_DIST = dialogue.txt
 
-#CLEANFILES = texture_png.o
+CLEANFILES = dialogue.string
 
-#texture_png.o: texture.png
-#	objcopy --input binary --output elf64-x86-64 --binary-architecture i386 texture.png texture_png.o --prefix-symbols embedded_data
-
+dialogue.string: dialogue.txt fold.py
+	./fold.py dialogue.txt > dialogue.string
 
 AM_CXXFLAGS = -std=gnu++11 

@@ -1,0 +1,395 @@
+Dialogue dialogue0[] = {
+    {DIALOGUE_CHARLES,
+        "Greetings Gertrude! My name is Charles Chavvington, the\n"
+        "proprietor of these here General High Pressure Steam Works.\n"
+        "From here we supply High Pressure Steam across half the city,\n"
+        "powering everything from steam umbrellas to steam xylophones.\n"
+        "\n"
+        "My dearly departed wife, Ada, stipulated that her research\n"
+        "into the mathematical properties of steam should continue\n"
+        "beyond her natural life. Which leads us to the reason for you\n"
+        "coming into my employ. Your undertaking shall be to preserve\n"
+        "her legacy and continue these scientific inquiries.\n"
+        "\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "I trust you have mastered elementary steam engineering in your\n"
+        "prior studies, but before we allow you access to her\n"
+        "laboratory, you must first demonstrate you are adept at basic\n"
+        "steam pipe construction.\n"
+        "\n"
+        "Connect the West generator to the East facilities, and the\n"
+        "North generator to the South facilities. Under no circumstance\n"
+        "should you connect the pipes together! Doing so will deliver\n"
+        "free steam to the South facilities, and they never pay their\n"
+        "bills on time!\n"
+        "\n"
+        "If you are unfamiliar with our High Pressure Steam pipes,\n"
+        "there is an engineering manual available up on the top right\n"
+        "with the \"?\" symbol.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue1[] = {
+    {DIALOGUE_CHARLES,
+        "Darn it! The secure door to Ada's laboratory is operated with\n"
+        "Low Pressure Steam! I could never figure out how she would get\n"
+        "this blasted thing open.\n"
+        "\n"
+        "Here at General High Pressure Steam Works we generate steam at\n"
+        "100 Pounds per Square Inch. The door uses Moorhouse's low\n"
+        "pressure steam which operates at 50 Pounds per Square Inch\n"
+        "(PSI). I'll be dammed if I pipe that degenerate Moorhouse\n"
+        "steam onto my property!\n"
+        "\n"
+        "Unless you can magic up a supply of low pressure steam at 50\n"
+        "PSI, we might as well give up. In the build menu, you will\n"
+        "find a steam inlet which can supply you plenty of High\n"
+        "Pressure Steam at 100 PSI.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue2[] = {
+    {DIALOGUE_CHARLES,
+        "By Jove! You did it! Terrible waste of good steam, but it got\n"
+        "the job done.\n"
+        "\n"
+        "In this laboratory, my dearest Ada conducted experiments on\n"
+        "the valves I constructed to her exact specifications. By\n"
+        "applying a good dose of High Pressure Steam to the port marked\n"
+        "with a \"+\", we can open the valve, allowing steam to pass\n"
+        "freely between the two unmarked ends.\n"
+        "\n"
+        "Give it a try. Connect West and East, but only when North is\n"
+        "at a High Pressure.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue3[] = {
+    {DIALOGUE_NICOLA,
+        "Impressive!\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Ah, Nicola, you are just in time. Gertrude, Nicola will be\n"
+        "your assistant. He has already begun studying the notes Ada\n"
+        "left. Now, the next bit is a little more challenging for the\n"
+        "old grey matter.\n"
+        "\n"
+        "While applying steam to the \"+\" port opens the valve, applying\n"
+        "steam to the \"-\" side closes it. The valve is only open when\n"
+        "\"+\" is under a Higher Pressure than the \"-\" side.\n"
+        "\n"
+        "Ada asked me to add this so she could make a valve that closes\n"
+        "upon application of High Pressure to the control pipe. Let's\n"
+        "see if these valves still operate correctly.\n"
+        "\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Connect the East and West, but only when the pressure coming\n"
+        "from the South is lower than 100 PSI.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue4[] = {
+    {DIALOGUE_CHARLES,
+        "Excellent! Now, combining these two designs, we can construct\n"
+        "a component that switches between two ports.\n"
+        "\n"
+        "When the West control house supplies 100 PSI High Pressure\n"
+        "Steam, the North generator should be connected to the East\n"
+        "facilities. But when the West control house is at 0 PSI\n"
+        "atmospheric pressure, the South generator should be connected\n"
+        "to the East facilities.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "What happens when the control house supplies a pressure\n"
+        "between 0 and 100?\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "What!?! That would be low pressure steam! We do not work with\n"
+        "low pressure steam! I did not make my fortune by supplying the\n"
+        "people low pressure steam!\n"
+        "\n"
+        "Never mind all that low pressure nonsense. When West control\n"
+        "is High Pressure, connect the North generator, otherwise\n"
+        "connect the South generator\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue5[] = {
+    {DIALOGUE_NICOLA,
+        "Lady Chavvington's notes talk about a steam connection between\n"
+        "the Laboratory and the Lady Easley's residence that was used\n"
+        "for communication.\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Yes, I had it removed. New procedures. Too much of our High\n"
+        "Pressure Steam was going missing. The only steam permitted to\n"
+        "leave our facility is metered and provided to paying\n"
+        "customers. None of my High Pressure Steam may leave these here\n"
+        "walls.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "I think we can still establish a connection without delivering\n"
+        "any steam out. According to these notes...\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Hah! Impossible! This is elementary steamology my dear boy! In\n"
+        "any case, I am needed elsewhere. These High Pressure Steam\n"
+        "Works do not run themselves.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "...\n"
+        "\n"
+        "According to Lady Chavvington, Charles was not known as the\n"
+        "greatest listener. It appears some of parts of the original\n"
+        "design still remain installed in the wall. So long as we use\n"
+        "Lady Easley's steam to power the devices beyond the wall,\n"
+        "Charles will have no complaint.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue6[] = {
+    {DIALOGUE_NICOLA,
+        "Not perfect, but we can always come back and improve it.\n"
+        "Fascinating, is it not?. The combination of valves reproduces\n"
+        "any pressure value. The incoming pressure opens the steam\n"
+        "inlet and the atmosphere venting valves the exact levels to\n"
+        "correctly reproduce the pressure in the output pipe.\n"
+        "\n"
+        "Let's send our first message and visit Lady Easley to see if\n"
+        "it works.\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "[Some time later]\n"
+        "You gave me such a scare! For a minute I thought it was Ada\n"
+        "talking to me from beyond the grave.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Our apologies Lady Easley. We are attempting to continue Lady\n"
+        "Chavvington's research. We were trying to send 80 PSI which\n"
+        "according to our codebook means \"Hello\".\n"
+        "\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "No! 80 PSI means, \"Help! I am trapped in the afterlife!\". It\n"
+        "is 20 PSI that means \"Hello\".\n"
+        "\n"
+        "When Ada installed the system she made a mistake on the valves\n"
+        "and all the pressures were received upside down. It was when\n"
+        "investigating the issue she got her epiphany on the\n"
+        "possibilities of steam. We never fixed it, and instead I\n"
+        "inverted all the the pressure values in my codebook.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Interesting. Perhaps we should see if we can make the same\n"
+        "mistake.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue7[] = {
+    {DIALOGUE_CHARLES,
+        "Drat! For the life of me I cannot find the pressure comparator\n"
+        "Ada made. Every year, the highly prestigious High Pressure\n"
+        "Steam society compares the pressures provided by all the High\n"
+        "Pressure Steam Works to determine the supplier of the Highest\n"
+        "Pressure Steam. Without an accurate comparator, we will have\n"
+        "to cancel this year's competition.\n"
+        "\n"
+        "My five year winning record will be ruined! I am sure she had\n"
+        "another one around here somewhere...\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "We should try and make it, otherwise he will just keep\n"
+        "interfering...\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "What was that you say boy?\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "I said we could make one, sir.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue8[] = {
+    {DIALOGUE_CHARLES,
+        "Excellent! Such precision! I am sure it could detect the\n"
+        "pressure of a feather on a cricket pitch.\n"
+        "\n"
+        "I need but one more device before I shall leave you to your\n"
+        "investigations. In order to be admitted to the High Pressure\n"
+        "Steam society, one must show their steam works produce High\n"
+        "Pressure Steam.\n"
+        "\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Here at General High Pressure Steam Works, we produce High\n"
+        "Pressure Steam at 100 PSI, the only pressure I would consider\n"
+        "as true High Pressure Steam. But technically any steam\n"
+        "pressure above 50 PSI is considered High Pressure Steam. As\n"
+        "the chair of the High Pressure Steam society, it is my\n"
+        "responsibility to make sure inferior low pressure steam\n"
+        "producing deviants are not permitted to join.\n"
+        "\n"
+        "I require a device to correctly determine the quality of the\n"
+        "applicants steam.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "We still have your design for the 50 PSI steam generator in\n"
+        "the tool box.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue9[] = {
+    {DIALOGUE_CHARLES,
+        "Bravo! With this contraption I will keep those low pressure\n"
+        "steam producers out of our exclusive society.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "How many members are there so far?\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Well... One... As I said \"Very Exclusive\".\n"
+        "\n"
+        "In any case, I must be off lest I miss the reception drinks!\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Finally?\n"
+        "\n"
+        "According to Lady Chavvington's diary, a second communication\n"
+        "pipeline was installed leading to the residence of non other\n"
+        "than Lord Moorhouse! Charles would not have been happy if he\n"
+        "found it. Look.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "June 17th\n"
+        "\n"
+        "With the pipeline to Lord Moorhouse's estate complete, I am\n"
+        "beginning work on a device to compact the our high range of\n"
+        "pressure values (0-100), to ones acceptable by the low\n"
+        "pressure system (0-50). To my complete surprise, when powered\n"
+        "by Lord Moorhouse's low pressure steam, but still using 100\n"
+        "PSI as the reference input, the pressure buffer was able to\n"
+        "scale the input pressure to precisely one half.\n"
+        "\n"
+        "These properties could have wondrous uses in the field of\n"
+        "mathematics.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Really! How can that possibly work?\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue10[] = {
+    {DIALOGUE_NICOLA,
+        "Astonishing! Well, that got us half way there. We can send,\n"
+        "but now we need to receive. All we need is to amplify their\n"
+        "steam pressure to our range. According to  Lady Chavvington,\n"
+        "we must power the device with our 100 PSI steam, but use 50\n"
+        "PSI as the reference pressure.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue11[] = {
+    {DIALOGUE_ADA,
+        "Alas our journey must stop somewhere. Be sure to join our\n"
+        "discord group to drive the direction of our adventure.\n"
+        "\n"
+        "To be Continued...\n"
+        "\n"
+        "\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue12[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue13[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue14[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue15[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue16[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue17[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue18[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue19[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue20[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue21[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue22[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, NULL};

@@ -4,6 +4,7 @@
 #include "GameState.h"
 #include "SaveState.h"
 #include "Misc.h"
+#include "Dialogue.h"
 
 #include <cassert>
 #include <SDL.h>
@@ -14,6 +15,9 @@
 #include <algorithm>
 #include <limits>
 #include <math.h>
+
+
+
 
 
 GameState::GameState(const char* filename)
@@ -31,11 +35,11 @@ GameState::GameState(const char* filename)
         level_set = new LevelSet(omap->get_item("levels"));
         
         current_level_index = omap->get_num("current_level_index");
-        if (current_level_index >= LEVEL_COUNT)
+        if (!level_set->is_playable(current_level_index))
             current_level_index = 0;
         game_speed = omap->get_num("game_speed");
         show_debug = omap->get_num("show_debug");
-        show_help = omap->get_num("show_help");
+        next_dialogue_level = omap->get_num("next_dialogue_level");
         show_help_page = omap->get_num("show_help_page");
         
         sound_volume = omap->get_num("sound_volume");
@@ -90,7 +94,7 @@ void GameState::save(const char*  filename)
     omap.add_num("current_level_index", current_level_index);
     omap.add_num("game_speed", game_speed);
     omap.add_num("show_debug", show_debug);
-    omap.add_num("show_help", show_help);
+    omap.add_num("next_dialogue_level", next_dialogue_level);
     omap.add_num("show_help_page", show_help_page);
     omap.add_num("scale", scale);
     omap.add_num("full_screen", full_screen);
@@ -457,7 +461,7 @@ void GameState::render()
             src_rect.x += 32;
         if (pos.x == 8)
             src_rect.x += 32;
-        if (current_level->blocked[pos.y][pos.x])
+        if (current_circuit->blocked[pos.y][pos.x])
             src_rect = {384, 80, 32, 32};
             
         SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
@@ -514,7 +518,7 @@ void GameState::render()
                 tl.y = br.y;
                 br.y = t;
             }
-            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty())
+            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty() && !current_circuit->is_blocked(pos))
                 selected = true;
         }
         
@@ -535,9 +539,9 @@ void GameState::render()
         if (pipe_start_ns)
         {
             mouse_rel.x -= 16;
-            if (mouse_rel.y < 0 && (pipe_start_grid_pos.y == 0 || current_level->blocked[pipe_start_grid_pos.y - 1][pipe_start_grid_pos.x]))
+            if (mouse_rel.y < 0 && (pipe_start_grid_pos.y == 0 || current_circuit->blocked[pipe_start_grid_pos.y - 1][pipe_start_grid_pos.x]))
                 mouse_rel.y = -mouse_rel.y;
-            if (mouse_rel.y >= 0 && (pipe_start_grid_pos.y == 9 || current_level->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
+            if (mouse_rel.y >= 0 && (pipe_start_grid_pos.y == 9 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
                 mouse_rel.y = -mouse_rel.y - 1;
 
 
@@ -572,9 +576,9 @@ void GameState::render()
         else
         {
             mouse_rel.y -= 16;
-            if (mouse_rel.x < 0 && (pipe_start_grid_pos.x == 0 || current_level->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x - 1]))
+            if (mouse_rel.x < 0 && (pipe_start_grid_pos.x == 0 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x - 1]))
                 mouse_rel.x = -mouse_rel.x;
-            if (mouse_rel.x >= 0 && (pipe_start_grid_pos.x == 9 || current_level->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
+            if (mouse_rel.x >= 0 && (pipe_start_grid_pos.x == 9 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
                 mouse_rel.x = -mouse_rel.x - 1;
             if (mouse_rel.x >= 0)   //west - eastwards
             {
@@ -608,7 +612,7 @@ void GameState::render()
     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
     {
         XYPos mouse_grid = ((mouse - grid_offset)/ scale) / 32;
-        if (mouse_grid.inside(XYPos(9,9)) && !current_level->blocked[mouse_grid.y][mouse_grid.x])
+        if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             SDL_Rect src_rect = {direction * 32, 4 * 32, 32, 32};
             SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
@@ -618,7 +622,7 @@ void GameState::render()
     else if (mouse_state == MOUSE_STATE_PLACING_SOURCE)
     {
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-        if (mouse_grid.inside(XYPos(9,9)) && !current_level->blocked[mouse_grid.y][mouse_grid.x])
+        if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             SDL_Rect src_rect = {128 + direction * 32, 0, 32, 32};
             SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
@@ -628,7 +632,7 @@ void GameState::render()
     else if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
     {
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-        if (mouse_grid.inside(XYPos(9,9)) && !current_level->blocked[mouse_grid.y][mouse_grid.x])
+        if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             XYPos pos = level_set->levels[placing_subcircuit_level]->getimage(direction);
             if (pos != XYPos(0,0))
@@ -762,7 +766,7 @@ void GameState::render()
             SDL_Rect dst_rect = {(8 + 32 * 13) * scale, (8) * scale, 32 * scale, 32 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
-        if (level_set->is_playable(5)){
+        if (level_set->is_playable(7)){
             SDL_Rect src_rect = {256+96, 112, 32, 32};
             SDL_Rect dst_rect = {(8 + 32 * 14) * scale, (8) * scale, 32 * scale, 32 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
@@ -834,6 +838,8 @@ void GameState::render()
         pos = XYPos(0,0);
         for (int i = 0; i < 4; i++)
         {
+            if (i == 0 && !level_set->is_playable(2))
+                continue;
             SDL_Rect src_rect = {256, 80, 32, 32};
             SDL_Rect dst_rect = {panel_offset.x + i * 32 * scale, panel_offset.y, 32 * scale, 32 * scale};
             if (i == 0 && mouse_state == MOUSE_STATE_PLACING_VALVE)
@@ -1242,6 +1248,40 @@ void GameState::render()
         render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
         render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
     }
+
+    if (!dialogue[current_level_index][dialogue_index].text)
+        show_dialogue = false;
+
+    if (show_dialogue)
+    {
+        bool pic_on_left = true;
+        XYPos pic_src;
+        switch (dialogue[current_level_index][dialogue_index].character)
+        {
+            case DIALOGUE_CHARLES:
+                pic_on_left = true;
+                pic_src = XYPos(0,0);
+                break;
+            case DIALOGUE_NICOLA:
+                pic_on_left = false;
+                pic_src = XYPos(1,0);
+                break;
+            case DIALOGUE_ADA:
+                pic_on_left = true;
+                pic_src = XYPos(1,1);
+                break;
+            case DIALOGUE_ANNIE:
+                pic_on_left = true;
+                pic_src = XYPos(0,1);
+                break;
+        }
+        render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 0);
+        SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
+        SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
+        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_text(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), dialogue[current_level_index][dialogue_index].text);
+    }
+    
     if (level_win_animation)
     {
         int size = 360 - level_win_animation * 3;
@@ -1289,7 +1329,7 @@ void GameState::render()
             }
             pages[] =
             {
-                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier. Click on the requirements to show a hint."},
+                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier. Click on the requirements to see the\ndialogue again."},
                 {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next\ndesign becomes available. You can always come back\nto refine your solution.\n\nPress the pipe button below to continue the\ntutorial. You can return to the help by pressing F1."},
                 {XYPos(0,0), 10, 1, "Use left mouse button to place pipes. The pipe will\nextend in the direction of the mouse. Right click to\nexit pipe laying mode."},
                 {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and\nother elements."},
@@ -1486,6 +1526,12 @@ void GameState::set_level(unsigned level_index)
         current_circuit = current_level->circuit;
         current_level->reset(level_set);
         show_hint = false;
+        if (level_index == next_dialogue_level)
+        {
+            show_dialogue = true;
+            dialogue_index = 0;
+            next_dialogue_level++;
+        }
     }
 }
 
@@ -1507,6 +1553,8 @@ void GameState::mouse_click_in_grid()
             return;
         if (current_circuit->elements[grid.y][grid.x]->is_empty())
             return;
+        if (current_circuit->blocked[grid.y][grid.x])
+            return;
         if (selected_elements.find(grid) == selected_elements.end())
             selected_elements.insert(grid);
         else
@@ -1525,7 +1573,6 @@ void GameState::mouse_click_in_grid()
             grid.x = 8;
         if (grid.y > 8)
             grid.y = 8;
-        mouse_state = MOUSE_STATE_PIPE;
         XYPos pos = (mouse - grid_offset) / scale;
         pos -= grid * 32;
         pipe_start_grid_pos = grid;
@@ -1553,6 +1600,17 @@ void GameState::mouse_click_in_grid()
                 pipe_start_ns = true;
             }
         }
+        if (pipe_start_ns)
+        {
+            if (current_circuit->is_blocked(pipe_start_grid_pos) && current_circuit->is_blocked(pipe_start_grid_pos - XYPos(0,1)))
+                return;
+        }
+        else
+        {
+            if (current_circuit->is_blocked(pipe_start_grid_pos) && current_circuit->is_blocked(pipe_start_grid_pos - XYPos(1,0)))
+                return;
+        }
+        mouse_state = MOUSE_STATE_PIPE_DRAGGING;
     }
     else if (mouse_state == MOUSE_STATE_PIPE)
     {
@@ -1561,9 +1619,9 @@ void GameState::mouse_click_in_grid()
         if (pipe_start_ns)
         {
             mouse_rel.x -= 16;
-            if (mouse_rel.y < 0 && (pipe_start_grid_pos.y == 0 || current_level->blocked[pipe_start_grid_pos.y - 1][pipe_start_grid_pos.x]))
+            if (mouse_rel.y < 0 && (pipe_start_grid_pos.y == 0 || current_circuit->blocked[pipe_start_grid_pos.y - 1][pipe_start_grid_pos.x]))
                 mouse_rel.y = -mouse_rel.y;
-            if (mouse_rel.y >= 0 && (pipe_start_grid_pos.y == 9 || current_level->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
+            if (mouse_rel.y >= 0 && (pipe_start_grid_pos.y == 9 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
                 mouse_rel.y = -mouse_rel.y - 1;
             if (mouse_rel.y < 0)    //south - northwards
             {
@@ -1613,9 +1671,9 @@ void GameState::mouse_click_in_grid()
         else
         {
             mouse_rel.y -= 16;
-            if (mouse_rel.x < 0 && (pipe_start_grid_pos.x == 0 || current_level->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x - 1]))
+            if (mouse_rel.x < 0 && (pipe_start_grid_pos.x == 0 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x - 1]))
                 mouse_rel.x = -mouse_rel.x;
-            if (mouse_rel.x >= 0 && (pipe_start_grid_pos.x == 9 || current_level->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
+            if (mouse_rel.x >= 0 && (pipe_start_grid_pos.x == 9 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
                 mouse_rel.x = -mouse_rel.x - 1;
             if (mouse_rel.x < 0)    //east - westwards
             {
@@ -1665,7 +1723,7 @@ void GameState::mouse_click_in_grid()
     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
     {
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-        if (mouse_grid.inside(XYPos(9,9)) && !current_level->blocked[mouse_grid.y][mouse_grid.x])
+        if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             current_circuit->set_element_valve(mouse_grid, direction);
             current_level->touched = true;
@@ -1674,7 +1732,7 @@ void GameState::mouse_click_in_grid()
     else if (mouse_state == MOUSE_STATE_PLACING_SOURCE)
     {
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-        if (mouse_grid.inside(XYPos(9,9)) && !current_level->blocked[mouse_grid.y][mouse_grid.x])
+        if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             current_circuit->set_element_source(mouse_grid, direction);
             current_level->touched = true;
@@ -1683,7 +1741,7 @@ void GameState::mouse_click_in_grid()
     else if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
     {
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-        if (mouse_grid.inside(XYPos(9,9)) && !current_level->blocked[mouse_grid.y][mouse_grid.x])
+        if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
             current_circuit->set_element_subcircuit(mouse_grid, direction, placing_subcircuit_level, level_set);
@@ -1726,7 +1784,7 @@ void GameState::mouse_click_in_panel()
                     panel_state = PANEL_STATE_MONITOR;
                     break;
                 case 3:
-                    if (!level_set->is_playable(5))
+                    if (!level_set->is_playable(7))
                         break;
                     panel_state = PANEL_STATE_TEST;
                     break;
@@ -1766,7 +1824,10 @@ void GameState::mouse_click_in_panel()
         }
         else if (panel_pos.y > 176)
         {
-            show_hint = !show_hint;
+            show_hint = true;
+            show_dialogue = true;
+            dialogue_index = 0;
+            
         }
         return;
     } else if (panel_state == PANEL_STATE_EDITOR)
@@ -1774,7 +1835,7 @@ void GameState::mouse_click_in_panel()
         XYPos panel_grid_pos = panel_pos / 32;
         if (panel_grid_pos.y == 0)
         {
-            if (panel_grid_pos.x == 0)
+            if (panel_grid_pos.x == 0 && level_set->is_playable(2))
                 mouse_state = MOUSE_STATE_PLACING_VALVE;
             else if (panel_grid_pos.x == 1)
                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
@@ -1900,6 +1961,9 @@ void GameState::mouse_motion()
         XYPos grid = ((mouse - grid_offset) / scale) / 32;
         if (grid.x >= 9 || grid.y >= 9)
             return;
+        if (current_circuit->is_blocked(grid))
+            return;
+
         current_circuit->set_element_empty(grid);
         current_level->touched = true;
 
@@ -2032,6 +2096,10 @@ bool GameState::events()
                 {
                     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
                         mouse_state = MOUSE_STATE_NONE;
+                    if (mouse_state == MOUSE_STATE_PIPE_DRAGGING)
+                    {
+                        mouse_state = MOUSE_STATE_PIPE;
+                    }
                     if (mouse_state == MOUSE_STATE_AREA_SELECT)
                     {
                         XYPos tl = ((mouse - grid_offset) / scale) / 32;
@@ -2052,7 +2120,7 @@ bool GameState::events()
                         for (pos.y = 0; pos.y < 9; pos.y++)
                         for (pos.x = 0; pos.x < 9; pos.x++)
                         {
-                            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty())
+                            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty() && !current_circuit->is_blocked(pos))
                                 selected_elements.insert(pos);
                         }
                         mouse_state = MOUSE_STATE_NONE;
@@ -2123,6 +2191,12 @@ bool GameState::events()
                         }
                         show_help_page = (show_help_page + 1) % 10;
                         break;
+                    }
+                    else if (show_dialogue)
+                    {
+                        dialogue_index++;
+                        if (!dialogue[current_level_index][dialogue_index].text)
+                            show_dialogue = false;
                     }
                     else if (mouse.x < panel_offset.x)
                         mouse_click_in_grid();

@@ -92,11 +92,15 @@ class GameState
     unsigned debug_last_second_frames = 0;
     unsigned debug_last_second_simticks = 0;
     
-    bool show_help = true;
+    bool show_help = false;
     int show_help_page = 0;
     int top_level_allowed = 0;
     int level_win_animation = 0;
     bool show_hint = false;
+    
+    bool show_dialogue = false;
+    int dialogue_index = 0;
+    int next_dialogue_level = 0;
 
     bool show_main_menu = false;
     unsigned sound_volume = 100;

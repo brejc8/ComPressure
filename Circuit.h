@@ -304,6 +304,8 @@ public:
     CircuitPressure connections_ns[10][10];
     CircuitPressure connections_ew[10][10];
 
+    bool blocked[9][9] = {false};
+
     bool fast_prepped = false;
     std::vector<FastFunc> fast_funcs;
     std::vector<CircuitPressure*> fast_pressures;
@@ -339,6 +341,8 @@ public:
     void sim_post(PressureAdjacent);
     void updated_ports() {fast_prepped = false;};
     void ammend();
+    void force_element(XYPos pos, CircuitElement* element);
+    bool is_blocked(XYPos pos);
     void undo(LevelSet* level_set);
     void redo(LevelSet* level_set);
 
