@@ -903,6 +903,66 @@ void Circuit::delete_selected_elements(std::set<XYPos> &selected_elements)
     }
 }
 
+void Circuit::add_pipe_drag_list(std::list<XYPos> &pipe_drag_list)
+{
+    ammend();
+
+    XYPos n1,n2,n3;
+    std::list<XYPos>::iterator it = pipe_drag_list.begin();
+    n2 = *it;
+    it++;
+    n3 = *it;
+    it++;
+    for (;it != pipe_drag_list.end(); ++it)
+    {
+        n1 = n2;
+        n2 = n3;
+        n3 = *it;
+        XYPos d1 = n1 - n2;
+        XYPos d2 = n3 - n2;
+        XYPos d = d1 + d2;
+        
+        Connections con = Connections(0);
+        
+        if (d.y < 0)
+        {
+            if (d.x < 0)
+                con = CONNECTIONS_NW;
+            else if (d.x > 0)
+                con = CONNECTIONS_NE;
+            else
+                assert(0);
+        }
+        else if (d.y > 0)
+        {
+            if (d.x < 0)
+                con = CONNECTIONS_WS;
+            else if (d.x > 0)
+                con = CONNECTIONS_ES;
+            else
+                assert(0);
+        }
+        else
+        {
+            if (d1.x)
+                con = CONNECTIONS_EW;
+            else if (d1.y)
+                con = CONNECTIONS_NS;
+            else assert(0);
+        }
+        if (elements[n2.y][n2.x]->get_type() == CIRCUIT_ELEMENT_TYPE_PIPE)
+        {
+            elements[n2.y][n2.x]->extend_pipe(con);
+        }
+        else
+        {
+            delete elements[n2.y][n2.x];
+            elements[n2.y][n2.x] = new CircuitElementPipe(con);
+        }
+    }
+    
+}
+
 void Circuit::force_element(XYPos pos, CircuitElement* element)
 {
     delete elements[pos.y][pos.x];
@@ -913,7 +973,7 @@ void Circuit::force_element(XYPos pos, CircuitElement* element)
 bool Circuit::is_blocked(XYPos pos)
 {
     if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
-        return false;
+        return true;
     return blocked[pos.y][pos.x];
 }
 

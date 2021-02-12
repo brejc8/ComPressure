@@ -46,7 +46,7 @@ Connect the East and West, but only when the pressure coming from the South is l
 
 #					Switch
 !CHARLES
-Excellent! Now, combining these two designs, we can construct a component that switches between two ports.
+Excellent! Now, combining these two designs, we can construct a component that switches between two sources.
 
 When the West control house supplies 100 PSI High Pressure Steam, the North generator should be connected to the East facilities. But when the West control house is at 0 PSI atmospheric pressure, the South generator should be connected to the East facilities.
 !NICOLA
@@ -76,7 +76,7 @@ According to Lady Chavvington, Charles was not known as the greatest listener. I
 !NICOLA
 Not perfect, but we can always come back and improve it. Fascinating, is it not?. The combination of valves reproduces any pressure value. The incoming pressure opens the steam inlet and the atmosphere venting valves the exact levels to correctly reproduce the pressure in the output pipe.
 
-Let's send our first message and visit Lady Easley to see if it works.
+Let us send our first message and visit Lady Easley to see if it works.
 !ANNIE
 [Some time later]
 You gave me such a scare! For a minute I thought it was Ada talking to me from beyond the grave.
@@ -110,7 +110,7 @@ Excellent! Such precision! I am sure it could detect the pressure of a feather o
 I need but one more device before I shall leave you to your investigations. In order to be admitted to the High Pressure Steam society, one must show their steam works produce High Pressure Steam.
 
 !CHARLES
-Here at General High Pressure Steam Works, we produce High Pressure Steam at 100 PSI, the only pressure I would consider as true High Pressure Steam. But technically any steam pressure above 50 PSI is considered High Pressure Steam. As the chair of the High Pressure Steam society, it is my responsibility to make sure inferior low pressure steam producing deviants are not permitted to join.
+Here at General High Pressure Steam Works, we produce High Pressure Steam at 100 PSI, the only pressure I would recognise as true High Pressure Steam. But technically any steam pressure above 50 PSI is considered High Pressure Steam. As the chair of the High Pressure Steam society, it is my responsibility to make sure inferior low pressure steam producing deviants are not permitted to join.
 
 I require a device to correctly determine the quality of the applicants steam.
 !NICOLA
@@ -126,7 +126,7 @@ Well... One... As I said "Very Exclusive".
 
 In any case, I must be off lest I miss the reception drinks!
 !NICOLA
-Finally?
+Finally...
 
 According to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of non other than Lord Moorhouse! Charles would not have been happy if he found it. Look.
 !ADA
@@ -136,11 +136,11 @@ With the pipeline to Lord Moorhouse's estate complete, I am beginning work on a 
 
 These properties could have wondrous uses in the field of mathematics.
 !NICOLA
-Really! How can that possibly work?
+Really!?! How can that possibly work?
 !END
 #                           mul 2
 !NICOLA
-Astonishing! Well, that got us half way there. We can send, but now we need to receive. All we need is to amplify their steam pressure to our range. According to  Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure.
+Astonishing! Well, that got us half way there. We can send, but now we need to receive. We must amplify their steam pressure to our range. According to Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure.
 !END
 !ADA
 Alas our journey must stop somewhere. Be sure to join our discord group to drive the direction of our adventure.
@@ -148,6 +148,13 @@ Alas our journey must stop somewhere. Be sure to join our discord group to drive
 To be Continued... 
 
 
+!END
+!END
+!END
+!END
+!END
+!END
+!END
 !END
 !END
 !END

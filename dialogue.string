@@ -104,7 +104,7 @@ Dialogue dialogue3[] = {
 Dialogue dialogue4[] = {
     {DIALOGUE_CHARLES,
         "Excellent! Now, combining these two designs, we can construct\n"
-        "a component that switches between two ports.\n"
+        "a component that switches between two sources.\n"
         "\n"
         "When the West control house supplies 100 PSI High Pressure\n"
         "Steam, the North generator should be connected to the East\n"
@@ -178,7 +178,7 @@ Dialogue dialogue6[] = {
         "inlet and the atmosphere venting valves the exact levels to\n"
         "correctly reproduce the pressure in the output pipe.\n"
         "\n"
-        "Let's send our first message and visit Lady Easley to see if\n"
+        "Let us send our first message and visit Lady Easley to see if\n"
         "it works.\n"
     },
 
@@ -257,7 +257,7 @@ Dialogue dialogue8[] = {
 
     {DIALOGUE_CHARLES,
         "Here at General High Pressure Steam Works, we produce High\n"
-        "Pressure Steam at 100 PSI, the only pressure I would consider\n"
+        "Pressure Steam at 100 PSI, the only pressure I would recognise\n"
         "as true High Pressure Steam. But technically any steam\n"
         "pressure above 50 PSI is considered High Pressure Steam. As\n"
         "the chair of the High Pressure Steam society, it is my\n"
@@ -293,7 +293,7 @@ Dialogue dialogue9[] = {
     },
 
     {DIALOGUE_NICOLA,
-        "Finally?\n"
+        "Finally...\n"
         "\n"
         "According to Lady Chavvington's diary, a second communication\n"
         "pipeline was installed leading to the residence of non other\n"
@@ -317,7 +317,7 @@ Dialogue dialogue9[] = {
     },
 
     {DIALOGUE_NICOLA,
-        "Really! How can that possibly work?\n"
+        "Really!?! How can that possibly work?\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -326,10 +326,10 @@ Dialogue dialogue9[] = {
 Dialogue dialogue10[] = {
     {DIALOGUE_NICOLA,
         "Astonishing! Well, that got us half way there. We can send,\n"
-        "but now we need to receive. All we need is to amplify their\n"
-        "steam pressure to our range. According to  Lady Chavvington,\n"
-        "we must power the device with our 100 PSI steam, but use 50\n"
-        "PSI as the reference pressure.\n"
+        "but now we need to receive. We must amplify their steam\n"
+        "pressure to our range. According to Lady Chavvington, we must\n"
+        "power the device with our 100 PSI steam, but use 50 PSI as the\n"
+        "reference pressure.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -392,4 +392,32 @@ Dialogue dialogue22[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, NULL};
+Dialogue dialogue23[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue24[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue25[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue26[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue27[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue28[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue dialogue29[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, NULL};

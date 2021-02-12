@@ -27,7 +27,7 @@ GameState::GameState(const char* filename)
     {
         level_set = new LevelSet();
         current_level_index = 0;
-        scale = 3;
+        update_scale(3);
     }
     else
     {
@@ -44,7 +44,7 @@ GameState::GameState(const char* filename)
         
         sound_volume = omap->get_num("sound_volume");
         music_volume = omap->get_num("music_volume");
-        scale = omap->get_num("scale");
+        update_scale(omap->get_num("scale"));
         if (scale < 1)
             scale = 3;
         full_screen = omap->get_num("full_screen");
@@ -61,7 +61,6 @@ GameState::GameState(const char* filename)
 	sdl_levels_texture = loadTexture("levels.png");
 	sdl_font_texture = loadTexture("font.png");
     SDL_SetRenderDrawColor(sdl_renderer, 0x0, 0x0, 0x0, 0xFF);
-    scale = 0;
     
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_AllocateChannels(16);
@@ -382,6 +381,17 @@ void GameState::render_text(XYPos tl, const char* string)
     }
 }
 
+void GameState::update_scale(int newscale)
+{
+    if (scale != newscale)
+    {
+        scale = newscale;
+        grid_offset = XYPos(32 * scale, 32 * scale);
+        panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
+    }
+}
+
+
 void GameState::render()
 {
     SDL_RenderClear(sdl_renderer);
@@ -393,12 +403,7 @@ void GameState::render()
         int newscale = std::min(sy, sx);
         if (newscale < 1)
             newscale = 1;
-        if (scale != newscale)
-        {
-            scale = newscale;
-            grid_offset = XYPos(32 * scale, 32 * scale);
-            panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
-        }
+        update_scale(newscale);
     }
     
     XYPos pos;
@@ -607,6 +612,60 @@ void GameState::render()
 //             SDL_Rect src_rect = {503, 80, 1, 1};
 //             SDL_Rect dst_rect = {(pipe_start_grid_pos.x * 32 - 4)  * scale + grid_offset.x, (pipe_start_grid_pos.y * 32 + 16 - 4) * scale + grid_offset.y, 8 * scale, 8 * scale};
 //             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+    }
+    if (mouse_state == MOUSE_STATE_PIPE_DRAGGING)
+    {
+        int i = 0;
+        XYPos n1,n2,n3;
+        std::list<XYPos>::iterator it = pipe_drag_list.begin();
+        n2 = *it;
+        it++;
+        n3 = *it;
+        it++;
+        for (;it != pipe_drag_list.end(); ++it)
+        {
+            n1 = n2;
+            n2 = n3;
+            n3 = *it;
+            XYPos d1 = n1 - n2;
+            XYPos d2 = n3 - n2;
+            XYPos d = d1 + d2;
+
+            if (frame_index % 20 < 10)
+            {
+                Connections con = Connections(0);
+
+                if (d.y < 0)
+                {
+                    if (d.x < 0)
+                        con = CONNECTIONS_NW;
+                    else if (d.x > 0)
+                        con = CONNECTIONS_NE;
+                    else
+                        assert(0);
+                }
+                else if (d.y > 0)
+                {
+                    if (d.x < 0)
+                        con = CONNECTIONS_WS;
+                    else if (d.x > 0)
+                        con = CONNECTIONS_ES;
+                    else
+                        assert(0);
+                }
+                else
+                {
+                    if (d1.x)
+                        con = CONNECTIONS_EW;
+                    else if (d1.y)
+                        con = CONNECTIONS_NS;
+                    else assert(0);
+                }
+                SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
+                SDL_Rect dst_rect = {n2.x * 32 * scale + grid_offset.x, n2.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
@@ -1275,7 +1334,9 @@ void GameState::render()
                 pic_src = XYPos(0,1);
                 break;
         }
-        render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 0);
+        render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
+        
+        render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
         SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
         SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
@@ -1600,16 +1661,24 @@ void GameState::mouse_click_in_grid()
                 pipe_start_ns = true;
             }
         }
+
+        pipe_drag_list.clear();
+
         if (pipe_start_ns)
         {
             if (current_circuit->is_blocked(pipe_start_grid_pos) && current_circuit->is_blocked(pipe_start_grid_pos - XYPos(0,1)))
                 return;
+            pipe_drag_list.push_back(XYPos(pipe_start_grid_pos));
+            pipe_drag_list.push_back(XYPos(pipe_start_grid_pos) - XYPos(0,1));
         }
         else
         {
             if (current_circuit->is_blocked(pipe_start_grid_pos) && current_circuit->is_blocked(pipe_start_grid_pos - XYPos(1,0)))
                 return;
+            pipe_drag_list.push_back(XYPos(pipe_start_grid_pos));
+            pipe_drag_list.push_back(XYPos(pipe_start_grid_pos) - XYPos(1,0));
         }
+        pipe_dragged = false;
         mouse_state = MOUSE_STATE_PIPE_DRAGGING;
     }
     else if (mouse_state == MOUSE_STATE_PIPE)
@@ -1954,6 +2023,44 @@ void GameState::mouse_click_in_panel()
 
 void GameState::mouse_motion()
 {
+    if (mouse_state == MOUSE_STATE_PIPE_DRAGGING)
+    {
+//        if (!((mouse - grid_offset) / scale).inside(XYPos(9*32,9*32)))
+//            return;
+        XYPos grid = (((mouse - grid_offset) / scale) + XYPos(32,32)) / 32 - XYPos(1,1);
+
+        XYPos last_pos = pipe_drag_list.back();
+        XYPos direction =  grid - last_pos;
+        XYPos next_pos = last_pos;
+
+        if (grid  == last_pos)
+            return;
+        if (direction.x > 0) next_pos += XYPos(1,0);
+        else if (direction.x < 0) next_pos += XYPos(-1,0);
+        else if (direction.y > 0) next_pos += XYPos(0,1);
+        else if (direction.y < 0) next_pos += XYPos(0,-1);
+        else assert(0);
+        
+        
+        std::list<XYPos>::reverse_iterator rit = pipe_drag_list.rbegin();
+        rit++;
+        if (next_pos == *rit)
+        {
+            if (pipe_drag_list.size() == 2)
+            {
+                pipe_drag_list.pop_front();
+                pipe_drag_list.push_back(next_pos);
+                return;
+            }
+            pipe_drag_list.pop_back();
+            return;
+        }
+        if (current_circuit->is_blocked(last_pos))
+            return;
+        pipe_dragged = true;
+        pipe_drag_list.push_back(next_pos);
+    }
+
     if (mouse_state == MOUSE_STATE_DELETING)
     {
         if (!((mouse - grid_offset) / scale).inside(XYPos(9*32,9*32)))
@@ -2098,7 +2205,18 @@ bool GameState::events()
                         mouse_state = MOUSE_STATE_NONE;
                     if (mouse_state == MOUSE_STATE_PIPE_DRAGGING)
                     {
-                        mouse_state = MOUSE_STATE_PIPE;
+                        if (pipe_drag_list.size() == 2)
+                        {
+                            pipe_drag_list.clear();
+                            if (!pipe_dragged)
+                                mouse_state = MOUSE_STATE_PIPE;
+                            else
+                                mouse_state = MOUSE_STATE_NONE;
+                            break;
+                        }
+                        current_circuit->add_pipe_drag_list(pipe_drag_list);
+                        pipe_drag_list.clear();
+                        mouse_state = MOUSE_STATE_NONE;
                     }
                     if (mouse_state == MOUSE_STATE_AREA_SELECT)
                     {

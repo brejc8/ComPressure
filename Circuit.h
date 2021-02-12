@@ -333,6 +333,7 @@ public:
     void set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set);
     void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
     void delete_selected_elements(std::set<XYPos> &selected_elements);
+    void add_pipe_drag_list(std::list<XYPos> &pipe_drag_list);
 
     void reset();
     void elaborate(LevelSet* level_set);

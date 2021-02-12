@@ -116,6 +116,8 @@ class GameState
     
     XYPos pipe_start_grid_pos;
     bool pipe_start_ns;
+    std::list<XYPos> pipe_drag_list;
+    bool pipe_dragged = false;
 
 public:
     GameState(const char* filename);
@@ -129,6 +131,7 @@ public:
     void render_number_long(XYPos pos, unsigned value, unsigned scale_mul = 1);
     void render_box(XYPos pos, XYPos size, unsigned colour);
     void render_text(XYPos pos, const char* string);
+    void update_scale(int newscale);
     void render();
     void advance();
     void set_level(unsigned level_index);
