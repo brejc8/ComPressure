@@ -103,6 +103,7 @@ class GameState
     int next_dialogue_level = 0;
 
     bool show_main_menu = false;
+    bool display_about = false;
     unsigned sound_volume = 100;
     unsigned music_volume = 100;
     Mix_Chunk *vent_steam_wav;

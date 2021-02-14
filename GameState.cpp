@@ -5,6 +5,7 @@
 #include "SaveState.h"
 #include "Misc.h"
 #include "Dialogue.h"
+#include "Demo.h"
 
 #include <cassert>
 #include <SDL.h>
@@ -15,10 +16,25 @@
 #include <algorithm>
 #include <limits>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+#ifdef _WIN32
+    #define NOMINMAX
+    #include <windows.h>
+    #include <shellapi.h>
+#endif
 
-
-
+static void DisplayWebsite(const char* url)
+{
+    #ifdef _WIN32
+        ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
+    #else
+        char buf[1024];
+        snprintf(buf, sizeof(buf), "xdg-open %s", url);
+        system(buf);
+    #endif
+}
 
 GameState::GameState(const char* filename)
 {
@@ -172,7 +188,7 @@ void GameState::advance()
             for (int p = 0; p < 4; p++)
             {
                 test_value[p] = simp.values[p];
-                test_drive[p] = simp.force/3;
+                test_drive[p] = simp.force[p]/3;
             }
             test_drive[current_level->tests[current_level->test_index].tested_direction] = 0;
             test_pressure_histroy_index = 0;
@@ -249,7 +265,7 @@ void GameState::render_number_2digit(XYPos pos, unsigned value, unsigned scale_m
     int myscale = scale * scale_mul;
     {
         SDL_Rect src_rect = {503, 80 + int(bg_colour), 1, 1};
-        SDL_Rect dst_rect = {pos.x, pos.y, 9 * myscale, 5 * myscale};
+        SDL_Rect dst_rect = {pos.x, pos.y-myscale, 9 * myscale, 7 * myscale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
     }
 
@@ -452,6 +468,32 @@ void GameState::render()
         src_rect = {128, 0, 32, 32};                // S
         dst_rect = {(4 * 32) * scale + grid_offset.x, (9 * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    }
+
+    if (current_level->tests[current_level->test_index].sim_points.size() == current_level->sim_point_index + 1)
+    {
+        unsigned test_index = current_level->test_index;
+        int pin_index = current_level->tests[test_index].tested_direction;
+        unsigned value = current_level->tests[test_index].sim_points.back().values[pin_index];
+        XYPos num_pos;
+        switch (pin_index)
+        {
+            case DIRECTION_N:
+                num_pos = XYPos(4, -1); break;
+            case DIRECTION_E:
+                num_pos = XYPos(9, 4); break;
+            case DIRECTION_S:
+                num_pos = XYPos(4, 9); break;
+            case DIRECTION_W:
+                num_pos = XYPos(-1, 4); break;
+            default:
+                assert(0);
+        }
+        num_pos *= 32;
+        num_pos += XYPos(6, 11);
+        num_pos *= scale;
+        num_pos += grid_offset;
+        render_number_2digit(num_pos, value, 2, 6, 0);
     }
 
     for (pos.y = 0; pos.y < 9; pos.y++)
@@ -890,6 +932,20 @@ void GameState::render()
         }
 
 
+        XYPos panel_pos = ((mouse - panel_offset) / scale);                 // Tooltip
+        if (panel_pos.y >= 0 && panel_pos.x >= 0)
+        {
+            XYPos panel_grid_pos = panel_pos / 32;
+            int level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
+
+            if (level_set->is_playable(level_index))
+            {
+                SDL_Rect src_rect = {192, 184 + level_index * 24, 64, 16};
+                SDL_Rect dst_rect = {(panel_pos.x - 64)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 64 * scale, 16 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+
+        }
 
 
     } else if (panel_state == PANEL_STATE_EDITOR)
@@ -1235,16 +1291,14 @@ void GameState::render()
             y_pos+= 16 * scale;
         }
 
-        {
+        {                                       // Output
             int pin_index = current_level->tests[test_index].tested_direction;
             SDL_Rect src_rect = {256 + pin_index * 16, 144, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             unsigned value = current_level->tests[test_index].sim_points[sim_point_count-1].values[pin_index];
             render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (sim_point_count-1) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == sim_point_count - 1 ? 4 : 0);
-
             render_number_pressure(XYPos(panel_offset.x + (8 + 16 + 3 + 16 + (sim_point_count-1) * 16) * scale, y_pos + (5) * scale), current_level->tests[test_index].last_pressure_log[HISTORY_POINT_COUNT - 1] , 1, 9, 1);
-
             y_pos += 16 * scale;
         }
         {
@@ -1267,10 +1321,18 @@ void GameState::render()
         {
             XYPos graph_pos(8 * scale + panel_offset.x, (32 + 32 + 8 + 112 + 9) * scale + panel_offset.y);
             {
-                SDL_Rect src_rect = {524, 80, 13, 101};
-                SDL_Rect dst_rect = {0 + graph_pos.x, graph_pos.y, 13 * scale, 101 * scale};
+                int target_value = current_level->tests[test_index].sim_points.back().values[current_level->tests[test_index].tested_direction];
+                int pos = 100 - target_value;
+                SDL_Rect src_rect = {503, 83, 1, 1};
+                SDL_Rect dst_rect = {graph_pos.x, (100 - target_value) * scale + graph_pos.y, (HISTORY_POINT_COUNT - 1) * scale, 1 * scale};
                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
+            {
+                SDL_Rect src_rect = {524, 80, 13, 101};
+                SDL_Rect dst_rect = {graph_pos.x, graph_pos.y, 13 * scale, 101 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+
 
             {
                 for (int i = 0; i < HISTORY_POINT_COUNT-1; i++)
@@ -1311,11 +1373,26 @@ void GameState::render()
     if (!dialogue[current_level_index][dialogue_index].text)
         show_dialogue = false;
 
+#ifdef COMPRESSURE_DEMO
+    if (current_level_index == (LEVEL_COUNT - 1) && dialogue_index)
+        show_dialogue = false;
+#endif
+
     if (show_dialogue)
     {
+        const char* text = dialogue[current_level_index][dialogue_index].text;
+        DialogueCharacter character = dialogue[current_level_index][dialogue_index].character;
+#ifdef COMPRESSURE_DEMO
+        if (current_level_index == (LEVEL_COUNT - 1))
+        {
+            text = "Alas our journey must stop somewhere. Be sure to join our\ndiscord group to drive the direction of our adventure.\n\nTo be Continued...";
+            character = DIALOGUE_ADA;
+        }
+#endif
+
         bool pic_on_left = true;
         XYPos pic_src;
-        switch (dialogue[current_level_index][dialogue_index].character)
+        switch (character)
         {
             case DIALOGUE_CHARLES:
                 pic_on_left = true;
@@ -1340,7 +1417,7 @@ void GameState::render()
         SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
         SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        render_text(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), dialogue[current_level_index][dialogue_index].text);
+        render_text(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text);
     }
     
     if (level_win_animation)
@@ -1398,7 +1475,7 @@ void GameState::render()
                 {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab\nis a shortcut to enter valve placement mode.\nPressing Tab again switches to steam inlet placement."},
                 {XYPos(0,7),  5,10, "A steam inlet will supply steam at pressure 100. Any\npipes with open ends will vent the steam to the\natmosphere at pressure 0."},
                 {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe\nconnections. Note how each pope has a little resistance. "},
-                {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the\n(+) side of the valve is at a higher pressure than\nthe (-) side. The higher it is, the more the valve\nis open. Steam on the (+) and (-) sides is not\nconsumed. Here, the (-) side is vented to atmosphere\nand thus at 0 pressure."},
+                {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the\n(+) side or the valve is at a higher pressure than\nthe (-) side. The higher it is, the more the valve\nis open. Steam on the (+) and (-) sides is not\nconsumed. Here, the (-) side is vented to atmosphere\nand thus at 0 pressure."},
                 {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower\nthan the (-) side, the valve becomes closed and no\nsteam will pass through."},
                 {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the\nvalve will become open only if the pressure on the\n(-) side is low."},
                 {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close\nthe valve."},
@@ -1517,64 +1594,87 @@ void GameState::render()
     if (show_main_menu)
     {
         render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 180), 0);
-        render_box(XYPos((160 + 32) * scale, (90 + 32)  * scale), XYPos(32, 32), 0);
+        if (!display_about)
         {
-            SDL_Rect src_rect = {448, 200, 24, 24};
-            SDL_Rect dst_rect = {(160 + 32 + 4) * scale, (90 + 32 + 4)  * scale, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_box(XYPos((160 + 32) * scale, (90 + 32)  * scale), XYPos(32, 32), 0);
+            {
+                SDL_Rect src_rect = {448, 200, 24, 24};
+                SDL_Rect dst_rect = {(160 + 32 + 4) * scale, (90 + 32 + 4)  * scale, 24 * scale, 24 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
-        }
-        render_box(XYPos((160 + 32 + 64) * scale, (90 + 32)  * scale), XYPos(32, 32), 0);
-        {
-            SDL_Rect src_rect = {472, 200, 24, 24};
-            SDL_Rect dst_rect = {(160 + 32 + 64 + 4) * scale, (90 + 32 + 4)  * scale, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        }
+            }
+            render_box(XYPos((160 + 32 + 64) * scale, (90 + 32)  * scale), XYPos(32, 32), 0);
+            {
+                SDL_Rect src_rect = {full_screen ? 280 : 256, 280, 24, 24};
+                SDL_Rect dst_rect = {(160 + 32 + 64 + 4) * scale, (90 + 32 + 4)  * scale, 24 * scale, 24 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
 
-        render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
-        {
-            SDL_Rect src_rect = {496, 200, 24, 24};
-            SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 4)  * scale, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        }
+            render_box(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(32, 32), 0);
+            {
+                SDL_Rect src_rect = {256, 256, 24, 24};
+                SDL_Rect dst_rect = {(160 + 32 + 4) * scale, (90 + 32 + 64 + 4)  * scale, 24 * scale, 24 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
-        {
-            SDL_Rect src_rect = {526, 80, 12, 101};
-            SDL_Rect dst_rect = {(160 + 32 + 128 + 16) * scale, (90 + 32 + 6 + 6)  * scale, 12 * scale, 101 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        }
+            }
 
-        {
-            SDL_Rect src_rect = {256 + 80 + 96, 16, 16, 16};
-            SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 32 + 6 + int(100 - sound_volume))  * scale, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        }
+            render_box(XYPos((160 + 32+ 64) * scale, (90 + 32 + 64)  * scale), XYPos(32, 32), 0);
+            {
+                SDL_Rect src_rect = {256+24, 256, 24, 24};
+                SDL_Rect dst_rect = {(160 + 32+ 64 + 4) * scale, (90 + 32 + 64 + 4)  * scale, 24 * scale, 24 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 
-        render_box(XYPos((160 + 32 + 192) * scale, (90 + 32)  * scale), XYPos(32, 128), 2);
-        {
-            SDL_Rect src_rect = {520, 200, 24, 24};
-            SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 4)  * scale, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        }
-        {
-            SDL_Rect src_rect = {526, 80, 12, 101};
-            SDL_Rect dst_rect = {(160 + 32 + 192 + 16) * scale, (90 + 32 + 6 + 6)  * scale, 12 * scale, 101 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        }
+            }
 
+            render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
+            {
+                SDL_Rect src_rect = {496, 200, 24, 24};
+                SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 4)  * scale, 24 * scale, 24 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+
+            {
+                SDL_Rect src_rect = {526, 80, 12, 101};
+                SDL_Rect dst_rect = {(160 + 32 + 128 + 16) * scale, (90 + 32 + 6 + 6)  * scale, 12 * scale, 101 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+
+            {
+                SDL_Rect src_rect = {256 + 80 + 96, 16, 16, 16};
+                SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 32 + 6 + int(100 - sound_volume))  * scale, 16 * scale, 16 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+
+            render_box(XYPos((160 + 32 + 192) * scale, (90 + 32)  * scale), XYPos(32, 128), 2);
+            {
+                SDL_Rect src_rect = {520, 200, 24, 24};
+                SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 4)  * scale, 24 * scale, 24 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+            {
+                SDL_Rect src_rect = {526, 80, 12, 101};
+                SDL_Rect dst_rect = {(160 + 32 + 192 + 16) * scale, (90 + 32 + 6 + 6)  * scale, 12 * scale, 101 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+
+            {
+                SDL_Rect src_rect = {256 + 80 + 192, 16, 16, 16};
+                SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 32 + 6 + int(100 - music_volume))  * scale, 16 * scale, 16 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+        }
+        else
         {
-            SDL_Rect src_rect = {256 + 80 + 192, 16, 16, 16};
-            SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 32 + 6 + int(100 - music_volume))  * scale, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson";
+            render_text(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text);
+
+        
         }
 
 
     }
     SDL_RenderPresent(sdl_renderer);
 }
-
- 
-
 
 void GameState::set_level(unsigned level_index)
 {
@@ -2259,15 +2359,29 @@ bool GameState::events()
                 {
                     if (show_main_menu)
                     {
+                        if (display_about)
+                        {
+                            display_about = false;
+                            break;
+                        }
+                        
                         XYPos pos = (mouse / scale) - XYPos((160 + 32), (90 + 32));
                         if (pos.inside(XYPos(32, 32)))
                             return true;
+                        if ((pos - XYPos(0, 64)).inside(XYPos(32, 32)))
+                        {
+                            DisplayWebsite("https://discord.gg/7ZVZgA7gkS");
+                        }
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 32)))
                         {
                             full_screen = !full_screen;
                             SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
                             SDL_SetWindowBordered(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
+                        }
+                        if ((pos - XYPos(0, 64)).inside(XYPos(32, 32)))
+                        {
+                            display_about = true;
                         }
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 128)))

@@ -1,4 +1,4 @@
-Dialogue dialogue0[] = {
+static Dialogue dialogue0[] = {
     {DIALOGUE_CHARLES,
         "Greetings Gertrude! My name is Charles Chavvington, the\n"
         "proprietor of these here General High Pressure Steam Works.\n"
@@ -33,10 +33,10 @@ Dialogue dialogue0[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue1[] = {
+static Dialogue dialogue1[] = {
     {DIALOGUE_CHARLES,
         "Darn it! The secure door to Ada's laboratory is operated with\n"
-        "Low Pressure Steam! I could never figure out how she would get\n"
+        "low pressure steam! I could never figure out how she would get\n"
         "this blasted thing open.\n"
         "\n"
         "Here at General High Pressure Steam Works we generate steam at\n"
@@ -54,7 +54,7 @@ Dialogue dialogue1[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue2[] = {
+static Dialogue dialogue2[] = {
     {DIALOGUE_CHARLES,
         "By Jove! You did it! Terrible waste of good steam, but it got\n"
         "the job done.\n"
@@ -72,7 +72,7 @@ Dialogue dialogue2[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue3[] = {
+static Dialogue dialogue3[] = {
     {DIALOGUE_NICOLA,
         "Impressive!\n"
     },
@@ -101,7 +101,7 @@ Dialogue dialogue3[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue4[] = {
+static Dialogue dialogue4[] = {
     {DIALOGUE_CHARLES,
         "Excellent! Now, combining these two designs, we can construct\n"
         "a component that switches between two sources.\n"
@@ -131,7 +131,7 @@ Dialogue dialogue4[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue5[] = {
+static Dialogue dialogue5[] = {
     {DIALOGUE_NICOLA,
         "Lady Chavvington's notes talk about a steam connection between\n"
         "the Laboratory and the Lady Easley's residence that was used\n"
@@ -152,8 +152,11 @@ Dialogue dialogue5[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "Hah! Impossible! This is elementary steamology my dear boy! In\n"
-        "any case, I am needed elsewhere. These High Pressure Steam\n"
+        "Hah! Impossible! This is elementary steamology my dear boy!\n"
+        "Steam communication relies on the transfer of steam, and you\n"
+        "shall not \"Transfer\" any of my steam out!\n"
+        "\n"
+        "In any case, I am needed elsewhere. These High Pressure Steam\n"
         "Works do not run themselves.\n"
     },
 
@@ -161,21 +164,42 @@ Dialogue dialogue5[] = {
         "...\n"
         "\n"
         "According to Lady Chavvington, Charles was not known as the\n"
-        "greatest listener. It appears some of parts of the original\n"
-        "design still remain installed in the wall. So long as we use\n"
-        "Lady Easley's steam to power the devices beyond the wall,\n"
-        "Charles will have no complaint.\n"
+        "greatest listener. She describes the design in some detail.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "June 5th\n"
+        "I created a fantastic pressure replicating device today. To\n"
+        "create a pressure of a specific value, I used a valves\n"
+        "supplying and venting steam at a precise ratio. By opening the\n"
+        "steam valve to 80%, and opening the atmospheric venting valve\n"
+        "to 20%, I could recreate the original pressure of 80 PSI. This\n"
+        "appears to work for a whole range of values. Due to it's\n"
+        "isolating properties I shall name it a \"buffer\".\n"
+        "\n"
+        "Communication through pressure, rather than the flow of steam,\n"
+        "offers wondrous possibilities as the value is not distorted by\n"
+        "the resistance of long pipes. I explained the idea to Charles,\n"
+        "although he was more consumed with matters of company profit.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "It appears some of parts of the original design still remain\n"
+        "installed in the wall. So long as we use Lady Easley's steam\n"
+        "to power the devices beyond the wall, Charles will have no\n"
+        "complaint.\n"
+        "\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue6[] = {
+static Dialogue dialogue6[] = {
     {DIALOGUE_NICOLA,
         "Not perfect, but we can always come back and improve it.\n"
         "Fascinating, is it not?. The combination of valves reproduces\n"
         "any pressure value. The incoming pressure opens the steam\n"
-        "inlet and the atmosphere venting valves the exact levels to\n"
+        "inlet and the atmosphere venting valves to the exact levels to\n"
         "correctly reproduce the pressure in the output pipe.\n"
         "\n"
         "Let us send our first message and visit Lady Easley to see if\n"
@@ -214,11 +238,11 @@ Dialogue dialogue6[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue7[] = {
+static Dialogue dialogue7[] = {
     {DIALOGUE_CHARLES,
         "Drat! For the life of me I cannot find the pressure comparator\n"
         "Ada made. Every year, the highly prestigious High Pressure\n"
-        "Steam society compares the pressures provided by all the High\n"
+        "Steam Society compares the pressures provided by all the High\n"
         "Pressure Steam Works to determine the supplier of the Highest\n"
         "Pressure Steam. Without an accurate comparator, we will have\n"
         "to cancel this year's competition.\n"
@@ -243,14 +267,14 @@ Dialogue dialogue7[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue8[] = {
+static Dialogue dialogue8[] = {
     {DIALOGUE_CHARLES,
         "Excellent! Such precision! I am sure it could detect the\n"
         "pressure of a feather on a cricket pitch.\n"
         "\n"
         "I need but one more device before I shall leave you to your\n"
         "investigations. In order to be admitted to the High Pressure\n"
-        "Steam society, one must show their steam works produce High\n"
+        "Steam Society, one must show their steam works produce High\n"
         "Pressure Steam.\n"
         "\n"
     },
@@ -276,7 +300,7 @@ Dialogue dialogue8[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue9[] = {
+static Dialogue dialogue9[] = {
     {DIALOGUE_CHARLES,
         "Bravo! With this contraption I will keep those low pressure\n"
         "steam producers out of our exclusive society.\n"
@@ -296,7 +320,7 @@ Dialogue dialogue9[] = {
         "Finally...\n"
         "\n"
         "According to Lady Chavvington's diary, a second communication\n"
-        "pipeline was installed leading to the residence of non other\n"
+        "pipeline was installed leading to the residence of none other\n"
         "than Lord Moorhouse! Charles would not have been happy if he\n"
         "found it. Look.\n"
     },
@@ -323,7 +347,7 @@ Dialogue dialogue9[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue10[] = {
+static Dialogue dialogue10[] = {
     {DIALOGUE_NICOLA,
         "Astonishing! Well, that got us half way there. We can send,\n"
         "but now we need to receive. We must amplify their steam\n"
@@ -335,89 +359,50 @@ Dialogue dialogue10[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue11[] = {
+static Dialogue dialogue11[] = {
     {DIALOGUE_ADA,
-        "Alas our journey must stop somewhere. Be sure to join our\n"
-        "discord group to drive the direction of our adventure.\n"
-        "\n"
-        "To be Continued...\n"
-        "\n"
+        "The journey will continue, although the story is yet to be\n"
+        "written.\n"
         "\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue12[] = {
+static Dialogue dialogue12[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue13[] = {
+static Dialogue dialogue13[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue14[] = {
+static Dialogue dialogue14[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue15[] = {
+static Dialogue dialogue15[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue16[] = {
+static Dialogue dialogue16[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue17[] = {
+static Dialogue dialogue17[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue18[] = {
+static Dialogue dialogue18[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue19[] = {
+static Dialogue dialogue19[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue20[] = {
+static Dialogue dialogue20[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue dialogue21[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue dialogue22[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue dialogue23[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue dialogue24[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue dialogue25[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue dialogue26[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue dialogue27[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue dialogue28[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue dialogue29[] = {
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, NULL};
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, NULL};

@@ -2,37 +2,50 @@
 #include "Misc.h"
 #include "SaveState.h"
 #include "Circuit.h"
+#include "Demo.h"
 #include <stdlib.h>
 
+
+#ifdef COMPRESSURE_DEMO
 #define LEVEL_COUNT 12
+#else
+#define LEVEL_COUNT 12
+#endif
 #define HISTORY_POINT_COUNT 200
 
 
 class SimPoint
 {
 public:
-    unsigned values[4];
-    unsigned force = 50;
+    unsigned values[4] = {50};
+    unsigned force[4] = {50};
     SimPoint(unsigned N, unsigned E, unsigned S, unsigned W)
     {
         values[0] = N;
         values[1] = E;
         values[2] = S;
         values[3] = W;
+        force[0] = 50;
+        force[1] = 50;
+        force[2] = 50;
+        force[3] = 50;
+
     }
-    SimPoint(unsigned N, unsigned E, unsigned S, unsigned W, unsigned F)
+    SimPoint(unsigned N, unsigned E, unsigned S, unsigned W, unsigned NF, unsigned EF, unsigned SF, unsigned WF)
     {
         values[0] = N;
         values[1] = E;
         values[2] = S;
         values[3] = W;
-        force = F;
+        force[0] = NF;
+        force[1] = EF;
+        force[2] = SF;
+        force[3] = WF;
     }
     SimPoint()
     {
         assert(0);
     }
-
 };
 
 enum TestExecType
@@ -62,6 +75,7 @@ public:
 class Level
 {
 public:
+    const char* name;
     CircuitPressure ports[4];
 
     unsigned level_index;

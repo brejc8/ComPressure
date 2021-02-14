@@ -127,7 +127,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
 #define NEW_TEST do {tests.push_back({}); if (loaded_level_version == level_version && slist && slist->get_count() > tests.size()-1) tests.back().load(slist->get_item(tests.size()-1));} while (false)
 #define NEW_POINT(a, b, c, d) tests.back().sim_points.push_back(SimPoint(a, b, c, d))
-#define NEW_POINT_F(a, b, c, d, f) tests.back().sim_points.push_back(SimPoint(a, b, c, d, f))
+#define NEW_POINT_F(a, b, c, d, fa, fb, fc, fd) tests.back().sim_points.push_back(SimPoint(a, b, c, d, fa, fb, fc, fd))
 
     SaveObjectList* slist = omap ? omap->get_item("tests")->get_list() : NULL;
     unsigned loaded_level_version = omap ? omap->get_num("level_version") : 0;
@@ -442,41 +442,41 @@ void Level::init_tests(SaveObjectMap* omap)
             level_version = 10;
 
             NEW_TEST;// N   E   S   W
-            NEW_POINT_F(  0,  0,  0,  0, 50);
-            NEW_POINT_F(  0,  0,  0,  0, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
             NEW_TEST;
-            NEW_POINT_F(  0,  0,  0,  0, 80);
-            NEW_POINT_F(  0, 50,  0,100, 80);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 80);
+            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 80);
             NEW_TEST;
-            NEW_POINT_F(  0, 50,  0,100, 40);
-            NEW_POINT_F(  0, 30,  0, 60, 50);
+            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 40);
+            NEW_POINT_F(  0, 30,  0, 60, 50, 50, 50, 50);
             NEW_TEST;
-            NEW_POINT_F(  0, 30,  0, 60,100);
-            NEW_POINT_F(  0, 25,  0, 50,100);
+            NEW_POINT_F(  0, 30,  0, 60, 50, 50, 50,100);
+            NEW_POINT_F(  0, 25,  0, 50, 50, 50, 50,100);
             NEW_TEST;
-            NEW_POINT_F(  0, 25,  0, 50, 60);
-            NEW_POINT_F(  0, 20,  0, 40, 60);
+            NEW_POINT_F(  0, 25,  0, 50, 50, 50, 50, 60);
+            NEW_POINT_F(  0, 20,  0, 40, 50, 50, 50, 60);
             NEW_TEST;
-            NEW_POINT_F(  0, 20,  0, 40, 80);
-            NEW_POINT_F(  0, 10,  0, 20, 80);
+            NEW_POINT_F(  0, 20,  0, 40, 50, 50, 50, 80);
+            NEW_POINT_F(  0, 10,  0, 20, 50, 50, 50, 80);
             NEW_TEST;
-            NEW_POINT_F(  0, 10,  0, 20, 40);
-            NEW_POINT_F(  0, 25,  0, 50, 40);
+            NEW_POINT_F(  0, 10,  0, 20, 50, 50, 50, 40);
+            NEW_POINT_F(  0, 25,  0, 50, 50, 50, 50, 40);
             NEW_TEST;
-            NEW_POINT_F(  0, 25,  0, 50, 60);
-            NEW_POINT_F(  0, 50,  0,100, 60);
+            NEW_POINT_F(  0, 25,  0, 50, 50, 50, 50, 60);
+            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 60);
             NEW_TEST;
-            NEW_POINT_F(  0, 50,  0,100, 40);
-            NEW_POINT_F(  0,  0,  0,  0, 40);
+            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 40);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 40);
             NEW_TEST;
-            NEW_POINT_F(  0,  0,  0,  0, 50);
-            NEW_POINT_F(  0, 50,  0,100, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
+            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 50);
             NEW_TEST;
-            NEW_POINT_F(  0, 50,  0,100, 40);
-            NEW_POINT_F(  0,  0,  0,  0, 40);
+            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 40);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 40);
             NEW_TEST;
-            NEW_POINT_F(  0,  0,  0,  0, 50);
-            NEW_POINT_F(  0, 50,  0,100, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
+            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 50);
             break;
 
         case 10:                                                        // mul 2
@@ -509,13 +509,43 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,  0,  0,  0);
             break;
 
-        case 11:                                                        // mul 2
-            connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
+        case 11:                                                    // mean
+            substep_count = 30000;
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
             level_version = 10;
+
             NEW_TEST;// N   E   S   W
-            NEW_POINT(  0, 77,  0,  0);
+            NEW_POINT_F(  0,  0,  0,  0, 10, 50, 50, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 10, 50, 50, 50);
+            NEW_TEST;
+            NEW_POINT_F(  0,  0,  0,  0, 10, 50, 50, 50);
+            NEW_POINT_F( 50, 50, 50,  0, 80, 50, 10, 50);
+            NEW_TEST;
+            NEW_POINT_F( 50, 50, 50,  0, 80, 50, 10, 50);
+            NEW_POINT_F(100,100,100,  0, 60, 50, 10, 50);
+            NEW_TEST;
+            NEW_POINT_F(100,100,100,  0, 60, 50, 10, 50);
+            NEW_POINT_F(  0, 50,100,  0, 20, 50, 70, 50);
+            NEW_TEST;
+            NEW_POINT_F(  0, 50,100,  0, 20, 50, 70, 50);
+            NEW_POINT_F(100, 50,  0,  0, 60, 50, 20, 50);
+            NEW_TEST;
+            NEW_POINT_F(100, 50,  0,  0, 60, 50, 20, 50);
+            NEW_POINT_F( 40, 20,  0,  0, 20, 50, 80, 50);
+            NEW_TEST;
+            NEW_POINT_F( 40, 20,  0,  0, 20, 50, 80, 50);
+            NEW_POINT_F(  0, 30, 60,  0, 70, 50, 20, 50);
+            NEW_TEST;
+            NEW_POINT_F(  0, 30, 60,  0, 70, 50, 20, 50);
+            NEW_POINT_F(100, 80, 60,  0, 70, 50, 40, 50);
+            NEW_TEST;
+            NEW_POINT_F(100, 80, 60,  0, 70, 50, 40, 50);
+            NEW_POINT_F(50,  55, 60,  0, 90, 50, 50, 50);
+            NEW_TEST;
+            NEW_POINT_F(50,  55, 60,  0, 90, 50, 50, 50);
+            NEW_POINT_F(10,  5,   0,  0, 70, 50, 30, 50);
             break;
-            
+
 
  
 //         case 10:                                                             // amp inv
@@ -746,7 +776,7 @@ void Level::advance(unsigned ticks, TestExecType type)
         for (int p = 0; p < 4; p++)
         {
             if (((connection_mask >> p) & 1) && p != tests[test_index].tested_direction)
-                ports[p].apply(simp.values[p], simp.force);
+                ports[p].apply(simp.values[p], simp.force[p]);
         }
         circuit->sim_post(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
 
@@ -878,6 +908,8 @@ SaveObject* LevelSet::save()
 }
 bool LevelSet::is_playable(unsigned level)
 {
+    if (level >= LEVEL_COUNT)
+        return false;
     for (int i = 0; i < level; i++)
     {
         if (levels[i]->best_score < percent_as_pressure(75))

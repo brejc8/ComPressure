@@ -14,7 +14,7 @@ If you are unfamiliar with our High Pressure Steam pipes, there is an engineerin
 
 #                               50
 !CHARLES
-Darn it! The secure door to Ada's laboratory is operated with Low Pressure Steam! I could never figure out how she would get this blasted thing open.
+Darn it! The secure door to Ada's laboratory is operated with low pressure steam! I could never figure out how she would get this blasted thing open.
 
 Here at General High Pressure Steam Works we generate steam at 100 Pounds per Square Inch. The door uses Moorhouse's low pressure steam which operates at 50 Pounds per Square Inch (PSI). I'll be dammed if I pipe that degenerate Moorhouse steam onto my property!
 
@@ -65,16 +65,26 @@ Yes, I had it removed. New procedures. Too much of our High Pressure Steam was g
 !NICOLA
 I think we can still establish a connection without delivering any steam out. According to these notes...
 !CHARLES
-Hah! Impossible! This is elementary steamology my dear boy! In any case, I am needed elsewhere. These High Pressure Steam Works do not run themselves.
+Hah! Impossible! This is elementary steamology my dear boy! Steam communication relies on the transfer of steam, and you shall not "Transfer" any of my steam out!
+
+In any case, I am needed elsewhere. These High Pressure Steam Works do not run themselves.
 !NICOLA
 ...
 
-According to Lady Chavvington, Charles was not known as the greatest listener. It appears some of parts of the original design still remain installed in the wall. So long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint.
+According to Lady Chavvington, Charles was not known as the greatest listener. She describes the design in some detail.
+!ADA
+June 5th
+I created a fantastic pressure replicating device today. To create a pressure of a specific value, I used a valves supplying and venting steam at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. This appears to work for a whole range of values. Due to it's isolating properties I shall name it a "buffer".
+
+Communication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit.
+!NICOLA
+It appears some of parts of the original design still remain installed in the wall. So long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint. 
+
 !END
 
 #                           Inverter
 !NICOLA
-Not perfect, but we can always come back and improve it. Fascinating, is it not?. The combination of valves reproduces any pressure value. The incoming pressure opens the steam inlet and the atmosphere venting valves the exact levels to correctly reproduce the pressure in the output pipe.
+Not perfect, but we can always come back and improve it. Fascinating, is it not?. The combination of valves reproduces any pressure value. The incoming pressure opens the steam inlet and the atmosphere venting valves to the exact levels to correctly reproduce the pressure in the output pipe.
 
 Let us send our first message and visit Lady Easley to see if it works.
 !ANNIE
@@ -93,7 +103,7 @@ Interesting. Perhaps we should see if we can make the same mistake.
 
 #                           Op Amp
 !CHARLES
-Drat! For the life of me I cannot find the pressure comparator Ada made. Every year, the highly prestigious High Pressure Steam society compares the pressures provided by all the High Pressure Steam Works to determine the supplier of the Highest Pressure Steam. Without an accurate comparator, we will have to cancel this year's competition.
+Drat! For the life of me I cannot find the pressure comparator Ada made. Every year, the highly prestigious High Pressure Steam Society compares the pressures provided by all the High Pressure Steam Works to determine the supplier of the Highest Pressure Steam. Without an accurate comparator, we will have to cancel this year's competition.
 
 My five year winning record will be ruined! I am sure she had another one around here somewhere...
 !NICOLA
@@ -107,7 +117,7 @@ I said we could make one, sir.
 #                           Amp
 Excellent! Such precision! I am sure it could detect the pressure of a feather on a cricket pitch.
 
-I need but one more device before I shall leave you to your investigations. In order to be admitted to the High Pressure Steam society, one must show their steam works produce High Pressure Steam.
+I need but one more device before I shall leave you to your investigations. In order to be admitted to the High Pressure Steam Society, one must show their steam works produce High Pressure Steam.
 
 !CHARLES
 Here at General High Pressure Steam Works, we produce High Pressure Steam at 100 PSI, the only pressure I would recognise as true High Pressure Steam. But technically any steam pressure above 50 PSI is considered High Pressure Steam. As the chair of the High Pressure Steam society, it is my responsibility to make sure inferior low pressure steam producing deviants are not permitted to join.
@@ -128,7 +138,7 @@ In any case, I must be off lest I miss the reception drinks!
 !NICOLA
 Finally...
 
-According to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of non other than Lord Moorhouse! Charles would not have been happy if he found it. Look.
+According to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of none other than Lord Moorhouse! Charles would not have been happy if he found it. Look.
 !ADA
 June 17th
 
@@ -143,27 +153,24 @@ Really!?! How can that possibly work?
 Astonishing! Well, that got us half way there. We can send, but now we need to receive. We must amplify their steam pressure to our range. According to Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure.
 !END
 !ADA
-Alas our journey must stop somewhere. Be sure to join our discord group to drive the direction of our adventure.
-
-To be Continued... 
-
+The journey will continue, although the story is yet to be written. 
 
 !END
+
+!END
+
+!END
+
+!END
+
+!END
+
 !END
 !END
+
 !END
+
 !END
+
 !END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
+
