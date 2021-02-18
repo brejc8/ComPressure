@@ -509,8 +509,110 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,  0,  0,  0);
             break;
 
-        case 11:                                                    // mean
-            substep_count = 30000;
+        case 11:                                                        // Encrypt
+            connection_mask = CONMASK_W | CONMASK_E;
+            level_version = 11;
+            
+            circuit->force_element(XYPos(0,1), new CircuitElementEmpty());
+            circuit->force_element(XYPos(1,1), new CircuitElementEmpty());
+            circuit->force_element(XYPos(2,1), new CircuitElementEmpty());
+            circuit->force_element(XYPos(0,2), new CircuitElementPipe(CONNECTIONS_ES));
+            circuit->force_element(XYPos(1,2), new CircuitElementValve(DIRECTION_E));
+            circuit->force_element(XYPos(2,2), new CircuitElementSource(DIRECTION_W));
+            circuit->force_element(XYPos(0,3), new CircuitElementPipe(CONNECTIONS_NES));
+            circuit->force_element(XYPos(1,3), new CircuitElementValve(DIRECTION_E));
+            circuit->force_element(XYPos(2,3), new CircuitElementSource(DIRECTION_W));
+            circuit->force_element(XYPos(0,4), new CircuitElementPipe(CONNECTIONS_NWS));
+            circuit->force_element(XYPos(1,4), new CircuitElementPipe(CONNECTIONS_NES));
+            circuit->force_element(XYPos(2,4), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(0,5), new CircuitElementPipe(CONNECTIONS_NE));
+            circuit->force_element(XYPos(1,5), new CircuitElementValve(DIRECTION_W));
+            circuit->force_element(XYPos(2,5), new CircuitElementEmpty());
+            circuit->force_element(XYPos(0,6), new CircuitElementEmpty());
+            circuit->force_element(XYPos(1,6), new CircuitElementSource(DIRECTION_N));
+            circuit->force_element(XYPos(2,6), new CircuitElementEmpty());
+            circuit->force_element(XYPos(0,7), new CircuitElementEmpty());
+            circuit->force_element(XYPos(1,7), new CircuitElementEmpty());
+            circuit->force_element(XYPos(2,7), new CircuitElementEmpty());
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 24,  0, 13);
+            NEW_TEST;
+            NEW_POINT(  0, 24,  0, 13);
+            NEW_POINT(  0, 27,  0, 15);
+            NEW_TEST;
+            NEW_POINT(  0, 27,  0, 15);
+            NEW_POINT(  0, 64,  0, 48);
+            NEW_TEST;
+            NEW_POINT(  0, 64,  0, 48);
+            NEW_POINT(  0, 69,  0, 54);
+            NEW_TEST;
+            NEW_POINT(  0, 69,  0, 54);
+            NEW_POINT(  0, 83,  0, 73);
+            NEW_TEST;
+            NEW_POINT(  0, 83,  0, 73);
+            NEW_POINT(  0, 85,  0, 76);
+            NEW_TEST;
+            NEW_POINT(  0, 85,  0, 76);
+            NEW_POINT(  0, 87,  0, 79);
+            NEW_TEST;
+            NEW_POINT(  0, 87,  0, 79);
+            NEW_POINT(  0, 94,  0, 90);
+            NEW_TEST;
+            NEW_POINT(  0, 94,  0, 90);
+            NEW_POINT(  0, 97,  0, 95);
+            NEW_TEST;
+            NEW_POINT(  0, 97,  0, 95);
+            NEW_POINT(  0,100,  0,100);
+            break;
+
+
+        case 12:                                                        // Decrypt
+            connection_mask = CONMASK_W | CONMASK_E;
+            level_version = 11;
+            substep_count = 20000;
+            circuit->force_element(XYPos(3,4), new CircuitElementSubCircuit(DIRECTION_N, 7));
+
+            circuit->force_element(XYPos(4,5), new CircuitElementSubCircuit(DIRECTION_S, 11));
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 13,  0, 24);
+            NEW_TEST;
+            NEW_POINT(  0, 13,  0, 24);
+            NEW_POINT(  0, 15,  0, 27);
+            NEW_TEST;
+            NEW_POINT(  0, 15,  0, 27);
+            NEW_POINT(  0, 48,  0, 64);
+            NEW_TEST;
+            NEW_POINT(  0, 48,  0, 64);
+            NEW_POINT(  0, 54,  0, 69);
+            NEW_TEST;
+            NEW_POINT(  0, 54,  0, 69);
+            NEW_POINT(  0, 73,  0, 83);
+            NEW_TEST;
+            NEW_POINT(  0, 73,  0, 83);
+            NEW_POINT(  0, 76,  0, 85);
+            NEW_TEST;
+            NEW_POINT(  0, 76,  0, 85);
+            NEW_POINT(  0, 79,  0, 87);
+            NEW_TEST;
+            NEW_POINT(  0, 79,  0, 87);
+            NEW_POINT(  0, 90,  0, 94);
+            NEW_TEST;
+            NEW_POINT(  0, 90,  0, 94);
+            NEW_POINT(  0, 95,  0, 97);
+
+
+            break;
+
+
+        case 13:                                                    // mean
+            substep_count = 20000;
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
             level_version = 10;
 
@@ -546,7 +648,83 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT_F(10,  5,   0,  0, 70, 50, 30, 50);
             break;
 
+        case 14:                                                    // add
+            substep_count = 20000;
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
 
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT( 70, 80, 10,  0);
+            NEW_TEST;
+            NEW_POINT( 70, 80, 10,  0);
+            NEW_POINT( 40, 80, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 40, 80, 40,  0);
+            NEW_POINT( 50,100, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 50,100, 50,  0);
+            NEW_POINT( 70,100, 30,  0);
+            NEW_TEST;
+            NEW_POINT( 70,100, 30,  0);
+            NEW_POINT( 25, 75, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 25, 75, 50,  0);
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_POINT( 10, 80, 70,  0);
+            NEW_TEST;
+            NEW_POINT( 10, 80, 70,  0);
+            NEW_POINT( 80, 90, 10,  0);
+            NEW_TEST;
+            NEW_POINT( 80, 90, 10,  0);
+            NEW_POINT( 20,100, 80,  0);
+            NEW_TEST;
+            NEW_POINT( 20,100, 80,  0);
+            NEW_POINT( 60,100, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 60,100, 40,  0);
+            NEW_POINT( 20, 80, 60,  0);
+            break;
+
+        case 15:                                                    // subtract
+            substep_count = 30000;
+            connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 40, 50, 90);
+            NEW_TEST;
+            NEW_POINT(  0, 40, 50, 90);
+            NEW_POINT(  0, 50, 20, 70);
+            NEW_TEST;
+            NEW_POINT(  0, 50, 20, 70);
+            NEW_POINT(  0,  0, 70, 70);
+            NEW_TEST;
+            NEW_POINT(  0,  0, 70, 70);
+            NEW_POINT(  0, 25, 25, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 25, 25, 50);
+            NEW_POINT(  0, 50, 20, 70);
+            NEW_TEST;
+            NEW_POINT(  0, 50, 20, 70);
+            NEW_POINT(  0, 20, 20, 40);
+            NEW_TEST;
+            NEW_POINT(  0, 20, 20, 40);
+            NEW_POINT(  0, 40,  0, 40);
+            NEW_TEST;
+            NEW_POINT(  0, 40,  0, 40);
+            NEW_POINT(  0,  0, 40, 40);
+            NEW_TEST;
+            NEW_POINT(  0,  0, 40, 40);
+            NEW_POINT(  0, 50, 50,100);
+
+ 
  
 //         case 10:                                                             // amp inv
 //             connection_mask = CONMASK_W | CONMASK_E;
@@ -624,121 +802,6 @@ void Level::init_tests(SaveObjectMap* omap)
 //             NEW_POINT( 60,  0, 45, 50);
 //             break;
 // 
-//         case 13:
-//             substep_count = 30000;
-//             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
-// 
-//             NEW_TEST;// N   E   S   W
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_TEST;
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_POINT( 50, 50, 50,  0);
-//             NEW_TEST;
-//             NEW_POINT( 50, 50, 50,  0);
-//             NEW_POINT(100,100,100,  0);
-//             NEW_TEST;
-//             NEW_POINT(100,100,100,  0);
-//             NEW_POINT(  0, 50,100,  0);
-//             NEW_TEST;
-//             NEW_POINT(  0, 50,100,  0);
-//             NEW_POINT(100, 50,  0,  0);
-//             NEW_TEST;
-//             NEW_POINT(100, 50,  0,  0);
-//             NEW_POINT( 40, 20,  0,  0);
-//             NEW_TEST;
-//             NEW_POINT( 40, 20,  0,  0);
-//             NEW_POINT(  0, 30, 60,  0);
-//             NEW_TEST;
-//             NEW_POINT(  0, 30, 60,  0);
-//             NEW_POINT(100, 80, 60,  0);
-//             NEW_TEST;
-//             NEW_POINT(100, 80, 60,  0);
-//             NEW_POINT(50,  55, 60,  0);
-//             NEW_TEST;
-//             NEW_POINT(50,  55, 60,  0);
-//             NEW_POINT(10,  5,  0,  0);
-//             break;
-// 
-// 
-//         case 14:
-//             substep_count = 30000;
-//             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
-// 
-//             NEW_TEST;// N   E   S   W
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_TEST;
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_POINT( 40, 50, 10,  0);
-//             NEW_TEST;
-//             NEW_POINT( 40, 50, 10,  0);
-//             NEW_POINT( 40, 80, 40,  0);
-//             NEW_TEST;
-//             NEW_POINT( 40, 80, 40,  0);
-//             NEW_POINT( 50,100, 50,  0);
-//             NEW_TEST;
-//             NEW_POINT( 50,100, 50,  0);
-//             NEW_POINT( 70,100, 30,  0);
-//             NEW_TEST;
-//             NEW_POINT( 70,100, 30,  0);
-//             NEW_POINT( 25, 75, 50,  0);
-//             NEW_TEST;
-//             NEW_POINT( 25, 75, 50,  0);
-//             NEW_POINT(  0, 50, 50,  0);
-//             NEW_TEST;
-//             NEW_POINT(  0, 50, 50,  0);
-//             NEW_POINT(  0, 10, 10,  0);
-//             NEW_TEST;
-//             NEW_POINT(  0, 10, 10,  0);
-//             NEW_POINT( 80, 90, 10,  0);
-//             NEW_TEST;
-//             NEW_POINT( 80, 90, 10,  0);
-//             NEW_POINT( 20,100, 80,  0);
-//             NEW_TEST;
-//             NEW_POINT( 20,100, 80,  0);
-//             NEW_POINT( 60,100, 40,  0);
-//             NEW_TEST;
-//             NEW_POINT( 60,100, 40,  0);
-//             NEW_POINT(  0,100,100,  0);
-//             NEW_TEST;
-//             NEW_POINT(  0,100,100,  0);
-//             NEW_POINT( 10, 10,  0,  0);
-//             break;
-// 
-//         case 15:
-//             substep_count = 50000;
-//             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
-//             NEW_TEST;// N   E   S   W
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_TEST;
-//             NEW_POINT(  0,  0,  0,  0);
-//             NEW_POINT(  0, 40, 50, 90);
-//             NEW_TEST;
-//             NEW_POINT(  0, 40, 50, 90);
-//             NEW_POINT(  0, 50, 20, 70);
-//             NEW_TEST;
-//             NEW_POINT(  0, 50, 20, 70);
-//             NEW_POINT(  0,  0, 70, 70);
-//             NEW_TEST;
-//             NEW_POINT(  0,  0, 70, 70);
-//             NEW_POINT(  0, 25, 25, 50);
-//             NEW_TEST;
-//             NEW_POINT(  0, 25, 25, 50);
-//             NEW_POINT(  0, 50, 20, 70);
-//             NEW_TEST;
-//             NEW_POINT(  0, 50, 20, 70);
-//             NEW_POINT(  0, 20, 20, 40);
-//             NEW_TEST;
-//             NEW_POINT(  0, 20, 20, 40);
-//             NEW_POINT(  0, 40,  0, 40);
-//             NEW_TEST;
-//             NEW_POINT(  0, 40,  0, 40);
-//             NEW_POINT(  0,  0, 40, 40);
-//             NEW_TEST;
-//             NEW_POINT(  0,  0, 40, 40);
-//             NEW_POINT(  0, 50, 50,100);
         default:
             printf("no level %d\n", level_index);
             break;

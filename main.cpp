@@ -10,7 +10,7 @@
 
 #include "GameState.h"
 
-#define STEAM
+//#define STEAM
 
 #ifdef STEAM
 #include "steam/steam_api.h"

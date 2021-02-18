@@ -326,7 +326,7 @@ public:
     void copy_elements(Circuit& other);
 
 
-    void set_element_empty(XYPos pos);
+    void set_element_empty(XYPos pos, bool no_history = false);
     void set_element_pipe(XYPos pos, Connections con);
     void set_element_valve(XYPos pos, Direction direction);
     void set_element_source(XYPos pos, Direction direction);

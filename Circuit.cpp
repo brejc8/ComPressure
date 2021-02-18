@@ -791,13 +791,16 @@ void Circuit::sim_post(PressureAdjacent adj_)
 }
 
 
-void Circuit::set_element_empty(XYPos pos)
+void Circuit::set_element_empty(XYPos pos, bool no_histoyy)
 {
     if (is_blocked(pos))
         return;
     if (elements[pos.y][pos.x]->is_empty())
         return;
-    ammend();
+    if (!no_histoyy)
+        ammend();
+    else
+        fast_prepped = false;
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementEmpty();
 }

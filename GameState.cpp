@@ -1010,8 +1010,18 @@ void GameState::render()
                 SDL_Rect dst_rect = {(panel_pos.x - 28)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 28 * scale, 12 * scale};
                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
-            
+            panel_grid_pos = (panel_pos - XYPos(0,8)) / 32;
+            int level_index = panel_grid_pos.x + (panel_grid_pos.y - 1) * 8;
+
+            if (level_set->is_playable(level_index))
+            {
+                SDL_Rect src_rect = {192, 184 + level_index * 24, 64, 16};
+                SDL_Rect dst_rect = {(panel_pos.x - 64)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 64 * scale, 16 * scale};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+
         }
+
 //     } else if (panel_state == PANEL_STATE_MONITOR && 0)
 //     {
 //         int mon_offset = 0;
@@ -1410,7 +1420,11 @@ void GameState::render()
                 pic_on_left = true;
                 pic_src = XYPos(0,1);
                 break;
-        }
+             case DIALOGUE_GEORGE:
+                pic_on_left = true;
+                pic_src = XYPos(1,2);
+                break;
+       }
         render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
         
         render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
@@ -1920,6 +1934,7 @@ void GameState::mouse_click_in_grid()
     else if (mouse_state == MOUSE_STATE_DELETING)
     {
         current_circuit->undo(level_set);
+        first_deletion = true;
     }
     else
     {
@@ -2170,8 +2185,11 @@ void GameState::mouse_motion()
             return;
         if (current_circuit->is_blocked(grid))
             return;
+        if (current_circuit->elements[grid.y][grid.x]->is_empty())
+            return;
 
-        current_circuit->set_element_empty(grid);
+        current_circuit->set_element_empty(grid, !first_deletion);
+        first_deletion = false;
         current_level->touched = true;
 
     }
@@ -2441,6 +2459,7 @@ bool GameState::events()
                     if (mouse_state == MOUSE_STATE_NONE)
                     {
                         mouse_state = MOUSE_STATE_DELETING;
+                        first_deletion = true;
                         mouse_motion();
                     }
                     else

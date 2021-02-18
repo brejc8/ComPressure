@@ -119,6 +119,7 @@ class GameState
     bool pipe_start_ns;
     std::list<XYPos> pipe_drag_list;
     bool pipe_dragged = false;
+    bool first_deletion = false;
 
 public:
     GameState(const char* filename);

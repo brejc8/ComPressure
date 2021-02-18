@@ -2,7 +2,7 @@
 !CHARLES
 Greetings Gertrude! My name is Charles Chavvington, the proprietor of these here General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.
 
-My dearly departed wife, Ada, stipulated that her research into the mathematical properties of steam should continue beyond her natural life. Which leads us to the reason for you coming into my employ. Your undertaking shall be to preserve her legacy and continue these scientific inquiries.
+My dearly departed wife, Ada, stipulated that her research into the mathematical properties of steam should continue beyond her time with us. Which leads us to the reason for you coming into my employ. Your undertaking shall be to preserve her legacy and continue these scientific inquiries.
 
 !CHARLES
 I trust you have mastered elementary steam engineering in your prior studies, but before we allow you access to her laboratory, you must first demonstrate you are adept at basic steam pipe construction.
@@ -23,7 +23,7 @@ Unless you can magic up a supply of low pressure steam at 50 PSI, we might as we
 
 #					NPN
 !CHARLES
-By Jove! You did it! Terrible waste of good steam, but it got the job done.
+By Jove! You did it! Terrible waste of good steam, but it got the job done. I apologise for the untidy state, but some hoodlums have gained access and left a frightful mess.
 
 In this laboratory, my dearest Ada conducted experiments on the valves I constructed to her exact specifications. By applying a good dose of High Pressure Steam to the port marked with a "+", we can open the valve, allowing steam to pass freely between the two unmarked ends.
 
@@ -65,20 +65,19 @@ Yes, I had it removed. New procedures. Too much of our High Pressure Steam was g
 !NICOLA
 I think we can still establish a connection without delivering any steam out. According to these notes...
 !CHARLES
-Hah! Impossible! This is elementary steamology my dear boy! Steam communication relies on the transfer of steam, and you shall not "Transfer" any of my steam out!
+Hah! Impossible! This is elementary steamology my dear boy! Steam communication relies on the transfer of steam, and thou shalt not "Transfer" any of my steam out!
 
-In any case, I am needed elsewhere. These High Pressure Steam Works do not run themselves.
-!NICOLA
+In any case, I am needed elsewhere. This matter does not appear as urgent as the investigations into into my missing steam.
 ...
 
 According to Lady Chavvington, Charles was not known as the greatest listener. She describes the design in some detail.
 !ADA
 June 5th
-I created a fantastic pressure replicating device today. To create a pressure of a specific value, I used a valves supplying and venting steam at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. This appears to work for a whole range of values. Due to it's isolating properties I shall name it a "buffer".
+I created a fantastic pressure replicating device today. To create a pressure of a specific value, I used a valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. This appears to work for a whole range of values with the minimal of error. Due to it's isolating properties I shall name it a "buffer".
 
 Communication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit.
 !NICOLA
-It appears some of parts of the original design still remain installed in the wall. So long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint. 
+It appears some of parts of the original design still remain installed in the wall. As long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint.
 
 !END
 
@@ -138,11 +137,11 @@ In any case, I must be off lest I miss the reception drinks!
 !NICOLA
 Finally...
 
-According to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of none other than Lord Moorhouse! Charles would not have been happy if he found it. Look.
+According to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of none other than Lord Moorhouse! Charles would not have been happy if he had found it. Look.
 !ADA
 June 17th
 
-With the pipeline to Lord Moorhouse's estate complete, I am beginning work on a device to compact the our high range of pressure values (0-100), to ones acceptable by the low pressure system (0-50). To my complete surprise, when powered by Lord Moorhouse's low pressure steam, but still using 100 PSI as the reference input, the pressure buffer was able to scale the input pressure to precisely one half.
+With the pipeline to Lord Moorhouse's estate complete, I am beginning work on a device to compact the high range of pressure values (0-100), to ones acceptable by the low pressure system (0-50). To my complete surprise, when powered by Lord Moorhouse's low pressure steam, but still using 100 PSI as the reference input, the pressure buffer was able to scale the input pressure to precisely one half.
 
 These properties could have wondrous uses in the field of mathematics.
 !NICOLA
@@ -150,27 +149,126 @@ Really!?! How can that possibly work?
 !END
 #                           mul 2
 !NICOLA
-Astonishing! Well, that got us half way there. We can send, but now we need to receive. We must amplify their steam pressure to our range. According to Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure.
+Astonishing! Well, that got us half way there. We can send; but now we need to receive. We must amplify their steam pressure to our range. According to Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure.
 !END
+#					???
+!NICOLA
+Lets see if this works.
+
+80 PSI [Hello]
+55 PSI [Request meeting]
+57 PSI [Afternoon tea at Madingley Hall]
+!GEORGE
+...
+23 PSI [Negative]
+...
+7  PSI [7]
+12 PSI [/]
+8  PSI [8]
+!NICOLA
+What?!? 7/8? Let me check the diary.
+...
+All the entry for June 8th talks about is the design of the pressure inverter. How could he even communicate with us if the pressures were reversed? ... reversed ... reversed? ...  Of cause!
+
+My apologies. Too much time spent in the colonies. Here is the correct entry.
 !ADA
-The journey will continue, although the story is yet to be written. 
+July 7th
 
+I suspect our communications have been compromised! At 2 PM precisely, Lord Moorhouse agree to combine our efforts and exchanged the codes to the doors of our respective laboratories over our new steam communicator. By 5 PM a hand delivered note was received at our residence informing me his Laboratory has been ransacked and I was no longer welcome. I rushed to find mine was also! So much work lost.
+
+I stored the code securely. Surely Charles would not have done such a thing. I immediately had the door on my laboratory replaced. Charles would rather die than operate a Moorhouse steam door.
+
+!ADA
+I no longer feel safe here. I contacted my sister to expect my imminent arrival. It was a perfect time to test my new encryption system which will keep our communications secure. I still have not received the sign Charles promised for the pipe that leads to her residence. He can be so forgetful at times.
+
+!NICOLA
+That was her last diary entry.
+
+Oh dear! I didn't think that pipe was leading anywhere so I used the components for our other designs. Luckily some were welded down so I left them in place. The encryption unit seems mostly functional.
+!END
+!NICOLA
+Well that was simple. The encryption is simple an unbalanced buffer. But how could you possibly make a design which accurately reverses such a codex?
+
+Perhaps Lady Easley could help. I shall enquire if she is available to assist us.
+...
+!ANNIE
+Among Ada's papers, did you happen to find a napkin from the Madingley Hall tea rooms? I believe it was dated June 24th. We were discussing new Royal Society paper on "convergence in monotonic series" when Ada begun scribbling things down on a napkin. She then proceeded to run out exclaiming how she may have solved the decryption problem. Without settling the bill, if I may add.
+!ADA
+June 24th
+A decryption device can be formed repeatedly guessing the value, encrypting it and comparing it to the encrypted input. Should the input be higher, we increase the guess. Should it be lower, we reduce it. Such a device could reverse numerous functions.
+
+Charles's steam comparator was just what I needed, although I must remember to return it to him before this year's high pressure steam society meeting.
+!NICOLA
+At least we know where his comparator got to.
+!END
+!NICOLA
+Incredible! Using this technique we could improve the precision of all our designs. Lady Chavvington's sister must have more information about these designs.
+
+80 PSI [Hello]
+!ADA
+80 PSI [Hello]
+93 PSI [This is Ada Chavvington]
+!NICOLA
+60 PSI [Who?]
+73 PSI [Repeat]
+!ADA
+25 PSI [A]
+28 PSI [D]
+25 PSI [A]
+24 PSI [_]
+27 PSI [C]
+32 PSI [H]
+25 PSI [A]
+46 PSI [V]
+46 PSI [V]
+33 PSI [I]
+38 PSI [N]
+31 PSI [G]
+44 PSI [T]
+39 PSI [O]
+38 PSI [N]
+!NICOLA
+This is unexpected. We must inform Lord Chavvington at once.
+...
+Lord Chavvington! We established a link to Lady Chavvington's sister's residence, but the person at the other end claims to be Lady Chavvington herself!
+!CHARLES
+Ah, yes, that would be Ada.
+!NICOLA
+B... But Lord Chavvington, you said Ada had died.
+!CHARLES
+What nonsense! Ada is perfectly fine and staying with sister until we resolve this matter of the missing High Pressure Steam.
+!NICOLA
+You called her your "dearly departed".
+!CHARLES
+Yes... She has departed... To her sister's...
+!NICOLA
+Everyone assumed she died...
+!CHARLES
+Hmm... Yes... On reflection, that would explain the flowers and cards expressing sympathy my loss. I was touched by people's concern for the loss of my High Pressure Steam.
+
+Nevertheless. The sooner you complete the steam calculation machine, the sooner we can get to the bottom of this. Continue the research at most haste.
+!ADA
+June 27th
+Together with Lord Moorhouse such progress has been made in our research info steam computation. I have discovered the key is the "Mean" function. Taking pressures from two pipes, and producing a third pressure, precisely between the two. Doing so without distorting the input pressures has yielded the most significant advancement so far. Using this, Lord Moorhouse was able to create an steam pressure adding component, which I hope he will reveal to me.
+
+Lord Moorhouse is most charming and smart as a whip, but often he refuses to share his innovations and at times his advances are most unwelcome.
+!END
+!NICOLA
+Well it works, but I don't see how this gets up closer to steam computation. I suppose we must ask Lord Moorhouse.
+!NICOLA
+Lord Moorhouse. 
+
+
+
+!ADA
+The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
 !END
 
 !END
-
-!END
-
-!END
-
-!END
-
 !END
 !END
-
 !END
-
 !END
-
 !END
-
+!END
+!END

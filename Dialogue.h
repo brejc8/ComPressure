@@ -7,6 +7,7 @@ enum DialogueCharacter
     DIALOGUE_NICOLA,
     DIALOGUE_ADA,
     DIALOGUE_ANNIE,
+    DIALOGUE_GEORGE
 };
 struct Dialogue
 {
