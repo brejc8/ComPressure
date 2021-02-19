@@ -9,7 +9,7 @@
 #ifdef COMPRESSURE_DEMO
 #define LEVEL_COUNT 12
 #else
-#define LEVEL_COUNT 16
+#define LEVEL_COUNT 17
 #endif
 #define HISTORY_POINT_COUNT 200
 
@@ -105,7 +105,7 @@ public:
     Level(unsigned level_index_, SaveObject* sobj);
     Level(unsigned level_index_);
     ~Level();
-    SaveObject* save();
+    SaveObject* save(bool lite = false);
 
     XYPos getimage(Direction direction);
     XYPos getimage_fg(Direction direction);
@@ -127,7 +127,7 @@ public:
     LevelSet(SaveObject* sobj);
     LevelSet();
     ~LevelSet();
-    SaveObject* save();
+    SaveObject* save(bool lite = false);
     bool is_playable(unsigned level);
     int top_playable();
 

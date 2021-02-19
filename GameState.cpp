@@ -10,6 +10,8 @@
 #include <cassert>
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <SDL_net.h>
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -18,6 +20,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
+#include <sstream>
 
 #ifdef _WIN32
     #define NOMINMAX
@@ -98,25 +102,67 @@ GameState::GameState(const char* filename)
     
 }
     
+SaveObject* GameState::save(bool lite)
+{
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_item("levels", level_set->save(lite));
+    omap->add_num("current_level_index", current_level_index);
+    omap->add_num("game_speed", game_speed);
+    omap->add_num("show_debug", show_debug);
+    omap->add_num("next_dialogue_level", next_dialogue_level);
+    omap->add_num("show_help_page", show_help_page);
+    omap->add_num("scale", scale);
+    omap->add_num("full_screen", full_screen);
+    omap->add_num("sound_volume", sound_volume);
+    omap->add_num("music_volume", music_volume);
+    omap->add_string("username", username);
 
-void GameState::save(const char*  filename)
+    return omap;
+}
+
+void GameState::save(std::ostream& outfile, bool lite)
+{
+    outfile << std::setprecision(std::numeric_limits<double>::digits);
+    SaveObject* omap = save(lite);
+    omap->save(outfile);
+    delete omap;
+}
+
+
+void GameState::save(const char*  filename, bool lite)
 {
     std::ofstream outfile (filename);
-    outfile << std::setprecision(std::numeric_limits<double>::digits);
-    SaveObjectMap omap;
-    
-    omap.add_item("levels", level_set->save());
-    omap.add_num("current_level_index", current_level_index);
-    omap.add_num("game_speed", game_speed);
-    omap.add_num("show_debug", show_debug);
-    omap.add_num("next_dialogue_level", next_dialogue_level);
-    omap.add_num("show_help_page", show_help_page);
-    omap.add_num("scale", scale);
-    omap.add_num("full_screen", full_screen);
-    omap.add_num("sound_volume", sound_volume);
-    omap.add_num("music_volume", music_volume);
+    save(outfile);
+}
 
-    omap.save(outfile);
+
+void GameState::post_to_server()
+{
+    IPaddress ip;
+    TCPsocket tcpsock;
+
+    std::ostringstream stream;
+    save(stream, true);
+    std::string uncomp =  stream.str();
+    std::string comp = compress_string(uncomp);
+
+//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
+    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1) {
+      printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+      return;
+    }
+
+    tcpsock = SDLNet_TCP_Open(&ip);
+    if (!tcpsock) {
+      printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+      return;
+    }
+    
+    SDLNet_TCP_Send(tcpsock, comp.c_str(), comp.length()); /* add 1 for the NULL */
+    SDLNet_TCP_Close(tcpsock);
+
+
+
 }
 
 

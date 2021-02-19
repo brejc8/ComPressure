@@ -2,6 +2,7 @@
 #include "Misc.h"
 #include "Circuit.h"
 #include "Level.h"
+#include "Compress.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
@@ -47,6 +48,8 @@ class GameState
     int scale = 0;
     XYPos grid_offset = XYPos(32 * scale, 32 * scale);
     XYPos panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
+    
+    const char* username = "none";
 
     LevelSet* level_set;
     Level* current_level;
@@ -123,7 +126,11 @@ class GameState
 
 public:
     GameState(const char* filename);
-    void save(const char* filename);
+    SaveObject* save(bool lite = false);
+    void save(std::ostream& outfile, bool lite = false);
+    void save(const char* filename, bool lite = false);
+    void post_to_server();
+
     ~GameState();
     SDL_Texture* loadTexture(const char* filename);
 
@@ -141,4 +148,9 @@ public:
     void mouse_click_in_panel();
     void mouse_motion();
     bool events();
+    void set_username(const char* name)
+    {
+        username = name;
+    }
+
 };

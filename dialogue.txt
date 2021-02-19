@@ -121,7 +121,7 @@ I need but one more device before I shall leave you to your investigations. In o
 !CHARLES
 Here at General High Pressure Steam Works, we produce High Pressure Steam at 100 PSI, the only pressure I would recognise as true High Pressure Steam. But technically any steam pressure above 50 PSI is considered High Pressure Steam. As the chair of the High Pressure Steam society, it is my responsibility to make sure inferior low pressure steam producing deviants are not permitted to join.
 
-I require a device to correctly determine the quality of the applicants steam.
+I require a device to correctly determine the quality of the applicant's steam.
 !NICOLA
 We still have your design for the 50 PSI steam generator in the tool box.
 !END
@@ -153,7 +153,7 @@ Astonishing! Well, that got us half way there. We can send; but now we need to r
 !END
 #					???
 !NICOLA
-Lets see if this works.
+Let's see if this works.
 
 80 PSI [Hello]
 55 PSI [Request meeting]
@@ -168,18 +168,18 @@ Lets see if this works.
 !NICOLA
 What?!? 7/8? Let me check the diary.
 ...
-All the entry for June 8th talks about is the design of the pressure inverter. How could he even communicate with us if the pressures were reversed? ... reversed ... reversed? ...  Of cause!
+All the entry for June 8th talks about is the design of the pressure inverter. How could he even communicate with us if the pressures were reversed? ... reversed ... reversed? ...  Of course!
 
 My apologies. Too much time spent in the colonies. Here is the correct entry.
 !ADA
 July 7th
 
-I suspect our communications have been compromised! At 2 PM precisely, Lord Moorhouse agree to combine our efforts and exchanged the codes to the doors of our respective laboratories over our new steam communicator. By 5 PM a hand delivered note was received at our residence informing me his Laboratory has been ransacked and I was no longer welcome. I rushed to find mine was also! So much work lost.
+I suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our new steam communicator. Just hours later, a hand delivered note was received at our residence informing me his Laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost.
 
 I stored the code securely. Surely Charles would not have done such a thing. I immediately had the door on my laboratory replaced. Charles would rather die than operate a Moorhouse steam door.
 
 !ADA
-I no longer feel safe here. I contacted my sister to expect my imminent arrival. It was a perfect time to test my new encryption system which will keep our communications secure. I still have not received the sign Charles promised for the pipe that leads to her residence. He can be so forgetful at times.
+I no longer feel safe here. I contacted my sister to expect my imminent arrival. It was a perfect time to test my new encryption system, which will keep our communications secure. I still have not received the sign Charles promised to put on the pipe that leads to her residence. He can be so forgetful at times.
 
 !NICOLA
 That was her last diary entry.
@@ -187,15 +187,15 @@ That was her last diary entry.
 Oh dear! I didn't think that pipe was leading anywhere so I used the components for our other designs. Luckily some were welded down so I left them in place. The encryption unit seems mostly functional.
 !END
 !NICOLA
-Well that was simple. The encryption is simple an unbalanced buffer. But how could you possibly make a design which accurately reverses such a codex?
+Well that was simple. The encryption is simple an unbalanced buffer. But how could you possibly make a design which accurately reverses such a cypher?
 
 Perhaps Lady Easley could help. I shall enquire if she is available to assist us.
 ...
 !ANNIE
-Among Ada's papers, did you happen to find a napkin from the Madingley Hall tea rooms? I believe it was dated June 24th. We were discussing new Royal Society paper on "convergence in monotonic series" when Ada begun scribbling things down on a napkin. She then proceeded to run out exclaiming how she may have solved the decryption problem. Without settling the bill, if I may add.
+Among Ada's papers, did you happen to find a napkin from the Madingley Hall tea rooms? I believe it was dated June 24th. We were discussing new Royal Society paper on "convergence in monotonic series" when Ada began scribbling things down on a napkin. She then proceeded to run out exclaiming how she may have solved the decryption problem. Without settling the bill, I might add.
 !ADA
 June 24th
-A decryption device can be formed repeatedly guessing the value, encrypting it and comparing it to the encrypted input. Should the input be higher, we increase the guess. Should it be lower, we reduce it. Such a device could reverse numerous functions.
+A decryption device can be formed by repeatedly guessing the value, encrypting it and comparing it to the encrypted input. Should the input be higher, we increase the guess. Should it be lower, we reduce it. Such a device could reverse numerous functions.
 
 Charles's steam comparator was just what I needed, although I must remember to return it to him before this year's high pressure steam society meeting.
 !NICOLA
@@ -246,20 +246,58 @@ Everyone assumed she died...
 !CHARLES
 Hmm... Yes... On reflection, that would explain the flowers and cards expressing sympathy my loss. I was touched by people's concern for the loss of my High Pressure Steam.
 
-Nevertheless. The sooner you complete the steam calculation machine, the sooner we can get to the bottom of this. Continue the research at most haste.
+Nevertheless. The sooner you complete the steam calculation machine, the sooner we can get to the bottom of this. Continue the research post haste.
 !ADA
 June 27th
-Together with Lord Moorhouse such progress has been made in our research info steam computation. I have discovered the key is the "Mean" function. Taking pressures from two pipes, and producing a third pressure, precisely between the two. Doing so without distorting the input pressures has yielded the most significant advancement so far. Using this, Lord Moorhouse was able to create an steam pressure adding component, which I hope he will reveal to me.
+Together with Lord Moorhouse such progress has been made in our research into steam computation. I have discovered the key is the "Mean" function. Taking pressures from two pipes, and producing a third pressure, precisely between the two. Doing so without distorting the input pressures has yielded the most significant advancement so far. Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.
 
 Lord Moorhouse is most charming and smart as a whip, but often he refuses to share his innovations and at times his advances are most unwelcome.
 !END
 !NICOLA
 Well it works, but I don't see how this gets up closer to steam computation. I suppose we must ask Lord Moorhouse.
 !NICOLA
-Lord Moorhouse. 
+Lord Moorhouse. Thank you for allowing us to call upon you. In her absence, we are attempting to continue the steam computation work of Lady Chavvington. Only you know the construction of the pressure adding unit and we beg you share it with us.
+!GEORGE
+I do agree. Having thought on this recently, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of the adder in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand.
+!NICOLA
+Lady Chavvington is alive and well, staying with her sister.
+!GEORGE
+That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. God forbid one of those high pressure tankers explodes. The destruction would be immense. I would not rest until the world was rid of this high pressure horror and my darling Ada was in my loving arms...
 
+Oh... Where was I? The adder. The mean unit already does most of the work, it simply requires a correction using Ada's low to high pressure steam convertor.
 
+But now, you must leave. With Ada safe, I have an important task I must prepare for.
+!END
+!CHARLES
+I have brought the sign for the pipe that Ada asked for.
+!NICOLA
+That must have been months ago.
+!CHARLES
+Yes, well, when a I say I will do something, it will be done. You don't have to remind me every month.
 
+Could you please send her a message from me?
+
+80, 94, 75, 52, 68
+!NICOLA
+I see you have learned the codes!
+!CHARLES
+Learned?!? I designed them! It was during my time in the military. A combination of the most frequently exchanged messages bewteen captains.
+
+Be a good chap and send it off at once.
+!NICOLA
+80 PSI [Hello]
+94 PSI [This is Charles Chavvington]
+75 PSI [My sweetest angel]
+52 PSI [My heart yearns for you]
+68 PSI [I longingly await your return for without you life has lost all meaning]
+
+!CHARLES
+Good, now, I see the adder design is complete. Excellent! As my dearly departed Ada used to say... 
+!NICOLA
+Sir! You must stop using that phrase! People are beginning to think you a murderer...
+!CHARLES
+Hmm... Yes. As Ada..., who is no longer with us, used to say, "A subtracter is but an inversion of an adder".
+!END
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
 !END
@@ -272,3 +310,4 @@ The journey will continue, although the story is yet to be written. If you have 
 !END
 !END
 !END
+

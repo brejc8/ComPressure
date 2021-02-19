@@ -91,18 +91,21 @@ Level::~Level()
     delete circuit;
 }
 
-SaveObject* Level::save()
+SaveObject* Level::save(bool lite)
 {
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_item("circuit", circuit->save());
     omap->add_num("level_version", level_version);
     omap->add_num("best_score", best_score);
 
-    SaveObjectList* slist = new SaveObjectList;
-    unsigned test_count = tests.size();
-    for (unsigned i = 0; i < test_count; i++)
-        slist->add_item(tests[i].save());
-    omap->add_item("tests", slist);
+    if (!lite)
+    {
+        SaveObjectList* slist = new SaveObjectList;
+        unsigned test_count = tests.size();
+        for (unsigned i = 0; i < test_count; i++)
+            slist->add_item(tests[i].save());
+        omap->add_item("tests", slist);
+    }
     return omap;
 }
 
@@ -129,7 +132,10 @@ void Level::init_tests(SaveObjectMap* omap)
 #define NEW_POINT(a, b, c, d) tests.back().sim_points.push_back(SimPoint(a, b, c, d))
 #define NEW_POINT_F(a, b, c, d, fa, fb, fc, fd) tests.back().sim_points.push_back(SimPoint(a, b, c, d, fa, fb, fc, fd))
 
-    SaveObjectList* slist = omap ? omap->get_item("tests")->get_list() : NULL;
+    SaveObjectList* slist = NULL;
+    if (omap && omap->get_item("tests"))
+        omap->get_item("tests")->get_list();
+
     unsigned loaded_level_version = omap ? omap->get_num("level_version") : 0;
 
     switch(level_index)
@@ -654,21 +660,21 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
-            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT( 20, 20,  0,  0);
             NEW_TEST;
-            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT( 20, 20,  0,  0);
             NEW_POINT( 70, 80, 10,  0);
             NEW_TEST;
             NEW_POINT( 70, 80, 10,  0);
             NEW_POINT( 40, 80, 40,  0);
             NEW_TEST;
             NEW_POINT( 40, 80, 40,  0);
-            NEW_POINT( 50,100, 50,  0);
+            NEW_POINT( 50, 70, 20,  0);
             NEW_TEST;
-            NEW_POINT( 50,100, 50,  0);
-            NEW_POINT( 70,100, 30,  0);
+            NEW_POINT( 50, 70, 20,  0);
+            NEW_POINT( 70, 80, 10,  0);
             NEW_TEST;
-            NEW_POINT( 70,100, 30,  0);
+            NEW_POINT( 70, 80, 10,  0);
             NEW_POINT( 25, 75, 50,  0);
             NEW_TEST;
             NEW_POINT( 25, 75, 50,  0);
@@ -681,18 +687,22 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT( 80, 90, 10,  0);
             NEW_TEST;
             NEW_POINT( 80, 90, 10,  0);
-            NEW_POINT( 20,100, 80,  0);
+            NEW_POINT( 20, 40, 20,  0);
             NEW_TEST;
-            NEW_POINT( 20,100, 80,  0);
+            NEW_POINT( 20, 40, 20,  0);
             NEW_POINT( 60,100, 40,  0);
             NEW_TEST;
             NEW_POINT( 60,100, 40,  0);
             NEW_POINT( 20, 80, 60,  0);
+            NEW_TEST;
+            NEW_POINT( 20, 80, 60,  0);
+            NEW_POINT(  0,  0,  0,  0);
             break;
 
         case 15:                                                    // subtract
             substep_count = 30000;
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
+            pin_order[0] = 3; pin_order[1] = 2; pin_order[2] = 1; pin_order[3] = 0;
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
             NEW_POINT(  0,  0,  0,  0);
@@ -723,8 +733,14 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT(  0,  0, 40, 40);
             NEW_POINT(  0, 50, 50,100);
+            break;
 
  
+        case 16:                                                    // end
+            connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0, 77,  0,  0);
+            break;
  
 //         case 10:                                                             // amp inv
 //             connection_mask = CONMASK_W | CONMASK_E;
@@ -927,6 +943,12 @@ void Level::update_score()
             for (int i = 0; i < HISTORY_POINT_COUNT; i++)
                 tests[t].best_pressure_log[i] = tests[t].last_pressure_log[i];
         }
+        
+        
+        SaveObject* omap = circuit->save();
+        omap->save(std::cout);
+        
+        
     }
     return;
 }
@@ -959,13 +981,13 @@ LevelSet::~LevelSet()
         }
 }
 
-SaveObject* LevelSet::save()
+SaveObject* LevelSet::save(bool lite)
 {
     SaveObjectList* slist = new SaveObjectList;
     
     for (int i = 0; i < LEVEL_COUNT; i++)
     {
-        slist->add_item(levels[i]->save());
+        slist->add_item(levels[i]->save(lite));
     }
     return slist;
 }

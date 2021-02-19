@@ -289,7 +289,7 @@ static Dialogue dialogue8[] = {
         "producing deviants are not permitted to join.\n"
         "\n"
         "I require a device to correctly determine the quality of the\n"
-        "applicants steam.\n"
+        "applicant's steam.\n"
     },
 
     {DIALOGUE_NICOLA,
@@ -361,7 +361,7 @@ static Dialogue dialogue10[] = {
 
 static Dialogue dialogue11[] = {
     {DIALOGUE_NICOLA,
-        "Lets see if this works.\n"
+        "Let's see if this works.\n"
         "\n"
         "80 PSI [Hello]\n"
         "55 PSI [Request meeting]\n"
@@ -383,7 +383,7 @@ static Dialogue dialogue11[] = {
         "All the entry for June 8th talks about is the design of the\n"
         "pressure inverter. How could he even communicate with us if\n"
         "the pressures were reversed? ... reversed ... reversed? ...\n"
-        "Of cause!\n"
+        "Of course!\n"
         "\n"
         "My apologies. Too much time spent in the colonies. Here is the\n"
         "correct entry.\n"
@@ -392,13 +392,14 @@ static Dialogue dialogue11[] = {
     {DIALOGUE_ADA,
         "July 7th\n"
         "\n"
-        "I suspect our communications have been compromised! At 2 PM\n"
-        "precisely, Lord Moorhouse agree to combine our efforts and\n"
-        "exchanged the codes to the doors of our respective\n"
-        "laboratories over our new steam communicator. By 5 PM a hand\n"
-        "delivered note was received at our residence informing me his\n"
-        "Laboratory has been ransacked and I was no longer welcome. I\n"
-        "rushed to find mine was also! So much work lost.\n"
+        "I suspect our communications have been compromised! After days\n"
+        "of pleading, Lord Moorhouse agreed to combine our research\n"
+        "efforts. We exchanged the codes to the doors of our respective\n"
+        "laboratories over our new steam communicator. Just hours\n"
+        "later, a hand delivered note was received at our residence\n"
+        "informing me his Laboratory has been ransacked and I was no\n"
+        "longer welcome. I rushed to find mine had also been broken\n"
+        "into! So much work lost.\n"
         "\n"
         "I stored the code securely. Surely Charles would not have done\n"
         "such a thing. I immediately had the door on my laboratory\n"
@@ -410,9 +411,10 @@ static Dialogue dialogue11[] = {
     {DIALOGUE_ADA,
         "I no longer feel safe here. I contacted my sister to expect my\n"
         "imminent arrival. It was a perfect time to test my new\n"
-        "encryption system which will keep our communications secure. I\n"
-        "still have not received the sign Charles promised for the pipe\n"
-        "that leads to her residence. He can be so forgetful at times.\n"
+        "encryption system, which will keep our communications secure.\n"
+        "I still have not received the sign Charles promised to put on\n"
+        "the pipe that leads to her residence. He can be so forgetful\n"
+        "at times.\n"
         "\n"
     },
 
@@ -432,7 +434,7 @@ static Dialogue dialogue12[] = {
     {DIALOGUE_NICOLA,
         "Well that was simple. The encryption is simple an unbalanced\n"
         "buffer. But how could you possibly make a design which\n"
-        "accurately reverses such a codex?\n"
+        "accurately reverses such a cypher?\n"
         "\n"
         "Perhaps Lady Easley could help. I shall enquire if she is\n"
         "available to assist us.\n"
@@ -443,15 +445,15 @@ static Dialogue dialogue12[] = {
         "Among Ada's papers, did you happen to find a napkin from the\n"
         "Madingley Hall tea rooms? I believe it was dated June 24th. We\n"
         "were discussing new Royal Society paper on \"convergence in\n"
-        "monotonic series\" when Ada begun scribbling things down on a\n"
+        "monotonic series\" when Ada began scribbling things down on a\n"
         "napkin. She then proceeded to run out exclaiming how she may\n"
         "have solved the decryption problem. Without settling the bill,\n"
-        "if I may add.\n"
+        "I might add.\n"
     },
 
     {DIALOGUE_ADA,
         "June 24th\n"
-        "A decryption device can be formed repeatedly guessing the\n"
+        "A decryption device can be formed by repeatedly guessing the\n"
         "value, encrypting it and comparing it to the encrypted input.\n"
         "Should the input be higher, we increase the guess. Should it\n"
         "be lower, we reduce it. Such a device could reverse numerous\n"
@@ -547,19 +549,19 @@ static Dialogue dialogue13[] = {
         "\n"
         "Nevertheless. The sooner you complete the steam calculation\n"
         "machine, the sooner we can get to the bottom of this. Continue\n"
-        "the research at most haste.\n"
+        "the research post haste.\n"
     },
 
     {DIALOGUE_ADA,
         "June 27th\n"
         "Together with Lord Moorhouse such progress has been made in\n"
-        "our research info steam computation. I have discovered the key\n"
+        "our research into steam computation. I have discovered the key\n"
         "is the \"Mean\" function. Taking pressures from two pipes, and\n"
         "producing a third pressure, precisely between the two. Doing\n"
         "so without distorting the input pressures has yielded the most\n"
         "significant advancement so far. Using this, Lord Moorhouse was\n"
-        "able to create an steam pressure adding component, which I\n"
-        "hope he will reveal to me.\n"
+        "able to create a steam pressure adding component, which I hope\n"
+        "he will reveal to me.\n"
         "\n"
         "Lord Moorhouse is most charming and smart as a whip, but often\n"
         "he refuses to share his innovations and at times his advances\n"
@@ -576,26 +578,110 @@ static Dialogue dialogue14[] = {
     },
 
     {DIALOGUE_NICOLA,
-        "Lord Moorhouse.\n"
-        "\n"
-        "\n"
-        "\n"
+        "Lord Moorhouse. Thank you for allowing us to call upon you. In\n"
+        "her absence, we are attempting to continue the steam\n"
+        "computation work of Lady Chavvington. Only you know the\n"
+        "construction of the pressure adding unit and we beg you share\n"
+        "it with us.\n"
     },
 
-    {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be\n"
-        "written. If you have reached this far, join our discord to\n"
-        "request the next chapter.\n"
+    {DIALOGUE_GEORGE,
+        "I do agree. Having thought on this recently, the advancement\n"
+        "of knowledge must continue despite her collusion with Charles\n"
+        "against me. I will disclose the secret of the adder in\n"
+        "exchange for the assurance that she is safe from him. Hearing\n"
+        "the rumours that pass through these halls, I suspect her dead\n"
+        "by his hand.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Lady Chavvington is alive and well, staying with her sister.\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "That is a relief. The idea of her spending any more time in\n"
+        "that high pressure death trap keeps me up at night. God forbid\n"
+        "one of those high pressure tankers explodes. The destruction\n"
+        "would be immense. I would not rest until the world was rid of\n"
+        "this high pressure horror and my darling Ada was in my loving\n"
+        "arms...\n"
+        "\n"
+        "Oh... Where was I? The adder. The mean unit already does most\n"
+        "of the work, it simply requires a correction using Ada's low\n"
+        "to high pressure steam convertor.\n"
+        "\n"
+        "But now, you must leave. With Ada safe, I have an important\n"
+        "task I must prepare for.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue15[] = {
+    {DIALOGUE_CHARLES,
+        "I have brought the sign for the pipe that Ada asked for.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "That must have been months ago.\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Yes, well, when a I say I will do something, it will be done.\n"
+        "You don't have to remind me every month.\n"
+        "\n"
+        "Could you please send her a message from me?\n"
+        "\n"
+        "80, 94, 75, 52, 68\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "I see you have learned the codes!\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Learned?!? I designed them! It was during my time in the\n"
+        "military. A combination of the most frequently exchanged\n"
+        "messages bewteen captains.\n"
+        "\n"
+        "Be a good chap and send it off at once.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "80 PSI [Hello]\n"
+        "94 PSI [This is Charles Chavvington]\n"
+        "75 PSI [My sweetest angel]\n"
+        "52 PSI [My heart yearns for you]\n"
+        "68 PSI [I longingly await your return for without you life has\n"
+        "lost all meaning]\n"
+        "\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Good, now, I see the adder design is complete. Excellent! As\n"
+        "my dearly departed Ada used to say...\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Sir! You must stop using that phrase! People are beginning to\n"
+        "think you a murderer...\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Hmm... Yes. As Ada..., who is no longer with us, used to say,\n"
+        "\"A subtracter is but an inversion of an adder\".\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue16[] = {
+    {DIALOGUE_ADA,
+        "The journey will continue, although the story is yet to be\n"
+        "written. If you have reached this far, join our discord to\n"
+        "request the next chapter.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
@@ -623,4 +709,12 @@ static Dialogue dialogue22[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, NULL};
+static Dialogue dialogue23[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue24[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, NULL};

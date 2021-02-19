@@ -1,6 +1,8 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <SDL_image.h>
+#include <SDL_net.h>
+
 #include <assert.h>
 #include <stdio.h>
 #include <string>
@@ -10,7 +12,7 @@
 
 #include "GameState.h"
 
-//#define STEAM
+#define STEAM
 
 #ifdef STEAM
 #include "steam/steam_api.h"
@@ -20,15 +22,21 @@
 void mainloop()
 {
     GameState* game_state = new GameState("compressure.save");
+#ifdef STEAM
+    game_state->set_username(SteamFriends()->GetPersonaName());
+#endif
+
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
+        const char* username = "non-steam-user";
 		if (game_state->events())
             break;
         game_state->advance();
         game_state->audio();
 #ifdef STEAM
         SteamGameServer_RunCallbacks();
+        username = SteamFriends()->GetPersonaName();
 #endif
         game_state->render();
         unsigned newtime = SDL_GetTicks();
@@ -37,6 +45,7 @@ void mainloop()
 
 	}
     game_state->save("compressure.save");
+    game_state->post_to_server();
     delete game_state;
 }
 
@@ -51,9 +60,13 @@ int main( int argc, char* argv[] )
 
     SDL_Init(SDL_INIT_VIDEO| SDL_INIT_AUDIO);
     IMG_Init(IMG_INIT_PNG);
+    SDLNet_Init();
     Mix_Init(0);
+
     mainloop();
+
     Mix_Quit();
+    SDLNet_Quit();
 	IMG_Quit();
 	SDL_Quit();
 
