@@ -68,6 +68,7 @@ GameState::GameState(const char* filename)
         if (scale < 1)
             scale = 3;
         full_screen = omap->get_num("full_screen");
+        minutes_played = omap->get_num("minutes_played");
 
         delete omap;
     }
@@ -115,6 +116,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("full_screen", full_screen);
     omap->add_num("sound_volume", sound_volume);
     omap->add_num("music_volume", music_volume);
+    omap->add_num("minutes_played", minutes_played + SDL_GetTicks()/ 1000 / 60);
     omap->add_string("username", username);
 
     return omap;
@@ -146,8 +148,8 @@ void GameState::post_to_server()
     std::string uncomp =  stream.str();
     std::string comp = compress_string(uncomp);
 
-//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
-    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1) {
+    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
+//    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1) {
       printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
       return;
     }

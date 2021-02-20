@@ -94,7 +94,8 @@ class GameState
 
     unsigned debug_last_second_frames = 0;
     unsigned debug_last_second_simticks = 0;
-    
+    unsigned minutes_played = 0;
+
     bool show_help = false;
     int show_help_page = 0;
     int top_level_allowed = 0;

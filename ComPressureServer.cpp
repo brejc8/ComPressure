@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 #include <unistd.h>
 #include <sys/socket.h>
@@ -37,13 +38,11 @@ int main()
     {
         perror("listen");
     }
-    int pid;
-    static int counter=0;
     for(;;)
     {
         int conn_fd = accept(sockid,(struct sockaddr *)&clientaddr, &len);
         
-        pid = fork();
+        int pid = fork();
         if (pid == 0)
         {
             pid_t my_pid = getpid();
@@ -65,7 +64,12 @@ int main()
                     SaveObjectMap* omap = SaveObject::load(decomp_stream)->get_map();
                     std::string name;
                     omap->get_string("username", name);
-                    printf("%s\n", name.c_str());
+                    printf("%s %d\n", name.c_str(), omap->get_num("minutes_played"));
+                    {
+                        std::ofstream outfile (name.c_str());
+                        outfile << inbuf;
+                    }
+
                     exit(0);
                 }
                 else
