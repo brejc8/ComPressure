@@ -304,7 +304,7 @@ public:
     CircuitPressure connections_ns[10][10];
     CircuitPressure connections_ew[10][10];
 
-    bool blocked[9][9] = {false};
+    bool blocked[9][9] = {{false}};
 
     bool fast_prepped = false;
     std::vector<FastFunc> fast_funcs;
