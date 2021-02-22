@@ -229,7 +229,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
         case 4:                                                                     // select
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
-            substep_count = 3000;
+            substep_count = 5000;
             level_version = 10;
 
             NEW_TEST;// N   E   S   W
@@ -270,17 +270,17 @@ void Level::init_tests(SaveObjectMap* omap)
 
         case 5:                                                                 // Buf
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 10;
+            level_version = 11;
 
-            circuit->force_element(XYPos(4,0), new CircuitElementEmpty());
-            circuit->force_element(XYPos(4,1), new CircuitElementEmpty());
+            circuit->force_element(XYPos(3,0), new CircuitElementEmpty());
+            circuit->force_element(XYPos(3,1), new CircuitElementEmpty());
             circuit->force_element(XYPos(4,2), new CircuitElementEmpty());
             circuit->force_element(XYPos(5,3), new CircuitElementValve(DIRECTION_E));
             circuit->force_element(XYPos(4,4), new CircuitElementEmpty());
             circuit->force_element(XYPos(5,5), new CircuitElementValve(DIRECTION_W));
             circuit->force_element(XYPos(4,6), new CircuitElementEmpty());
-            circuit->force_element(XYPos(4,7), new CircuitElementEmpty());
-            circuit->force_element(XYPos(4,8), new CircuitElementEmpty());
+            circuit->force_element(XYPos(3,7), new CircuitElementEmpty());
+            circuit->force_element(XYPos(3,8), new CircuitElementEmpty());
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
             NEW_POINT(  0,  0,  0,  0);
@@ -296,12 +296,6 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT(  0, 90,  0, 90);
             NEW_POINT(  0,100,  0,100);
-            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
-            NEW_POINT(  0, 50,  0,100);
-            NEW_POINT(  0, 50,  0,100);
-            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
-            NEW_POINT(  0,  0,  0,100);
-            NEW_POINT(  0,  0,  0,100);
             NEW_TEST;
             NEW_POINT(  0,100,  0,100);
             NEW_POINT(  0, 90,  0, 90);
@@ -314,12 +308,15 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT(  0, 20,  0, 20);
             NEW_POINT(  0,  0,  0,  0);
-            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
-            NEW_POINT(  0, 50,  0,  0);
-            NEW_POINT(  0, 50,  0,  0);
-            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
-            NEW_POINT(  0,100,  0,  0);
-            NEW_POINT(  0,100,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_TEST;
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0,100,  0,100);
+            NEW_TEST;
+            NEW_POINT(  0,100,  0,100);
+            NEW_POINT(  0,  0,  0,  0);
             break;
 
 
@@ -616,92 +613,59 @@ void Level::init_tests(SaveObjectMap* omap)
 
             break;
 
+        case 13:                                                                 // Sensor
+            connection_mask = CONMASK_W | CONMASK_E;
+            level_version = 11;
 
-        case 13:                                                    // mean
-            substep_count = 20000;
-            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
-            level_version = 10;
-
-            NEW_TEST;// N   E   S   W
-            NEW_POINT_F(  0,  0,  0,  0, 10, 50, 50, 50);
-            NEW_POINT_F(  0,  0,  0,  0, 10, 50, 50, 50);
-            NEW_TEST;
-            NEW_POINT_F(  0,  0,  0,  0, 10, 50, 50, 50);
-            NEW_POINT_F( 50, 50, 50,  0, 80, 50, 10, 50);
-            NEW_TEST;
-            NEW_POINT_F( 50, 50, 50,  0, 80, 50, 10, 50);
-            NEW_POINT_F(100,100,100,  0, 60, 50, 10, 50);
-            NEW_TEST;
-            NEW_POINT_F(100,100,100,  0, 60, 50, 10, 50);
-            NEW_POINT_F(  0, 50,100,  0, 20, 50, 70, 50);
-            NEW_TEST;
-            NEW_POINT_F(  0, 50,100,  0, 20, 50, 70, 50);
-            NEW_POINT_F(100, 50,  0,  0, 60, 50, 20, 50);
-            NEW_TEST;
-            NEW_POINT_F(100, 50,  0,  0, 60, 50, 20, 50);
-            NEW_POINT_F( 40, 20,  0,  0, 20, 50, 80, 50);
-            NEW_TEST;
-            NEW_POINT_F( 40, 20,  0,  0, 20, 50, 80, 50);
-            NEW_POINT_F(  0, 30, 60,  0, 70, 50, 20, 50);
-            NEW_TEST;
-            NEW_POINT_F(  0, 30, 60,  0, 70, 50, 20, 50);
-            NEW_POINT_F(100, 80, 60,  0, 70, 50, 40, 50);
-            NEW_TEST;
-            NEW_POINT_F(100, 80, 60,  0, 70, 50, 40, 50);
-            NEW_POINT_F(50,  55, 60,  0, 90, 50, 50, 50);
-            NEW_TEST;
-            NEW_POINT_F(50,  55, 60,  0, 90, 50, 50, 50);
-            NEW_POINT_F(10,  5,   0,  0, 70, 50, 30, 50);
-            break;
-
-        case 14:                                                    // add
-            substep_count = 20000;
-            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+            circuit->force_element(XYPos(0,3), new CircuitElementSource(DIRECTION_S));
+            circuit->force_element(XYPos(0,4), new CircuitElementValve(DIRECTION_W));
+            circuit->force_element(XYPos(0,5), new CircuitElementPipe(CONNECTIONS_NES));
+            circuit->force_element(XYPos(0,6), new CircuitElementValve(DIRECTION_E));
+            circuit->force_element(XYPos(0,7), new CircuitElementEmpty());
+            circuit->force_element(XYPos(1,4), new CircuitElementEmpty());
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
-            NEW_POINT( 20, 20,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
-            NEW_POINT( 20, 20,  0,  0);
-            NEW_POINT( 70, 80, 10,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 10,  0, 10);
             NEW_TEST;
-            NEW_POINT( 70, 80, 10,  0);
-            NEW_POINT( 40, 80, 40,  0);
+            NEW_POINT(  0, 10,  0, 10);
+            NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
-            NEW_POINT( 40, 80, 40,  0);
-            NEW_POINT( 50, 70, 20,  0);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0, 60,  0, 60);
             NEW_TEST;
-            NEW_POINT( 50, 70, 20,  0);
-            NEW_POINT( 70, 80, 10,  0);
+            NEW_POINT(  0, 60,  0, 60);
+            NEW_POINT(  0, 20,  0, 20);
             NEW_TEST;
-            NEW_POINT( 70, 80, 10,  0);
-            NEW_POINT( 25, 75, 50,  0);
+            NEW_POINT(  0, 20,  0, 20);
+            NEW_POINT(  0, 70,  0, 70);
             NEW_TEST;
-            NEW_POINT( 25, 75, 50,  0);
-            NEW_POINT(  0, 50, 50,  0);
+            NEW_POINT(  0, 70,  0, 70);
+            NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
-            NEW_POINT(  0, 50, 50,  0);
-            NEW_POINT( 10, 80, 70,  0);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0, 20,  0, 20);
             NEW_TEST;
-            NEW_POINT( 10, 80, 70,  0);
-            NEW_POINT( 80, 90, 10,  0);
+            NEW_POINT(  0, 20,  0, 20);
+            NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
-            NEW_POINT( 80, 90, 10,  0);
-            NEW_POINT( 20, 40, 20,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
-            NEW_POINT( 20, 40, 20,  0);
-            NEW_POINT( 60,100, 40,  0);
+            NEW_POINT(  0, 50,  0, 50);
+            NEW_POINT(  0, 30,  0, 30);
             NEW_TEST;
-            NEW_POINT( 60,100, 40,  0);
-            NEW_POINT( 20, 80, 60,  0);
-            NEW_TEST;
-            NEW_POINT( 20, 80, 60,  0);
+            NEW_POINT(  0, 30,  0, 30);
             NEW_POINT(  0,  0,  0,  0);
             break;
 
-        case 15:                                                    // subtract
+        case 14:                                                    // subtract
             substep_count = 30000;
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
+            level_version = 10;
             pin_order[0] = 3; pin_order[1] = 2; pin_order[2] = 1; pin_order[3] = 0;
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -735,6 +699,52 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 50, 50,100);
             break;
 
+
+        case 15:                                                    // add
+            substep_count = 20000;
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+            level_version = 10;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT( 20, 20,  0,  0);
+            NEW_TEST;
+            NEW_POINT( 20, 20,  0,  0);
+            NEW_POINT( 70, 80, 10,  0);
+            NEW_TEST;
+            NEW_POINT( 70, 80, 10,  0);
+            NEW_POINT( 40, 80, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 40, 80, 40,  0);
+            NEW_POINT( 50, 70, 20,  0);
+            NEW_TEST;
+            NEW_POINT( 50, 70, 20,  0);
+            NEW_POINT( 70, 80, 10,  0);
+            NEW_TEST;
+            NEW_POINT( 70, 80, 10,  0);
+            NEW_POINT( 25, 75, 50,  0);
+            NEW_TEST;
+            NEW_POINT( 25, 75, 50,  0);
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_POINT( 10, 80, 70,  0);
+            NEW_TEST;
+            NEW_POINT( 10, 80, 70,  0);
+            NEW_POINT( 80, 90, 10,  0);
+            NEW_TEST;
+            NEW_POINT( 80, 90, 10,  0);
+            NEW_POINT( 20, 40, 20,  0);
+            NEW_TEST;
+            NEW_POINT( 20, 40, 20,  0);
+            NEW_POINT( 60,100, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 60,100, 40,  0);
+            NEW_POINT( 20, 80, 60,  0);
+            NEW_TEST;
+            NEW_POINT( 20, 80, 60,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            break;
  
         case 16:                                                    // end
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
@@ -892,6 +902,7 @@ void Level::advance(unsigned ticks, TestExecType type)
                     if (score < 0)
                         score = 0;
                     tests[test_index].last_score = score;
+                    update_score(false);
                     sim_point_index = 0;
                     substep_index = 0;
                     if (type == MONITOR_STATE_PLAY_ALL)
@@ -899,7 +910,7 @@ void Level::advance(unsigned ticks, TestExecType type)
                         test_index++;
                         if (test_index == tests.size())
                         {
-                            update_score();
+                            update_score(true);
                             test_index = 0;
                             circuit->reset();
                             touched = false;
@@ -924,7 +935,7 @@ void Level::select_test(unsigned t)
     test_index = t;
 }
 
-void Level::update_score()
+void Level::update_score(bool fin)
 {
     unsigned test_count = tests.size();
     Pressure score = 0;
@@ -934,7 +945,7 @@ void Level::update_score()
     }
     score /= test_count;
     last_score = score;
-    if (score > best_score)
+    if (score > best_score && fin)
     {
         best_score = score;
         for (unsigned t = 0; t < test_count; t++)
@@ -943,11 +954,6 @@ void Level::update_score()
             for (int i = 0; i < HISTORY_POINT_COUNT; i++)
                 tests[t].best_pressure_log[i] = tests[t].last_pressure_log[i];
         }
-        
-        
-        SaveObject* omap = circuit->save();
-        omap->save(std::cout);
-        
         
     }
     return;

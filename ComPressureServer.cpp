@@ -67,7 +67,7 @@ int main()
                     printf("%s %d\n", name.c_str(), omap->get_num("minutes_played"));
                     {
                         std::ofstream outfile (name.c_str());
-                        outfile << inbuf;
+                        outfile << decomp;
                     }
 
                     exit(0);

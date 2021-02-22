@@ -27,11 +27,10 @@ class SaveObjectNumber :
     public SaveObject
 {
 public:
-    double number;
+    int number;
     SaveObjectNumber(int number_):number(number_){};
     SaveObjectNumber(std::istream& stream) {stream >> number;};
     int get_num(){return number;};
-    double get_float(){return number;};
     void save(std::ostream& f){f << number;};
 };
 

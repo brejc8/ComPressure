@@ -140,6 +140,8 @@ public:
     void render_number_pressure(XYPos pos, Pressure value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_long(XYPos pos, unsigned value, unsigned scale_mul = 1);
     void render_box(XYPos pos, XYPos size, unsigned colour);
+    void render_button(XYPos pos, XYPos content, unsigned colour);
+
     void render_text(XYPos pos, const char* string);
     void update_scale(int newscale);
     void render();

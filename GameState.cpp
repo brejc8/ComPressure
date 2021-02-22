@@ -124,7 +124,6 @@ SaveObject* GameState::save(bool lite)
 
 void GameState::save(std::ostream& outfile, bool lite)
 {
-    outfile << std::setprecision(std::numeric_limits<double>::digits);
     SaveObject* omap = save(lite);
     omap->save(outfile);
     delete omap;
@@ -162,9 +161,6 @@ void GameState::post_to_server()
     
     SDLNet_TCP_Send(tcpsock, comp.c_str(), comp.length()); /* add 1 for the NULL */
     SDLNet_TCP_Close(tcpsock);
-
-
-
 }
 
 
@@ -420,6 +416,14 @@ void GameState::render_box(XYPos pos, XYPos size, unsigned colour)
     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Bottom Right
 }
 
+void GameState::render_button(XYPos pos, XYPos content, unsigned colour)
+{
+    render_box(pos, XYPos(32,32), colour);
+    SDL_Rect src_rect = {content.x , content.y , 24, 24};
+    SDL_Rect dst_rect = {pos.x + 4 * scale, pos.y + 4 * scale, 24 * scale, 24 * scale};
+    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+
+}
 
 void GameState::render_text(XYPos tl, const char* string)
 {
@@ -955,23 +959,14 @@ void GameState::render()
                 break;
             if (!level_set->is_playable(level_index))
                 break;
-            SDL_Rect src_rect = {256, 80, 32, 32};
-            if (level_index == current_level_index)
-                src_rect = {288, 80, 32, 32};
-            SDL_Rect dst_rect = {pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-            
-            
-            XYPos level_pos = level_set->levels[level_index]->getimage_fg(DIRECTION_N);
-            src_rect = {level_pos.x, level_pos.y, 24, 24};
-            dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0);
             
             unsigned score = pressure_as_percent(level_set->levels[level_index]->best_score);
 
             render_number_2digit(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), score);
             level_index++;
         }
+            render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0);
 
         {
             SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};
@@ -1529,14 +1524,14 @@ void GameState::render()
             }
             pages[] =
             {
-                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier. Click on the requirements to see the\ndialogue again."},
+                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier. Click on the requirements to see recieve\na hint."},
                 {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next\ndesign becomes available. You can always come back\nto refine your solution.\n\nPress the pipe button below to continue the\ntutorial. You can return to the help by pressing F1."},
-                {XYPos(0,0), 10, 1, "Use left mouse button to place pipes. The pipe will\nextend in the direction of the mouse. Right click to\nexit pipe laying mode."},
+                {XYPos(0,0), 10, 1, "Pipes can be laid down by either left mouse button\ndragging the pipe from the source to the desination,\nor by clicking left mouse button to extend the pipe\nin the direction of the mouse. Right click to cancel\npipe laying mode."},
                 {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and\nother elements."},
-                {XYPos(0,4), 15, 1, "The build menu allows you to add components into\nyour design. Select the steam inlet component and\nhover over your design. The arrow buttons change\nthe orientation. This can also be done using keys Q\nand E. Clicking the left mouse button will place the\ncomponent. Right click to exit steam inlet placing\nmode."},
-                {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab\nis a shortcut to enter valve placement mode.\nPressing Tab again switches to steam inlet placement."},
+                {XYPos(0,4), 15, 1, "The build menu allows you to add components into\nyour design. Select the steam inlet component and\nhover over your design. The arrow buttons change\nthe orientation. This can also be done using keys Q\nand E or the mouse scroll wheel. Clicking the left\nmouse button will place the component. Right click\nto exit steam inlet placing mode."},
+                {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab,\nor middle mouse button, is a shortcut to enter\nvalve placement mode. Pressing Tab, or middle mouse\nbutton, again switches to steam inlet placement."},
                 {XYPos(0,7),  5,10, "A steam inlet will supply steam at pressure 100. Any\npipes with open ends will vent the steam to the\natmosphere at pressure 0."},
-                {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe\nconnections. Note how each pope has a little resistance. "},
+                {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe\nconnections. Note how each pipe has a little\nresistance."},
                 {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the\n(+) side or the valve is at a higher pressure than\nthe (-) side. The higher it is, the more the valve\nis open. Steam on the (+) and (-) sides is not\nconsumed. Here, the (-) side is vented to atmosphere\nand thus at 0 pressure."},
                 {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower\nthan the (-) side, the valve becomes closed and no\nsteam will pass through."},
                 {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the\nvalve will become open only if the pressure on the\n(-) side is low."},
@@ -1548,8 +1543,8 @@ void GameState::render()
                 {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the\nports and examine your design's operation. The\nvertical sliders set the desired value. The\nhorizontal sliders below set force of the input.\nSetting the slider all the way left makes it an\noutput. Initial values are set from the current\ntest."},
                 {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the\nport values."},
                 
-                {XYPos(0,0),  0, 1, ""},
-                {XYPos(0,0),  0, 1, ""},
+                {XYPos(1,15), 4, 1, "Components can be selected by either clicking while\nholding Crtl, or dragging while hoding Shift.\nSelected components can be moved using WASD keys if\nthe destination is empty. To delete selcted\ncomponents, press X or Delete.\n\nUndo is reached througn Z key (Ctrl is optional) and\nRedo though either Y or Shift+Z. Undo can also be\ntriggered by holding right mouse button and clicking\nthe left."},
+                {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow\nyou to to to exit the game, switch between windowed\nand full screen, join our Discord group and show\ncredits.\n\nThe sliders adjust the sound effects and music\nvolumes."},
                 
                 {XYPos(0,0),  0, 1, ""},
                 {XYPos(0,0),  0, 1, ""},
@@ -2057,6 +2052,9 @@ void GameState::mouse_click_in_panel()
         else if (panel_pos.y > 176)
         {
             show_hint = true;
+        }
+        else if ((panel_pos - XYPos(0,144)).inside(XYPos(32,32)))
+        {
             show_dialogue = true;
             dialogue_index = 0;
             

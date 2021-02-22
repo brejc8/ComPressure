@@ -12,7 +12,7 @@
 
 #include "GameState.h"
 
-#define STEAM
+//#define STEAM
 
 #ifdef STEAM
 #include "steam/steam_api.h"
@@ -26,6 +26,9 @@ void mainloop()
     game_state->set_username(SteamFriends()->GetPersonaName());
 #endif
 
+
+    int frame = 0;
+
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
@@ -36,13 +39,18 @@ void mainloop()
         game_state->audio();
 #ifdef STEAM
         SteamGameServer_RunCallbacks();
-        username = SteamFriends()->GetPersonaName();
 #endif
         game_state->render();
         unsigned newtime = SDL_GetTicks();
+        frame++;
+        if (frame > 100 * 4)
+        {
+            game_state->save("compressure.save");
+            game_state->post_to_server();
+            frame = 0;
+        }
         if ((newtime - oldtime) < 10)
             SDL_Delay(10 - (newtime - oldtime));
-
 	}
     game_state->save("compressure.save");
     game_state->post_to_server();

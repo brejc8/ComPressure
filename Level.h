@@ -7,7 +7,7 @@
 
 
 #ifdef COMPRESSURE_DEMO
-#define LEVEL_COUNT 12
+#define LEVEL_COUNT 14
 #else
 #define LEVEL_COUNT 17
 #endif
@@ -115,7 +115,7 @@ public:
     void advance(unsigned ticks, TestExecType type);
     void select_test(unsigned t);
 
-    void update_score();
+    void update_score(bool fin);
 
 };
 

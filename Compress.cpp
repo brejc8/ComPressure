@@ -13,6 +13,8 @@ std::string compress_string(const std::string& str, int compressionlevel)
 {
     z_stream zs;                        // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
+    zs.zalloc = Z_NULL;
+    zs.zfree = Z_NULL;
 
     if (deflateInit(&zs, compressionlevel) != Z_OK)
         throw(std::runtime_error("deflateInit failed while compressing."));
