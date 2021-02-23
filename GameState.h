@@ -49,7 +49,8 @@ class GameState
     XYPos grid_offset = XYPos(32 * scale, 32 * scale);
     XYPos panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
     
-    const char* username = "none";
+    uint64_t steam_id = 0;
+    const char* steam_username = "none";
 
     LevelSet* level_set;
     Level* current_level;
@@ -151,9 +152,10 @@ public:
     void mouse_click_in_panel();
     void mouse_motion();
     bool events();
-    void set_username(const char* name)
+    void set_steam_user(uint64_t id, const char* name)
     {
-        username = name;
+        steam_id = id;
+        steam_username = name;
     }
 
 };

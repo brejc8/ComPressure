@@ -9,6 +9,8 @@
 #include <set>
 #include <map>
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
 
 #include "GameState.h"
 
@@ -21,14 +23,25 @@
 
 void mainloop()
 {
-    GameState* game_state = new GameState("compressure.save");
+    char* save_path = SDL_GetPrefPath("CharlieBrej", "ComPressure");
+    std::string save_filename = std::string(save_path) + "compressure.save";
+    SDL_free(save_path);
+    const char* load_filename = save_filename.c_str();
+
+    
+    {
+        std::ifstream test_loadfile(save_filename);
+        if (test_loadfile.fail() || test_loadfile.eof())
+            load_filename = "compressure.save";
+        test_loadfile.close();
+    }
+
+    GameState* game_state = new GameState(load_filename);
 #ifdef STEAM
-    game_state->set_username(SteamFriends()->GetPersonaName());
+    game_state->set_steam_user(SteamUser()->GetSteamID()->ConvertToUint64(), SteamFriends()->GetPersonaName());
 #endif
-
-
     int frame = 0;
-
+    
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
@@ -43,16 +56,16 @@ void mainloop()
         game_state->render();
         unsigned newtime = SDL_GetTicks();
         frame++;
-        if (frame > 100 * 4)
+        if (frame > 100 * 60)
         {
-            game_state->save("compressure.save");
+            game_state->save(save_filename.c_str());
             game_state->post_to_server();
             frame = 0;
         }
         if ((newtime - oldtime) < 10)
             SDL_Delay(10 - (newtime - oldtime));
 	}
-    game_state->save("compressure.save");
+    game_state->save(save_filename.c_str());
     game_state->post_to_server();
     delete game_state;
 }

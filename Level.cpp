@@ -133,8 +133,14 @@ void Level::init_tests(SaveObjectMap* omap)
 #define NEW_POINT_F(a, b, c, d, fa, fb, fc, fd) tests.back().sim_points.push_back(SimPoint(a, b, c, d, fa, fb, fc, fd))
 
     SaveObjectList* slist = NULL;
-    if (omap && omap->get_item("tests"))
-        omap->get_item("tests")->get_list();
+    try 
+    {
+        if (omap)
+            slist = omap->get_item("tests")->get_list();
+    }
+    catch (const std::runtime_error& error)
+    {
+    }
 
     unsigned loaded_level_version = omap ? omap->get_num("level_version") : 0;
 
@@ -910,7 +916,8 @@ void Level::advance(unsigned ticks, TestExecType type)
                         test_index++;
                         if (test_index == tests.size())
                         {
-                            update_score(true);
+                            if (!touched)
+                                update_score(true);
                             test_index = 0;
                             circuit->reset();
                             touched = false;

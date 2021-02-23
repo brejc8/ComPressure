@@ -27,8 +27,8 @@ class SaveObjectNumber :
     public SaveObject
 {
 public:
-    int number;
-    SaveObjectNumber(int number_):number(number_){};
+    int64_t number;
+    SaveObjectNumber(int64_t number_):number(number_){};
     SaveObjectNumber(std::istream& stream) {stream >> number;};
     int get_num(){return number;};
     void save(std::ostream& f){f << number;};

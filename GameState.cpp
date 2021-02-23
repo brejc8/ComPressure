@@ -42,36 +42,48 @@ static void DisplayWebsite(const char* url)
 
 GameState::GameState(const char* filename)
 {
-    std::ifstream loadfile(filename);
-    if (loadfile.fail() || loadfile.eof())
+    bool load_was_good = false;
+    try 
+    {
+        std::ifstream loadfile(filename);
+        if (!loadfile.fail() && !loadfile.eof())
+        {
+            SaveObjectMap* omap;
+            omap = SaveObject::load(loadfile)->get_map();
+            level_set = new LevelSet(omap->get_item("levels"));
+
+            current_level_index = omap->get_num("current_level_index");
+            if (!level_set->is_playable(current_level_index))
+                current_level_index = 0;
+            game_speed = omap->get_num("game_speed");
+            show_debug = omap->get_num("show_debug");
+            next_dialogue_level = omap->get_num("next_dialogue_level");
+            show_help_page = omap->get_num("show_help_page");
+
+            sound_volume = omap->get_num("sound_volume");
+            music_volume = omap->get_num("music_volume");
+            update_scale(omap->get_num("scale"));
+            if (scale < 1)
+                scale = 3;
+            full_screen = omap->get_num("full_screen");
+            minutes_played = omap->get_num("minutes_played");
+
+            delete omap;
+            load_was_good = true;
+        }
+    }
+    catch (const std::runtime_error& error)
+    {
+        std::cerr << error.what() << "\n";
+    }
+
+    if (!load_was_good)
     {
         level_set = new LevelSet();
         current_level_index = 0;
         update_scale(3);
     }
-    else
-    {
-        SaveObjectMap* omap = SaveObject::load(loadfile)->get_map();
-        level_set = new LevelSet(omap->get_item("levels"));
-        
-        current_level_index = omap->get_num("current_level_index");
-        if (!level_set->is_playable(current_level_index))
-            current_level_index = 0;
-        game_speed = omap->get_num("game_speed");
-        show_debug = omap->get_num("show_debug");
-        next_dialogue_level = omap->get_num("next_dialogue_level");
-        show_help_page = omap->get_num("show_help_page");
-        
-        sound_volume = omap->get_num("sound_volume");
-        music_volume = omap->get_num("music_volume");
-        update_scale(omap->get_num("scale"));
-        if (scale < 1)
-            scale = 3;
-        full_screen = omap->get_num("full_screen");
-        minutes_played = omap->get_num("minutes_played");
 
-        delete omap;
-    }
     set_level(current_level_index);
 
     sdl_window = SDL_CreateWindow( "ComPressure", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640*scale, 360*scale, SDL_WINDOW_RESIZABLE);
@@ -117,7 +129,6 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("sound_volume", sound_volume);
     omap->add_num("music_volume", music_volume);
     omap->add_num("minutes_played", minutes_played + SDL_GetTicks()/ 1000 / 60);
-    omap->add_string("username", username);
 
     return omap;
 }
@@ -143,12 +154,20 @@ void GameState::post_to_server()
     TCPsocket tcpsock;
 
     std::ostringstream stream;
-    save(stream, true);
+    {
+        SaveObjectMap omap;
+        omap.add_string("command", "save");
+        omap.add_item("content", save(true));
+        omap.add_num("steam_id", steam_id);
+        omap.add_string("steam_username", steam_username);
+
+        omap.save(stream);
+    }
     std::string uncomp =  stream.str();
     std::string comp = compress_string(uncomp);
 
-    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
-//    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1) {
+//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
+    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1) {
       printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
       return;
     }
@@ -159,7 +178,9 @@ void GameState::post_to_server()
       return;
     }
     
-    SDLNet_TCP_Send(tcpsock, comp.c_str(), comp.length()); /* add 1 for the NULL */
+    uint32_t length = comp.length();
+    SDLNet_TCP_Send(tcpsock, (char*)&length, 4);
+    SDLNet_TCP_Send(tcpsock, comp.c_str(), length);
     SDLNet_TCP_Close(tcpsock);
 }
 

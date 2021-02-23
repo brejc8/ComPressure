@@ -1,6 +1,7 @@
 #include "Misc.h"
 #include "SaveState.h"
 #include <assert.h>
+#define assert_exp(x) do { if (f.get() != x) throw (std::runtime_error("Unexpected character"));} while (false)
 
 SaveObject* SaveObject::load(std::istream& f)
 {
@@ -15,13 +16,13 @@ SaveObject* SaveObject::load(std::istream& f)
         return new SaveObjectString(f);
     if ((c >= '0' && c <= '9') || c == '-')
         return new SaveObjectNumber(f);
-    assert(0);
+    throw(std::runtime_error("Parse Error"));
 }
 
 SaveObjectString::SaveObjectString(std::istream& f)
 {
     char c;
-    assert(f.get() == '\"');
+    assert_exp('\"');
     while ((c = f.get()) != '\"')
     {
         if (c == '\\')
@@ -57,24 +58,24 @@ void SaveObjectString::save(std::ostream& f)
 
 SaveObjectMap::SaveObjectMap(std::istream& f)
 {
-    assert(f.get() == '{');
+    assert_exp('{');
     char c;
     while (true)
     {
         if (f.peek() == '}')
             break;
-        assert(f.get() == '\"');
+        assert_exp('\"');
         std::string key;
         while ((c = f.get()) != '\"')
             key.push_back(c);
-        assert(f.get() == ':');
+        assert_exp(':');
         SaveObject* obj = SaveObject::load(f);
         add_item(key, obj);
         if (f.peek() == '}')
             break;
-        assert(f.get() == ',');
+        assert_exp(',');
     }
-    assert(f.get() == '}');
+    assert_exp('}');
 }
 SaveObjectMap::~SaveObjectMap()
 {
@@ -89,6 +90,8 @@ void SaveObjectMap::add_item(std::string key, SaveObject* value)
 
 SaveObject* SaveObjectMap::get_item(std::string key)
 {
+    if (omap.find(key) == omap.end())
+        throw(std::runtime_error("Bad map key"));
     return omap[key];
 }
 
@@ -140,7 +143,7 @@ void SaveObjectMap::save(std::ostream& f)
 
 SaveObjectList::SaveObjectList(std::istream& f)
 {
-    assert(f.get() == '[');
+    assert_exp('[');
     char c;
     while (true)
     {
@@ -150,9 +153,9 @@ SaveObjectList::SaveObjectList(std::istream& f)
         add_item(obj);
         if (f.peek() == ']')
             break;
-        assert(f.get() == ',');
+        assert_exp(',');
     }
-    assert(f.get() == ']');
+    assert_exp(']');
 }
 
 SaveObjectList::~SaveObjectList()
@@ -168,7 +171,8 @@ void SaveObjectList::add_item(SaveObject* value)
 
 SaveObject* SaveObjectList::get_item(unsigned index)
 {
-    assert(index < get_count());
+    if (index >= get_count())
+        throw(std::runtime_error("Bad list index"));
     return olist[index];
 }
 
@@ -203,10 +207,10 @@ void SaveObjectList::save(std::ostream& f)
 
 SaveObjectNull::SaveObjectNull(std::istream& f)
 {
-    assert(f.get() == 'n');
-    assert(f.get() == 'u');
-    assert(f.get() == 'l');
-    assert(f.get() == 'l');
+    assert_exp('n');
+    assert_exp('u');
+    assert_exp('l');
+    assert_exp('l');
 }
 
 void SaveObjectNull::save(std::ostream& f)
