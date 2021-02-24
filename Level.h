@@ -9,7 +9,7 @@
 #ifdef COMPRESSURE_DEMO
 #define LEVEL_COUNT 14
 #else
-#define LEVEL_COUNT 17
+#define LEVEL_COUNT 19
 #endif
 #define HISTORY_POINT_COUNT 200
 

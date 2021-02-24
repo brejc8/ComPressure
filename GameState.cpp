@@ -1488,6 +1488,10 @@ void GameState::render()
                 pic_on_left = true;
                 pic_src = XYPos(1,2);
                 break;
+             case DIALOGUE_JOSEPH:
+                pic_on_left = true;
+                pic_src = XYPos(0,2);
+                break;
        }
         render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
         

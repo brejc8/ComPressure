@@ -1,4 +1,4 @@
-﻿#                               PipeCross
+#                               PipeCross
 !CHARLES
 Greetings Gertrude! My name is Charles Chavvington, the proprietor of these here General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.
 
@@ -48,7 +48,7 @@ Connect the East and West, but only when the pressure coming from the South is l
 
 #					Switch
 !CHARLES
-Excellent! Now, combining these two designs, we can construct a component that switches between two sources. We can use our designs we just made, but remember, each design adds additional pipes which slow things down.
+Excellent! Now, combining these two designs, we can construct a component that switches between two sources. We can use the designs we just made, but remember, each design adds additional pipes which slow things down.
 
 When the West control house supplies 100 PSI High Pressure Steam, the North generator should be connected to the East facilities. But when the West control house is at 0 PSI atmospheric pressure, the South generator should be connected to the East facilities.
 !NICOLA
@@ -273,7 +273,7 @@ Lady Chavvington is alive and well, staying with her sister.
 !GEORGE
 That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. God forbid one of those high pressure tankers explodes. The destruction would be immense. I would not rest until the world was rid of this high pressure horror and my darling Ada was in my loving arms...
 
-Oh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure it’s openness.
+Oh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure it's openness.
 
 But now, you must leave. With Ada safe, I have an important task I must prepare for.
 !END
@@ -307,7 +307,40 @@ Good, now, I see the subtracter design is complete. Excellent! As my dearly depa
 !NICOLA
 Sir! You must stop using that phrase! People are beginning to think you a murderer...
 !CHARLES
-Hmm... Yes. As Ada..., who is no longer with us, once said, "An adder is but an inversion of an subrtacter. The output minus one of the inputs must be equal to the other input."
+Hmm... Yes. As Ada..., who is no longer with us, once said, "An adder is but an inversion of an subtractor. The output minus one of the inputs must be equal to the other input."
+!END
+!ANNIE
+Why have you not been responding to my messages?
+!NICOLA
+Our apologies Lady Easley, we did not know you sent any.
+!ANNIE
+They should be recorded on your message latches over here.
+...
+
+They're missing! The latches must have been stolen by whoever broke into the laboratory. You should recreate them at once lest you miss any other important communications.
+!ANNIE
+When a message is stable, a pulse if steam is sent on the timing pipe. This causes the latch to capture the value at that time. The latch will record the value, but will maintain the old value until the timing pipe has returned to a low pressure level.
+
+Because these latches can be placed in sequence to record a series of messages, it is important that the new value is only released once the timing pipe has returned to low pressure
+
+I was always impressed about how well sealed Charles's valves are with a closed valve able to maintain the pressure within a pipe indefinitely.
+!END
+!CHARLES
+Great news everyone! Allow me to introduce Professor Joseph Cogsworth. One of, if not THE, brightest mind in all of the lands. His gear based tabulating machines have done wonders to our accounting department.
+
+He has been aiding in our missing High Pressure Steam situation and has taken a curiosity into Ada's work.
+!JOSEPH
+Interesting to see how far you have come. I see you have reconstructed the latch to the same specification as Ada described in her notes.
+!NICOLA
+Those notes went missing during the break in. How did you know of them?
+!JOSEPH
+Ada was always a great admirer of my work. Although I thought her steam based approach to be crude and inaccurate, she would often seek my advice in hopes that it could be made adequate.
+!CHARLES
+Once you complete the steam tabulator, we will be able to determine which of my accountants has been embezzling my High Pressure Steam.
+
+Each tabulator either adds, or subtracts a value from the current tally. The North connection selects between adding or subtracting and the South connection provides a timing pulse of High Pressure Steam.
+
+Ada had to improve all her previous designs to increase the accuracy of all the used components. Work she never managed to complete.
 !END
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.

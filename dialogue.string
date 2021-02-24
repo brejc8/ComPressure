@@ -110,7 +110,7 @@ static Dialogue dialogue3[] = {
 static Dialogue dialogue4[] = {
     {DIALOGUE_CHARLES,
         "Excellent! Now, combining these two designs, we can construct\n"
-        "a component that switches between two sources. We can use our\n"
+        "a component that switches between two sources. We can use the\n"
         "designs we just made, but remember, each design adds\n"
         "additional pipes which slow things down.\n"
         "\n"
@@ -627,7 +627,7 @@ static Dialogue dialogue14[] = {
         "Oh... Where was I? The addition design. Before you can make\n"
         "one, you must make one of subtraction. A valve is as open as\n"
         "the pressure on the (+) side minus the pressure on the (-)\n"
-        "side. Once you create such a valve, you can then measure it’s\n"
+        "side. Once you create such a valve, you can then measure it's\n"
         "openness.\n"
         "\n"
         "But now, you must leave. With Ada safe, I have an important\n"
@@ -689,7 +689,7 @@ static Dialogue dialogue15[] = {
 
     {DIALOGUE_CHARLES,
         "Hmm... Yes. As Ada..., who is no longer with us, once said,\n"
-        "\"An adder is but an inversion of an subrtacter. The output\n"
+        "\"An adder is but an inversion of an subtractor. The output\n"
         "minus one of the inputs must be equal to the other input.\"\n"
     },
 
@@ -697,20 +697,95 @@ static Dialogue dialogue15[] = {
 };
 
 static Dialogue dialogue16[] = {
-    {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be\n"
-        "written. If you have reached this far, join our discord to\n"
-        "request the next chapter.\n"
+    {DIALOGUE_ANNIE,
+        "Why have you not been responding to my messages?\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Our apologies Lady Easley, we did not know you sent any.\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "They should be recorded on your message latches over here.\n"
+        "...\n"
+        "\n"
+        "They're missing! The latches must have been stolen by whoever\n"
+        "broke into the laboratory. You should recreate them at once\n"
+        "lest you miss any other important communications.\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "When a message is stable, a pulse if steam is sent on the\n"
+        "timing pipe. This causes the latch to capture the value at\n"
+        "that time. The latch will record the value, but will maintain\n"
+        "the old value until the timing pipe has returned to a low\n"
+        "pressure level.\n"
+        "\n"
+        "Because these latches can be placed in sequence to record a\n"
+        "series of messages, it is important that the new value is only\n"
+        "released once the timing pipe has returned to low pressure\n"
+        "\n"
+        "I was always impressed about how well sealed Charles's valves\n"
+        "are with a closed valve able to maintain the pressure within a\n"
+        "pipe indefinitely.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue17[] = {
+    {DIALOGUE_CHARLES,
+        "Great news everyone! Allow me to introduce Professor Joseph\n"
+        "Cogsworth. One of, if not THE, brightest mind in all of the\n"
+        "lands. His gear based tabulating machines have done wonders to\n"
+        "our accounting department.\n"
+        "\n"
+        "He has been aiding in our missing High Pressure Steam\n"
+        "situation and has taken a curiosity into Ada's work.\n"
+    },
+
+    {DIALOGUE_JOSEPH,
+        "Interesting to see how far you have come. I see you have\n"
+        "reconstructed the latch to the same specification as Ada\n"
+        "described in her notes.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Those notes went missing during the break in. How did you know\n"
+        "of them?\n"
+    },
+
+    {DIALOGUE_JOSEPH,
+        "Ada was always a great admirer of my work. Although I thought\n"
+        "her steam based approach to be crude and inaccurate, she would\n"
+        "often seek my advice in hopes that it could be made adequate.\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Once you complete the steam tabulator, we will be able to\n"
+        "determine which of my accountants has been embezzling my High\n"
+        "Pressure Steam.\n"
+        "\n"
+        "Each tabulator either adds, or subtracts a value from the\n"
+        "current tally. The North connection selects between adding or\n"
+        "subtracting and the South connection provides a timing pulse\n"
+        "of High Pressure Steam.\n"
+        "\n"
+        "Ada had to improve all her previous designs to increase the\n"
+        "accuracy of all the used components. Work she never managed to\n"
+        "complete.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue18[] = {
+    {DIALOGUE_ADA,
+        "The journey will continue, although the story is yet to be\n"
+        "written. If you have reached this far, join our discord to\n"
+        "request the next chapter.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
@@ -738,4 +813,12 @@ static Dialogue dialogue24[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, NULL};
+static Dialogue dialogue25[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue26[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, NULL};
