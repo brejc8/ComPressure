@@ -166,8 +166,8 @@ void GameState::post_to_server()
     std::string uncomp =  stream.str();
     std::string comp = compress_string(uncomp);
 
-//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
-    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1) {
+    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
+//    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1) {
       printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
       return;
     }

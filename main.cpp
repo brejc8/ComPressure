@@ -38,7 +38,7 @@ void mainloop()
 
     GameState* game_state = new GameState(load_filename);
 #ifdef STEAM
-    game_state->set_steam_user(SteamUser()->GetSteamID()->ConvertToUint64(), SteamFriends()->GetPersonaName());
+    game_state->set_steam_user(SteamUser()->GetSteamID().CSteamID::ConvertToUint64(), SteamFriends()->GetPersonaName());
 #endif
     int frame = 0;
     
