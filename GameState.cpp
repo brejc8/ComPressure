@@ -59,6 +59,8 @@ GameState::GameState(const char* filename)
             show_debug = omap->get_num("show_debug");
             next_dialogue_level = omap->get_num("next_dialogue_level");
             show_help_page = omap->get_num("show_help_page");
+            flash_editor_menu = omap->get_num("flash_editor_menu");
+            flash_steam_inlet = omap->get_num("flash_steam_inlet");
 
             sound_volume = omap->get_num("sound_volume");
             music_volume = omap->get_num("music_volume");
@@ -124,6 +126,8 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("show_debug", show_debug);
     omap->add_num("next_dialogue_level", next_dialogue_level);
     omap->add_num("show_help_page", show_help_page);
+    omap->add_num("flash_editor_menu", flash_editor_menu);
+    omap->add_num("flash_steam_inlet", flash_steam_inlet);
     omap->add_num("scale", scale);
     omap->add_num("full_screen", full_screen);
     omap->add_num("sound_volume", sound_volume);
@@ -325,31 +329,44 @@ void GameState::audio()
     Mix_VolumeMusic(music_volume);
 }
 
+void GameState::render_texture_custom(SDL_Texture* texture, SDL_Rect& src_rect, SDL_Rect& dst_rect)
+{
+    SDL_Rect my_dst_rect = {dst_rect.x + screen_offset.x, dst_rect.y + screen_offset.y, dst_rect.w, dst_rect.h};
+    SDL_RenderCopy(sdl_renderer, texture, &src_rect, &my_dst_rect);
+}
+
+void GameState::render_texture(SDL_Rect& src_rect, SDL_Rect& dst_rect)
+{
+    render_texture_custom(sdl_texture, src_rect, dst_rect);
+}
+
+
+
 void GameState::render_number_2digit(XYPos pos, unsigned value, unsigned scale_mul, unsigned bg_colour, unsigned fg_colour)
 {
     int myscale = scale * scale_mul;
     {
         SDL_Rect src_rect = {503, 80 + int(bg_colour), 1, 1};
         SDL_Rect dst_rect = {pos.x, pos.y-myscale, 9 * myscale, 7 * myscale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
     }
 
     if (value == 100)
     {
         SDL_Rect src_rect = {40 + int(fg_colour/4) * 64, 160 + int(fg_colour%4) * 5, 9, 5};
         SDL_Rect dst_rect = {pos.x, pos.y, 9 * myscale, 5 * myscale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
     }
     else
     {
         SDL_Rect src_rect = {0 + int(fg_colour/4) * 64 + (int(value) / 10) * 4, 160 + int(fg_colour%4) * 5, 4, 5};
         SDL_Rect dst_rect = {pos.x, pos.y, 4 * myscale, 5 * myscale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
         src_rect.w = 5;
         src_rect.x = 0 + (value % 10) * 4 + int(fg_colour/4) * 64;
         dst_rect.w = 5 * myscale;
         dst_rect.x += 4 * myscale;
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
     }
 
 }
@@ -364,7 +381,7 @@ void GameState::render_number_pressure(XYPos pos, Pressure value, unsigned scale
     {
         SDL_Rect src_rect = {49 + int(fg_colour/4) * 64, 160 + int(fg_colour%4) * 5, 1, 5};
         SDL_Rect dst_rect = {pos.x, pos.y, 1 * myscale, 5 * myscale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
     }
     pos.x += 1 * myscale;
     render_number_2digit(pos, p % 100, scale_mul, bg_colour, fg_colour);
@@ -390,7 +407,7 @@ void GameState::render_number_long(XYPos pos, unsigned value, unsigned scale_mul
     while (i < 10)
     {
         src_rect.x = 0 + digits[i] * 4;
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
         dst_rect.x += 4 * myscale;
         i++;
 
@@ -402,39 +419,39 @@ void GameState::render_box(XYPos pos, XYPos size, unsigned colour)
     int color_table = 256 + colour * 32;
     SDL_Rect src_rect = {color_table, 80, 16, 16};
     SDL_Rect dst_rect = {pos.x, pos.y, 16 * scale, 16 * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Top Left
+    render_texture(src_rect, dst_rect);     //  Top Left
 
     src_rect = {color_table + 16, 80, 1, 16};
     dst_rect = {pos.x + 16 * scale, pos.y, (size.x - 32) * scale, 16 * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Top
+    render_texture(src_rect, dst_rect);     //  Top
 
     src_rect = {color_table + 16, 80, 16, 16};
     dst_rect = {pos.x + (size.x - 16) * scale, pos.y, 16 * scale, 16 * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Top Right
+    render_texture(src_rect, dst_rect);     //  Top Right
     
     src_rect = {color_table, 80 + 16, 16, 1};
     dst_rect = {pos.x, pos.y + 16 * scale, 16 * scale, (size.y - 32) * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Left
+    render_texture(src_rect, dst_rect);     //  Left
 
     src_rect = {color_table + 16, 80 + 16, 1, 1};
     dst_rect = {pos.x + 16 * scale, pos.y + 16 * scale, (size.x - 32) * scale, (size.y - 32) * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Middle
+    render_texture(src_rect, dst_rect);     //  Middle
 
     src_rect = {color_table + 16, 80 + 16, 16, 1};
     dst_rect = {pos.x + (size.x - 16) * scale, pos.y + 16 * scale, 16 * scale, (size.y - 32) * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Right
+    render_texture(src_rect, dst_rect);     //  Right
 
     src_rect = {color_table, 80 + 16, 16, 16};
     dst_rect = {pos.x, pos.y + (size.y - 16) * scale, 16 * scale, 16 * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Bottom Left
+    render_texture(src_rect, dst_rect);     //  Bottom Left
 
     src_rect = {color_table + 16, 80 + 16, 1, 16};
     dst_rect = {pos.x + 16 * scale, pos.y + (size.y - 16) * scale, (size.x - 32) * scale, 16 * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Bottom
+    render_texture(src_rect, dst_rect);     //  Bottom
 
     src_rect = {color_table + 16, 80 + 16, 16, 16};
     dst_rect = {pos.x + (size.x - 16) * scale, pos.y + (size.y - 16) * scale, 16 * scale, 16 * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);     //  Bottom Right
+    render_texture(src_rect, dst_rect);     //  Bottom Right
 }
 
 void GameState::render_button(XYPos pos, XYPos content, unsigned colour)
@@ -442,7 +459,7 @@ void GameState::render_button(XYPos pos, XYPos content, unsigned colour)
     render_box(pos, XYPos(32,32), colour);
     SDL_Rect src_rect = {content.x , content.y , 24, 24};
     SDL_Rect dst_rect = {pos.x + 4 * scale, pos.y + 4 * scale, 24 * scale, 24 * scale};
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+    render_texture(src_rect, dst_rect);
 
 }
 
@@ -463,7 +480,7 @@ void GameState::render_text(XYPos tl, const char* string)
                 c-= 32;
             SDL_Rect src_rect = {(c % 16) * 7, (c / 16) * 9, 7, 9};
             SDL_Rect dst_rect = {(tl.x + pos.x * 7) * scale, (tl.y + pos.y * 9) * scale, 7 * scale, 9 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_font_texture, &src_rect, &dst_rect);
+            render_texture_custom(sdl_font_texture, src_rect, dst_rect);
             pos.x++;
         }
         string++;
@@ -493,6 +510,8 @@ void GameState::render()
         if (newscale < 1)
             newscale = 1;
         update_scale(newscale);
+        screen_offset.x = (window_size.x - (newscale * 640)) / 2;
+        screen_offset.y = (window_size.y - (newscale * 360)) / 2;
     }
     
     XYPos pos;
@@ -509,14 +528,13 @@ void GameState::render()
     {
         SDL_Rect src_rect = {320, 300, 320, 180};       // Background
         SDL_Rect dst_rect = {0, 0, 640*scale, 360*scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        dst_rect.x = 640*scale;
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        dst_rect.x = 0;
-        dst_rect.y = 360*scale;
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-        dst_rect.x = 640*scale;
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        for (int x = -1; x <= 1; x++)
+        for (int y = -1; y <= 1; y++)
+        {
+            dst_rect.x = 640*x;
+            dst_rect.y = 360*y;
+            render_texture(src_rect, dst_rect);
+        }
     }
     {                                               // Input pipe background
         render_box(XYPos((4 * 32 - 8) * scale + grid_offset.x, (-32 - 16) * scale + grid_offset.y), XYPos(48, 48), 0);
@@ -528,19 +546,19 @@ void GameState::render()
     {                                               // Input pipes
         SDL_Rect src_rect = {160, 0, 32, 32};       // W
         SDL_Rect dst_rect = {-32 * scale + grid_offset.x, (4 * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
 
         src_rect = {224, 0, 32, 32};                // E
         dst_rect = {(9 * 32) * scale + grid_offset.x, (4 * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
 
         src_rect = {192, 0, 32, 32};                // N
         dst_rect = {(4 * 32) * scale + grid_offset.x, -32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
 
         src_rect = {128, 0, 32, 32};                // S
         dst_rect = {(4 * 32) * scale + grid_offset.x, (9 * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
     }
 
     if (current_level->tests[current_level->test_index].sim_points.size() == current_level->sim_point_index + 1)
@@ -585,7 +603,7 @@ void GameState::render()
             src_rect = {384, 80, 32, 32};
             
         SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
     }
     
     for (pos.y = 0; pos.y < 9; pos.y++)                                         // Draw elements
@@ -598,7 +616,7 @@ void GameState::render()
                 int xoffset = (32 - src_rect.w) / 2;
                 int yoffset = (32 - src_rect.h) / 2;
                 SDL_Rect dst_rect = {(pos.x * 32  + xoffset) * scale + grid_offset.x, (pos.y * 32 + yoffset) * scale + grid_offset.y, src_rect.w * scale, src_rect.h * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
         }
 
@@ -608,7 +626,7 @@ void GameState::render()
         {
             SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};
             SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
 
         src_pos = current_circuit->elements[pos.y][pos.x]->getimage_fg();
@@ -616,7 +634,7 @@ void GameState::render()
         {
             SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
             SDL_Rect dst_rect = {(pos.x * 32 + 4) * scale + grid_offset.x, (pos.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         bool selected = false;
         selected = selected_elements.find(pos) != selected_elements.end();
@@ -646,7 +664,7 @@ void GameState::render()
         {
             SDL_Rect src_rect =  {256, 176, 32, 32};
             SDL_Rect dst_rect = {(pos.x * 32) * scale + grid_offset.x, (pos.y * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
 
     }
@@ -675,7 +693,7 @@ void GameState::render()
                         con = CONNECTIONS_NW;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                     SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale + grid_offset.x, pipe_start_grid_pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                    render_texture(src_rect, dst_rect);
             }
             else                                        //south - northwards
             {
@@ -687,11 +705,11 @@ void GameState::render()
                         con = CONNECTIONS_WS;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                     SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale + grid_offset.x, (pipe_start_grid_pos.y - 1) * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                    render_texture(src_rect, dst_rect);
             }
 //             SDL_Rect src_rect = {503, 80, 1, 1};
 //             SDL_Rect dst_rect = {(pipe_start_grid_pos.x * 32 + 16 - 4)  * scale + grid_offset.x, (pipe_start_grid_pos.y * 32 - 4) * scale + grid_offset.y, 8 * scale, 8 * scale};
-//             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//             render_texture(src_rect, dst_rect);
         }
         else
         {
@@ -710,7 +728,7 @@ void GameState::render()
                         con = CONNECTIONS_NW;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                     SDL_Rect dst_rect = {pipe_start_grid_pos.x * 32 * scale + grid_offset.x, pipe_start_grid_pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                    render_texture(src_rect, dst_rect);
             }
             else                                        //east - westwards
             {
@@ -722,11 +740,11 @@ void GameState::render()
                         con = CONNECTIONS_NE;
                     SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                     SDL_Rect dst_rect = {(pipe_start_grid_pos.x - 1) * 32 * scale + grid_offset.x, pipe_start_grid_pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                    render_texture(src_rect, dst_rect);
             }
 //             SDL_Rect src_rect = {503, 80, 1, 1};
 //             SDL_Rect dst_rect = {(pipe_start_grid_pos.x * 32 - 4)  * scale + grid_offset.x, (pipe_start_grid_pos.y * 32 + 16 - 4) * scale + grid_offset.y, 8 * scale, 8 * scale};
-//             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//             render_texture(src_rect, dst_rect);
         }
     }
     if (mouse_state == MOUSE_STATE_PIPE_DRAGGING)
@@ -779,7 +797,7 @@ void GameState::render()
                 }
                 SDL_Rect src_rect = {(con % 4) * 32, (con / 4) * 32, 32, 32};
                 SDL_Rect dst_rect = {n2.x * 32 * scale + grid_offset.x, n2.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
         }
     }
@@ -790,7 +808,7 @@ void GameState::render()
         {
             SDL_Rect src_rect = {direction * 32, 4 * 32, 32, 32};
             SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_SOURCE)
@@ -800,7 +818,7 @@ void GameState::render()
         {
             SDL_Rect src_rect = {128 + direction * 32, 0, 32, 32};
             SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
@@ -813,7 +831,7 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {pos.x, pos.y, 32, 32};
                 SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
 
@@ -822,7 +840,7 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {pos.x, pos.y, 24, 24};
                 SDL_Rect dst_rect = {(mouse_grid.x * 32 + 4) * scale + grid_offset.x, (mouse_grid.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
         }
@@ -852,19 +870,19 @@ void GameState::render()
             SDL_Rect src_rect = {503, 80, 1, 1};
             {
                 SDL_Rect dst_rect = {tl.x * scale + grid_offset.x, tl.y * scale + grid_offset.y, size.x * scale, 1 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             {
                 SDL_Rect dst_rect = {tl.x * scale + grid_offset.x, (tl.y + size.y) * scale + grid_offset.y, (size.x + 1) * scale, 1 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             {
                 SDL_Rect dst_rect = {tl.x * scale + grid_offset.x, tl.y * scale + grid_offset.y, 1 * scale, size.y * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             {
                 SDL_Rect dst_rect = {(tl.x + size.x) * scale + grid_offset.x, tl.y * scale + grid_offset.y, 1 * scale, (size.y + 1) * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
         }
     }
@@ -881,7 +899,7 @@ void GameState::render()
         {
             SDL_Rect src_rect = {16*int(rand & 3) + 256, 160, 16, 16};
             SDL_Rect dst_rect = {(pos.x * 32  + 7 + int(rand % 3)) * scale + grid_offset.x, (pos.y * 32 - 9  + int(rand % 3)) * scale + grid_offset.y, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         render_number_2digit(XYPos((pos.x * 32  + 11) * scale + grid_offset.x, (pos.y * 32 - 3) * scale + grid_offset.y), value, 1, 6);
     }
@@ -896,7 +914,7 @@ void GameState::render()
         {
             SDL_Rect src_rect = {16*int(rand & 3) + 256, 160, 16, 16};
             SDL_Rect dst_rect = {(pos.x * 32  - 9) * scale + int(rand % 3 * scale) + grid_offset.x, (pos.y * 32 + 7 ) * scale + int(rand % 3 * scale) + grid_offset.y, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         render_number_2digit(XYPos((pos.x * 32  - 5) * scale + grid_offset.x, (pos.y * 32 + 13) * scale + grid_offset.y), value, 1, 6);
     }
@@ -928,32 +946,32 @@ void GameState::render()
         {                                                                                               // Top Menu
             SDL_Rect src_rect = {256, 112, 32, 32};
             SDL_Rect dst_rect = {(8 + 32 * 11) * scale, (8) * scale, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
-        if (level_set->is_playable(1)){
+        if (level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30))){
             SDL_Rect src_rect = {256+32, 112, 32, 32};
             SDL_Rect dst_rect = {(8 + 32 * 12) * scale, (8) * scale, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         if (level_set->is_playable(3)){
             SDL_Rect src_rect = {256+64, 112, 32, 32};
             SDL_Rect dst_rect = {(8 + 32 * 13) * scale, (8) * scale, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         if (level_set->is_playable(7)){
             SDL_Rect src_rect = {256+96, 112, 32, 32};
             SDL_Rect dst_rect = {(8 + 32 * 14) * scale, (8) * scale, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         {
             SDL_Rect src_rect = {256+128, 112, 96, 32};
             SDL_Rect dst_rect = {(8 + 32 * 15) * scale, (8) * scale, 96 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         {                                                                                               // Speed slider
             SDL_Rect src_rect = {624, 16, 16, 16};
             SDL_Rect dst_rect = {(8 + 32 * 11 + 32 * 5 + int(game_speed)) * scale, (8 + 8) * scale, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         {                                                                                               // Current Score
             render_number_2digit(XYPos((8 + 32 * 11 + 32 * 4 + 3) * scale, (8 + 8) * scale), pressure_as_percent(current_level->best_score), 3);
@@ -962,7 +980,7 @@ void GameState::render()
             render_box(XYPos((8 + 32 * 11 + 7 * 32) * scale, (8) * scale), XYPos(32, 32), 0);
             SDL_Rect src_rect = {640-96, 208, 32, 32};
             SDL_Rect dst_rect = {(8 + 32 * 11 + 7 * 32) * scale, (8) * scale, 32 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
 
     }
@@ -980,6 +998,8 @@ void GameState::render()
                 break;
             if (!level_set->is_playable(level_index))
                 break;
+            if (next_dialogue_level == level_index && (frame_index % 60 < 30))
+                continue;
             render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0);
             
             unsigned score = pressure_as_percent(level_set->levels[level_index]->best_score);
@@ -988,11 +1008,10 @@ void GameState::render()
             level_index++;
         }
             render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0);
-
         {
             SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};
             SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_levels_texture, &src_rect, &dst_rect);
+            render_texture_custom(sdl_levels_texture, src_rect, dst_rect);
         }
 
 
@@ -1006,7 +1025,7 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {192, 184 + level_index * 24, 64, 16};
                 SDL_Rect dst_rect = {(panel_pos.x - 64)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 64 * scale, 16 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
         }
@@ -1019,25 +1038,29 @@ void GameState::render()
         {
             if (i == 0 && !level_set->is_playable(2))
                 continue;
-            SDL_Rect src_rect = {256, 80, 32, 32};
-            SDL_Rect dst_rect = {panel_offset.x + i * 32 * scale, panel_offset.y, 32 * scale, 32 * scale};
+            int colour = 0;
             if (i == 0 && mouse_state == MOUSE_STATE_PLACING_VALVE)
-                src_rect.x = 256 + 32;
+                colour = 1;
             if (i == 1 && mouse_state == MOUSE_STATE_PLACING_SOURCE)
-                src_rect.x = 256 + 32;
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            {
+                colour = 1;
+                flash_steam_inlet = false;
+            }
+            if (flash_steam_inlet && i == 1 && (frame_index % 60 < 30))
+                continue;
+            render_box(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(32, 32), colour);
         }
 
         for (int i = 0; i < 2; i++)
         {
             SDL_Rect src_rect = {544 + direction * 24, 160 + i * 24, 24, 24};
             SDL_Rect dst_rect = {(i * 32 + 4) * scale + panel_offset.x, (4) * scale + panel_offset.y, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         {
             SDL_Rect src_rect = {640-64, 208, 64, 32};
             SDL_Rect dst_rect = {64 * scale + panel_offset.x, panel_offset.y, 64 * scale, 32 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
 
         unsigned level_index = 0;
@@ -1055,11 +1078,11 @@ void GameState::render()
 
             SDL_Rect dst_rect = {pos.x * 32 * scale + panel_offset.x, (32 + 8 + pos.y * 32) * scale + panel_offset.y, 32 * scale, 32 * scale};
             if (level_index != current_level_index && !level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, level_set))
-                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                 render_texture(src_rect, dst_rect);
             XYPos level_pos = level_set->levels[level_index]->getimage_fg(direction);
             src_rect = {level_pos.x, level_pos.y, 24, 24};
             dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, (32 + 8 + pos.y * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
             level_index++;
         }
 
@@ -1072,7 +1095,7 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {496, 124 + panel_grid_pos.x * 12, 28, 12};
                 SDL_Rect dst_rect = {(panel_pos.x - 28)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 28 * scale, 12 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             panel_grid_pos = (panel_pos - XYPos(0,8)) / 32;
             int level_index = panel_grid_pos.x + (panel_grid_pos.y - 1) * 8;
@@ -1081,7 +1104,7 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {192, 184 + level_index * 24, 64, 16};
                 SDL_Rect dst_rect = {(panel_pos.x - 64)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 64 * scale, 16 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
         }
@@ -1100,7 +1123,7 @@ void GameState::render()
 //                 {
 //                     SDL_Rect src_rect = {503, 86, 1, 1};
 //                     SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 200 * scale, 101 * scale};
-//                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                     render_texture(src_rect, dst_rect);
 // 
 //                 }
 //                 for (int x = 0; x < 10; x++)
@@ -1112,7 +1135,7 @@ void GameState::render()
 //                         src_rect.w = 5;
 //                         dst_rect.w = 5 * scale;
 //                     }
-//                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                     render_texture(src_rect, dst_rect);
 //                 }
 //             }
 //             else
@@ -1121,7 +1144,7 @@ void GameState::render()
 //                 {
 //                     SDL_Rect src_rect = {503, 86, 1, 1};
 //                     SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 200 * scale, 35 * scale};
-//                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                     render_texture(src_rect, dst_rect);
 // 
 //                 }
 //                 for (int x = 0; x < 10; x++)
@@ -1133,7 +1156,7 @@ void GameState::render()
 //                         src_rect.w = 5;
 //                         dst_rect.w = 5 * scale;
 //                     }
-//                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                     render_texture(src_rect, dst_rect);
 //                 }
 //             }
 //                 {
@@ -1153,7 +1176,7 @@ void GameState::render()
 //                     }
 //                         
 //                     SDL_Rect dst_rect = {(200 + 5) * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 16 * scale, 16 * scale};
-//                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                     render_texture(src_rect, dst_rect);
 //                 
 //                 }
 //             if (current_level->sim_point_count)
@@ -1196,7 +1219,7 @@ void GameState::render()
 //                             offset = (offset + 2) / 3;
 // 
 //                         SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + offset) * scale + panel_offset.y, int(width) * scale, 1 * scale};
-//                         SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                         render_texture(src_rect, dst_rect);
 //                     }
 //                     else
 //                     {
@@ -1214,13 +1237,13 @@ void GameState::render()
 //                             int top = offset < t_offset ? offset : t_offset;
 // 
 //                             SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + top) * scale + panel_offset.y, int(width) * scale, size * scale};
-//                             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                             render_texture(src_rect, dst_rect);
 //                         }
 //                         if (!current_point || (frame_index % 20 < 10))
 //                         {
 //                             SDL_Rect src_rect = {503, 80, 1, 1};
 //                             SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + offset) * scale + panel_offset.y, int(width) * scale, 1 * scale};
-//                             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//                             render_texture(src_rect, dst_rect);
 //                         }
 //                     }
 //                 }
@@ -1239,26 +1262,26 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {524, 80, 13, 101};
                 SDL_Rect dst_rect = {(port_index * 48 + 8 + 13) * scale + panel_offset.x, (8) * scale + panel_offset.y, 13 * scale, 101 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
             {
                 SDL_Rect src_rect = {448, 80, 48, 16};
                 SDL_Rect dst_rect = {(port_index * 48) * scale + panel_offset.x, (101 + 14) * scale + panel_offset.y, 48 * scale, 16 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             
             {
                 SDL_Rect src_rect = {256 + 80 + (port_index * 6 * 16) , 16, 16, 16};
                 SDL_Rect dst_rect = {(port_index * 48 + 8) * scale + panel_offset.x, (101 - int(test_value[port_index])) * scale + panel_offset.y, 16 * scale, 16 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             render_number_2digit(XYPos((port_index * 48 + 8 + 3 ) * scale + panel_offset.x, ((101 - test_value[port_index]) + 5) * scale + panel_offset.y), test_value[port_index]);
             
             {
                 SDL_Rect src_rect = {256 + 80 + (port_index * 6 * 16) , 16, 16, 16};
                 SDL_Rect dst_rect = {(port_index * 48 + int(test_drive[port_index])) * scale + panel_offset.x, (101 + 16 + 7) * scale + panel_offset.y, 16 * scale, 16 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             //render_number_2digit(XYPos((port_index * 48 + test_drive[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), test_drive[port_index]*3);
             
@@ -1272,7 +1295,7 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {524, 80, 13, 101};
                 SDL_Rect dst_rect = {0 + graph_pos.x, graph_pos.y, 13 * scale, 101 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             for (int i = 0; i < 192-1; i++)
             {
@@ -1289,7 +1312,7 @@ void GameState::render()
 
                         SDL_Rect src_rect = {502, 80 + myport, 1, 1};
                         SDL_Rect dst_rect = {i * scale + graph_pos.x, top * scale + graph_pos.y, 1 * scale, size * scale};
-                        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                        render_texture(src_rect, dst_rect);
                     }
             }
             
@@ -1304,13 +1327,13 @@ void GameState::render()
             render_box(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(32, 32), monitor_state == i ? 1 : 0);
             SDL_Rect src_rect = {448 + i * 24, 176, 24, 24};
             SDL_Rect dst_rect = {panel_offset.x + (i * 32 + 4) * scale, panel_offset.y + 4 * scale, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
         
         {
             SDL_Rect src_rect = {336, 32, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + (0) * scale, panel_offset.y + (32 + 8 + 16) * scale, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
 
         for (int i = 0; i < test_count; i++)
@@ -1321,7 +1344,7 @@ void GameState::render()
             else if (i < test_index && monitor_state == MONITOR_STATE_PLAY_ALL && !current_level->touched)
                 src_rect.x = 368;
             SDL_Rect dst_rect = {panel_offset.x + (16 + i * 16) * scale, panel_offset.y + (32 + 8) * scale, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
             render_number_2digit(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), pressure_as_percent(current_level->tests[i].last_score));
             render_number_2digit(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), pressure_as_percent(current_level->tests[i].best_score));
         }
@@ -1337,7 +1360,7 @@ void GameState::render()
         {
             SDL_Rect src_rect = {448, 144, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
             y_pos+= 16 * scale;
         }
         for (int i = 0; i < 4; i++)                 // Inputs
@@ -1348,7 +1371,7 @@ void GameState::render()
             
                 SDL_Rect src_rect = {256 + pin_index * 16, 144, 16, 16};
                 SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
                 for (int i2 = 0; i2 < sim_point_count; i2++)
                 {
                     unsigned value = current_level->tests[test_index].sim_points[i2].values[pin_index];
@@ -1361,7 +1384,7 @@ void GameState::render()
         {
             SDL_Rect src_rect = {448, 160, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
             y_pos+= 16 * scale;
         }
 
@@ -1369,7 +1392,7 @@ void GameState::render()
             int pin_index = current_level->tests[test_index].tested_direction;
             SDL_Rect src_rect = {256 + pin_index * 16, 144, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
             unsigned value = current_level->tests[test_index].sim_points[sim_point_count-1].values[pin_index];
             render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (sim_point_count-1) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == sim_point_count - 1 ? 4 : 0);
             render_number_pressure(XYPos(panel_offset.x + (8 + 16 + 3 + 16 + (sim_point_count-1) * 16) * scale, y_pos + (5) * scale), current_level->tests[test_index].last_pressure_log[HISTORY_POINT_COUNT - 1] , 1, 9, 1);
@@ -1378,16 +1401,16 @@ void GameState::render()
         {
             SDL_Rect src_rect = {320, 144, 16, 8};
             SDL_Rect dst_rect = {panel_offset.x + int(8 + 16 + current_level->sim_point_index * 16) * scale, panel_offset.y + (32 + 32 + 16) * scale, 16 * scale, 8 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
             src_rect.y += 8;
             src_rect.h = 1;
             dst_rect.y += 8 * scale;
             dst_rect.h = y_pos - dst_rect.y - 8 * scale;
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
             src_rect.h = 8;
             dst_rect.y = y_pos - 8 * scale;
             dst_rect.h = 8 * scale;
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
 
 
@@ -1399,12 +1422,12 @@ void GameState::render()
                 int pos = 100 - target_value;
                 SDL_Rect src_rect = {503, 83, 1, 1};
                 SDL_Rect dst_rect = {graph_pos.x, (100 - target_value) * scale + graph_pos.y, (HISTORY_POINT_COUNT - 1) * scale, 1 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             {
                 SDL_Rect src_rect = {524, 80, 13, 101};
                 SDL_Rect dst_rect = {graph_pos.x, graph_pos.y, 13 * scale, 101 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
 
@@ -1418,7 +1441,7 @@ void GameState::render()
 
                     SDL_Rect src_rect = {503, 81, 1, 1};
                     SDL_Rect dst_rect = {i * scale + graph_pos.x, top * scale + graph_pos.y, 1 * scale, size * scale};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                    render_texture(src_rect, dst_rect);
                 }
                 for (int i = 0; i < int(current_level->tests[test_index].last_pressure_index) - 1; i++)
                 {
@@ -1429,7 +1452,7 @@ void GameState::render()
 
                     SDL_Rect src_rect = {503, 86, 1, 1};
                     SDL_Rect dst_rect = {i * scale + graph_pos.x, top * scale + graph_pos.y, 1 * scale, size * scale};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                    render_texture(src_rect, dst_rect);
                 }
             }
 
@@ -1498,7 +1521,7 @@ void GameState::render()
         render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
         SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
         SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
         render_text(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text);
     }
     
@@ -1507,7 +1530,7 @@ void GameState::render()
         int size = 360 - level_win_animation * 3;
         SDL_Rect src_rect = {336, 32, 16, 16};
         SDL_Rect dst_rect = {(320 - size / 2) * scale, (180 - size / 2) * scale, size * scale, size * scale};
-        SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        render_texture(src_rect, dst_rect);
         level_win_animation--;
     }
 
@@ -1524,13 +1547,13 @@ void GameState::render()
                 render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale), XYPos(32, 32), 0);
             SDL_Rect src_rect = {352 + (i % 5) * 24, 240 + (i / 5) * 24, 24, 24};
             SDL_Rect dst_rect = {(32 + 48 + 4 + i * 32) * scale, (2 * (128 + 16) + 4 + 28) * scale, 24 * scale, 24 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
 
         {
             SDL_Rect src_rect = {464, 144, 16, 16};
             SDL_Rect dst_rect = {(32 + 512 + 32 + 8) * scale, (8) * scale, 16 * scale, 16 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            render_texture(src_rect, dst_rect);
         }
 
         for (int i = 0; i < 2; i++)
@@ -1589,90 +1612,12 @@ void GameState::render()
 
             SDL_Rect src_rect = {x * 128, (y * 128), 128, 128};
             SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 16) * scale, 128 * scale, 128 * scale};
-            SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
+            render_texture_custom(sdl_tutorial_texture, src_rect, dst_rect);
             
             render_text(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 16), page->text);
         }
-
-
     }
 
-
-//         unsigned frame = (SDL_GetTicks() / 1000);
-//         int x = frame % 5;
-//         int y = frame / 5;
-// 
-//         render_box(XYPos((16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         
-//         SDL_Rect src_rect = {x * 128, 128 * (y % 2), 128, 128};
-//         SDL_Rect dst_rect = {32 * scale, 32 * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-//         
-//         render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {x * 128, (2 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 1 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-//         
-//         render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {x * 128, (3 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 2 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-// 
-//         render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {x * 128, (4 * 128)  + 128 * (y % 3), 128, 128};
-//         dst_rect = {((128 +16) * 3 + 32) * scale, 32 * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-//         
-//         render_box(XYPos((0 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (7 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 0 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-// 
-//         render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {x * 128, (8 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 1 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-// 
-//         render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (9 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 2 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-// 
-//         render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (1 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (10 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 3 + 32) * scale, (1 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-//     }
-// 
-//     if (show_help == 2)
-//     {
-//         render_box(XYPos(16 * scale, 16 * scale), XYPos(592, 328), 0);
-//         unsigned frame = (SDL_GetTicks() / 1000);
-//         int x = frame % 5;
-//         int y = frame / 5;
-// 
-//         render_box(XYPos((0 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         SDL_Rect src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (11 * 128), 128, 128};
-//         SDL_Rect dst_rect = {((128 +16) * 0 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-// 
-//         render_box(XYPos((1 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {(int(SDL_GetTicks() / 50) % 5) * 128, (12 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 1 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-// 
-//         render_box(XYPos((2 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {x * 128, (13 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 2 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-// 
-//         render_box(XYPos((3 * (128 +16) + 16 + 8) * scale, (0 * (128 +16) + 16 + 8) * scale), XYPos(128+16, 128+16), 4);
-//         src_rect = {x * 128, (14 * 128), 128, 128};
-//         dst_rect = {((128 +16) * 3 + 32) * scale, (0 * (128 +16) + 32) * scale, 128 * scale, 128 * scale};
-//         SDL_RenderCopy(sdl_renderer, sdl_tutorial_texture, &src_rect, &dst_rect);
-// 
-//     }
-    
     if (show_main_menu)
     {
         render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 180), 0);
@@ -1682,21 +1627,21 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {448, 200, 24, 24};
                 SDL_Rect dst_rect = {(160 + 32 + 4) * scale, (90 + 32 + 4)  * scale, 24 * scale, 24 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
 
             }
             render_box(XYPos((160 + 32 + 64) * scale, (90 + 32)  * scale), XYPos(32, 32), 0);
             {
                 SDL_Rect src_rect = {full_screen ? 280 : 256, 280, 24, 24};
                 SDL_Rect dst_rect = {(160 + 32 + 64 + 4) * scale, (90 + 32 + 4)  * scale, 24 * scale, 24 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
             render_box(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(32, 32), 0);
             {
                 SDL_Rect src_rect = {256, 256, 24, 24};
                 SDL_Rect dst_rect = {(160 + 32 + 4) * scale, (90 + 32 + 64 + 4)  * scale, 24 * scale, 24 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
 
             }
 
@@ -1704,7 +1649,7 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {256+24, 256, 24, 24};
                 SDL_Rect dst_rect = {(160 + 32+ 64 + 4) * scale, (90 + 32 + 64 + 4)  * scale, 24 * scale, 24 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
 
             }
 
@@ -1712,37 +1657,37 @@ void GameState::render()
             {
                 SDL_Rect src_rect = {496, 200, 24, 24};
                 SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 4)  * scale, 24 * scale, 24 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
             {
                 SDL_Rect src_rect = {526, 80, 12, 101};
                 SDL_Rect dst_rect = {(160 + 32 + 128 + 16) * scale, (90 + 32 + 6 + 6)  * scale, 12 * scale, 101 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
             {
                 SDL_Rect src_rect = {256 + 80 + 96, 16, 16, 16};
                 SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 32 + 6 + int(100 - sound_volume))  * scale, 16 * scale, 16 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
             render_box(XYPos((160 + 32 + 192) * scale, (90 + 32)  * scale), XYPos(32, 128), 2);
             {
                 SDL_Rect src_rect = {520, 200, 24, 24};
                 SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 4)  * scale, 24 * scale, 24 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
             {
                 SDL_Rect src_rect = {526, 80, 12, 101};
                 SDL_Rect dst_rect = {(160 + 32 + 192 + 16) * scale, (90 + 32 + 6 + 6)  * scale, 12 * scale, 101 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
 
             {
                 SDL_Rect src_rect = {256 + 80 + 192, 16, 16, 16};
                 SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 32 + 6 + int(100 - music_volume))  * scale, 16 * scale, 16 * scale};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                render_texture(src_rect, dst_rect);
             }
         }
         else
@@ -2029,6 +1974,7 @@ void GameState::mouse_click_in_panel()
                     if (!level_set->is_playable(1))
                         break;
                     panel_state = PANEL_STATE_EDITOR;
+                    flash_editor_menu = false;
                     break;
                 case 2:
                     if (!level_set->is_playable(3))
@@ -2381,6 +2327,7 @@ bool GameState::events()
             {
                 mouse.x = e.motion.x;
                 mouse.y = e.motion.y;
+                mouse -= screen_offset;
                 mouse_motion();
                 break;
             }
@@ -2388,6 +2335,7 @@ bool GameState::events()
             {
                 mouse.x = e.button.x;
                 mouse.y = e.button.y;
+                mouse -= screen_offset;
                 if (e.button.button == SDL_BUTTON_LEFT)
                 {
                     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
@@ -2444,6 +2392,7 @@ bool GameState::events()
             {
                 mouse.x = e.button.x;
                 mouse.y = e.button.y;
+                mouse -= screen_offset;
                 if (e.button.button == SDL_BUTTON_LEFT)
                 {
                     if (show_main_menu)

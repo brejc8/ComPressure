@@ -46,6 +46,7 @@ class GameState
 
     bool full_screen = false;
     int scale = 0;
+    XYPos screen_offset = XYPos(0, 0);
     XYPos grid_offset = XYPos(32 * scale, 32 * scale);
     XYPos panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
     
@@ -102,7 +103,9 @@ class GameState
     int top_level_allowed = 0;
     int level_win_animation = 0;
     bool show_hint = false;
-    
+    bool flash_editor_menu = true;
+    bool flash_steam_inlet = true;
+
     bool show_dialogue = false;
     int dialogue_index = 0;
     int next_dialogue_level = 0;
@@ -137,6 +140,8 @@ public:
     SDL_Texture* loadTexture(const char* filename);
 
     void audio();
+    void render_texture(SDL_Rect& src_rect, SDL_Rect& dst_rect);
+    void render_texture_custom(SDL_Texture* texture, SDL_Rect& src_rect, SDL_Rect& dst_rect);
     void render_number_2digit(XYPos pos, unsigned value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_pressure(XYPos pos, Pressure value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_long(XYPos pos, unsigned value, unsigned scale_mul = 1);
