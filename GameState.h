@@ -62,6 +62,8 @@ class GameState
     unsigned selected_monitor = 0;
     
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
+    bool skip_to_next_subtest = false;
+    int skip_to_subtest_index = -1;
 
     unsigned frame_index = 0;
     unsigned game_speed = 20;
@@ -105,6 +107,7 @@ class GameState
     bool show_hint = false;
     bool flash_editor_menu = true;
     bool flash_steam_inlet = true;
+    bool flash_valve = true;
 
     bool show_dialogue = false;
     int dialogue_index = 0;
@@ -112,8 +115,8 @@ class GameState
 
     bool show_main_menu = false;
     bool display_about = false;
-    unsigned sound_volume = 100;
-    unsigned music_volume = 100;
+    unsigned sound_volume = 50;
+    unsigned music_volume = 50;
     Mix_Chunk *vent_steam_wav;
     Mix_Chunk *move_steam_wav;
     Mix_Music *music;

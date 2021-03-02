@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <bit>
 
 #ifdef _WIN32
     #define NOMINMAX
@@ -61,6 +62,7 @@ GameState::GameState(const char* filename)
             show_help_page = omap->get_num("show_help_page");
             flash_editor_menu = omap->get_num("flash_editor_menu");
             flash_steam_inlet = omap->get_num("flash_steam_inlet");
+            flash_valve = omap->get_num("flash_valve");
 
             sound_volume = omap->get_num("sound_volume");
             music_volume = omap->get_num("music_volume");
@@ -128,6 +130,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("show_help_page", show_help_page);
     omap->add_num("flash_editor_menu", flash_editor_menu);
     omap->add_num("flash_steam_inlet", flash_steam_inlet);
+    omap->add_num("flash_valve", flash_valve);
     omap->add_num("scale", scale);
     omap->add_num("full_screen", full_screen);
     omap->add_num("sound_volume", sound_volume);
@@ -240,6 +243,10 @@ void GameState::advance()
     int count = pow(1.2, game_speed) * 2;
     if (monitor_state != MONITOR_STATE_PAUSE)
     {
+        if (skip_to_next_subtest)
+        {
+            count = current_level->substep_count - current_level->substep_index;
+        }
         while (count)
         {
             int subcount = count < 100 ? count : 100;
@@ -248,10 +255,17 @@ void GameState::advance()
             debug_simticks += subcount;
             if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 100))
             {
-                game_speed--;
+                if (!skip_to_next_subtest)
+                    game_speed--;
                 break;
             }
         }
+        if (!count)
+        {
+            if (skip_to_subtest_index < 0 || skip_to_subtest_index == current_level->sim_point_index)
+                skip_to_next_subtest = false;
+        }
+
         {
             SimPoint& simp = current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index];
             for (int p = 0; p < 4; p++)
@@ -944,28 +958,20 @@ void GameState::render()
             render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 16, 11*32 + 8), panel_colour);
         }
         {                                                                                               // Top Menu
-            SDL_Rect src_rect = {256, 112, 32, 32};
-            SDL_Rect dst_rect = {(8 + 32 * 11) * scale, (8) * scale, 32 * scale, 32 * scale};
-            render_texture(src_rect, dst_rect);
+            bool flash_next_level = level_set->is_playable(next_dialogue_level) && (frame_index % 60 < 30);
+            render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT);
+            if (level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
+                render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR);
+            if (level_set->is_playable(3))
+                render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR);
+            if (level_set->is_playable(7))
+                render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST);
+            render_box(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(32, 32), 0);
+            render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
         }
-        if (level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30))){
-            SDL_Rect src_rect = {256+32, 112, 32, 32};
-            SDL_Rect dst_rect = {(8 + 32 * 12) * scale, (8) * scale, 32 * scale, 32 * scale};
-            render_texture(src_rect, dst_rect);
-        }
-        if (level_set->is_playable(3)){
-            SDL_Rect src_rect = {256+64, 112, 32, 32};
-            SDL_Rect dst_rect = {(8 + 32 * 13) * scale, (8) * scale, 32 * scale, 32 * scale};
-            render_texture(src_rect, dst_rect);
-        }
-        if (level_set->is_playable(7)){
-            SDL_Rect src_rect = {256+96, 112, 32, 32};
-            SDL_Rect dst_rect = {(8 + 32 * 14) * scale, (8) * scale, 32 * scale, 32 * scale};
-            render_texture(src_rect, dst_rect);
-        }
-        {
-            SDL_Rect src_rect = {256+128, 112, 96, 32};
-            SDL_Rect dst_rect = {(8 + 32 * 15) * scale, (8) * scale, 96 * scale, 32 * scale};
+        {                                                                                               // Speed arrows
+            SDL_Rect src_rect = {376, 112, 64, 16};
+            SDL_Rect dst_rect = {(8 + 32 * 16) * scale, (8) * scale, 64 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
         }
         {                                                                                               // Speed slider
@@ -998,7 +1004,7 @@ void GameState::render()
                 break;
             if (!level_set->is_playable(level_index))
                 break;
-            if (next_dialogue_level == level_index && (frame_index % 60 < 30))
+            if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue)
                 continue;
             render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0);
             
@@ -1040,13 +1046,18 @@ void GameState::render()
                 continue;
             int colour = 0;
             if (i == 0 && mouse_state == MOUSE_STATE_PLACING_VALVE)
+            {
                 colour = 1;
+                flash_valve = false;
+            }
             if (i == 1 && mouse_state == MOUSE_STATE_PLACING_SOURCE)
             {
                 colour = 1;
                 flash_steam_inlet = false;
             }
-            if (flash_steam_inlet && i == 1 && (frame_index % 60 < 30))
+            if (flash_steam_inlet && i == 1 && (frame_index % 60 < 30) && !show_dialogue)
+                continue;
+            if (flash_valve && i == 0 && (frame_index % 60 < 30) && current_level_index == 2 && !show_dialogue)
                 continue;
             render_box(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(32, 32), colour);
         }
@@ -2100,6 +2111,14 @@ void GameState::mouse_click_in_panel()
                 
 
         }
+        XYPos subtest_pos = panel_pos - XYPos(8 + 16, 32 + 32 + 16);
+        if (subtest_pos.inside(XYPos(current_level->tests[current_level->test_index].sim_points.size() * 16, popcount(current_level->connection_mask) * 16 + 32)))
+        {
+            skip_to_subtest_index = subtest_pos.x / 16;
+            skip_to_next_subtest = true;
+            monitor_state = MONITOR_STATE_PLAY_1;
+        }
+        
 //         int mon_offset = 0;
 //         for (unsigned mon_index = 0; mon_index < 4; mon_index++)
 //         {
@@ -2305,11 +2324,20 @@ bool GameState::events()
                     case SDL_SCANCODE_F5:
                         show_debug = !show_debug;
                         break;
+                    case SDL_SCANCODE_F11:
+                        full_screen = !full_screen;
+                        SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+                        SDL_SetWindowBordered(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
+                        break;
                     case SDL_SCANCODE_LSHIFT:
                         keyboard_shift = true;
                         break;
                     case SDL_SCANCODE_LCTRL:
                         keyboard_ctrl = true;
+                        break;
+                    case SDL_SCANCODE_SPACE:
+                        skip_to_next_subtest = true;
+                        skip_to_subtest_index = -1;
                         break;
                     default:
                         printf("Uncaught key: %d\n", e.key.keysym.scancode);
@@ -2469,7 +2497,22 @@ bool GameState::events()
                             show_dialogue = false;
                     }
                     else if (mouse.x < panel_offset.x)
-                        mouse_click_in_grid();
+                        if (e.button.clicks == 2)
+                        {
+//                             XYPos pos = (mouse - grid_offset) / scale;
+//                             XYPos grid = pos / 32;
+//                             if (grid.inside(XYPos(9,9)))
+//                             {
+//                                 Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit();
+//                                 if (sub_circuit)
+//                                 {
+//                                     current_circuit = sub_circuit;
+//                                     mouse_state = MOUSE_STATE_NONE;
+//                                 }
+//                             }
+                        }
+                        else
+                            mouse_click_in_grid();
                     else
                         mouse_click_in_panel();
                 }

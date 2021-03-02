@@ -329,3 +329,14 @@ inline std::ostream& operator<<(std::ostream& os, const XYPosFloat& obj)
       os << "(" << obj.x << ", " << obj.y << ")";
       return os;
 }
+
+inline unsigned popcount(unsigned in)
+{
+    unsigned count = 0;
+    while (in)
+    {
+        count += in & 1;
+        in >>= 1;
+    }
+    return count;   
+}

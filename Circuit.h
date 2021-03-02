@@ -12,6 +12,8 @@
 class LevelSet;
 class Level;
 
+class Circuit;
+
 typedef int Pressure;
 
 static unsigned pressure_as_percent(Pressure p)
@@ -160,6 +162,8 @@ public:
 
     virtual CircuitElementType get_type() = 0;
     virtual void extend_pipe(Connections con){assert(0);}
+    virtual Circuit* get_subcircuit() {return NULL;}
+
 
 };
 
@@ -257,7 +261,6 @@ public:
 
 };
 
-class Circuit;
 
 class CircuitElementSubCircuit : public CircuitElement
 {
@@ -284,6 +287,7 @@ public:
     void sim_pre(PressureAdjacent adj);
     void sim_post(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
+    Circuit* get_subcircuit() {return circuit;}
 };
 
 class Circuit

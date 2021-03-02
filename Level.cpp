@@ -486,6 +486,9 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
             NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 50);
+            NEW_TEST;
+            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 20);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 20);
             break;
 
         case 10:                                                        // mul 2
@@ -845,11 +848,62 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(100,  0,  0, 50);
             break;
 
-        case 18:                                                    // end
-            connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
-            NEW_TEST;// N   E   S   W
-            NEW_POINT(  0,  0,  0,  0);
+        case 18:                                                    // broken link
+            connection_mask = CONMASK_W | CONMASK_E;
+            substep_count = 50000;
+            level_version = 10;
+            circuit->force_element(XYPos(0,4), new CircuitElementPipe(CONNECTIONS_WS));
+            circuit->force_element(XYPos(0,5), new CircuitElementPipe(CONNECTIONS_NE));
+            circuit->force_element(XYPos(1,5), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(2,5), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(3,5), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(4,5), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(5,5), new CircuitElementPipe(CONNECTIONS_NS_WE));
+            circuit->force_element(XYPos(6,5), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(7,5), new CircuitElementValve(DIRECTION_N));
+            circuit->force_element(XYPos(7,4), new CircuitElementSource(DIRECTION_S));
+            circuit->force_element(XYPos(8,5), new CircuitElementPipe(CONNECTIONS_NWS));
+            circuit->force_element(XYPos(8,4), new CircuitElementPipe(CONNECTIONS_ES));
 
+            circuit->force_element(XYPos(0,6), new CircuitElementEmpty());
+            circuit->force_element(XYPos(1,6), new CircuitElementPipe(CONNECTIONS_ES));
+            circuit->force_element(XYPos(2,6), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(3,6), new CircuitElementPipe(CONNECTIONS_EWS));
+            circuit->force_element(XYPos(4,6), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(5,6), new CircuitElementPipe(CONNECTIONS_NWS));
+            circuit->force_element(XYPos(6,6), new CircuitElementEmpty());
+            circuit->force_element(XYPos(7,6), new CircuitElementPipe(CONNECTIONS_NES));
+            circuit->force_element(XYPos(8,6), new CircuitElementValve(DIRECTION_W));
+
+            circuit->force_element(XYPos(0,7), new CircuitElementSource(DIRECTION_E));
+            circuit->force_element(XYPos(1,7), new CircuitElementValve(DIRECTION_S));
+            circuit->force_element(XYPos(2,7), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(3,7), new CircuitElementValve(DIRECTION_N));
+            circuit->force_element(XYPos(4,7), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(5,7), new CircuitElementValve(DIRECTION_S));
+            circuit->force_element(XYPos(6,7), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(7,7), new CircuitElementValve(DIRECTION_W));
+            circuit->force_element(XYPos(8,7), new CircuitElementPipe(CONNECTIONS_EWS));
+
+            circuit->force_element(XYPos(0,8), new CircuitElementSource(DIRECTION_E));
+            circuit->force_element(XYPos(1,8), new CircuitElementPipe(CONNECTIONS_ALL));
+            circuit->force_element(XYPos(2,8), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(3,8), new CircuitElementPipe(CONNECTIONS_NWE));
+            circuit->force_element(XYPos(4,8), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(5,8), new CircuitElementPipe(CONNECTIONS_NW));
+            circuit->force_element(XYPos(6,8), new CircuitElementEmpty());
+            circuit->force_element(XYPos(7,8), new CircuitElementSource(DIRECTION_N));
+            circuit->force_element(XYPos(8,8), new CircuitElementSource(DIRECTION_N));
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT_F(  0,  0,  0,100,  0,  0,  0, 50);
+            break;
+
+        case 19:                                                    // broken link
+            connection_mask = CONMASK_W | CONMASK_E;
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0, 77);
+            break;
 
 //         case 10:                                                             // amp inv
 //             connection_mask = CONMASK_W | CONMASK_E;

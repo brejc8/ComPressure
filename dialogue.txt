@@ -1,3 +1,4 @@
+﻿                
 #                               PipeCross
 !CHARLES
 Greetings Gertrude! My name is Charles Chavvington, the proprietor of these here General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.
@@ -16,14 +17,14 @@ If you are unfamiliar with our High Pressure Steam pipes, there is an engineerin
 !CHARLES
 Darn it! The secure door to Ada's laboratory is operated with low pressure steam! I could never figure out how she would get this blasted thing open.
 
-Here at General High Pressure Steam Works we generate steam at 100 Pounds per Square Inch. The door uses Moorhouse's low pressure steam which operates at 50 Pounds per Square Inch (PSI). I'll be dammed if I pipe that degenerate Moorhouse steam onto my property!
+Here at General High Pressure Steam Works we generate steam at 100 Pounds per Square Inch. The door uses Moorhouse's low pressure steam which operates at 50 Pounds per Square Inch (PSI). I'll be damned if I pipe that degenerate Moorhouse steam onto my property!
 !CHARLES
 Unless you can magic up a supply of low pressure steam at 50 PSI, we might as well give up.
 
 In the build menu, you will find a steam inlet which can supply you plenty of High Pressure Steam at 100 PSI. It is up there, marked with a spanner. You can also press Tab twice to get access to it.
 !END
 
-#					NPN
+#                    NPN
 !CHARLES
 By Jove! You did it! Terrible waste of good steam, but it got the job done. I apologise for the untidy state, but some hoodlums have gained access and left a frightful mess.
 
@@ -32,7 +33,7 @@ In this laboratory, my dearest Ada conducted experiments on the valves I constru
 Give it a try. Connect West and East, but only when North is at a High Pressure. 
 !END
 
-#					PNP
+#                    PNP
 !NICOLA
 Impressive!
 !CHARLES
@@ -46,7 +47,7 @@ Ada asked me to add this so she could make a valve that closes upon application 
 Connect the East and West, but only when the pressure coming from the South is lower than 100 PSI.
 !END
 
-#					Switch
+#                    Switch
 !CHARLES
 Excellent! Now, combining these two designs, we can construct a component that switches between two sources. We can use the designs we just made, but remember, each design adds additional pipes which slow things down.
 
@@ -61,7 +62,7 @@ Never mind all that low pressure nonsense. When West control is High Pressure, c
 
 #                           Buffer
 !NICOLA
-Lady Chavvington's notes talk about a steam connection between the Laboratory and the Lady Easley's residence that was used for communication.
+Lady Chavvington's notes talk about a steam connection between the Laboratory and Lady Easley's residence that was used for communication.
 !CHARLES
 Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these here walls.
 !NICOLA
@@ -69,17 +70,17 @@ I think we can still establish a connection without delivering any steam out. Ac
 !CHARLES
 Hah! Impossible! This is elementary steamology my dear boy! Steam communication relies on the transfer of steam, and thou shalt not "Transfer" any of my steam out!
 
-In any case, I am needed elsewhere. This matter does not appear as urgent as the investigations into into my missing steam.
+In any case, I am needed elsewhere. This matter does not appear as urgent as the investigations into my missing steam.
 
 !NICOLA
 According to Lady Chavvington, Charles was not known as the greatest listener. She describes the design in some detail.
 !ADA
 June 5th
-I created a fantastic pressure replicating device today. To create a pressure of a specific value, I used a valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. This appears to work for a whole range of values with the minimal of error. Due to it's isolating properties I shall name it a "buffer".
+I created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. This appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a "buffer".
 
 Communication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit.
 !NICOLA
-It appears some of parts of the original design still remain installed in the wall. As long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint.
+It appears some parts of the original design still remain installed in the wall. As long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint.
 
 !END
 
@@ -97,7 +98,7 @@ Our apologies Lady Easley. We are attempting to continue Lady Chavvington's rese
 !ANNIE
 No! 80 PSI means, "Help! I am trapped in the afterlife!". It is 20 PSI that means "Hello".
 
-When Ada installed the system she made a mistake on the valves and all the pressures were received upside down. It was when investigating the issue she got her epiphany on the possibilities of steam. We never fixed it, and instead I inverted all the the pressure values in my codebook.
+When Ada installed the system she made a mistake on the valves and all the pressures were received upside down. It was when investigating the issue she got her epiphany on the possibilities of steam. We never fixed it, and instead I inverted all the pressure values in my codebook.
 !NICOLA
 Interesting. Perhaps we should see if we can make the same mistake.
 !END
@@ -153,7 +154,7 @@ Really!?! How can that possibly work?
 !NICOLA
 Astonishing! Well, that got us half way there. We can send; but now we need to receive. We must amplify their steam pressure to our range. According to Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure.
 !END
-#					Encrypt
+#                    Encrypt
 !NICOLA
 Let's see if this works.
 
@@ -190,12 +191,12 @@ Oh dear! I didn't think that pipe was leading anywhere so I used the components 
 !END 
 #                          Decrypt
 !NICOLA
-Well that was simple. The encryption is simple an unbalanced buffer. But how could you possibly make a design which accurately reverses such a cypher?
+Well that was simple. The encryption is simply an unbalanced buffer. But how could you possibly make a design which accurately reverses such a cypher?
 
 Perhaps Lady Easley could help. I shall enquire if she is available to assist us.
 ...
 !ANNIE
-Among Ada's papers, did you happen to find a napkin from the Madingley Hall tea rooms? I believe it was dated June 24th. We were discussing new Royal Society paper on "convergence in monotonic series" when Ada began scribbling things down on a napkin. She then proceeded to run out exclaiming how she may have solved the decryption problem. Without settling the bill, I might add.
+Among Ada's papers, did you happen to find a napkin from the Madingley Hall tea rooms? I believe it was dated June 24th. We were discussing the new Royal Society paper on "convergence in monotonic series" when Ada began scribbling things down on a napkin. She then proceeded to run out exclaiming how she may have solved the decryption problem. Without settling the bill, I might add.
 !ADA
 June 24th
 A decryption device can be formed by repeatedly guessing the value, encrypting it and comparing it to the encrypted input. Should the input be higher, we increase the guess. Should it be lower, we reduce it. Such a device could reverse numerous functions.
@@ -204,7 +205,7 @@ Charles's steam comparator was just what I needed, although I must remember to r
 !NICOLA
 At least we know where his comparator got to.
 !END
-#					Sensor
+#                    Sensor
 !NICOLA
 Incredible! Using this technique we could improve the precision of all our designs. Lady Chavvington's sister must have more information about these techniques.
 
@@ -255,7 +256,7 @@ Nevertheless. The sooner you complete the steam calculation machine, the sooner 
 June 27th
 Together with Lord Moorhouse such progress has been made in our research into steam computation. Our previous designs suffered from inaccuracies. Only when the valves were perfectly balanced and produced an output of 50, was the result perfect. With this I was struck with an idea.
 
-I could sense how open any valve is, by placing a second valve which vented the steam and adjusting its openness. Only when the who valves are equally open, will the pressure between them be precisely 50. All I had to do is to adjust the value until this was the case.
+I could sense how open any valve is, by placing a second valve which vented the steam and adjusting its openness. Only when the two valves are equally open, will the pressure between them be precisely 50. All I had to do is to adjust the value until this was the case.
 !ADA
 Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.
 
@@ -283,7 +284,7 @@ I have brought the sign for the pipe that Ada asked for.
 !NICOLA
 That must have been months ago.
 !CHARLES
-Yes, well, when a I say I will do something, it will be done. You don't have to remind me every month.
+Yes, well, when I say I will do something, it will be done. You don't have to remind me every month.
 
 Could you please send her a message from me?
 
@@ -303,32 +304,32 @@ Be a good chap and send it off at once.
 71 PSI [Without you life has lost all meaning]
 
 !CHARLES
-Good, now, I see the subtracter design is complete. Excellent! As my dearly departed Ada once said... 
+Good, now, I see the subtractor design is complete. Excellent! As my dearly departed Ada once said... 
 !NICOLA
 Sir! You must stop using that phrase! People are beginning to think you a murderer...
 !CHARLES
-Hmm... Yes. As Ada..., who is no longer with us, once said, "An adder is but an inversion of an subtractor. The output minus one of the inputs must be equal to the other input."
+Hmm... Yes. As Ada..., who is no longer with us, once said, "An adder is but an inversion of a subtractor. The output minus one of the inputs must be equal to the other input."
 !END
 !ANNIE
 Why have you not been responding to my messages?
 !NICOLA
-Our apologies Lady Easley, we did not know you sent any.
+Our apologies Lady Easley, we did not know you had sent any.
 !ANNIE
 They should be recorded on your message latches over here.
 ...
 
 They're missing! The latches must have been stolen by whoever broke into the laboratory. You should recreate them at once lest you miss any other important communications.
 !ANNIE
-When a message is stable, a pulse if steam is sent on the timing pipe. This causes the latch to capture the value at that time. The latch will record the value, but will maintain the old value until the timing pipe has returned to a low pressure level.
+When a message is stable, a pulse of steam is sent on the timing pipe. This causes the latch to capture the value at that time. The latch will record the value, but will maintain the old value until the timing pipe has returned to a low pressure level.
 
 Because these latches can be placed in sequence to record a series of messages, it is important that the new value is only released once the timing pipe has returned to low pressure
 
 I was always impressed about how well sealed Charles's valves are with a closed valve able to maintain the pressure within a pipe indefinitely.
 !END
 !CHARLES
-Great news everyone! Allow me to introduce Professor Joseph Cogsworth. One of, if not THE, brightest mind in all of the lands. His gear based tabulating machines have done wonders to our accounting department.
+Great news everyone! Allow me to introduce Professor Joseph Cogsworth. One of, if not THE, brightest mind in all of the lands. His gear based tabulating machines have done wonders for our accounting department.
 
-He has been aiding in our missing High Pressure Steam situation and has taken a curiosity into Ada's work.
+He has been aiding in our missing High Pressure Steam situation and has condescended to take an interest in Ada's work.
 !JOSEPH
 Interesting to see how far you have come. I see you have reconstructed the latch to the same specification as Ada described in her notes.
 !NICOLA
@@ -342,16 +343,54 @@ Each tabulator either adds, or subtracts a value from the current tally. The Nor
 
 Ada had to improve all her previous designs to increase the accuracy of all the used components. Work she never managed to complete.
 !END
+!CHARLES
+Very good, but alas too late, for Professor Cogsworth has already identified the guilty accountant.
+!JOSEPH
+Indeed, but in return all I ask is to take possession of this crude attempt at a steam based tabulating device. Ada wished for me to be the custodian of all her research. Gertrude? Nicola? Your work here is done.
+!ADA
+I hardly think so! Unlikely I would pass my work over to a man with both character and intellect of a parasitic wasp.
+!JOSEPH
+Ada! I was under the impression you had died.
+!ADA
+Charles! Apprehend this man, for he is the cause of all of this perturbation.
+!CHARLES
+What!?! I hardly think a man of his stature would be involved in such petty crimes.
+!GEORGE
+It's true Charles. Joseph poisoned me against you with mistruths, manipulating us to detest one another. At first I collaborated with him due to his dislike of high pressure steam, but it was only later I realised his hatred of ALL steam!
+!CHARLES
+Is this true Joseph? You have no passion for High Pressure Steam?
+!JOSEPH
+Of course it is true! Ghastly substance. But to have me apprehended? For what? But you have no proof of any misdeeds.
+!ADA
+Actually we do. Your gear tabulating machines have been removing tiny fractions from each transaction. It was only when we compared the results to the steam tabulator that we spotted these errors. All this so you could slowly syphon off high pressure steam. Were it not for Charles's sense of something being amiss, this would have never been spotted.
+!JOSEPH
+Preposterous! What would I want with this revolting substance!
+!GEORGE
+To slowly fill the pressure vessel you asked me to construct under the town hall.
+!CHARLES
+What!?! But that's a low pressure vessel! Have you no idea of the consequences of filling it with High Pressure Steam!?!
+!JOSEPH
+The only consequences would be the world finally rejecting steam once and for all! It should be reserved for executions and only seen in museums. To think! Steam invading the offices and displacing my machines! For it is only gears that can produce a...
+
+WHAT!?! Let go of me! Unhand me you wretched fools! You cannot do this to me! Wait until the academy hears about this!
+!CHARLES
+Well that's a satisfying conclusion to this matter. My High Pressure Steam is safe as is my dear Ada.
+!ADA
+Actually darling, I think the story of steam computation is only just beginning.
+!CHARLES
+Indeed. But, perhaps we should diffuse that steam bomb first.
+!END
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
 !END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
 
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
+
 
