@@ -45,6 +45,8 @@ Ada asked me to add this so she could make a valve that closes upon application 
 
 !CHARLES
 Connect the East and West, but only when the pressure coming from the South is lower than 100 PSI.
+
+You can use the steam inlet as a source of good High Pressure Steam.
 !END
 
 #                    Switch

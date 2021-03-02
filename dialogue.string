@@ -102,6 +102,9 @@ static Dialogue dialogue3[] = {
     {DIALOGUE_CHARLES,
         "Connect the East and West, but only when the pressure coming\n"
         "from the South is lower than 100 PSI.\n"
+        "\n"
+        "You can use the steam inlet as a source of good High Pressure\n"
+        "Steam.\n"
     },
 
     {DIALOGUE_END, NULL}
