@@ -426,6 +426,9 @@ int main()
     
     std::list<Connection> conns;
     std::list<Workload*> workloads;
+
+    time_t old_time = 0;
+
     while(true)
     {
         if (workloads.empty())
@@ -433,7 +436,7 @@ int main()
             fd_set w_fds;
             fd_set r_fds;
             struct timeval timeout;
-            timeout.tv_sec = 60;
+            timeout.tv_sec = 1;
             timeout.tv_usec = 0;
 
             FD_ZERO(&r_fds);
@@ -490,6 +493,24 @@ int main()
         fflush(stdout);
         if (power_down)
             break;
+
+        time_t new_time;
+        time(&new_time);
+        if ((old_time + 120) < new_time)
+        {
+            old_time = new_time;
+            std::ofstream outfile ("auto_db.save");
+            SaveObject* savobj = db.save();
+            savobj->save(outfile);
+            delete savobj;
+        }
+    {
+        std::ofstream outfile ("db.save");
+        SaveObject* savobj = db.save();
+        savobj->save(outfile);
+        delete savobj;
+    }
+
     }
     close(sockid);
     {

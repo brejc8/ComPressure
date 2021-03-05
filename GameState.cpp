@@ -201,8 +201,8 @@ static int fetch_from_server_thread(void *ptr)
     TCPsocket tcpsock;
     ServerComms* comms = (ServerComms*)ptr;
     
-//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
-    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
+    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1)
+//    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
     {
         printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
         if (comms->resp)
@@ -1661,7 +1661,7 @@ void GameState::render()
                 int top = 100 - std::max(v1, v2);
                 int size = abs(v1 - v2) + 1;
 
-                SDL_Rect src_rect = {503, 80 + colour, 1, 1};
+                SDL_Rect src_rect = {503, 80 + (int)colour, 1, 1};
                 SDL_Rect dst_rect = {i * scale + graph_pos.x, top * scale + graph_pos.y, 1 * scale, size * scale};
                 render_texture(src_rect, dst_rect);
             }
