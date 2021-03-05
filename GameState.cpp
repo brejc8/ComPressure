@@ -2532,6 +2532,7 @@ bool GameState::events()
                         full_screen = !full_screen;
                         SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
                         SDL_SetWindowBordered(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
+                        SDL_SetWindowInputFocus(sdl_window);
                         break;
                     case SDL_SCANCODE_LSHIFT:
                         keyboard_shift = true;
@@ -2648,6 +2649,7 @@ bool GameState::events()
                             full_screen = !full_screen;
                             SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
                             SDL_SetWindowBordered(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
+                            SDL_SetWindowInputFocus(sdl_window);
                         }
                         if ((pos - XYPos(0, 64)).inside(XYPos(32, 32)))
                         {

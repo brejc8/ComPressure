@@ -42,7 +42,6 @@ void mainloop()
 #endif
     int frame = 0;
     
-    game_state->score_fetch(5);
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
