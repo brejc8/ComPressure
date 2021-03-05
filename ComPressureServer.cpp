@@ -504,13 +504,6 @@ int main()
             savobj->save(outfile);
             delete savobj;
         }
-    {
-        std::ofstream outfile ("db.save");
-        SaveObject* savobj = db.save();
-        savobj->save(outfile);
-        delete savobj;
-    }
-
     }
     close(sockid);
     {
