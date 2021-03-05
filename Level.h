@@ -93,15 +93,20 @@ public:
     Pressure best_score = 0;
     Pressure last_score = 0;
     unsigned level_version = 0;
-    bool enabled = false;
     
     
     bool touched = false;
+    bool score_set = false;
+    bool best_score_set = false;
+
     unsigned test_index;
     unsigned sim_point_index;
     unsigned substep_index;
-    unsigned in_range_count;
     
+    Pressure global_score_graph[200];
+    Pressure global_fetched_score;
+    bool global_score_graph_set = false;
+
     Level(unsigned level_index_, SaveObject* sobj);
     Level(unsigned level_index_);
     ~Level();
@@ -130,6 +135,7 @@ public:
     SaveObject* save(bool lite = false);
     bool is_playable(unsigned level);
     int top_playable();
+    Pressure test_level(unsigned level_index);
 
 
 };

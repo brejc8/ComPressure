@@ -131,12 +131,12 @@ static Dialogue dialogue4[] = {
 
     {DIALOGUE_CHARLES,
         "What!?! That would be low pressure steam! We do not work with\n"
-        "low pressure steam! I did not make my fortune by supplying the\n"
-        "people low pressure steam!\n"
+        "low pressure steam! I did not make my fortune by supplying\n"
+        "people with low pressure steam!\n"
         "\n"
         "Never mind all that low pressure nonsense. When West control\n"
         "is High Pressure, connect the North generator, otherwise\n"
-        "connect the South generator\n"
+        "connect the South generator.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -163,7 +163,7 @@ static Dialogue dialogue5[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "Hah! Impossible! This is elementary steamology my dear boy!\n"
+        "Hah! Impossible! This is elementary steamology, my dear boy!\n"
         "Steam communication relies on the transfer of steam, and thou\n"
         "shalt not \"Transfer\" any of my steam out!\n"
         "\n"
@@ -268,7 +268,7 @@ static Dialogue dialogue7[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "What was that you say boy?\n"
+        "What was that you say, boy?\n"
     },
 
     {DIALOGUE_NICOLA,
@@ -383,15 +383,15 @@ static Dialogue dialogue11[] = {
         "...\n"
         "23 PSI [Negative]\n"
         "...\n"
-        "7  PSI [7]\n"
+        "6  PSI [6]\n"
         "12 PSI [/]\n"
-        "8  PSI [8]\n"
+        "7  PSI [7]\n"
     },
 
     {DIALOGUE_NICOLA,
-        "What?!? 7/8? Let me check the diary.\n"
+        "What?!? 6/7? Let me check the diary.\n"
         "...\n"
-        "All the entry for June 8th talks about is the design of the\n"
+        "All the entry for June 7th talks about is the design of the\n"
         "pressure inverter. How could he even communicate with us if\n"
         "the pressures were reversed? ... reversed ... reversed? ...\n"
         "Of course!\n"
@@ -401,13 +401,13 @@ static Dialogue dialogue11[] = {
     },
 
     {DIALOGUE_ADA,
-        "July 7th\n"
+        "July 6th\n"
         "\n"
         "I suspect our communications have been compromised! After days\n"
         "of pleading, Lord Moorhouse agreed to combine our research\n"
         "efforts. We exchanged the codes to the doors of our respective\n"
         "laboratories over our steam communicator. Just hours later, a\n"
-        "hand delivered note was received at our residence informing me\n"
+        "hand-delivered note was received at our residence informing me\n"
         "his Laboratory has been ransacked and I was no longer welcome.\n"
         "I rushed to find mine had also been broken into! So much work\n"
         "lost.\n"

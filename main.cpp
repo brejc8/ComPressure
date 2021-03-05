@@ -42,6 +42,7 @@ void mainloop()
 #endif
     int frame = 0;
     
+    game_state->score_fetch(5);
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
@@ -59,14 +60,15 @@ void mainloop()
         if (frame > 100 * 60)
         {
             game_state->save(save_filename.c_str());
-            game_state->post_to_server();
+            game_state->save_to_server();
             frame = 0;
         }
         if ((newtime - oldtime) < 10)
             SDL_Delay(10 - (newtime - oldtime));
 	}
     game_state->save(save_filename.c_str());
-    game_state->post_to_server();
+    game_state->save_to_server(true);
+    game_state->score_submit(true);
     delete game_state;
 }
 

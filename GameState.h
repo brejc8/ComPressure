@@ -11,6 +11,14 @@
 #include <list>
 #include <set>
 
+struct ServerResp
+{
+    SaveObject* resp = NULL;
+    bool working = false;
+    bool done = false;
+    bool error = false;
+};
+
 class GameState
 {
     SDL_Window* sdl_window;
@@ -39,7 +47,9 @@ class GameState
         PANEL_STATE_LEVEL_SELECT,
         PANEL_STATE_EDITOR,
         PANEL_STATE_MONITOR,
-        PANEL_STATE_TEST
+        PANEL_STATE_TEST,
+        PANEL_STATE_SCORES
+
     } panel_state = PANEL_STATE_LEVEL_SELECT;
 
     Direction direction = DIRECTION_N;
@@ -52,6 +62,7 @@ class GameState
     
     uint64_t steam_id = 0;
     const char* steam_username = "none";
+    ServerResp scores_from_server;
 
     LevelSet* level_set;
     Level* current_level;
@@ -137,7 +148,11 @@ public:
     SaveObject* save(bool lite = false);
     void save(std::ostream& outfile, bool lite = false);
     void save(const char* filename, bool lite = false);
-    void post_to_server();
+    void post_to_server(SaveObject* send, bool sync);
+    void fetch_from_server(SaveObject* send, ServerResp* resp);
+    void save_to_server(bool sync = false);
+    void score_submit(bool sync = false);
+    void score_fetch(unsigned level);
 
     ~GameState();
     SDL_Texture* loadTexture(const char* filename);

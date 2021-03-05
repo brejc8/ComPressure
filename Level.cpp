@@ -995,7 +995,6 @@ void Level::reset(LevelSet* level_set)
     test_index = 0;
     sim_point_index = 0;
     substep_index = 0;
-    in_range_count = 0;
     touched = false;
 
     circuit->elaborate(level_set);
@@ -1087,6 +1086,7 @@ void Level::select_test(unsigned t)
     sim_point_index = 0;
     substep_index = 0;
     test_index = t;
+    touched = true;
 }
 
 void Level::update_score(bool fin)
@@ -1108,8 +1108,10 @@ void Level::update_score(bool fin)
             for (int i = 0; i < HISTORY_POINT_COUNT; i++)
                 tests[t].best_pressure_log[i] = tests[t].last_pressure_log[i];
         }
-        
+        best_score_set = true;
     }
+    if (fin)
+        score_set = true;
     return;
 }
 
@@ -1151,6 +1153,7 @@ SaveObject* LevelSet::save(bool lite)
     }
     return slist;
 }
+
 bool LevelSet::is_playable(unsigned level)
 {
     if (level >= LEVEL_COUNT)
@@ -1162,6 +1165,7 @@ bool LevelSet::is_playable(unsigned level)
     }
     return true;
 }
+
 int LevelSet::top_playable()
 {
     for (int i = 0; i < LEVEL_COUNT; i++)
@@ -1170,4 +1174,12 @@ int LevelSet::top_playable()
             return i;
     }
     return LEVEL_COUNT - 1;
+}
+
+Pressure LevelSet::test_level(unsigned level_index)
+{
+    levels[level_index]->reset(this);
+    while (!levels[level_index]->score_set)
+        levels[level_index]->advance(1000, MONITOR_STATE_PLAY_ALL);
+    return levels[level_index]->last_score;
 }

@@ -12,7 +12,10 @@ ComPressure_LDADD=@SDL_LIBS@ -lSDL2_image -lSDL2_mixer -lSDL2_net -lz \
  
 ComPressureServer_SOURCES =  ComPressureServer.cpp \
                     Compress.cpp Compress.h \
-                    SaveState.cpp SaveState.h
+                    SaveState.cpp SaveState.h \
+                    Circuit.cpp Circuit.h \
+                    Level.cpp Level.h
+
 ComPressureServer_LDADD= -lz 
 
 EXTRA_DIST = dialogue.txt

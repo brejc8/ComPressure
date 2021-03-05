@@ -16,10 +16,10 @@ public:
     virtual ~SaveObject(){};
     virtual void save(std::ostream& f)=0;
     static SaveObject* load(std::istream& f);
-    virtual int get_num(){assert(0);return 0;};
-    virtual std::string get_string(){assert(0);return "";};
-    virtual SaveObjectMap* get_map(){assert(0);return NULL;};
-    virtual SaveObjectList* get_list(){assert(0);return NULL;};
+    virtual int get_num(){throw(std::runtime_error("Not a num"));};
+    virtual std::string get_string(){throw(std::runtime_error("Not a string"));};
+    virtual SaveObjectMap* get_map(){throw(std::runtime_error("Not a map"));};
+    virtual SaveObjectList* get_list(){throw(std::runtime_error("Not a list"));};
     virtual bool is_null(){return false;};
 };
 

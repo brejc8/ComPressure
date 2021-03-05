@@ -99,6 +99,34 @@ GameState::GameState(const char* filename)
 	sdl_font_texture = loadTexture("font.png");
     SDL_SetRenderDrawColor(sdl_renderer, 0x0, 0x0, 0x0, 0xFF);
     
+    {
+    
+        int w = 27;
+        int h = 27;
+        SDL_Surface* icon_surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
+        SDL_SetSurfaceBlendMode(icon_surface, SDL_BLENDMODE_NONE);
+
+        SDL_Renderer* icon_renderer = SDL_CreateSoftwareRenderer(icon_surface);
+        SDL_Surface* loadedSurface = IMG_Load("texture.png");
+        SDL_Texture* newTexture = SDL_CreateTextureFromSurface(icon_renderer, loadedSurface);
+        SDL_SetTextureBlendMode(newTexture, SDL_BLENDMODE_BLEND);
+	    SDL_FreeSurface(loadedSurface);
+        SDL_SetRenderDrawColor(icon_renderer, 0xff, 0xff, 0xff, 0xFF);
+        SDL_RenderClear(icon_renderer);
+        SDL_SetColorKey(icon_surface, SDL_TRUE, 0xFFffffFF);
+
+        SDL_Rect src_rect = {37,37,27,27};
+        SDL_Rect dst_rect = {0,0,w,h};
+        SDL_RenderCopy(icon_renderer, newTexture, &src_rect, &dst_rect);
+        SDL_RenderPresent(icon_renderer);
+
+        SDL_SetWindowIcon(sdl_window, icon_surface);
+	    SDL_DestroyTexture(newTexture);
+	    SDL_DestroyRenderer(icon_renderer);
+	    SDL_FreeSurface(icon_surface);
+    }
+    
+    
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_AllocateChannels(16);
     
@@ -155,40 +183,150 @@ void GameState::save(const char*  filename, bool lite)
 }
 
 
-void GameState::post_to_server()
+class ServerComms
+{
+public:
+    SaveObject* send;
+    ServerResp* resp;
+
+    ServerComms(SaveObject* send_, ServerResp* resp_ = NULL):
+        send(send_),
+        resp(resp_)
+    {}
+};
+
+static int fetch_from_server_thread(void *ptr)
 {
     IPaddress ip;
     TCPsocket tcpsock;
-
-    std::ostringstream stream;
+    ServerComms* comms = (ServerComms*)ptr;
+    
+//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
+    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
     {
-        SaveObjectMap omap;
-        omap.add_string("command", "save");
-        omap.add_item("content", save(true));
-        omap.add_num("steam_id", steam_id);
-        omap.add_string("steam_username", steam_username);
-
-        omap.save(stream);
-    }
-    std::string uncomp =  stream.str();
-    std::string comp = compress_string(uncomp);
-
-    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1) {
-//    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1) {
-      printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-      return;
+        printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+        if (comms->resp)
+        {
+            comms->resp->error = true;
+            comms->resp->done = true;
+            comms->resp->working = false;
+        }
+        delete comms->send;
+        delete comms;
+        return 0;
     }
 
     tcpsock = SDLNet_TCP_Open(&ip);
-    if (!tcpsock) {
-      printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
-      return;
+    if (!tcpsock)
+    {
+        printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+        if (comms->resp)
+        {
+            comms->resp->error = true;
+            comms->resp->done = true;
+            comms->resp->working = false;
+        }
+        delete comms->send;
+        delete comms;
+        return 0;
     }
     
-    uint32_t length = comp.length();
-    SDLNet_TCP_Send(tcpsock, (char*)&length, 4);
-    SDLNet_TCP_Send(tcpsock, comp.c_str(), length);
+    try 
+    {
+        std::ostringstream stream;
+        comms->send->save(stream);
+        std::string comp = compress_string(stream.str());
+
+        uint32_t length = comp.length();
+        SDLNet_TCP_Send(tcpsock, (char*)&length, 4);
+        SDLNet_TCP_Send(tcpsock, comp.c_str(), length);
+
+        if (comms->resp)
+        {
+            int got = SDLNet_TCP_Recv(tcpsock, (char*)&length, 4);
+            if (got != 4)
+                throw(std::runtime_error("Connection closed early"));
+            char* data = (char*)malloc(length);
+            got = SDLNet_TCP_Recv(tcpsock, data, length);
+            if (got != length)
+            {
+                free (data);
+                throw(std::runtime_error("Connection closed early"));
+            }
+            std::string in_str(data, length);
+            free (data);
+            std::string decomp = decompress_string(in_str);
+            std::istringstream decomp_stream(decomp);
+            comms->resp->resp = SaveObject::load(decomp_stream);
+        }
+        
+    }
+    catch (const std::runtime_error& error)
+    {
+        std::cerr << error.what() << "\n";
+        comms->resp->error = true;
+    }
     SDLNet_TCP_Close(tcpsock);
+    if (comms->resp)
+    {
+        comms->resp->done = true;
+        comms->resp->working = false;
+    }
+    delete comms->send;
+    delete comms;
+    return 0;
+}
+
+void GameState::post_to_server(SaveObject* send, bool sync)
+{
+    SDL_Thread *thread = SDL_CreateThread(fetch_from_server_thread, "PostToServer", (void *)new ServerComms(send));
+    if (sync);
+        SDL_WaitThread(thread, NULL);
+}
+
+
+void GameState::fetch_from_server(SaveObject* send, ServerResp* resp)
+{
+    resp->working = true;
+    resp->done = false;
+    resp->error = false;
+    if (resp->resp)
+        delete resp->resp;
+    resp->resp = NULL;
+    SDL_Thread *thread = SDL_CreateThread(fetch_from_server_thread, "FetchFromServer", (void *)new ServerComms(send, resp));
+}
+
+
+void GameState::save_to_server(bool sync)
+{
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "save");
+    omap->add_item("content", save(true));
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    post_to_server(omap, sync);
+}
+
+void GameState::score_submit(bool sync)
+{
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "score_submit");
+    omap->add_item("levels", level_set->save(true));
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    post_to_server(omap, sync);
+}
+
+void GameState::score_fetch(unsigned level)
+{
+    if (scores_from_server.working)
+        return;
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "score_fetch");
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    omap->add_num("level", level);
+    fetch_from_server(omap, &scores_from_server);
 }
 
 
@@ -209,9 +347,6 @@ GameState::~GameState()
 extern const char embedded_data_binary_texture_png_start;
 extern const char embedded_data_binary_texture_png_end;
 
-
-
-
 SDL_Texture* GameState::loadTexture(const char* filename)
 {
     SDL_Surface* loadedSurface = IMG_Load(filename);
@@ -223,7 +358,6 @@ SDL_Texture* GameState::loadTexture(const char* filename)
 	SDL_FreeSurface(loadedSurface);
 	return newTexture;
 }
-
 
 void GameState::advance()
 {
@@ -333,6 +467,12 @@ void GameState::advance()
                 break;
             }
         }
+    }
+    if (current_level->best_score_set)
+    {
+        printf("test\n");
+        current_level->best_score_set = false;
+        score_submit(false);
     }
 }
 
@@ -514,6 +654,30 @@ void GameState::update_scale(int newscale)
 
 void GameState::render()
 {
+    if (scores_from_server.done && !scores_from_server.error)
+    {
+        try 
+        {
+            SaveObjectMap* omap = scores_from_server.resp->get_map();
+            unsigned level = omap->get_num("level");
+            level_set->levels[level]->global_fetched_score = omap->get_num("score");
+            SaveObjectList* glist = omap->get_item("graph")->get_list();
+            for (unsigned i = 0; i < 200; i++)
+            {
+                level_set->levels[level]->global_score_graph[i] = glist->get_num(i);
+            }
+            level_set->levels[level]->global_score_graph_set = true;
+        }
+        catch (const std::runtime_error& error)
+        {
+            std::cerr << error.what() << "\n";
+        }
+        if (scores_from_server.resp)
+            delete scores_from_server.resp;
+        scores_from_server.resp = NULL;
+        scores_from_server.done = false;
+    }
+
     SDL_RenderClear(sdl_renderer);
     XYPos window_size;
     SDL_GetWindowSize(sdl_window, &window_size.x, &window_size.y);
@@ -951,6 +1115,9 @@ void GameState::render()
                 case PANEL_STATE_TEST:
                     panel_colour = 4;
                     break;
+                case PANEL_STATE_SCORES:
+                    panel_colour = 6;
+                    break;
                 default:
                     assert(0);
             }
@@ -1277,7 +1444,7 @@ void GameState::render()
             }
 
             {
-                SDL_Rect src_rect = {448, 80, 48, 16};
+                SDL_Rect src_rect = {448, 112, 48, 16};
                 SDL_Rect dst_rect = {(port_index * 48) * scale + panel_offset.x, (101 + 14) * scale + panel_offset.y, 48 * scale, 16 * scale};
                 render_texture(src_rect, dst_rect);
             }
@@ -1470,6 +1637,40 @@ void GameState::render()
             
         }
 
+    } else if (panel_state == PANEL_STATE_SCORES)
+    {
+        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256, 120), 5);
+        XYPos graph_pos(8 * scale + panel_offset.x, (32 + 32 + 8 + 112 + 9) * scale + panel_offset.y);
+        {
+            SDL_Rect src_rect = {524, 80, 13, 101};
+            SDL_Rect dst_rect = {graph_pos.x, graph_pos.y, 13 * scale, 101 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+
+
+        if (current_level->global_score_graph_set)
+        {
+            Pressure my_score = current_level->global_fetched_score;
+            for (int i = 0; i < 200-1; i++)
+            {
+                unsigned colour = 6;
+                int v1 = pressure_as_percent(current_level->global_score_graph[i]);
+                int v2 = pressure_as_percent(current_level->global_score_graph[i + 1]);
+                if ((current_level->global_score_graph[i] >= my_score) && (current_level->global_score_graph[i + 1] <= my_score))
+                    colour = 3;
+                int top = 100 - std::max(v1, v2);
+                int size = abs(v1 - v2) + 1;
+
+                SDL_Rect src_rect = {503, 80 + colour, 1, 1};
+                SDL_Rect dst_rect = {i * scale + graph_pos.x, top * scale + graph_pos.y, 1 * scale, size * scale};
+                render_texture(src_rect, dst_rect);
+            }
+        }
+        else
+        {
+            if (!scores_from_server.working)
+                score_fetch(current_level_index);
+        }
     }
 
     if (show_debug)
@@ -1583,7 +1784,7 @@ void GameState::render()
             }
             pages[] =
             {
-                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier. Click on the requirements to see recieve\na hint."},
+                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier. Click on the requirements to recieve a\nhint."},
                 {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next\ndesign becomes available. You can always come back\nto refine your solution.\n\nPress the pipe button below to continue the\ntutorial. You can return to the help by pressing F1."},
                 {XYPos(0,0), 10, 1, "Pipes can be laid down by either left mouse button\ndragging the pipe from the source to the desination,\nor by clicking left mouse button to extend the pipe\nin the direction of the mouse. Right click to cancel\npipe laying mode."},
                 {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and\nother elements."},
@@ -1597,13 +1798,13 @@ void GameState::render()
                 {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close\nthe valve."},
                 {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your\ndesign is performing. The first three buttons\npause the testing, repeatedly run a single test and\nrun all tests respectively.\n\n"
                                     "The current scores for individual tests are shown\nwith the scores of best design seen below. On the\nright is the final score formed from the average of\nall tests.\n\n"
-                                    "The next panel shows the sequence of inputs and\nexpected outputs for the current test. The current\nphase is highlighted. The output recorded on the\nlast run is show to the right."},
+                                    "The next panel shows the sequence of inputs and\nexpected outputs for the current test. The current\nphase is highlighted. The output recorded on the\nlast run is shown to the right."},
                 {XYPos(2,12), 3, 1, "The score is based on how close the output is to the\ntarget value. The graph shows the output value\nduring the final stage of the test. The faded line\nin the graph shows the path of the best design so\nfar."},
                 {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the\nports and examine your design's operation. The\nvertical sliders set the desired value. The\nhorizontal sliders below set force of the input.\nSetting the slider all the way left makes it an\noutput. Initial values are set from the current\ntest."},
                 {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the\nport values."},
                 
-                {XYPos(1,15), 4, 1, "Components can be selected by either clicking while\nholding Crtl, or dragging while hoding Shift.\nSelected components can be moved using WASD keys if\nthe destination is empty. To delete selcted\ncomponents, press X or Delete.\n\nUndo is reached througn Z key (Ctrl is optional) and\nRedo though either Y or Shift+Z. Undo can also be\ntriggered by holding right mouse button and clicking\nthe left."},
-                {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow\nyou to to to exit the game, switch between windowed\nand full screen, join our Discord group and show\ncredits.\n\nThe sliders adjust the sound effects and music\nvolumes."},
+                {XYPos(1,15), 4, 1, "Components can be selected by either clicking while\nholding Ctrl, or dragging while holding Shift.\nSelected components can be moved using WASD keys if\nthe destination is empty. To delete selected\ncomponents, press X or Delete.\n\nUndo is reached through Z key (Ctrl is optional) and\nRedo through either Y or Shift+Z. Undo can also be\ntriggered by holding right mouse button and clicking\nthe left one."},
+                {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow\nyou to exit the game, switch between windowed\nand full screen, join our Discord group and show\ncredits.\n\nThe sliders adjust the sound effects and music\nvolumes."},
                 
                 {XYPos(0,0),  0, 1, ""},
                 {XYPos(0,0),  0, 1, ""},
@@ -1996,6 +2197,9 @@ void GameState::mouse_click_in_panel()
                     if (!level_set->is_playable(7))
                         break;
                     panel_state = PANEL_STATE_TEST;
+                    break;
+                case 4:
+                    panel_state = PANEL_STATE_SCORES;
                     break;
                 case 5:
                 case 6:

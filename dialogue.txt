@@ -1,4 +1,4 @@
-﻿                
+                
 #                               PipeCross
 !CHARLES
 Greetings Gertrude! My name is Charles Chavvington, the proprietor of these here General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.
@@ -57,9 +57,9 @@ When the West control house supplies 100 PSI High Pressure Steam, the North gene
 !NICOLA
 What happens when the control house supplies a pressure between 0 and 100?
 !CHARLES
-What!?! That would be low pressure steam! We do not work with low pressure steam! I did not make my fortune by supplying the people low pressure steam!
+What!?! That would be low pressure steam! We do not work with low pressure steam! I did not make my fortune by supplying people with low pressure steam!
 
-Never mind all that low pressure nonsense. When West control is High Pressure, connect the North generator, otherwise connect the South generator
+Never mind all that low pressure nonsense. When West control is High Pressure, connect the North generator, otherwise connect the South generator.
 !END
 
 #                           Buffer
@@ -70,7 +70,7 @@ Yes, I had it removed. New procedures. Too much of our High Pressure Steam was g
 !NICOLA
 I think we can still establish a connection without delivering any steam out. According to these notes...
 !CHARLES
-Hah! Impossible! This is elementary steamology my dear boy! Steam communication relies on the transfer of steam, and thou shalt not "Transfer" any of my steam out!
+Hah! Impossible! This is elementary steamology, my dear boy! Steam communication relies on the transfer of steam, and thou shalt not "Transfer" any of my steam out!
 
 In any case, I am needed elsewhere. This matter does not appear as urgent as the investigations into my missing steam.
 
@@ -105,7 +105,7 @@ When Ada installed the system she made a mistake on the valves and all the press
 Interesting. Perhaps we should see if we can make the same mistake.
 !END
 
-#                           Op Amp
+#                           Comparator
 !CHARLES
 Drat! For the life of me I cannot find the pressure comparator Ada made. Every year, the highly prestigious High Pressure Steam Society compares the pressures provided by all the High Pressure Steam Works to determine the supplier of the Highest Pressure Steam. Without an accurate comparator, we will have to cancel this year's competition.
 
@@ -113,7 +113,7 @@ My five year winning record will be ruined! I am sure she had another one around
 !NICOLA
 We should try and make it, otherwise he will just keep interfering...
 !CHARLES
-What was that you say boy?
+What was that you say, boy?
 !NICOLA
 I said we could make one, sir.
 !END
@@ -167,19 +167,19 @@ Let's see if this works.
 ...
 23 PSI [Negative]
 ...
-7  PSI [7]
+6  PSI [6]
 12 PSI [/]
-8  PSI [8]
+7  PSI [7]
 !NICOLA
-What?!? 7/8? Let me check the diary.
+What?!? 6/7? Let me check the diary.
 ...
-All the entry for June 8th talks about is the design of the pressure inverter. How could he even communicate with us if the pressures were reversed? ... reversed ... reversed? ...  Of course!
+All the entry for June 7th talks about is the design of the pressure inverter. How could he even communicate with us if the pressures were reversed? ... reversed ... reversed? ...  Of course!
 
 My apologies. Too much time spent in the colonies. Here is the correct entry.
 !ADA
-July 7th
+July 6th
 
-I suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand delivered note was received at our residence informing me his Laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost.
+I suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand-delivered note was received at our residence informing me his Laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost.
 
 I stored the code securely. Surely Charles would not have done such a thing. I immediately had the door on my laboratory replaced. Charles would rather die than operate a Moorhouse steam door.
 
