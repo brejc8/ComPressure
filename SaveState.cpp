@@ -140,6 +140,15 @@ void SaveObjectMap::save(std::ostream& f)
     f.put('}');
 };
 
+SaveObject* SaveObjectMap::dup()
+{
+    SaveObjectMap* rep = new SaveObjectMap;
+    for (std::map<std::string, SaveObject*>::iterator it=omap.begin(); it!=omap.end(); ++it)
+    {
+        rep->add_item(it->first, it->second->dup());
+    }
+    return rep;
+};
 
 SaveObjectList::SaveObjectList(std::istream& f)
 {
@@ -204,6 +213,17 @@ void SaveObjectList::save(std::ostream& f)
     }
     f.put(']');
 }
+
+SaveObject* SaveObjectList::dup()
+{
+    SaveObjectList* rep = new SaveObjectList;
+    for (std::vector<SaveObject*>::iterator it=olist.begin(); it!=olist.end(); ++it)
+    {
+        rep->add_item((*it)->dup());
+    }
+    return rep;
+};
+
 
 SaveObjectNull::SaveObjectNull(std::istream& f)
 {

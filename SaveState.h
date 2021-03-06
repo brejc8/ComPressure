@@ -21,6 +21,7 @@ public:
     virtual SaveObjectMap* get_map(){throw(std::runtime_error("Not a map"));};
     virtual SaveObjectList* get_list(){throw(std::runtime_error("Not a list"));};
     virtual bool is_null(){return false;};
+    virtual SaveObject* dup() = 0;
 };
 
 class SaveObjectNumber :
@@ -32,6 +33,7 @@ public:
     SaveObjectNumber(std::istream& stream) {stream >> number;};
     int get_num(){return number;};
     void save(std::ostream& f){f << number;};
+    SaveObject* dup() {return new SaveObjectNumber(number);};
 };
 
 class SaveObjectString :
@@ -43,6 +45,7 @@ public:
     SaveObjectString(std::istream& stream);
     std::string get_string();
     void save(std::ostream& f);
+    SaveObject* dup() {return new SaveObjectString(str);};
 };
 
 class SaveObjectMap :
@@ -64,6 +67,7 @@ public:
     void add_num(std::string key, int value);
     void add_string(std::string key, std::string value);
     void get_string(std::string key, std::string& value);
+    SaveObject* dup();
 
 };
 
@@ -87,6 +91,7 @@ public:
     int get_num(int index);
     void add_string(std::string value);
     std::string get_string(int index);
+    SaveObject* dup();
 
 };
 
@@ -99,4 +104,5 @@ public:
     SaveObjectNull(std::istream& f);
     void save(std::ostream& f);
     virtual bool is_null(){return true;};
+    SaveObject* dup() {return new SaveObjectNull();};
 };

@@ -470,7 +470,6 @@ void GameState::advance()
     }
     if (current_level->best_score_set)
     {
-        printf("test\n");
         current_level->best_score_set = false;
         score_submit(false);
     }
@@ -1694,7 +1693,7 @@ void GameState::render()
 #ifdef COMPRESSURE_DEMO
         if (current_level_index == (LEVEL_COUNT - 1))
         {
-            text = "Alas our journey must stop somewhere. Be sure to join our\ndiscord group to drive the direction of our adventure.\n\nTo be Continued...";
+            text = "Alas our journey must stop somewhere. The adventure continues\nin the full game. Be sure to join our Discord group to drive\nits direction.\n\nTo be continued...";
             character = DIALOGUE_ADA;
         }
 #endif
@@ -1917,7 +1916,7 @@ void GameState::render()
 
 void GameState::set_level(unsigned level_index)
 {
-    if (level_index < LEVEL_COUNT)
+    if (level_set->is_playable(level_index))
     {
         if (current_circuit)
             current_circuit->retire();
@@ -1926,6 +1925,7 @@ void GameState::set_level(unsigned level_index)
         current_circuit = current_level->circuit;
         current_level->reset(level_set);
         show_hint = false;
+        selected_elements.clear();
         if (level_index == next_dialogue_level)
         {
             show_dialogue = true;
@@ -2521,6 +2521,18 @@ bool GameState::events()
                         break;
                     case SDL_SCANCODE_Y:
                         current_circuit->redo(level_set);
+                        break;
+                    case SDL_SCANCODE_PAGEUP:
+                        if (level_set->is_playable(current_level_index + 1))
+                            set_level(current_level_index + 1);
+                        else
+                            set_level(0);
+                        break;
+                    case SDL_SCANCODE_PAGEDOWN:
+                        if (current_level_index)
+                            set_level(current_level_index - 1);
+                        else
+                            set_level(level_set->top_playable());
                         break;
                     case SDL_SCANCODE_F1:
                         show_help = !show_help;

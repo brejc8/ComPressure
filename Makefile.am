@@ -17,6 +17,7 @@ ComPressureServer_SOURCES =  ComPressureServer.cpp \
                     Level.cpp Level.h
 
 ComPressureServer_LDADD= -lz 
+ComPressureServer_LDFLAGS= #-static
 
 EXTRA_DIST = dialogue.txt
 
