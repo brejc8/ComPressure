@@ -40,7 +40,7 @@ public:
             uint64_t id = score.second;
             score_map->add_num("id", id);
             score_map->add_num("score", user_score[id].score);
-            score_map->add_item("design", user_score[id].sobj);
+            score_map->add_item("design", user_score[id].sobj->dup());
             score_list->add_item(score_map);
         }
         return score_list;
