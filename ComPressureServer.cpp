@@ -88,8 +88,9 @@ public:
     SaveObject* fetch_graph()
     {
         std::vector<Pressure> scores;
-        for(auto const &score : sorted_scores)
-            scores.push_back(score.first);
+        if (sorted_scores.size())
+            for(auto const &score : sorted_scores)
+                scores.push_back(score.first);
 
         SaveObjectList* score_list = new SaveObjectList;
         
