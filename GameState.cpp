@@ -126,7 +126,7 @@ GameState::GameState(const char* filename)
 	    SDL_FreeSurface(icon_surface);
     }
 
-    font = TTF_OpenFont("5x7-iso8859-1.fon", 10);
+    font = TTF_OpenFont("fixed.fon", 10);
 
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_AllocateChannels(16);
