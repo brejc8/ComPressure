@@ -106,6 +106,7 @@ public:
     Pressure global_score_graph[200];
     Pressure global_fetched_score;
     bool global_score_graph_set = false;
+    unsigned global_score_graph_time = 0;
 
     Level(unsigned level_index_, SaveObject* sobj);
     Level(unsigned level_index_);

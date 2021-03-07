@@ -689,6 +689,7 @@ void GameState::render()
                 level_set->levels[level]->global_score_graph[i] = glist->get_num(i);
             }
             level_set->levels[level]->global_score_graph_set = true;
+            level_set->levels[level]->global_score_graph_time = SDL_GetTicks();
         }
         catch (const std::runtime_error& error)
         {
@@ -1688,7 +1689,7 @@ void GameState::render()
                 render_texture(src_rect, dst_rect);
             }
         }
-        else
+        if (!current_level->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), current_level->global_score_graph_set + 1000 * 60))
         {
             if (!scores_from_server.working)
                 score_fetch(current_level_index);

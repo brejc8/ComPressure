@@ -15,7 +15,7 @@
 
 #include "GameState.h"
 
-//#define STEAM
+#define STEAM
 
 #ifdef STEAM
 #include "steam/steam_api.h"
@@ -86,6 +86,8 @@ int main( int argc, char* argv[] )
     SDLNet_Init();
     TTF_Init();
     Mix_Init(0);
+    
+    SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 
     mainloop();
 
