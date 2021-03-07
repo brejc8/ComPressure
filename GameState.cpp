@@ -281,7 +281,7 @@ static int fetch_from_server_thread(void *ptr)
 void GameState::post_to_server(SaveObject* send, bool sync)
 {
     SDL_Thread *thread = SDL_CreateThread(fetch_from_server_thread, "PostToServer", (void *)new ServerComms(send));
-    if (sync);
+    if (sync)
         SDL_WaitThread(thread, NULL);
 }
 
