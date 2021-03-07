@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 
 #include <map>
 #include <list>
@@ -26,7 +27,7 @@ class GameState
     SDL_Texture* sdl_texture;
     SDL_Texture* sdl_tutorial_texture;
     SDL_Texture* sdl_levels_texture;
-    SDL_Texture* sdl_font_texture;
+    TTF_Font *font;
 
     Rand rand = 3;
     enum MouseState
@@ -166,7 +167,7 @@ public:
     void render_box(XYPos pos, XYPos size, unsigned colour);
     void render_button(XYPos pos, XYPos content, unsigned colour);
 
-    void render_text(XYPos pos, const char* string);
+    void render_text(XYPos tl, const char* string, int width);
     void update_scale(int newscale);
     void render();
     void advance();

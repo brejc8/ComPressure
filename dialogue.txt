@@ -1,4 +1,4 @@
-                
+﻿                
 #                               PipeCross
 !CHARLES
 Greetings Gertrude! My name is Charles Chavvington, the proprietor of these here General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.
@@ -251,7 +251,7 @@ Yes... She has departed... To her sister's...
 !NICOLA
 Everyone assumed she died...
 !CHARLES
-Hmm... Yes... On reflection, that would explain the flowers and cards expressing sympathy my loss. I was touched by people's concern for the loss of my High Pressure Steam.
+Hmm... Yes... On reflection, that would explain the flowers and cards expressing sympathy for my loss. I was touched by people's concern for the loss of my High Pressure Steam.
 
 Nevertheless. The sooner you complete the steam calculation machine, the sooner we can get to the bottom of this. Continue the research post haste.
 !ADA
@@ -266,7 +266,7 @@ Lord Moorhouse is most charming and smart as a whip, but often he refuses to sha
 !END
 #                                Subtract
 !NICOLA
-Well it works. We can now sense how open a valve is, but I don't see how this gets up closer to steam computation. I suppose we must ask Lord Moorhouse.
+Well it works. We can now sense how open a valve is, but I don't see how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse.
 !NICOLA
 Lord Moorhouse. Thank you for allowing us to call upon you. In her absence, we are attempting to continue the steam computation work of Lady Chavvington. Only you know the construction of the pressure adding unit and we beg you share it with us.
 !GEORGE
@@ -290,7 +290,7 @@ Yes, well, when I say I will do something, it will be done. You don't have to re
 
 Could you please send her a message from me?
 
-80, 94, 75, 52, 68
+80, 94, 75, 52, 68, 71
 !NICOLA
 I see you have learned the codes!
 !CHARLES

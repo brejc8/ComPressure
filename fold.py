@@ -23,12 +23,7 @@ for line_in in fileinput.input():
             first_line = False
             print("    {DIALOGUE_" + line_in[1:] + ',');
     else:
-        if line_in == "":
-            print ('        "\\n"')
-        else:
-            for line_out in textwrap.wrap(line_in, 62):
-                line_out = line_out.replace('"','\\"')
-                print ('        "' + line_out + '\\n"')
+        print ('        "' + line_in.replace('"','\\"') + '\\n"')
 
 
 print ('Dialogue* ' + fileinput.filename().replace(".txt","") + '[] = {', end ="")

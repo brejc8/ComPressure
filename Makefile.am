@@ -7,9 +7,9 @@ ComPressure_SOURCES =  GameState.cpp GameState.h \
                     Level.cpp Level.h \
                     Dialogue.cpp Dialogue.h \
                     Compress.cpp Compress.h
-ComPressure_LDADD=@SDL_LIBS@ -lSDL2_image -lSDL2_mixer -lSDL2_net -lz \
-                    /home/brejc8/sdk/redistributable_bin/linux64/libsteam_api.so
- 
+ComPressure_LDADD=@SDL_LIBS@ -lSDL2_image -lSDL2_mixer -lSDL2_net -lSDL2_ttf -lz -lsteam_api
+ComPressure_LDFLAGS=-L.
+
 ComPressureServer_SOURCES =  ComPressureServer.cpp \
                     Compress.cpp Compress.h \
                     SaveState.cpp SaveState.h \

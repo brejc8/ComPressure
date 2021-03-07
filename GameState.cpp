@@ -11,6 +11,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <SDL_net.h>
+#include <SDL_ttf.h>
 
 #include <iostream>
 #include <iomanip>
@@ -96,7 +97,6 @@ GameState::GameState(const char* filename)
 	sdl_texture = loadTexture("texture.png");
 	sdl_tutorial_texture = loadTexture("tutorial.png");
 	sdl_levels_texture = loadTexture("levels.png");
-	sdl_font_texture = loadTexture("font.png");
     SDL_SetRenderDrawColor(sdl_renderer, 0x0, 0x0, 0x0, 0xFF);
     
     {
@@ -125,8 +125,9 @@ GameState::GameState(const char* filename)
 	    SDL_DestroyRenderer(icon_renderer);
 	    SDL_FreeSurface(icon_surface);
     }
-    
-    
+
+    font = TTF_OpenFont("5x7-iso8859-1.fon", 10);
+
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_AllocateChannels(16);
     
@@ -335,6 +336,8 @@ GameState::~GameState()
     Mix_FreeChunk(vent_steam_wav);
     Mix_FreeChunk(move_steam_wav);
     Mix_FreeMusic(music);
+
+    TTF_CloseFont(font);
 
 	SDL_DestroyTexture(sdl_texture);
 	SDL_DestroyTexture(sdl_tutorial_texture);
@@ -616,28 +619,48 @@ void GameState::render_button(XYPos pos, XYPos content, unsigned colour)
 
 }
 
-void GameState::render_text(XYPos tl, const char* string)
+void GameState::render_text(XYPos tl, const char* string, int width)
 {
-    XYPos pos;
-    while (int c = (unsigned char)*string)
-    {
-        if (c == '\n')
-        {
-            pos.y++;
-            pos.x = 0;
-        }
-        else
-        {
-            c -= 0x20;
-            if (c >= 128)
-                c-= 32;
-            SDL_Rect src_rect = {(c % 16) * 7, (c / 16) * 9, 7, 9};
-            SDL_Rect dst_rect = {(tl.x + pos.x * 7) * scale, (tl.y + pos.y * 9) * scale, 7 * scale, 9 * scale};
-            render_texture_custom(sdl_font_texture, src_rect, dst_rect);
-            pos.x++;
-        }
-        string++;
-    }
+    SDL_Color color={0xff,0xff,0xff};
+    SDL_Surface *text_surface = TTF_RenderUTF8_Blended_Wrapped(font, string, color, width);
+    SDL_Texture* newTexture = SDL_CreateTextureFromSurface(sdl_renderer, text_surface);
+    
+    SDL_Rect src_rect;
+    SDL_GetClipRect(text_surface, &src_rect);
+    SDL_Rect dst_rect = src_rect;
+    dst_rect.x = tl.x * scale;
+    dst_rect.y = tl.y * scale;
+    dst_rect.w = src_rect.w * scale;
+    dst_rect.h = src_rect.h * scale;
+
+    render_texture_custom(newTexture, src_rect, dst_rect);
+
+
+
+
+// 
+// 
+// 
+//     XYPos pos;
+//     while (int c = (unsigned char)*string)
+//     {
+//         if (c == '\n')
+//         {
+//             pos.y++;
+//             pos.x = 0;
+//         }
+//         else
+//         {
+//             c -= 0x20;
+//             if (c >= 128)
+//                 c-= 32;
+//             SDL_Rect src_rect = {(c % 16) * 7, (c / 16) * 9, 7, 9};
+//             SDL_Rect dst_rect = {(tl.x + pos.x * 7) * scale, (tl.y + pos.y * 9) * scale, 7 * scale, 9 * scale};
+//             render_texture_custom(sdl_font_texture, src_rect, dst_rect);
+//             pos.x++;
+//         }
+//         string++;
+//     }
 }
 
 void GameState::update_scale(int newscale)
@@ -1733,7 +1756,7 @@ void GameState::render()
         SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
         SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
         render_texture(src_rect, dst_rect);
-        render_text(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text);
+        render_text(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text, 640 - 80 - 128);
     }
     
     if (level_win_animation)
@@ -1783,27 +1806,27 @@ void GameState::render()
             }
             pages[] =
             {
-                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes\nthe design requirements. Each design has four ports\nand the requirements state the expected output in\nterms of other ports. Each port has a colour\nidentifier. Click on the requirements to recieve a\nhint."},
-                {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next\ndesign becomes available. You can always come back\nto refine your solution.\n\nPress the pipe button below to continue the\ntutorial. You can return to the help by pressing F1."},
-                {XYPos(0,0), 10, 1, "Pipes can be laid down by either left mouse button\ndragging the pipe from the source to the desination,\nor by clicking left mouse button to extend the pipe\nin the direction of the mouse. Right click to cancel\npipe laying mode."},
-                {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and\nother elements."},
-                {XYPos(0,4), 15, 1, "The build menu allows you to add components into\nyour design. Select the steam inlet component and\nhover over your design. The arrow buttons change\nthe orientation. This can also be done using keys Q\nand E or the mouse scroll wheel. Clicking the left\nmouse button will place the component. Right click\nto exit steam inlet placing mode."},
-                {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab,\nor middle mouse button, is a shortcut to enter\nvalve placement mode. Pressing Tab, or middle mouse\nbutton, again switches to steam inlet placement."},
-                {XYPos(0,7),  5,10, "A steam inlet will supply steam at pressure 100. Any\npipes with open ends will vent the steam to the\natmosphere at pressure 0."},
-                {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe\nconnections. Note how each pipe has a little\nresistance."},
-                {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the\n(+) side or the valve is at a higher pressure than\nthe (-) side. The higher it is, the more the valve\nis open. Steam on the (+) and (-) sides is not\nconsumed. Here, the (-) side is vented to atmosphere\nand thus at 0 pressure."},
-                {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower\nthan the (-) side, the valve becomes closed and no\nsteam will pass through."},
-                {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the\nvalve will become open only if the pressure on the\n(-) side is low."},
-                {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close\nthe valve."},
-                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your\ndesign is performing. The first three buttons\npause the testing, repeatedly run a single test and\nrun all tests respectively.\n\n"
-                                    "The current scores for individual tests are shown\nwith the scores of best design seen below. On the\nright is the final score formed from the average of\nall tests.\n\n"
-                                    "The next panel shows the sequence of inputs and\nexpected outputs for the current test. The current\nphase is highlighted. The output recorded on the\nlast run is shown to the right."},
-                {XYPos(2,12), 3, 1, "The score is based on how close the output is to the\ntarget value. The graph shows the output value\nduring the final stage of the test. The faded line\nin the graph shows the path of the best design so\nfar."},
-                {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the\nports and examine your design's operation. The\nvertical sliders set the desired value. The\nhorizontal sliders below set force of the input.\nSetting the slider all the way left makes it an\noutput. Initial values are set from the current\ntest."},
-                {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the\nport values."},
+                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes the design requirements. Each design has four ports and the requirements state the expected output in terms of other ports. Each port has a colour identifier. Click on the requirements to recieve a hint."},
+                {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next design becomes available. You can always come back to refine your solution.\n\nPress the pipe button below to continue the tutorial. You can return to the help by pressing F1."},
+                {XYPos(0,0), 10, 1, "Pipes can be laid down by either left mouse button dragging the pipe from the source to the desination, or by clicking left mouse button to extend the pipe in the direction of the mouse. Right click to cancel pipe laying mode."},
+                {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and other elements."},
+                {XYPos(0,4), 15, 1, "The build menu allows you to add components into your design. Select the steam inlet component and hover over your design. The arrow buttons change the orientation. This can also be done using keys Q and E or the mouse scroll wheel. Clicking the left mouse button will place the component. Right click to exit steam inlet placing mode."},
+                {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab, or middle mouse button, is a shortcut to enter valve placement mode. Pressing Tab, or middle mouse button, again switches to steam inlet placement."},
+                {XYPos(0,7),  5,10, "A steam inlet will supply steam at pressure 100. Any pipes with open ends will vent the steam to the atmosphere at pressure 0."},
+                {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe connections. Note how each pipe has a little resistance."},
+                {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the (+) side or the valve is at a higher pressure than the (-) side. The higher it is, the more the valve is open. Steam on the (+) and (-) sides is not consumed. Here, the (-) side is vented to atmosphere and thus at 0 pressure."},
+                {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower than the (-) side, the valve becomes closed and no steam will pass through."},
+                {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is low."},
+                {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close the valve."},
+                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively.\n\n"
+                                    "The current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the average of all tests.\n\n"
+                                    "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right."},
+                {XYPos(2,12), 3, 1, "The score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
+                {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the ports and examine your design's operation. The vertical sliders set the desired value. The horizontal sliders below set force of the input. Setting the slider all the way left makes it an output. Initial values are set from the current test."},
+                {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the port values."},
                 
-                {XYPos(1,15), 4, 1, "Components can be selected by either clicking while\nholding Ctrl, or dragging while holding Shift.\nSelected components can be moved using WASD keys if\nthe destination is empty. To delete selected\ncomponents, press X or Delete.\n\nUndo is reached through Z key (Ctrl is optional) and\nRedo through either Y or Shift+Z. Undo can also be\ntriggered by holding right mouse button and clicking\nthe left one."},
-                {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow\nyou to exit the game, switch between windowed\nand full screen, join our Discord group and show\ncredits.\n\nThe sliders adjust the sound effects and music\nvolumes."},
+                {XYPos(1,15), 4, 1, "Components can be selected by either clicking while holding Ctrl, or dragging while holding Shift. Selected components can be moved using WASD keys if the destination is empty. To delete selected components, press X or Delete.\n\nUndo is reached through Z key (Ctrl is optional) and Redo through either Y or Shift+Z. Undo can also be triggered by holding right mouse button and clicking the left one."},
+                {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow you to exit the game, switch between windowed and full screen, join our Discord group and show credits.\n\nThe sliders adjust the sound effects and music volumes."},
                 
                 {XYPos(0,0),  0, 1, ""},
                 {XYPos(0,0),  0, 1, ""},
@@ -1825,7 +1848,7 @@ void GameState::render()
             SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 16) * scale, 128 * scale, 128 * scale};
             render_texture_custom(sdl_tutorial_texture, src_rect, dst_rect);
             
-            render_text(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 16), page->text);
+            render_text(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 16), page->text, 384 - 16);
         }
     }
 
@@ -1904,13 +1927,18 @@ void GameState::render()
         else
         {
             const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson";
-            render_text(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text);
+            render_text(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
 
         
         }
 
 
     }
+
+
+
+
+
     SDL_RenderPresent(sdl_renderer);
 }
 

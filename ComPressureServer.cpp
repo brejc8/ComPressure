@@ -23,6 +23,18 @@ class Score
 public:
     Pressure score = 0;
     SaveObject* sobj = NULL;
+    Score(){}
+    Score(const Score& other)
+    {
+        score = other.score;
+        sobj = other.sobj->dup();
+    }
+    ~Score()
+    {
+        if (sobj)
+            delete sobj;
+    }
+
 };
     
 
@@ -31,6 +43,12 @@ class ScoreTable
 public:
     std::multimap<Pressure, uint64_t, std::greater<Pressure>> sorted_scores;
     std::map<uint64_t, Score> user_score;
+    
+    ~ScoreTable()
+    {
+   
+    }
+    
     SaveObject* save()
     {
         SaveObjectList* score_list = new SaveObjectList;
@@ -88,9 +106,10 @@ public:
     SaveObject* fetch_graph()
     {
         std::vector<Pressure> scores;
-        if (sorted_scores.size())
-            for(auto const &score : sorted_scores)
-                scores.push_back(score.first);
+        for(auto const &score : sorted_scores)
+        {
+            scores.push_back(score.first);
+        }
 
         SaveObjectList* score_list = new SaveObjectList;
         
@@ -178,8 +197,9 @@ public:
 
     SaveObject* get_scores(unsigned level, uint64_t user_id)
     {
+        if (level >= levels.size())
+            levels.resize(level + 1);
         SaveObjectMap* omap = new SaveObjectMap;
-        SaveObjectList* level_list = new SaveObjectList;
         omap->add_num("level", level);
         omap->add_item("graph", levels[level].fetch_graph());
         omap->add_num("score", levels[level].get_score(user_id));
@@ -453,7 +473,7 @@ int main()
             fd_set w_fds;
             fd_set r_fds;
             struct timeval timeout;
-            timeout.tv_sec = 1;
+            timeout.tv_sec = 5;
             timeout.tv_usec = 0;
 
             FD_ZERO(&r_fds);
@@ -469,7 +489,7 @@ int main()
             
             select(1024, &r_fds, &w_fds, NULL, &timeout);
         }
-        
+
         while (true)
         {
             int conn_fd = accept(sockid,(struct sockaddr *)&clientaddr, &len);
@@ -480,7 +500,7 @@ int main()
                 ::close(conn_fd);
             conns.push_back(conn_fd);
         }
-        
+
         for (std::list<Connection>::iterator it = conns.begin(); it != conns.end();)
         {
             Connection& conn = (*it);
@@ -490,7 +510,9 @@ int main()
                 workloads.push_back(new_workload);
             }
             if (conn.conn_fd < 0)
+            {
                 it = conns.erase(it);
+            }
             else
                 it++;
         }
@@ -513,10 +535,10 @@ int main()
 
         time_t new_time;
         time(&new_time);
-        if ((old_time + 120) < new_time)
+        if ((old_time + 60) < new_time)
         {
             old_time = new_time;
-            std::ofstream outfile ("auto_db.save");
+            std::ofstream outfile ("db.save");
             SaveObject* savobj = db.save();
             savobj->save(outfile);
             delete savobj;

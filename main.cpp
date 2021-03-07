@@ -2,6 +2,7 @@
 #include <SDL_mixer.h>
 #include <SDL_image.h>
 #include <SDL_net.h>
+#include <SDL_ttf.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -83,11 +84,13 @@ int main( int argc, char* argv[] )
     SDL_Init(SDL_INIT_VIDEO| SDL_INIT_AUDIO);
     IMG_Init(IMG_INIT_PNG);
     SDLNet_Init();
+    TTF_Init();
     Mix_Init(0);
 
     mainloop();
 
     Mix_Quit();
+    TTF_Quit();
     SDLNet_Quit();
 	IMG_Quit();
 	SDL_Quit();
