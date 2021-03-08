@@ -39,8 +39,12 @@ class GameState
         MOUSE_STATE_PLACING_VALVE,
         MOUSE_STATE_PLACING_SOURCE,
         MOUSE_STATE_PLACING_SUBCIRCUIT,
+        MOUSE_STATE_PLACING_SIGN,
         MOUSE_STATE_SPEED_SLIDER,
         MOUSE_STATE_AREA_SELECT,
+        MOUSE_STATE_DRAGGING_SIGN,
+        MOUSE_STATE_ENTERING_TEXT_INTO_SIGN,
+
     } mouse_state = MOUSE_STATE_NONE;
 
     enum PanelState
@@ -143,6 +147,9 @@ class GameState
     std::list<XYPos> pipe_drag_list;
     bool pipe_dragged = false;
     bool first_deletion = false;
+    
+    Sign dragged_sign;
+    bool dragged_sign_motion;
 
 public:
     GameState(const char* filename);
@@ -159,6 +166,7 @@ public:
     SDL_Texture* loadTexture(const char* filename);
 
     void audio();
+    XYPos get_text_size(std::string& text);
     void render_texture(SDL_Rect& src_rect, SDL_Rect& dst_rect);
     void render_texture_custom(SDL_Texture* texture, SDL_Rect& src_rect, SDL_Rect& dst_rect);
     void render_number_2digit(XYPos pos, unsigned value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
@@ -167,8 +175,9 @@ public:
     void render_box(XYPos pos, XYPos size, unsigned colour);
     void render_button(XYPos pos, XYPos content, unsigned colour);
 
-    void render_text(XYPos tl, const char* string, int width);
-    void update_scale(int newscale);
+    void render_text_wrapped(XYPos tl, const char* string, int width);
+    void render_text(XYPos tl, const char* string);
+    void update_scale(int ewscale);
     void render();
     void advance();
     void set_level(unsigned level_index);

@@ -121,6 +121,11 @@ void SaveObjectMap::get_string(std::string key, std::string& value)
         value = omap[key]->get_string();
 }
 
+bool SaveObjectMap::has_key(std::string key)
+{
+    return omap.find(key) != omap.end();
+}
+
 void SaveObjectMap::save(std::ostream& f)
 {
     f.put('{');

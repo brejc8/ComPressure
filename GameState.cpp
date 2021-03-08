@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
-#include <bit>
 
 #ifdef _WIN32
     #define NOMINMAX
@@ -100,33 +99,12 @@ GameState::GameState(const char* filename)
     SDL_SetRenderDrawColor(sdl_renderer, 0x0, 0x0, 0x0, 0xFF);
     
     {
-    
-        int w = 27;
-        int h = 27;
-        SDL_Surface* icon_surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
-        SDL_SetSurfaceBlendMode(icon_surface, SDL_BLENDMODE_NONE);
-
-        SDL_Renderer* icon_renderer = SDL_CreateSoftwareRenderer(icon_surface);
-        SDL_Surface* loadedSurface = IMG_Load("texture.png");
-        SDL_Texture* newTexture = SDL_CreateTextureFromSurface(icon_renderer, loadedSurface);
-        SDL_SetTextureBlendMode(newTexture, SDL_BLENDMODE_BLEND);
-	    SDL_FreeSurface(loadedSurface);
-        SDL_SetRenderDrawColor(icon_renderer, 0xff, 0xff, 0xff, 0xFF);
-        SDL_RenderClear(icon_renderer);
-        SDL_SetColorKey(icon_surface, SDL_TRUE, 0xFFffffFF);
-
-        SDL_Rect src_rect = {37,37,27,27};
-        SDL_Rect dst_rect = {0,0,w,h};
-        SDL_RenderCopy(icon_renderer, newTexture, &src_rect, &dst_rect);
-        SDL_RenderPresent(icon_renderer);
-
+        SDL_Surface* icon_surface = IMG_Load("icon.png");
         SDL_SetWindowIcon(sdl_window, icon_surface);
-	    SDL_DestroyTexture(newTexture);
-	    SDL_DestroyRenderer(icon_renderer);
 	    SDL_FreeSurface(icon_surface);
     }
 
-    font = TTF_OpenFont("fixed.fon", 10);
+    font = TTF_OpenFont("fixed.ttf", 10);
 
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_AllocateChannels(16);
@@ -356,10 +334,10 @@ SDL_Texture* GameState::loadTexture(const char* filename)
 //    SDL_Surface* loadedSurface = IMG_Load_RW(SDL_RWFromMem((void*)&embedded_data_binary_texture_png_start,
 //                                    &embedded_data_binary_texture_png_end - &embedded_data_binary_texture_png_start),1);
 	assert(loadedSurface);
-    SDL_Texture* newTexture = SDL_CreateTextureFromSurface(sdl_renderer, loadedSurface);
-	assert(newTexture);
+    SDL_Texture* new_texture = SDL_CreateTextureFromSurface(sdl_renderer, loadedSurface);
+	assert(new_texture);
 	SDL_FreeSurface(loadedSurface);
-	return newTexture;
+	return new_texture;
 }
 
 void GameState::advance()
@@ -483,6 +461,27 @@ void GameState::audio()
     Mix_Volume(0, pressure_as_percent(current_circuit->last_vented*40) * sound_volume / 100 / 5);
     Mix_Volume(1, pressure_as_percent(current_circuit->last_moved*1) * sound_volume / 100/ 2);
     Mix_VolumeMusic(music_volume);
+}
+
+XYPos GameState::get_text_size(std::string& text)
+{
+    XYPos rep = XYPos(0,0);
+    std::string::size_type pos = 0;
+    std::string::size_type prev = 0;
+    while (true)
+    {
+        pos = text.find("\n", prev);
+        std::string sub = text.substr(prev, pos - prev);
+        prev = pos + 1;
+        XYPos sub_size;
+        TTF_SizeUTF8(font, sub.c_str(), &sub_size.x, &sub_size.y);
+        if (sub_size.x > rep.x)
+            rep.x = sub_size.x;
+        rep.y += TTF_FontLineSkip(font);
+        if (pos == std::string::npos)
+            break;
+    }
+    return rep;
 }
 
 void GameState::render_texture_custom(SDL_Texture* texture, SDL_Rect& src_rect, SDL_Rect& dst_rect)
@@ -619,11 +618,11 @@ void GameState::render_button(XYPos pos, XYPos content, unsigned colour)
 
 }
 
-void GameState::render_text(XYPos tl, const char* string, int width)
+void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
 {
     SDL_Color color={0xff,0xff,0xff};
     SDL_Surface *text_surface = TTF_RenderUTF8_Blended_Wrapped(font, string, color, width);
-    SDL_Texture* newTexture = SDL_CreateTextureFromSurface(sdl_renderer, text_surface);
+    SDL_Texture* new_texture = SDL_CreateTextureFromSurface(sdl_renderer, text_surface);
     
     SDL_Rect src_rect;
     SDL_GetClipRect(text_surface, &src_rect);
@@ -633,34 +632,44 @@ void GameState::render_text(XYPos tl, const char* string, int width)
     dst_rect.w = src_rect.w * scale;
     dst_rect.h = src_rect.h * scale;
 
-    render_texture_custom(newTexture, src_rect, dst_rect);
+    render_texture_custom(new_texture, src_rect, dst_rect);
+	SDL_DestroyTexture(new_texture);
+	SDL_FreeSurface(text_surface);
+}
 
+void GameState::render_text(XYPos tl, const char* string)
+{
+    std::string text = string;
+    SDL_Color color={0xff,0xff,0xff};
 
+    XYPos rep = XYPos(0,0);
+    std::string::size_type pos = 0;
+    std::string::size_type prev = 0;
+    while (true)
+    {
+        pos = text.find("\n", prev);
+        std::string sub = text.substr(prev, pos - prev);
+        prev = pos + 1;
 
+        SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, sub.c_str(), color);
+        SDL_Texture* new_texture = SDL_CreateTextureFromSurface(sdl_renderer, text_surface);
 
-// 
-// 
-// 
-//     XYPos pos;
-//     while (int c = (unsigned char)*string)
-//     {
-//         if (c == '\n')
-//         {
-//             pos.y++;
-//             pos.x = 0;
-//         }
-//         else
-//         {
-//             c -= 0x20;
-//             if (c >= 128)
-//                 c-= 32;
-//             SDL_Rect src_rect = {(c % 16) * 7, (c / 16) * 9, 7, 9};
-//             SDL_Rect dst_rect = {(tl.x + pos.x * 7) * scale, (tl.y + pos.y * 9) * scale, 7 * scale, 9 * scale};
-//             render_texture_custom(sdl_font_texture, src_rect, dst_rect);
-//             pos.x++;
-//         }
-//         string++;
-//     }
+        SDL_Rect src_rect;
+        SDL_GetClipRect(text_surface, &src_rect);
+        SDL_Rect dst_rect = src_rect;
+        dst_rect.x = tl.x * scale;
+        dst_rect.y = tl.y * scale;
+        dst_rect.w = src_rect.w * scale;
+        dst_rect.h = src_rect.h * scale;
+
+        render_texture_custom(new_texture, src_rect, dst_rect);
+	    SDL_DestroyTexture(new_texture);
+    	SDL_FreeSurface(text_surface);
+
+        tl.y += TTF_FontLineSkip(font);
+        if (pos == std::string::npos)
+            break;
+    }
 }
 
 void GameState::update_scale(int newscale)
@@ -1104,7 +1113,7 @@ void GameState::render()
         }
         render_number_2digit(XYPos((pos.x * 32  + 11) * scale + grid_offset.x, (pos.y * 32 - 3) * scale + grid_offset.y), value, 1, 6);
     }
-    for (pos.y = 0; pos.y < 9; pos.y++)                         // Show venting pipes
+    for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 10; pos.x++)
     {
         if (!current_circuit->connections_ew[pos.y][pos.x].touched)
@@ -1120,7 +1129,55 @@ void GameState::render()
         render_number_2digit(XYPos((pos.x * 32  - 5) * scale + grid_offset.x, (pos.y * 32 + 13) * scale + grid_offset.y), value, 1, 6);
     }
     
+    for (auto i = current_circuit->signs.rbegin(); i != current_circuit->signs.rend(); ++i)     // show notes
+    {
+        Sign& sign = *i;
+        sign.set_size(get_text_size(sign.text));
+        render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4);
+        {
+            SDL_Rect src_rect = {288 + (int)sign.direction * 16, 176, 16, 16};
+            SDL_Rect dst_rect = {(sign.pos.x - 8) * scale + grid_offset.x, (sign.pos.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), sign.text.c_str());
+    }
+    if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN && (frame_index % 60 < 30))
+    {
+        Sign& sign = current_circuit->signs.front();
+        std::string text = sign.text;
+        text.append("\u258f");
+        render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), text.c_str());
+    }
+
     
+    if (mouse_state == MOUSE_STATE_PLACING_SIGN)
+    {
+        XYPos mouse_grid = (mouse - grid_offset) / scale;
+        Sign sign(mouse_grid, direction, "");
+        sign.set_size(get_text_size(sign.text));
+        render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4);
+        {
+            SDL_Rect src_rect = {288 + (int)sign.direction * 16, 176, 16, 16};
+            SDL_Rect dst_rect = {(sign.pos.x - 8) * scale + grid_offset.x, (sign.pos.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), sign.text.c_str());
+    }
+
+    if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+    {
+        XYPos mouse_grid = (mouse - grid_offset) / scale;
+        dragged_sign.set_size(get_text_size(dragged_sign.text));
+        render_box((dragged_sign.get_pos() + mouse_grid) * scale + grid_offset , dragged_sign.get_size(), 4);
+        {
+            SDL_Rect src_rect = {288 + (int)dragged_sign.direction * 16, 176, 16, 16};
+            SDL_Rect dst_rect = {(dragged_sign.pos.x + mouse_grid.x - 8) * scale + grid_offset.x, (dragged_sign.pos.y + mouse_grid.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        render_text(dragged_sign.get_pos() + mouse_grid + XYPos(32,32) + XYPos(4,4), dragged_sign.text.c_str());
+    }
+
+
     {                                               // Panel background
         {
             int panel_colour = 0;
@@ -1160,8 +1217,8 @@ void GameState::render()
             render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
         }
         {                                                                                               // Speed arrows
-            SDL_Rect src_rect = {376, 112, 64, 16};
-            SDL_Rect dst_rect = {(8 + 32 * 16) * scale, (8) * scale, 64 * scale, 16 * scale};
+            SDL_Rect src_rect = {256, 136, 53, 5};
+            SDL_Rect dst_rect = {(8 + 32 * 16 + 6) * scale, (8 + 6) * scale, 53 * scale, 5 * scale};
             render_texture(src_rect, dst_rect);
         }
         {                                                                                               // Speed slider
@@ -1173,10 +1230,7 @@ void GameState::render()
             render_number_2digit(XYPos((8 + 32 * 11 + 32 * 4 + 3) * scale, (8 + 8) * scale), pressure_as_percent(current_level->best_score), 3);
         }
         {                                                                                               // Help Button
-            render_box(XYPos((8 + 32 * 11 + 7 * 32) * scale, (8) * scale), XYPos(32, 32), 0);
-            SDL_Rect src_rect = {640-96, 208, 32, 32};
-            SDL_Rect dst_rect = {(8 + 32 * 11 + 7 * 32) * scale, (8) * scale, 32 * scale, 32 * scale};
-            render_texture(src_rect, dst_rect);
+            render_button(XYPos((8 + 32 * 11 + 7 * 32) * scale, (8) * scale), XYPos(256+24*5, 112), show_help);
         }
 
     }
@@ -1230,39 +1284,24 @@ void GameState::render()
     } else if (panel_state == PANEL_STATE_EDITOR)
     {
         pos = XYPos(0,0);
-        for (int i = 0; i < 4; i++)
-        {
-            if (i == 0 && !level_set->is_playable(2))
-                continue;
-            int colour = 0;
-            if (i == 0 && mouse_state == MOUSE_STATE_PLACING_VALVE)
-            {
-                colour = 1;
-                flash_valve = false;
-            }
-            if (i == 1 && mouse_state == MOUSE_STATE_PLACING_SOURCE)
-            {
-                colour = 1;
-                flash_steam_inlet = false;
-            }
-            if (flash_steam_inlet && i == 1 && (frame_index % 60 < 30) && !show_dialogue)
-                continue;
-            if (flash_valve && i == 0 && (frame_index % 60 < 30) && current_level_index == 2 && !show_dialogue)
-                continue;
-            render_box(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(32, 32), colour);
-        }
+        bool flasher = (frame_index % 50) < 25;
 
-        for (int i = 0; i < 2; i++)
-        {
-            SDL_Rect src_rect = {544 + direction * 24, 160 + i * 24, 24, 24};
-            SDL_Rect dst_rect = {(i * 32 + 4) * scale + panel_offset.x, (4) * scale + panel_offset.y, 24 * scale, 24 * scale};
-            render_texture(src_rect, dst_rect);
-        }
-        {
-            SDL_Rect src_rect = {640-64, 208, 64, 32};
-            SDL_Rect dst_rect = {64 * scale + panel_offset.x, panel_offset.y, 64 * scale, 32 * scale};
-            render_texture(src_rect, dst_rect);
-        }
+        if (mouse_state == MOUSE_STATE_PLACING_SOURCE)
+            flash_steam_inlet = false;
+        if (mouse_state == MOUSE_STATE_PLACING_VALVE)
+            flash_valve = false;
+
+        if (level_set->is_playable(2))
+            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)));
+        render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet));
+
+        render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(400, 112), 0);
+        render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(400+24, 112), 0);
+        
+        
+        if (level_set->is_playable(8))
+            render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN);
+
 
         unsigned level_index = 0;
 
@@ -1757,7 +1796,8 @@ void GameState::render()
         SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
         SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
         render_texture(src_rect, dst_rect);
-        render_text(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text, 640 - 80 - 128);
+//        render_text_wrapped(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text, 640 - 80 - 128);
+        render_text(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text);
     }
     
     if (level_win_animation)
@@ -1849,7 +1889,7 @@ void GameState::render()
             SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 16) * scale, 128 * scale, 128 * scale};
             render_texture_custom(sdl_tutorial_texture, src_rect, dst_rect);
             
-            render_text(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 16), page->text, 384 - 16);
+            render_text_wrapped(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 16), page->text, 384 - 16);
         }
     }
 
@@ -1928,7 +1968,7 @@ void GameState::render()
         else
         {
             const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson";
-            render_text(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
+            render_text_wrapped(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
 
         
         }
@@ -1947,6 +1987,7 @@ void GameState::set_level(unsigned level_index)
 {
     if (level_set->is_playable(level_index))
     {
+        mouse_state = MOUSE_STATE_NONE;
         if (current_circuit)
             current_circuit->retire();
         current_level_index = level_index;
@@ -1998,6 +2039,22 @@ void GameState::mouse_click_in_grid()
     }
     if (mouse_state == MOUSE_STATE_NONE)
     {
+
+        for (auto it = current_circuit->signs.begin(); it != current_circuit->signs.end(); it++)
+        {
+            Sign& sign = *it;
+            if ((pos - sign.get_pos()).inside(sign.get_size()))
+            {
+                mouse_state = MOUSE_STATE_DRAGGING_SIGN;
+                dragged_sign_motion = false;
+                dragged_sign = sign;
+                dragged_sign.pos -= pos;
+                current_circuit->ammend();
+                current_circuit->signs.erase(it);
+                return;
+            }
+        }
+
         if (grid.x > 8)
             grid.x = 8;
         if (grid.y > 8)
@@ -2185,6 +2242,15 @@ void GameState::mouse_click_in_grid()
             current_level->touched = true;
         }
     }
+    else if (mouse_state == MOUSE_STATE_PLACING_SIGN)
+    {
+        XYPos mouse_grid = ((mouse - grid_offset) / scale);
+        if (mouse_grid.inside(XYPos(9*32,9*32)))
+        {
+            Sign sign(mouse_grid, direction, "");
+            current_circuit->add_sign(sign);
+        }
+    }
     else if (mouse_state == MOUSE_STATE_DELETING)
     {
         current_circuit->undo(level_set);
@@ -2262,7 +2328,6 @@ void GameState::mouse_click_in_panel()
         if (level_index < LEVEL_COUNT && level_set->is_playable(level_index))
         {
             set_level(level_index);
-            mouse_state = MOUSE_STATE_NONE;
         }
         else if (panel_pos.y > 176)
         {
@@ -2288,6 +2353,8 @@ void GameState::mouse_click_in_panel()
                 direction = Direction((int(direction) + 4 - 1) % 4);
             else if (panel_grid_pos.x == 3)
                 direction = Direction((int(direction) + 1) % 4);
+            else if (panel_grid_pos.x == 7)
+                mouse_state = MOUSE_STATE_PLACING_SIGN;
             return;
         }
         panel_grid_pos = (panel_pos - XYPos(0, 32 + 8)) / 32;
@@ -2447,6 +2514,17 @@ void GameState::mouse_motion()
 
     if (mouse_state == MOUSE_STATE_DELETING)
     {
+        XYPos pos = ((mouse - grid_offset) / scale);
+        for (auto it = current_circuit->signs.begin(); it != current_circuit->signs.end(); it++)
+        {
+            Sign& sign = *it;
+            if ((pos - sign.get_pos()).inside(sign.get_size()))
+            {
+                current_circuit->signs.erase(it);
+                return;
+            }
+        }
+
         if (!((mouse - grid_offset) / scale).inside(XYPos(9*32,9*32)))
             return;
         XYPos grid = ((mouse - grid_offset) / scale) / 32;
@@ -2510,6 +2588,7 @@ bool GameState::events()
                 {
                     case SDL_SCANCODE_ESCAPE:
                         show_main_menu = !show_main_menu;
+                        mouse_state = MOUSE_STATE_NONE;
                         break;
                     case SDL_SCANCODE_TAB:
                     {
@@ -2520,48 +2599,105 @@ bool GameState::events()
                         break;
                     }
                     case SDL_SCANCODE_Q:
-                        direction = Direction((int(direction) + 4 - 1) % 4);
+                        if (!SDL_IsTextInputActive())
+                            direction = Direction((int(direction) + 4 - 1) % 4);
+                        if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                            dragged_sign.rotate(false);
                         break;
                     case SDL_SCANCODE_E:
-                        direction = Direction((int(direction) + 1) % 4);
+                        if (!SDL_IsTextInputActive())
+                            direction = Direction((int(direction) + 1) % 4);
+                        if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                            dragged_sign.rotate(true);
                         break;
                     case SDL_SCANCODE_W:
-                        current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
+                        if (!SDL_IsTextInputActive())
+                            current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
                         break;
                     case SDL_SCANCODE_A:
-                        current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
+                        if (!SDL_IsTextInputActive())
+                            current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
                         break;
                     case SDL_SCANCODE_S:
-                        current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
+                        if (!SDL_IsTextInputActive())
+                            current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
                         break;
                     case SDL_SCANCODE_D:
-                        current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                        if (!SDL_IsTextInputActive())
+                            current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
                         break;
                     case SDL_SCANCODE_X:
+                        if (!SDL_IsTextInputActive())
+                        {
+                            current_circuit->delete_selected_elements(selected_elements);
+                            selected_elements.clear();
+                        }
+                        break;
                     case SDL_SCANCODE_DELETE:
-                        current_circuit->delete_selected_elements(selected_elements);
-                        selected_elements.clear();
+                        if (!SDL_IsTextInputActive())
+                        {
+                            current_circuit->delete_selected_elements(selected_elements);
+                            selected_elements.clear();
+                        }
+                        break;
+                    case SDL_SCANCODE_BACKSPACE:
+                        if (!SDL_IsTextInputActive())
+                        {
+                            current_circuit->delete_selected_elements(selected_elements);
+                            selected_elements.clear();
+                        }
+                        else
+                        {
+                            if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+                            {
+                                Sign& sign = current_circuit->signs.front();
+                                while (!sign.text.empty() && is_leading_utf8_byte(sign.text.back()))
+                                {
+                                    sign.text.pop_back();
+                                }
+                                if (!sign.text.empty())
+                                    sign.text.pop_back();
+                                break;
+                            }
+                        }
+                        break;
+                    case SDL_SCANCODE_RETURN:
+                        if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+                        {
+                            Sign& sign = current_circuit->signs.front();
+                            sign.text.append("\n");
+                        }
                         break;
                     case SDL_SCANCODE_Z:
-                        if (!keyboard_shift)
-                            current_circuit->undo(level_set);
-                        else
-                            current_circuit->redo(level_set);
+                        if (!SDL_IsTextInputActive())
+                        {
+                            if (!keyboard_shift)
+                                current_circuit->undo(level_set);
+                            else
+                                current_circuit->redo(level_set);
+                        }
                         break;
                     case SDL_SCANCODE_Y:
-                        current_circuit->redo(level_set);
+                        if (!SDL_IsTextInputActive())
+                            current_circuit->redo(level_set);
                         break;
                     case SDL_SCANCODE_PAGEUP:
-                        if (level_set->is_playable(current_level_index + 1))
-                            set_level(current_level_index + 1);
-                        else
-                            set_level(0);
+                        if (!SDL_IsTextInputActive())
+                        {
+                            if (level_set->is_playable(current_level_index + 1))
+                                set_level(current_level_index + 1);
+                            else
+                                set_level(0);
+                        }
                         break;
                     case SDL_SCANCODE_PAGEDOWN:
-                        if (current_level_index)
-                            set_level(current_level_index - 1);
-                        else
-                            set_level(level_set->top_playable());
+                        if (!SDL_IsTextInputActive())
+                        {
+                            if (current_level_index)
+                                set_level(current_level_index - 1);
+                            else
+                                set_level(level_set->top_playable());
+                        }
                         break;
                     case SDL_SCANCODE_F1:
                         show_help = !show_help;
@@ -2582,8 +2718,11 @@ bool GameState::events()
                         keyboard_ctrl = true;
                         break;
                     case SDL_SCANCODE_SPACE:
-                        skip_to_next_subtest = true;
-                        skip_to_subtest_index = -1;
+                        if (!SDL_IsTextInputActive())
+                        {
+                            skip_to_next_subtest = true;
+                            skip_to_subtest_index = -1;
+                        }
                         break;
                     default:
                         printf("Uncaught key: %d\n", e.key.keysym.scancode);
@@ -2597,8 +2736,18 @@ bool GameState::events()
                     else if (e.key.keysym.scancode == SDL_SCANCODE_LCTRL)
                         keyboard_ctrl = false;
                 break;
+            case SDL_TEXTINPUT:
+            {
+                if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+                {
+                    Sign& sign = current_circuit->signs.front();
+                    sign.text.append(e.text.text);
+                    break;
+                }
+            }
             case SDL_MOUSEMOTION:
             {
+                dragged_sign_motion = true;
                 mouse.x = e.motion.x;
                 mouse.y = e.motion.y;
                 mouse -= screen_offset;
@@ -2654,6 +2803,19 @@ bool GameState::events()
                         }
                         mouse_state = MOUSE_STATE_NONE;
                     }
+                    if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                    {
+                        XYPos pos = (mouse - grid_offset) / scale;
+                        Sign sign(dragged_sign.pos + pos, dragged_sign.direction, dragged_sign.text);
+                        current_circuit->add_sign(sign, true);
+                        if (dragged_sign_motion)
+                            mouse_state = MOUSE_STATE_NONE;
+                        else
+                        {
+                            mouse_state = MOUSE_STATE_ENTERING_TEXT_INTO_SIGN;
+                            SDL_StartTextInput();
+                        }
+                    }
                 }
                 if (e.button.button == SDL_BUTTON_RIGHT)
                 {
@@ -2664,6 +2826,11 @@ bool GameState::events()
             }
             case SDL_MOUSEBUTTONDOWN:
             {
+                if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+                {
+                    mouse_state = MOUSE_STATE_NONE;
+                    break;
+                }
                 mouse.x = e.button.x;
                 mouse.y = e.button.y;
                 mouse -= screen_offset;
@@ -2757,6 +2924,7 @@ bool GameState::events()
 //                                     mouse_state = MOUSE_STATE_NONE;
 //                                 }
 //                             }
+                            mouse_click_in_grid();
                         }
                         else
                             mouse_click_in_grid();
@@ -2792,12 +2960,18 @@ bool GameState::events()
                 if(e.wheel.y < 0)
                     direction = Direction((int(direction) + 1) % 4);
 
+                break;
             }
+            default:
             {
-            break;
+//                printf("event:0x%x\n", e.type);
+            
+            
             }
         }
     }
+    if (SDL_IsTextInputActive() && mouse_state != MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+        SDL_StopTextInput();
 
-   return false;
+    return false;
 }

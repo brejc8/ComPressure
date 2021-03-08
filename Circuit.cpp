@@ -513,6 +513,91 @@ void CircuitElementSubCircuit::sim_post(PressureAdjacent adj_)
     circuit->sim_post(adj);
 }
 
+Sign::Sign(XYPos pos_, Direction direction_, std::string text_):
+    pos(pos_),
+    direction(direction_),
+    text(text_)
+{
+    if (pos.x < 0)
+        pos.x = 0;
+    if (pos.y < 0)
+        pos.y = 0;
+    if (pos.x > 9 * 32 - 1)
+        pos.x = 9 * 32 - 1;
+    if (pos.y > 9 * 32 - 1)
+        pos.y = 9 * 32 - 1;
+        
+}
+
+Sign::Sign(SaveObject* sobj)
+{
+    SaveObjectMap* omap = sobj->get_map();
+    omap->get_string("text", text);
+    omap->get_num("pos.x", pos.x);
+    omap->get_num("pos.y", pos.y);
+    direction = Direction(omap->get_num("direction"));
+    
+}
+
+SaveObject*  Sign::save()
+{
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("text", text);
+    omap->add_num("pos.x", pos.x);
+    omap->add_num("pos.y", pos.y);
+    omap->add_num("direction", direction);
+    return omap;
+}
+
+XYPos Sign::get_size()
+{
+    return size;
+}
+
+void Sign::set_size(XYPos size_)
+{
+    if (size_.x < 14)
+        size_.x = 14;
+    if (size_.y < 14)
+        size_.y = 14;
+    size = size_ + XYPos(8,8);
+}
+
+XYPos Sign::get_pos()
+{
+    XYPos box_pos;
+    switch (direction)
+    {
+    case DIRECTION_N:
+        box_pos.x = pos.x - size.x / 2;
+        box_pos.y = pos.y + 4;
+        break;
+    case DIRECTION_E:
+        box_pos.x = pos.x - size.x - 4;
+        box_pos.y = pos.y - size.y / 2;
+        break;
+    case DIRECTION_S:
+        box_pos.x = pos.x - size.x / 2;
+        box_pos.y = pos.y - size.y - 4;
+        break;
+    case DIRECTION_W:
+        box_pos.x = pos.x + 4;
+        box_pos.y = pos.y - size.y / 2;
+        break;
+    default:
+        assert(0);
+    }
+    return box_pos;
+}
+
+void Sign::rotate(bool clockwise)
+{
+    if (clockwise)
+        direction = Direction((direction + 1) % 4);
+    else
+        direction = Direction((direction + 3) % 4);
+}
+
 Circuit::Circuit(SaveObjectMap* omap)
 {
     SaveObjectList* slist_y = omap->get_item("elements")->get_list();
@@ -526,6 +611,16 @@ Circuit::Circuit(SaveObjectMap* omap)
             elements[pos.y][pos.x] = CircuitElement::load(smap);
         }
     }
+    if (omap->has_key("signs"))
+    {
+        SaveObjectList* slist = omap->get_item("signs")->get_list();
+        for (unsigned i = 0; i < slist->get_count(); i++)
+        {
+            signs.push_back(Sign(slist->get_item(i)));
+        }
+    }
+
+    
 }
 
 Circuit::Circuit()
@@ -538,7 +633,8 @@ Circuit::Circuit()
     }
 }
 
-Circuit::Circuit(Circuit& other)
+Circuit::Circuit(Circuit& other) :
+    signs(other.signs)
 {
     XYPos pos;
     for (pos.y = 0; pos.y < 9; pos.y++)
@@ -546,6 +642,8 @@ Circuit::Circuit(Circuit& other)
     {
         elements[pos.y][pos.x] = other.elements[pos.y][pos.x]->copy();
     }
+
+
 }
 
 Circuit::~Circuit()
@@ -579,11 +677,20 @@ SaveObject* Circuit::save()
         slist_y->add_item(slist_x);
     }
     omap->add_item("elements", slist_y);
+    
+    SaveObjectList* slist = new SaveObjectList;
+    for (Sign &sign : signs)
+    {
+        slist->add_item(sign.save());
+    }
+    omap->add_item("signs", slist);
+
     return omap;
 }
 
 void Circuit::copy_elements(Circuit& other)
 {
+    signs = other.signs;
     XYPos pos;
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
@@ -846,6 +953,13 @@ void Circuit::set_element_subcircuit(XYPos pos, Direction direction, unsigned le
     ammend();
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = new CircuitElementSubCircuit(direction, level_index, level_set);
+}
+
+void Circuit::add_sign(Sign sign, bool no_undo)
+{
+    if (!no_undo)
+        ammend();
+    signs.push_front(sign);
 }
 
 void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Direction d)

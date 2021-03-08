@@ -1,7 +1,7 @@
-﻿                
+                
 #                               PipeCross
 !CHARLES
-Greetings Gertrude! My name is Charles Chavvington, the proprietor of these here General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.
+Greetings Gertrude! My name is Charles Chavvington, the proprietor of these General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.
 
 My dearly departed wife, Ada, stipulated that her research into the mathematical properties of steam should continue beyond her time with us. Which leads us to the reason for you coming into my employ. Your undertaking shall be to preserve her legacy and continue these scientific inquiries.
 
@@ -66,7 +66,7 @@ Never mind all that low pressure nonsense. When West control is High Pressure, c
 !NICOLA
 Lady Chavvington's notes talk about a steam connection between the Laboratory and Lady Easley's residence that was used for communication.
 !CHARLES
-Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these here walls.
+Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these walls.
 !NICOLA
 I think we can still establish a connection without delivering any steam out. According to these notes...
 !CHARLES
@@ -219,21 +219,9 @@ Incredible! Using this technique we could improve the precision of all our desig
 60 PSI [Who?]
 73 PSI [Repeat]
 !ADA
-25 PSI [A]
-28 PSI [D]
-25 PSI [A]
+25 PSI [A], 28 PSI [D], 25 PSI [A]
 24 PSI [_]
-27 PSI [C]
-32 PSI [H]
-25 PSI [A]
-46 PSI [V]
-46 PSI [V]
-33 PSI [I]
-38 PSI [N]
-31 PSI [G]
-44 PSI [T]
-39 PSI [O]
-38 PSI [N]
+27 PSI [C], 32 PSI [H], 25 PSI [A], 46 PSI [V], 46 PSI [V], 33 PSI [I], 38 PSI [N], 31 PSI [G], 44 PSI [T], 39 PSI [O], 38 PSI [N]
 !NICOLA
 This is unexpected. We must inform Lord Chavvington at once.
 ...
@@ -312,6 +300,7 @@ Sir! You must stop using that phrase! People are beginning to think you a murder
 !CHARLES
 Hmm... Yes. As Ada..., who is no longer with us, once said, "An adder is but an inversion of a subtractor. The output minus one of the inputs must be equal to the other input."
 !END
+                                    #  Latch
 !ANNIE
 Why have you not been responding to my messages?
 !NICOLA
@@ -324,7 +313,7 @@ They're missing! The latches must have been stolen by whoever broke into the lab
 !ANNIE
 When a message is stable, a pulse of steam is sent on the timing pipe. This causes the latch to capture the value at that time. The latch will record the value, but will maintain the old value until the timing pipe has returned to a low pressure level.
 
-Because these latches can be placed in sequence to record a series of messages, it is important that the new value is only released once the timing pipe has returned to low pressure
+Because these latches can be placed in sequence to record a series of messages, it is important that the new value is only released once the timing pipe has returned to low pressure.
 
 I was always impressed about how well sealed Charles's valves are with a closed valve able to maintain the pressure within a pipe indefinitely.
 !END

@@ -67,6 +67,8 @@ public:
     void add_num(std::string key, int value);
     void add_string(std::string key, std::string value);
     void get_string(std::string key, std::string& value);
+    bool has_key(std::string key);
+
     SaveObject* dup();
 
 };

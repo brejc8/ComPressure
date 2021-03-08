@@ -1,6 +1,6 @@
 static Dialogue dialogue0[] = {
     {DIALOGUE_CHARLES,
-        "Greetings Gertrude! My name is Charles Chavvington, the proprietor of these here General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.\n"
+        "Greetings Gertrude! My name is Charles Chavvington, the proprietor of these General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.\n"
         "\n"
         "My dearly departed wife, Ada, stipulated that her research into the mathematical properties of steam should continue beyond her time with us. Which leads us to the reason for you coming into my employ. Your undertaking shall be to preserve her legacy and continue these scientific inquiries.\n"
         "\n"
@@ -94,7 +94,7 @@ static Dialogue dialogue5[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these here walls.\n"
+        "Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these walls.\n"
     },
 
     {DIALOGUE_NICOLA,
@@ -337,21 +337,9 @@ static Dialogue dialogue13[] = {
     },
 
     {DIALOGUE_ADA,
-        "25 PSI [A]\n"
-        "28 PSI [D]\n"
-        "25 PSI [A]\n"
+        "25 PSI [A], 28 PSI [D], 25 PSI [A]\n"
         "24 PSI [_]\n"
-        "27 PSI [C]\n"
-        "32 PSI [H]\n"
-        "25 PSI [A]\n"
-        "46 PSI [V]\n"
-        "46 PSI [V]\n"
-        "33 PSI [I]\n"
-        "38 PSI [N]\n"
-        "31 PSI [G]\n"
-        "44 PSI [T]\n"
-        "39 PSI [O]\n"
-        "38 PSI [N]\n"
+        "27 PSI [C], 32 PSI [H], 25 PSI [A], 46 PSI [V], 46 PSI [V], 33 PSI [I], 38 PSI [N], 31 PSI [G], 44 PSI [T], 39 PSI [O], 38 PSI [N]\n"
     },
 
     {DIALOGUE_NICOLA,
@@ -505,7 +493,7 @@ static Dialogue dialogue16[] = {
     {DIALOGUE_ANNIE,
         "When a message is stable, a pulse of steam is sent on the timing pipe. This causes the latch to capture the value at that time. The latch will record the value, but will maintain the old value until the timing pipe has returned to a low pressure level.\n"
         "\n"
-        "Because these latches can be placed in sequence to record a series of messages, it is important that the new value is only released once the timing pipe has returned to low pressure\n"
+        "Because these latches can be placed in sequence to record a series of messages, it is important that the new value is only released once the timing pipe has returned to low pressure.\n"
         "\n"
         "I was always impressed about how well sealed Charles's valves are with a closed valve able to maintain the pressure within a pipe indefinitely.\n"
     },

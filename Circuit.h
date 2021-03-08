@@ -2,10 +2,11 @@
 #include "Misc.h"
 #include "SaveState.h"
 
-#include <SDL.h>
 #include <vector>
 #include <set>
 #include <list>
+#include <string>
+#include <SDL.h>
 
 #define PRESSURE_SCALAR (65536)
 
@@ -261,7 +262,6 @@ public:
 
 };
 
-
 class CircuitElementSubCircuit : public CircuitElement
 {
 private:
@@ -290,6 +290,23 @@ public:
     Circuit* get_subcircuit() {return circuit;}
 };
 
+class Sign
+{
+public:
+    XYPos pos;
+    XYPos size;
+    Direction direction;
+    std::string text;
+    Sign(){};
+    Sign(XYPos pos_, Direction direction_, std::string text);
+    Sign(SaveObject* omap);
+    SaveObject*  save();
+    XYPos get_size();
+    void set_size(XYPos size);
+    XYPos get_pos();
+    void rotate(bool clockwise);
+};
+
 class Circuit
 {
 public:
@@ -304,6 +321,9 @@ public:
         {}
     };
     CircuitElement* elements[9][9];
+
+    std::list<Sign> signs;
+
 
     CircuitPressure connections_ns[10][10];
     CircuitPressure connections_ew[10][10];
@@ -335,6 +355,8 @@ public:
     void set_element_valve(XYPos pos, Direction direction);
     void set_element_source(XYPos pos, Direction direction);
     void set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set);
+    void add_sign(Sign sign, bool no_undo = false);
+
     void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
     void delete_selected_elements(std::set<XYPos> &selected_elements);
     void add_pipe_drag_list(std::list<XYPos> &pipe_drag_list);
