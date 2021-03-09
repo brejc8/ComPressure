@@ -1102,7 +1102,7 @@ void GameState::render()
     {
         if (!current_circuit->connections_ns[pos.y][pos.x].touched)
             continue;
-        Pressure vented = (current_circuit->connections_ns[pos.y][pos.x].vented);
+        Pressure vented = (current_circuit->connections_ns[pos.y][pos.x].venting) ? (current_circuit->connections_ns[pos.y][pos.x].moved) : 0;
         unsigned value = pressure_as_percent(current_circuit->connections_ns[pos.y][pos.x].value);
         
         if (vented > 20)
@@ -1118,7 +1118,7 @@ void GameState::render()
     {
         if (!current_circuit->connections_ew[pos.y][pos.x].touched)
             continue;
-        Pressure vented = (current_circuit->connections_ew[pos.y][pos.x].vented);
+        Pressure vented = (current_circuit->connections_ew[pos.y][pos.x].venting) ? (current_circuit->connections_ew[pos.y][pos.x].moved) : 0;
         unsigned value = pressure_as_percent(current_circuit->connections_ew[pos.y][pos.x].value);
         if (vented > 20)
         {
@@ -1145,7 +1145,7 @@ void GameState::render()
     {
         Sign& sign = current_circuit->signs.front();
         std::string text = sign.text;
-        text.append("\u258f");
+        text.append(u8"\u258F");
         render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), text.c_str());
     }
 
@@ -1266,7 +1266,8 @@ void GameState::render()
 
 
         XYPos panel_pos = ((mouse - panel_offset) / scale);                 // Tooltip
-        if (panel_pos.y >= 0 && panel_pos.x >= 0)
+        XYPos panel_grid_pos = panel_pos / 32;
+        if (panel_pos.y >= 0 && panel_pos.x >= 0 && panel_grid_pos.x < 8)
         {
             XYPos panel_grid_pos = panel_pos / 32;
             int level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
@@ -1328,9 +1329,9 @@ void GameState::render()
 
 
         XYPos panel_pos = ((mouse - panel_offset) / scale);                 // Tooltip
-        if (panel_pos.y >= 0 && panel_pos.x >= 0)
+        XYPos panel_grid_pos = panel_pos / 32;
+        if (panel_pos.y >= 0 && panel_pos.x >= 0 && panel_grid_pos.x < 8)
         {
-            XYPos panel_grid_pos = panel_pos / 32;
             if (panel_grid_pos.y == 0 &&  panel_grid_pos.x < 4)
             {
                 SDL_Rect src_rect = {496, 124 + panel_grid_pos.x * 12, 28, 12};
@@ -1733,6 +1734,18 @@ void GameState::render()
             if (!scores_from_server.working)
                 score_fetch(current_level_index);
         }
+
+        XYPos pos = ((mouse - panel_offset) / scale) - graph_pos;                 // Tooltip
+        if (pos.y >= 0 && pos.x >= 0 && pos.x < 200)
+        {
+            {
+                SDL_Rect src_rect = {0, 0, 64, 64};
+                SDL_Rect dst_rect = {(pos.x - 64)* scale + panel_offset.x, pos.y * scale + panel_offset.y, 64 * scale, 64 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+
+        }
+
     }
 
     if (show_debug)
@@ -2681,7 +2694,7 @@ bool GameState::events()
                         if (!SDL_IsTextInputActive())
                             current_circuit->redo(level_set);
                         break;
-                    case SDL_SCANCODE_PAGEUP:
+                    case SDL_SCANCODE_PAGEDOWN:
                         if (!SDL_IsTextInputActive())
                         {
                             if (level_set->is_playable(current_level_index + 1))
@@ -2690,7 +2703,7 @@ bool GameState::events()
                                 set_level(0);
                         }
                         break;
-                    case SDL_SCANCODE_PAGEDOWN:
+                    case SDL_SCANCODE_PAGEUP:
                         if (!SDL_IsTextInputActive())
                         {
                             if (current_level_index)
