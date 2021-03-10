@@ -101,9 +101,18 @@ public:
     bool score_set = false;
     bool best_score_set = false;
 
-    unsigned test_index;
-    unsigned sim_point_index;
-    unsigned substep_index;
+    unsigned test_index = 0;
+    unsigned sim_point_index = 0;
+    unsigned substep_index = 0;
+
+    class PressureRecord
+    {
+    public:
+        Pressure values[4] = {-1};
+    } test_pressure_histroy[192];
+    int test_pressure_histroy_index = 0;
+    int test_pressure_histroy_sample_downcounter = 0;
+
     
     Pressure global_score_graph[200];
     Pressure global_fetched_score;
@@ -120,7 +129,7 @@ public:
 
     void init_tests(SaveObjectMap* omap = NULL);
     void reset(LevelSet* level_set);
-    void advance(unsigned ticks, TestExecType type);
+    void advance(unsigned ticks);
     void select_test(unsigned t);
 
     void update_score(bool fin);

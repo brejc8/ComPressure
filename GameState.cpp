@@ -356,7 +356,6 @@ void GameState::advance()
     }
 
     int count = pow(1.2, game_speed) * 2;
-    if (current_level->monitor_state != MONITOR_STATE_PAUSE)
     {
         if (skip_to_next_subtest)
         {
@@ -364,8 +363,8 @@ void GameState::advance()
         }
         while (count)
         {
-            int subcount = count < 100 ? count : 100;
-            current_level->advance(subcount, current_level->monitor_state);
+            int subcount = count < 1000 ? count : 1000;
+            current_level->advance(subcount);
             count -= subcount;
             debug_simticks += subcount;
             if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 100))
@@ -380,75 +379,52 @@ void GameState::advance()
             if (skip_to_subtest_index < 0 || skip_to_subtest_index == current_level->sim_point_index)
                 skip_to_next_subtest = false;
         }
-
-        {
-            SimPoint& simp = current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index];
-            for (int p = 0; p < 4; p++)
-            {
-                test_value[p] = simp.values[p];
-                test_drive[p] = simp.force[p]/3;
-            }
-            test_drive[current_level->tests[current_level->test_index].tested_direction] = 0;
-            test_pressure_histroy_index = 0;
-            test_pressure_histroy_sample_downcounter = 0;
-            for (int i = 0; i < 192; i++)
-            {
-                test_pressure_histroy[i].values[0]=0;
-                test_pressure_histroy[i].values[1]=0;
-                test_pressure_histroy[i].values[2]=0;
-                test_pressure_histroy[i].values[3]=0;
-                test_pressure_histroy[i].set = false;
-            }
-        }
-
-
-
     }
-    else
-    {
-        while (count)
-        {
-            int subcount = count < 100 ? count : 100;
-            for (int i = 0; i < subcount; i++)
-            {
-                for (int p = 0; p < 4; p++)
-                {
-                    test_pressures[p].apply(test_value[p], test_drive[p] * 3);
-                    test_pressures[p].pre();
-                }
-                PressureAdjacent adj(test_pressures[0], test_pressures[1],test_pressures[2],test_pressures[3]);
-
-                current_circuit->sim_pre(adj);
-                current_circuit->sim_post(adj);
-
-                for (int p = 0; p < 4; p++)
-                {
-                    test_pressures[p].post();
-                }
-
-                if (test_pressure_histroy_sample_downcounter == 0 )
-                {
-                    test_pressure_histroy_sample_downcounter = 100; // test_pressure_histroy_sample_frequency;
-
-                    for (int p = 0; p < 4; p++)
-                        test_pressure_histroy[test_pressure_histroy_index].values[p] = pressure_as_percent(test_pressures[p].value);
-                    test_pressure_histroy[test_pressure_histroy_index].set = true;
-
-                    test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 192;
-                    
-                }
-                test_pressure_histroy_sample_downcounter--;
-                
-            }
-            count -= subcount;
-            debug_simticks += subcount;
-            if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 100))
-            {
-                game_speed--;
-                break;
-            }
-        }
-    }
+//     if (0)
+//     {
+//         while (count)
+//         {
+//             int subcount = count < 100 ? count : 100;
+//             for (int i = 0; i < subcount; i++)
+//             {
+//                 for (int p = 0; p < 4; p++)
+//                 {
+//                     test_pressures[p].apply(test_value[p], test_drive[p] * 3);
+//                     test_pressures[p].pre();
+//                 }
+//                 PressureAdjacent adj(test_pressures[0], test_pressures[1],test_pressures[2],test_pressures[3]);
+// 
+//                 current_circuit->sim_pre(adj);
+//                 current_circuit->sim_post(adj);
+// 
+//                 for (int p = 0; p < 4; p++)
+//                 {
+//                     test_pressures[p].post();
+//                 }
+// 
+//                 if (test_pressure_histroy_sample_downcounter == 0 )
+//                 {
+//                     test_pressure_histroy_sample_downcounter = 100; // test_pressure_histroy_sample_frequency;
+// 
+//                     for (int p = 0; p < 4; p++)
+//                         test_pressure_histroy[test_pressure_histroy_index].values[p] = pressure_as_percent(test_pressures[p].value);
+//                     test_pressure_histroy[test_pressure_histroy_index].set = true;
+// 
+//                     test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 192;
+//                     
+//                 }
+//                 test_pressure_histroy_sample_downcounter--;
+//                 
+//             }
+//             count -= subcount;
+//             debug_simticks += subcount;
+//             if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 100))
+//             {
+//                 game_speed--;
+//                 break;
+//             }
+//         }
+//     }
     if (current_level->best_score_set)
     {
         current_level->best_score_set = false;
@@ -1517,19 +1493,19 @@ void GameState::render()
             
             {
                 SDL_Rect src_rect = {256 + 80 + (port_index * 6 * 16) , 16, 16, 16};
-                SDL_Rect dst_rect = {(port_index * 48 + 8) * scale + panel_offset.x, (101 - int(test_value[port_index])) * scale + panel_offset.y, 16 * scale, 16 * scale};
+                SDL_Rect dst_rect = {(port_index * 48 + 8) * scale + panel_offset.x, (101 - int(current_level->current_simpoint.values[port_index])) * scale + panel_offset.y, 16 * scale, 16 * scale};
                 render_texture(src_rect, dst_rect);
             }
-            render_number_2digit(XYPos((port_index * 48 + 8 + 3 ) * scale + panel_offset.x, ((101 - test_value[port_index]) + 5) * scale + panel_offset.y), test_value[port_index]);
+            render_number_2digit(XYPos((port_index * 48 + 8 + 3 ) * scale + panel_offset.x, ((101 - current_level->current_simpoint.values[port_index]) + 5) * scale + panel_offset.y), current_level->current_simpoint.values[port_index]);
             
             {
                 SDL_Rect src_rect = {256 + 80 + (port_index * 6 * 16) , 16, 16, 16};
-                SDL_Rect dst_rect = {(port_index * 48 + int(test_drive[port_index])) * scale + panel_offset.x, (101 + 16 + 7) * scale + panel_offset.y, 16 * scale, 16 * scale};
+                SDL_Rect dst_rect = {(port_index * 48 + int(current_level->current_simpoint.force[port_index])/ 3) * scale + panel_offset.x, (101 + 16 + 7) * scale + panel_offset.y, 16 * scale, 16 * scale};
                 render_texture(src_rect, dst_rect);
             }
-            //render_number_2digit(XYPos((port_index * 48 + test_drive[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), test_drive[port_index]*3);
+            //render_number_2digit(XYPos((port_index * 48 + current_level->current_simpoint.force[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), current_level->current_simpoint.force[port_index]*3);
             
-            render_number_pressure(XYPos((port_index * 48 + 8 + 6 ) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), test_pressures[port_index].value);
+            render_number_pressure(XYPos((port_index * 48 + 8 + 6 ) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), current_level->ports[port_index].value);
 
             
         }
@@ -1543,14 +1519,14 @@ void GameState::render()
             }
             for (int i = 0; i < 192-1; i++)
             {
-                PressureRecord* rec1 = &test_pressure_histroy[(test_pressure_histroy_index + i) % 192];
-                PressureRecord* rec2 = &test_pressure_histroy[(test_pressure_histroy_index + i + 1) % 192];
-                if (rec1->set && rec2->set)
+                Level::PressureRecord& rec1 = current_level->test_pressure_histroy[(current_level->test_pressure_histroy_index + i) % 192];
+                Level::PressureRecord& rec2 = current_level->test_pressure_histroy[(current_level->test_pressure_histroy_index + i + 1) % 192];
+                if ((rec1.values[0] >= 0)  && (rec2.values[0] >= 0))
                     for (int port = 0; port < 4; port++)
                     {
-                        int myport = ((test_pressure_histroy_index + i) % 192 + port) % 4;
-                        int v1 = rec1->values[myport];
-                        int v2 = rec2->values[myport];
+                        int myport = ((current_level->test_pressure_histroy_index + i) % 192 + port) % 4;
+                        int v1 = pressure_as_percent(rec1.values[myport]);
+                        int v2 = pressure_as_percent(rec2.values[myport]);
                         int top = 100 - std::max(v1, v2);
                         int size = abs(v1 - v2) + 1;
 
@@ -2314,12 +2290,7 @@ void GameState::mouse_click_in_panel()
                 case 5:
                 case 6:
                 {
-                    mouse_state = MOUSE_STATE_SPEED_SLIDER;
-                    slider_direction = DIRECTION_E;
-                    slider_max = 49;
-                    slider_pos = panel_offset.x + (5 * 32 + 8) * scale;
-                    slider_value_tgt = &game_speed;
-                    mouse_motion();
+                    watch_slider(panel_offset.x + (5 * 32 + 8) * scale, DIRECTION_E, 49,  &game_speed);
                     break;
                 }
                 case 7:
@@ -2459,12 +2430,7 @@ void GameState::mouse_click_in_panel()
             current_circuit->updated_ports();
             current_level->touched = true;
 
-            mouse_state = MOUSE_STATE_SPEED_SLIDER;
-            slider_direction = DIRECTION_N;
-            slider_max = 100;
-            slider_pos = panel_offset.y + (101 + 8) * scale;
-            slider_value_tgt = &test_value[port_index];
-            mouse_motion();
+            watch_slider(panel_offset.y + (101 + 8) * scale, DIRECTION_N, 100, &current_level->current_simpoint.values[port_index]);
             return;
         }
         else if (panel_pos.y <= (101 + 16 + 7 + 16))
@@ -2473,12 +2439,7 @@ void GameState::mouse_click_in_panel()
             current_circuit->updated_ports();
             current_level->touched = true;
 
-            mouse_state = MOUSE_STATE_SPEED_SLIDER;
-            slider_direction = DIRECTION_E;
-            slider_max = 33;
-            slider_pos = panel_offset.x + (port_index * 48 + 8) * scale;
-            slider_value_tgt = &test_drive[port_index];
-            mouse_motion();
+            watch_slider(panel_offset.x + (port_index * 48 + 8) * scale, DIRECTION_E, 33, &current_level->current_simpoint.force[port_index], 100);
             return;
         }
 
@@ -2583,6 +2544,8 @@ void GameState::mouse_motion()
             vol = 0;
         if (vol > slider_max)
             vol = slider_max;
+        if (slider_value_max)
+            vol = (vol * slider_value_max) / slider_max;
         *slider_value_tgt = vol;
     }
 }
@@ -2882,22 +2845,12 @@ bool GameState::events()
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 128)))
                         {
-                            mouse_state = MOUSE_STATE_SPEED_SLIDER;
-                            slider_direction = DIRECTION_N;
-                            slider_max = 100;
-                            slider_pos = (90 + 32 + 100 + 8) * scale;
-                            slider_value_tgt = &sound_volume;
-                            mouse_motion();
+                            watch_slider((90 + 32 + 100 + 8) * scale, DIRECTION_N, 100, &sound_volume);
                         }
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 128)))
                         {
-                            mouse_state = MOUSE_STATE_SPEED_SLIDER;
-                            slider_direction = DIRECTION_N;
-                            slider_max = 100;
-                            slider_pos = (90 + 32 + 100 + 8) * scale;
-                            slider_value_tgt = &music_volume;
-                            mouse_motion();
+                            watch_slider((90 + 32 + 100 + 8) * scale, DIRECTION_N, 100, &music_volume);
                         }
                         break;
                     }
@@ -2990,4 +2943,15 @@ bool GameState::events()
         SDL_StopTextInput();
 
     return false;
+}
+
+void GameState::watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_)
+{
+    mouse_state = MOUSE_STATE_SPEED_SLIDER;
+    slider_pos = slider_pos_;
+    slider_direction = slider_direction_;
+    slider_max = slider_max_;
+    slider_value_tgt = slider_value_tgt_;
+    slider_value_max = slider_value_max_;
+    mouse_motion();
 }

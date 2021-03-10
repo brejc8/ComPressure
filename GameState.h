@@ -87,24 +87,10 @@ class GameState
     Direction slider_direction;
     unsigned slider_max;
     unsigned* slider_value_tgt;
+    unsigned slider_value_max;
     
     std::set<XYPos> selected_elements;
     XYPos select_area_pos;
-
-    unsigned test_value[4] = {0};
-    unsigned test_drive[4] = {0};
-    
-    CircuitPressure test_pressures[4];
-    
-    class PressureRecord
-    {
-    public:
-        unsigned values[4];
-        bool set;
-    } test_pressure_histroy[192];
-    unsigned test_pressure_histroy_index;
-    unsigned test_pressure_histroy_sample_downcounter;
-    unsigned test_pressure_histroy_sample_frequency = 100;
 
     bool show_debug = false;
     unsigned debug_last_time = 0;
@@ -184,6 +170,7 @@ public:
     void mouse_click_in_panel();
     void mouse_motion();
     bool events();
+    void watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_ = 0);
     void set_steam_user(uint64_t id, const char* name)
     {
         steam_id = id;

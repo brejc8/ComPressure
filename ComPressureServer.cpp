@@ -252,7 +252,7 @@ public:
                 level_set->levels[current_level]->reset(level_set);
                 init_level = true;
             }
-            level_set->levels[current_level]->advance(10000, MONITOR_STATE_PLAY_ALL);
+            level_set->levels[current_level]->advance(10000);
             if (level_set->levels[current_level]->score_set)
             {
                 Pressure score = level_set->levels[current_level]->last_score;

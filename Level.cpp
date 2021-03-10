@@ -65,6 +65,7 @@ Level::Level(unsigned level_index_):
     pin_order[0] = 0; pin_order[1] = 1; pin_order[2] = 2; pin_order[3] = 3;
     circuit = new Circuit;
     init_tests();
+    set_monitor_state(monitor_state);
 }
 
 Level::Level(unsigned level_index_, SaveObject* sobj):
@@ -84,6 +85,7 @@ Level::Level(unsigned level_index_, SaveObject* sobj):
         circuit = new Circuit;
         init_tests();
     }
+    set_monitor_state(monitor_state);
 }
 
 Level::~Level()
@@ -129,7 +131,7 @@ void Level::init_tests(SaveObjectMap* omap)
 #define CONMASK_W          (8)
 
 #define NEW_TEST do {tests.push_back({}); if (loaded_level_version == level_version && slist && slist->get_count() > tests.size()-1) tests.back().load(slist->get_item(tests.size()-1));} while (false)
-#define NEW_POINT(a, b, c, d) tests.back().sim_points.push_back(SimPoint(a, b, c, d))
+#define NEW_POINT(a, b, c, d) tests.back().sim_points.push_back(SimPoint(a, b, c, d, tests.back().tested_direction == DIRECTION_N ? 0 : 50, tests.back().tested_direction == DIRECTION_E ? 0 : 50, tests.back().tested_direction == DIRECTION_S ? 0 : 50, tests.back().tested_direction == DIRECTION_W ? 0 : 50))
 #define NEW_POINT_F(a, b, c, d, fa, fb, fc, fd) tests.back().sim_points.push_back(SimPoint(a, b, c, d, fa, fb, fc, fd))
 
     SaveObjectList* slist = NULL;
@@ -451,44 +453,44 @@ void Level::init_tests(SaveObjectMap* omap)
             level_version = 10;
 
             NEW_TEST;// N   E   S   W
-            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
-            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
             NEW_TEST;
-            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 80);
-            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 80);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 80);
+            NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 80);
             NEW_TEST;
-            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 40);
-            NEW_POINT_F(  0, 30,  0, 60, 50, 50, 50, 50);
+            NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 40);
+            NEW_POINT_F(  0, 30,  0, 60, 50, 0, 50, 50);
             NEW_TEST;
-            NEW_POINT_F(  0, 30,  0, 60, 50, 50, 50,100);
-            NEW_POINT_F(  0, 25,  0, 50, 50, 50, 50,100);
+            NEW_POINT_F(  0, 30,  0, 60, 50, 0, 50,100);
+            NEW_POINT_F(  0, 25,  0, 50, 50, 0, 50,100);
             NEW_TEST;
-            NEW_POINT_F(  0, 25,  0, 50, 50, 50, 50, 60);
-            NEW_POINT_F(  0, 20,  0, 40, 50, 50, 50, 60);
+            NEW_POINT_F(  0, 25,  0, 50, 50, 0, 50, 60);
+            NEW_POINT_F(  0, 20,  0, 40, 50, 0, 50, 60);
             NEW_TEST;
-            NEW_POINT_F(  0, 20,  0, 40, 50, 50, 50, 80);
-            NEW_POINT_F(  0, 10,  0, 20, 50, 50, 50, 80);
+            NEW_POINT_F(  0, 20,  0, 40, 50, 0, 50, 80);
+            NEW_POINT_F(  0, 10,  0, 20, 50, 0, 50, 80);
             NEW_TEST;
-            NEW_POINT_F(  0, 10,  0, 20, 50, 50, 50, 40);
-            NEW_POINT_F(  0, 25,  0, 50, 50, 50, 50, 40);
+            NEW_POINT_F(  0, 10,  0, 20, 50, 0, 50, 40);
+            NEW_POINT_F(  0, 25,  0, 50, 50, 0, 50, 40);
             NEW_TEST;
-            NEW_POINT_F(  0, 25,  0, 50, 50, 50, 50, 60);
-            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 60);
+            NEW_POINT_F(  0, 25,  0, 50, 50, 0, 50, 60);
+            NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 60);
             NEW_TEST;
-            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 40);
-            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 40);
+            NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 40);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 40);
             NEW_TEST;
-            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
-            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
+            NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 50);
             NEW_TEST;
-            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 40);
-            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 40);
+            NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 40);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 40);
             NEW_TEST;
-            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 50);
-            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 50);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
+            NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 50);
             NEW_TEST;
-            NEW_POINT_F(  0, 50,  0,100, 50, 50, 50, 20);
-            NEW_POINT_F(  0,  0,  0,  0, 50, 50, 50, 20);
+            NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 20);
+            NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 20);
             break;
 
         case 10:                                                        // mul 2
@@ -1003,21 +1005,19 @@ void Level::reset(LevelSet* level_set)
         ports[i] = 0;
 }
 
-void Level::advance(unsigned ticks, TestExecType type)
+void Level::advance(unsigned ticks)
 {
     static int val = 0;
     for (int tick = 0; tick < ticks; tick++)
     {
-        SimPoint& simp = tests[test_index].sim_points[sim_point_index];
-
         for (int p = 0; p < 4; p++)
             ports[p].pre();
 
         circuit->sim_pre(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
         for (int p = 0; p < 4; p++)
         {
-            if (((connection_mask >> p) & 1) && p != tests[test_index].tested_direction)
-                ports[p].apply(simp.values[p], simp.force[p]);
+            if ((((connection_mask >> p) & 1) && p != tests[test_index].tested_direction) || (monitor_state == MONITOR_STATE_PAUSE))
+                ports[p].apply(current_simpoint.values[p], current_simpoint.force[p]);
         }
         circuit->sim_post(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
 
@@ -1032,16 +1032,16 @@ void Level::advance(unsigned ticks, TestExecType type)
             tests[test_index].last_pressure_index = index + 1;
         }
 
-        substep_index++;
-
-        if (substep_index >= substep_count)
+        if (monitor_state != MONITOR_STATE_PAUSE)
         {
-            substep_index  = 0;
-            if (sim_point_index == tests[test_index].sim_points.size() - 1)
+            substep_index++;
+            if (substep_index >= substep_count)
             {
+                substep_index  = 0;
+                if (sim_point_index == tests[test_index].sim_points.size() - 1)
                 {
                     Direction p = tests[test_index].tested_direction;
-                    Pressure score = percent_as_pressure(25) - abs(percent_as_pressure(simp.values[p]) - ports[p].value) * 100;
+                    Pressure score = percent_as_pressure(25) - abs(percent_as_pressure(current_simpoint.values[p]) - ports[p].value) * 100;
                     if (score < 0)
                         score /= 2;
                     score += percent_as_pressure(25);
@@ -1057,7 +1057,7 @@ void Level::advance(unsigned ticks, TestExecType type)
                     update_score(false);
                     sim_point_index = 0;
                     substep_index = 0;
-                    if (type == MONITOR_STATE_PLAY_ALL)
+                    if (monitor_state == MONITOR_STATE_PLAY_ALL)
                     {
                         test_index++;
                         if (test_index == tests.size())
@@ -1070,12 +1070,24 @@ void Level::advance(unsigned ticks, TestExecType type)
                         }
                     }
                 }
-            }
-            else
-            {
-                sim_point_index++;
+                else
+                {
+                    sim_point_index++;
+                }
+                current_simpoint = tests[test_index].sim_points[sim_point_index];
             }
         }
+
+        if (test_pressure_histroy_sample_downcounter <= 0 )
+        {
+            test_pressure_histroy_sample_downcounter = substep_count / 200;
+
+            for (int p = 0; p < 4; p++)
+                test_pressure_histroy[test_pressure_histroy_index].values[p] = ports[p].value;
+            test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 192;
+
+        }
+        test_pressure_histroy_sample_downcounter--;
     }
 }
 
@@ -1117,12 +1129,9 @@ void Level::update_score(bool fin)
 
 void Level::set_monitor_state(TestExecType monitor_state_)
 {
-    if (monitor_state_ == MONITOR_STATE_PAUSE && monitor_state == MONITOR_STATE_PAUSE)
-        return;
-
     monitor_state = monitor_state_;
-    
-    current_simpoint = tests[test_index].sim_points[sim_point_index];
+    if (monitor_state != MONITOR_STATE_PAUSE)
+        current_simpoint = tests[test_index].sim_points[sim_point_index];
 }
 
 LevelSet::LevelSet(SaveObject* sobj)
@@ -1189,7 +1198,8 @@ int LevelSet::top_playable()
 Pressure LevelSet::test_level(unsigned level_index)
 {
     levels[level_index]->reset(this);
+    levels[level_index]->set_monitor_state(MONITOR_STATE_PLAY_ALL);
     while (!levels[level_index]->score_set)
-        levels[level_index]->advance(1000, MONITOR_STATE_PLAY_ALL);
+        levels[level_index]->advance(1000);
     return levels[level_index]->last_score;
 }
