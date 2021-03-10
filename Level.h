@@ -42,9 +42,9 @@ public:
         force[2] = SF;
         force[3] = WF;
     }
+    
     SimPoint()
     {
-        assert(0);
     }
 };
 
@@ -77,6 +77,8 @@ class Level
 public:
     const char* name;
     CircuitPressure ports[4];
+    SimPoint current_simpoint;
+    TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
 
     unsigned level_index;
     Circuit* circuit;
@@ -122,6 +124,7 @@ public:
     void select_test(unsigned t);
 
     void update_score(bool fin);
+    void set_monitor_state(TestExecType monitor_state_);
 
 };
 

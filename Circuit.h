@@ -7,6 +7,7 @@
 #include <list>
 #include <string>
 #include <SDL.h>
+#include <unistd.h>
 
 #define PRESSURE_SCALAR (65536)
 
@@ -19,7 +20,7 @@ typedef int Pressure;
 
 static unsigned pressure_as_percent(Pressure p)
 {
-    return std::min(std::max((p + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR, 0), 100);
+    return std::min(std::max((p + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR, Pressure(0)), Pressure(100));
 }
 
 static Pressure percent_as_pressure(unsigned p)

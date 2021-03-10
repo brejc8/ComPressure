@@ -77,7 +77,6 @@ class GameState
     unsigned placing_subcircuit_level;
     unsigned selected_monitor = 0;
     
-    TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
     bool skip_to_next_subtest = false;
     int skip_to_subtest_index = -1;
 

@@ -90,7 +90,7 @@ GameState::GameState(const char* filename)
 
     set_level(current_level_index);
 
-    sdl_window = SDL_CreateWindow( "ComPressure", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640*scale, 360*scale, SDL_WINDOW_RESIZABLE);
+    sdl_window = SDL_CreateWindow( "ComPressure", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640*scale, 360*scale, SDL_WINDOW_RESIZABLE);
     SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
 	sdl_texture = loadTexture("texture.png");
@@ -356,7 +356,7 @@ void GameState::advance()
     }
 
     int count = pow(1.2, game_speed) * 2;
-    if (monitor_state != MONITOR_STATE_PAUSE)
+    if (current_level->monitor_state != MONITOR_STATE_PAUSE)
     {
         if (skip_to_next_subtest)
         {
@@ -365,7 +365,7 @@ void GameState::advance()
         while (count)
         {
             int subcount = count < 100 ? count : 100;
-            current_level->advance(subcount, monitor_state);
+            current_level->advance(subcount, current_level->monitor_state);
             count -= subcount;
             debug_simticks += subcount;
             if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 100))
@@ -800,7 +800,7 @@ void GameState::render()
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        SDL_Rect src_rect = {352, 144, 32, 32};
+        SDL_Rect src_rect = {256, 480, 32, 32};
         if (pos.y > 0)
             src_rect.y += 32;
         if (pos.y == 8)
@@ -809,6 +809,9 @@ void GameState::render()
             src_rect.x += 32;
         if (pos.x == 8)
             src_rect.x += 32;
+            
+//            src_rect.y += 96;
+
         if (current_circuit->blocked[pos.y][pos.x])
             src_rect = {384, 80, 32, 32};
             
@@ -1565,7 +1568,7 @@ void GameState::render()
         pos = XYPos(0,0);
         for (int i = 0; i < 3; i++)                         // Play/ pause
         {
-            render_box(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(32, 32), monitor_state == i ? 1 : 0);
+            render_box(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(32, 32), current_level->monitor_state == i ? 1 : 0);
             SDL_Rect src_rect = {448 + i * 24, 176, 24, 24};
             SDL_Rect dst_rect = {panel_offset.x + (i * 32 + 4) * scale, panel_offset.y + 4 * scale, 24 * scale, 24 * scale};
             render_texture(src_rect, dst_rect);
@@ -1582,7 +1585,7 @@ void GameState::render()
             SDL_Rect src_rect = {272, 16, 16, 16};
             if (i == test_index)
                 src_rect.x = 368;
-            else if (i < test_index && monitor_state == MONITOR_STATE_PLAY_ALL && !current_level->touched)
+            else if (i < test_index && current_level->monitor_state == MONITOR_STATE_PLAY_ALL && !current_level->touched)
                 src_rect.x = 368;
             SDL_Rect dst_rect = {panel_offset.x + (16 + i * 16) * scale, panel_offset.y + (32 + 8) * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
@@ -1873,9 +1876,8 @@ void GameState::render()
                 {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is low."},
                 {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close the valve."},
                 {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively.\n\n"
-                                    "The current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the average of all tests.\n\n"
-                                    "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right."},
-                {XYPos(2,12), 3, 1, "The score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
+                                    "The current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the average of all tests."},
+                {XYPos(2,12), 3, 1, "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
                 {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the ports and examine your design's operation. The vertical sliders set the desired value. The horizontal sliders below set force of the input. Setting the slider all the way left makes it an output. Initial values are set from the current test."},
                 {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the port values."},
                 
@@ -1980,7 +1982,7 @@ void GameState::render()
         }
         else
         {
-            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson";
+            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson\n\nBuild: " __DATE__ "  " __TIME__;
             render_text_wrapped(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
 
         
@@ -2387,21 +2389,21 @@ void GameState::mouse_click_in_panel()
         {
             if (panel_grid_pos.x == 0)
             {
-                monitor_state = MONITOR_STATE_PAUSE;
+                current_level->set_monitor_state(MONITOR_STATE_PAUSE);
                 current_circuit->updated_ports();
                 current_level->touched = true;
 
             }
             else if (panel_grid_pos.x == 1)
             {
-                monitor_state = MONITOR_STATE_PLAY_1;
+                current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
                 current_circuit->updated_ports();
                 current_level->touched = true;
 
             }
             else if (panel_grid_pos.x == 2)
             {
-                monitor_state = MONITOR_STATE_PLAY_ALL;
+                current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
                 current_circuit->updated_ports();
                 current_level->touched = true;
                 current_level->reset(level_set);
@@ -2417,7 +2419,7 @@ void GameState::mouse_click_in_panel()
             if (t < test_count)
             {
                 current_level->select_test(t);
-                monitor_state = MONITOR_STATE_PLAY_1;
+                current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
                 current_circuit->updated_ports();
                 current_level->touched = true;
             }
@@ -2429,7 +2431,7 @@ void GameState::mouse_click_in_panel()
         {
             skip_to_subtest_index = subtest_pos.x / 16;
             skip_to_next_subtest = true;
-            monitor_state = MONITOR_STATE_PLAY_1;
+            current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
         }
         
 //         int mon_offset = 0;
@@ -2453,7 +2455,7 @@ void GameState::mouse_click_in_panel()
             return;
         if (panel_pos.y <= (101 + 16))
         {
-            monitor_state = MONITOR_STATE_PAUSE;
+            current_level->set_monitor_state(MONITOR_STATE_PAUSE);
             current_circuit->updated_ports();
             current_level->touched = true;
 
@@ -2467,7 +2469,7 @@ void GameState::mouse_click_in_panel()
         }
         else if (panel_pos.y <= (101 + 16 + 7 + 16))
         {
-            monitor_state = MONITOR_STATE_PAUSE;
+            current_level->set_monitor_state(MONITOR_STATE_PAUSE);
             current_circuit->updated_ports();
             current_level->touched = true;
 
@@ -2601,6 +2603,7 @@ bool GameState::events()
                 {
                     case SDL_SCANCODE_ESCAPE:
                         show_main_menu = !show_main_menu;
+                        display_about = false;
                         mouse_state = MOUSE_STATE_NONE;
                         break;
                     case SDL_SCANCODE_TAB:
