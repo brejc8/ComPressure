@@ -7,7 +7,6 @@
 #include <list>
 #include <string>
 #include <SDL.h>
-#include <unistd.h>
 
 #define PRESSURE_SCALAR (65536)
 
