@@ -177,7 +177,7 @@ public:
 
     virtual CircuitElementType get_type() = 0;
     virtual void extend_pipe(Connections con){assert(0);}
-    virtual Circuit* get_subcircuit() {return NULL;}
+    virtual Circuit* get_subcircuit(unsigned& level_index_) {return NULL;}
 
 
 };
@@ -306,7 +306,7 @@ public:
     void sim_pre(PressureAdjacent adj);
     void sim_post(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
-    Circuit* get_subcircuit() {return circuit;}
+    Circuit* get_subcircuit(unsigned& level_index_) {level_index_ = level_index; return circuit;}
 };
 
 class Sign

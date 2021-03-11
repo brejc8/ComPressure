@@ -75,6 +75,8 @@ class GameState
     Circuit* current_circuit = NULL;
     unsigned current_level_index = 0;
     unsigned placing_subcircuit_level;
+    
+    std::vector<std::pair<unsigned, Circuit*>> inspection_stack;
     bool current_circuit_is_inspected_subcircuit = false;
     bool current_circuit_is_read_only = false;
 

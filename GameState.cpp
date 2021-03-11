@@ -1114,9 +1114,19 @@ void GameState::render()
         render_text(dragged_sign.get_pos() + mouse_grid + XYPos(32,32) + XYPos(4,4), dragged_sign.text.c_str());
     }
 
-    if (current_circuit_is_inspected_subcircuit)        // pop out icon
     {
-        render_button(XYPos((10 * 32) * scale, 0 * scale), XYPos(352, 136), 0);
+        int x = 0;
+        render_button(XYPos(x * scale, 0 * scale), XYPos(0, 184 + current_level_index * 24), current_circuit_is_inspected_subcircuit?0:1);
+        x += 32;
+
+        if (current_circuit_is_inspected_subcircuit)
+        {
+            for (auto &i : inspection_stack)
+            {
+                render_button(XYPos(x * scale, 0 * scale), XYPos(0, 184 + i.first * 24), &i == &inspection_stack.back());
+                x += 32;
+            }
+        }
     }
 
 
@@ -1795,6 +1805,7 @@ void GameState::set_level(unsigned level_index)
         current_level_index = level_index;
         current_level = level_set->levels[current_level_index];
         current_circuit = current_level->circuit;
+        inspection_stack.clear();
         current_level->reset(level_set);
         show_hint = false;
         selected_elements.clear();
@@ -1809,15 +1820,50 @@ void GameState::set_level(unsigned level_index)
 
 void GameState::mouse_click_in_grid()
 {
+    XYPos pos = (mouse - grid_offset) / scale;
+    XYPos grid = pos / 32;
+
+    if (mouse_state == MOUSE_STATE_NONE)
+    {
+        if (grid.inside(XYPos(9,9)))
+        {
+            unsigned level_index;
+            Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit(level_index);
+            if (sub_circuit)
+            {
+                inspection_stack.push_back(std::make_pair(level_index, sub_circuit));
+                current_circuit = sub_circuit;
+                current_circuit_is_inspected_subcircuit = true;
+                set_current_circuit_read_only();
+                mouse_state = MOUSE_STATE_NONE;
+                return;
+            }
+        }
+    }
     if (current_circuit_is_read_only)
     {
-        if ((mouse/scale - XYPos(320,0)).inside(XYPos(32,32)))
-            printf("werwer\n");
+        XYPos pos = mouse/scale;
+        if (pos.inside(XYPos(320,32)))
+        {
+            unsigned i = pos.x / 32;
+            
+            if (i == 0)
+            {
+                inspection_stack.clear();
+                current_circuit_is_read_only = false;
+                current_circuit_is_inspected_subcircuit = false;
+                current_circuit = current_level->circuit;
+            }
+            else if (inspection_stack.size() > i)
+            {
+                inspection_stack.resize(i);
+                i--;
+                current_circuit = inspection_stack[i].second;
+            }
+        }
         return;
     }
 
-    XYPos pos = (mouse - grid_offset) / scale;
-    XYPos grid = pos / 32;
     if (keyboard_shift)
     {
         select_area_pos = pos;
@@ -1848,7 +1894,6 @@ void GameState::mouse_click_in_grid()
     }
     if (mouse_state == MOUSE_STATE_NONE)
     {
-
         for (auto it = current_circuit->signs.begin(); it != current_circuit->signs.end(); it++)
         {
             Sign& sign = *it;
@@ -2687,9 +2732,11 @@ bool GameState::events()
                             XYPos grid = pos / 32;
                             if (grid.inside(XYPos(9,9)))
                             {
-                                Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit();
+                                unsigned level_index;
+                                Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit(level_index);
                                 if (sub_circuit)
                                 {
+                                    inspection_stack.push_back(std::make_pair(level_index, sub_circuit));
                                     current_circuit = sub_circuit;
                                     current_circuit_is_inspected_subcircuit = true;
                                     set_current_circuit_read_only();
@@ -2764,6 +2811,6 @@ void GameState::set_current_circuit_read_only()
 {
     current_circuit_is_read_only = true;
     if (panel_state == PANEL_STATE_EDITOR)
-        panel_state == PANEL_STATE_MONITOR;
+        panel_state = PANEL_STATE_MONITOR;
     mouse_state = MOUSE_STATE_NONE;
 }
