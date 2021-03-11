@@ -75,8 +75,9 @@ class GameState
     Circuit* current_circuit = NULL;
     unsigned current_level_index = 0;
     unsigned placing_subcircuit_level;
-    unsigned selected_monitor = 0;
-    
+    bool current_circuit_is_inspected_subcircuit = false;
+    bool current_circuit_is_read_only = false;
+
     bool skip_to_next_subtest = false;
     int skip_to_subtest_index = -1;
 
@@ -171,6 +172,7 @@ public:
     void mouse_motion();
     bool events();
     void watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_ = 0);
+    void set_current_circuit_read_only();
     void set_steam_user(uint64_t id, const char* name)
     {
         steam_id = id;

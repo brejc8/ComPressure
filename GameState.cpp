@@ -90,8 +90,7 @@ GameState::GameState(const char* filename)
 
     set_level(current_level_index);
 
-    sdl_window = SDL_CreateWindow( "ComPressure", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640*scale, 360*scale, SDL_WINDOW_RESIZABLE);
-    SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    sdl_window = SDL_CreateWindow( "ComPressure", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640*scale, 360*scale, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | (full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP  | SDL_WINDOW_BORDERLESS : 0));
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
 	sdl_texture = loadTexture("texture.png");
 	sdl_tutorial_texture = loadTexture("tutorial.png");
@@ -380,51 +379,6 @@ void GameState::advance()
                 skip_to_next_subtest = false;
         }
     }
-//     if (0)
-//     {
-//         while (count)
-//         {
-//             int subcount = count < 100 ? count : 100;
-//             for (int i = 0; i < subcount; i++)
-//             {
-//                 for (int p = 0; p < 4; p++)
-//                 {
-//                     test_pressures[p].apply(test_value[p], test_drive[p] * 3);
-//                     test_pressures[p].pre();
-//                 }
-//                 PressureAdjacent adj(test_pressures[0], test_pressures[1],test_pressures[2],test_pressures[3]);
-// 
-//                 current_circuit->sim_pre(adj);
-//                 current_circuit->sim_post(adj);
-// 
-//                 for (int p = 0; p < 4; p++)
-//                 {
-//                     test_pressures[p].post();
-//                 }
-// 
-//                 if (test_pressure_histroy_sample_downcounter == 0 )
-//                 {
-//                     test_pressure_histroy_sample_downcounter = 100; // test_pressure_histroy_sample_frequency;
-// 
-//                     for (int p = 0; p < 4; p++)
-//                         test_pressure_histroy[test_pressure_histroy_index].values[p] = pressure_as_percent(test_pressures[p].value);
-//                     test_pressure_histroy[test_pressure_histroy_index].set = true;
-// 
-//                     test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 192;
-//                     
-//                 }
-//                 test_pressure_histroy_sample_downcounter--;
-//                 
-//             }
-//             count -= subcount;
-//             debug_simticks += subcount;
-//             if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 100))
-//             {
-//                 game_speed--;
-//                 break;
-//             }
-//         }
-//     }
     if (current_level->best_score_set)
     {
         current_level->best_score_set = false;
@@ -785,14 +739,18 @@ void GameState::render()
             src_rect.x += 32;
         if (pos.x == 8)
             src_rect.x += 32;
-            
-//            src_rect.y += 96;
+        if (current_circuit_is_read_only)
+            src_rect.y += 96;
 
-        if (current_circuit->blocked[pos.y][pos.x])
-            src_rect = {384, 80, 32, 32};
-            
         SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
         render_texture(src_rect, dst_rect);
+
+        if (current_circuit->is_blocked(pos))
+        {
+            src_rect = {384, 80, 32, 32};
+            render_texture(src_rect, dst_rect);
+        }
+
     }
     
     for (pos.y = 0; pos.y < 9; pos.y++)                                         // Draw elements
@@ -866,9 +824,9 @@ void GameState::render()
         if (pipe_start_ns)
         {
             mouse_rel.x -= 16;
-            if (mouse_rel.y < 0 && (pipe_start_grid_pos.y == 0 || current_circuit->blocked[pipe_start_grid_pos.y - 1][pipe_start_grid_pos.x]))
+            if (mouse_rel.y < 0 && (pipe_start_grid_pos.y == 0 || current_circuit->is_blocked(pipe_start_grid_pos + XYPos(0,-1))))
                 mouse_rel.y = -mouse_rel.y;
-            if (mouse_rel.y >= 0 && (pipe_start_grid_pos.y == 9 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
+            if (mouse_rel.y >= 0 && (pipe_start_grid_pos.y == 9 || current_circuit->is_blocked(pipe_start_grid_pos)))
                 mouse_rel.y = -mouse_rel.y - 1;
 
 
@@ -903,9 +861,9 @@ void GameState::render()
         else
         {
             mouse_rel.y -= 16;
-            if (mouse_rel.x < 0 && (pipe_start_grid_pos.x == 0 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x - 1]))
+            if (mouse_rel.x < 0 && (pipe_start_grid_pos.x == 0 || current_circuit->is_blocked(pipe_start_grid_pos + XYPos(-1,0))))
                 mouse_rel.x = -mouse_rel.x;
-            if (mouse_rel.x >= 0 && (pipe_start_grid_pos.x == 9 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
+            if (mouse_rel.x >= 0 && (pipe_start_grid_pos.x == 9 || current_circuit->is_blocked(pipe_start_grid_pos)))
                 mouse_rel.x = -mouse_rel.x - 1;
             if (mouse_rel.x >= 0)   //west - eastwards
             {
@@ -1156,6 +1114,11 @@ void GameState::render()
         render_text(dragged_sign.get_pos() + mouse_grid + XYPos(32,32) + XYPos(4,4), dragged_sign.text.c_str());
     }
 
+    if (current_circuit_is_inspected_subcircuit)        // pop out icon
+    {
+        render_button(XYPos((10 * 32) * scale, 0 * scale), XYPos(352, 136), 0);
+    }
+
 
     {                                               // Panel background
         {
@@ -1186,13 +1149,13 @@ void GameState::render()
         {                                                                                               // Top Menu
             bool flash_next_level = level_set->is_playable(next_dialogue_level) && (frame_index % 60 < 30);
             render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT);
-            if (level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
+            if (!current_circuit_is_read_only && level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
                 render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR);
             if (level_set->is_playable(3))
                 render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR);
             if (level_set->is_playable(7))
                 render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST);
-            render_box(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(32, 32), 0);
+            render_box(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(32, 32), panel_state == PANEL_STATE_SCORES);
             render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
         }
         {                                                                                               // Speed arrows
@@ -1329,151 +1292,6 @@ void GameState::render()
 
         }
 
-//     } else if (panel_state == PANEL_STATE_MONITOR && 0)
-//     {
-//         int mon_offset = 0;
-//         for (unsigned mon_index = 0; mon_index < 4; mon_index++)
-//         {
-//             int color_table = 256 + mon_index * 48;
-//             unsigned graph_size;
-//             if (mon_index == selected_monitor)
-//             {
-//                 render_box(XYPos(panel_offset.x, mon_offset * scale + panel_offset.y), XYPos(7*32, 112), mon_index);
-// 
-//                 {
-//                     SDL_Rect src_rect = {503, 86, 1, 1};
-//                     SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 200 * scale, 101 * scale};
-//                     render_texture(src_rect, dst_rect);
-// 
-//                 }
-//                 for (int x = 0; x < 10; x++)
-//                 {
-//                     SDL_Rect src_rect = {524, 80, 13, 101};
-//                     SDL_Rect dst_rect = {(x * 20 + 6) * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 13 * scale, 101 * scale};
-//                     if (x != 0)
-//                     {
-//                         src_rect.w = 5;
-//                         dst_rect.w = 5 * scale;
-//                     }
-//                     render_texture(src_rect, dst_rect);
-//                 }
-//             }
-//             else
-//             {
-//                 render_box(XYPos(panel_offset.x, mon_offset * scale + panel_offset.y), XYPos(7*32, 48), mon_index);
-//                 {
-//                     SDL_Rect src_rect = {503, 86, 1, 1};
-//                     SDL_Rect dst_rect = {5 * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 200 * scale, 35 * scale};
-//                     render_texture(src_rect, dst_rect);
-// 
-//                 }
-//                 for (int x = 0; x < 10; x++)
-//                 {
-//                     SDL_Rect src_rect = {504, 80, 13, 35};
-//                     SDL_Rect dst_rect = {(x * 20 + 6) * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 13 * scale, 35 * scale};
-//                     if (x != 0)
-//                     {
-//                         src_rect.w = 5;
-//                         dst_rect.w = 5 * scale;
-//                     }
-//                     render_texture(src_rect, dst_rect);
-//                 }
-//             }
-//                 {
-//                     SDL_Rect src_rect;
-//                     switch (mon_index)
-//                     {
-//                         case 0:
-//                             src_rect = {256+80, 0+32, 16, 16}; break;
-//                         case 1:
-//                             src_rect = {352+80, 0+32, 16, 16}; break;
-//                         case 2:
-//                             src_rect = {448+80, 0+32, 16, 16}; break;
-//                         case 3:
-//                             src_rect = {544+80, 0+32, 16, 16}; break;
-//                         default:
-//                             assert (0);
-//                     }
-//                         
-//                     SDL_Rect dst_rect = {(200 + 5) * scale + panel_offset.x, (mon_offset + 6) * scale + panel_offset.y, 16 * scale, 16 * scale};
-//                     render_texture(src_rect, dst_rect);
-//                 
-//                 }
-//             if (current_level->sim_point_count)
-//             {
-//                 unsigned width = 200 / current_level->sim_point_count;
-//                 assert (width);
-//                 for (int x = 0; x < current_level->sim_point_count; x++)
-//                 {
-//                     bool current_point = (x == current_level->sim_point_index);
-// 
-//                     IOValue& io_val = current_level->sim_points[x].get(mon_index);
-//                     if (io_val.in_value < 0)
-//                         continue;
-// 
-//                     int rec_val = io_val.recorded;
-//                     if (current_point)
-//                     {
-//                         switch (mon_index)
-//                         {
-//                         case 0:
-//                             rec_val = pressure_as_percent(current_level->N.value);
-//                             break;
-//                         case 1:
-//                             rec_val = pressure_as_percent(current_level->E.value);
-//                             break;
-//                         case 2:
-//                             rec_val = pressure_as_percent(current_level->S.value);
-//                             break;
-//                         case 3:
-//                             rec_val = pressure_as_percent(current_level->W.value);
-//                             break;
-//                         }
-//                     }
-// 
-//                     if (!io_val.observed && !current_point)
-//                     {
-//                         SDL_Rect src_rect = {503, 81, 1, 1};
-//                         int offset = 100 - io_val.in_value;
-//                         if (mon_index != selected_monitor)
-//                             offset = (offset + 2) / 3;
-// 
-//                         SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + offset) * scale + panel_offset.y, int(width) * scale, 1 * scale};
-//                         render_texture(src_rect, dst_rect);
-//                     }
-//                     else
-//                     {
-//                         int offset = 100 - rec_val;
-//                         if (mon_index != selected_monitor)
-//                             offset = (offset + 2) / 3;
-// 
-//                         {
-//                             SDL_Rect src_rect = {503, 81, 1, 1};
-//                             int t_offset = 100 - io_val.in_value;
-//                             if (mon_index != selected_monitor)
-//                                 t_offset = (t_offset + 2) / 3;
-// 
-//                             int size = abs(offset - t_offset) + 1;
-//                             int top = offset < t_offset ? offset : t_offset;
-// 
-//                             SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + top) * scale + panel_offset.y, int(width) * scale, size * scale};
-//                             render_texture(src_rect, dst_rect);
-//                         }
-//                         if (!current_point || (frame_index % 20 < 10))
-//                         {
-//                             SDL_Rect src_rect = {503, 80, 1, 1};
-//                             SDL_Rect dst_rect = {(x * int(width) + 6) * scale + panel_offset.x, (mon_offset + 6 + offset) * scale + panel_offset.y, int(width) * scale, 1 * scale};
-//                             render_texture(src_rect, dst_rect);
-//                         }
-//                     }
-//                 }
-//             }
-//             
-//             if (mon_index == selected_monitor)
-//                 mon_offset += 112 + 4;
-//             else
-//                 mon_offset += 48 + 4;
-//         }
     } else if (panel_state == PANEL_STATE_TEST)
     {
         for (int port_index = 0; port_index < 4; port_index++)
@@ -1960,16 +1778,8 @@ void GameState::render()
         {
             const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson\n\nBuild: " __DATE__ "  " __TIME__;
             render_text_wrapped(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
-
-        
         }
-
-
     }
-
-
-
-
 
     SDL_RenderPresent(sdl_renderer);
 }
@@ -1978,9 +1788,10 @@ void GameState::set_level(unsigned level_index)
 {
     if (level_set->is_playable(level_index))
     {
+        current_circuit_is_inspected_subcircuit = false;
+        current_circuit_is_read_only = false;
+
         mouse_state = MOUSE_STATE_NONE;
-        if (current_circuit)
-            current_circuit->retire();
         current_level_index = level_index;
         current_level = level_set->levels[current_level_index];
         current_circuit = current_level->circuit;
@@ -1998,6 +1809,13 @@ void GameState::set_level(unsigned level_index)
 
 void GameState::mouse_click_in_grid()
 {
+    if (current_circuit_is_read_only)
+    {
+        if ((mouse/scale - XYPos(320,0)).inside(XYPos(32,32)))
+            printf("werwer\n");
+        return;
+    }
+
     XYPos pos = (mouse - grid_offset) / scale;
     XYPos grid = pos / 32;
     if (keyboard_shift)
@@ -2014,7 +1832,7 @@ void GameState::mouse_click_in_grid()
             return;
         if (current_circuit->elements[grid.y][grid.x]->is_empty())
             return;
-        if (current_circuit->blocked[grid.y][grid.x])
+        if (current_circuit->is_blocked(grid))
             return;
         if (selected_elements.find(grid) == selected_elements.end())
             selected_elements.insert(grid);
@@ -2104,9 +1922,9 @@ void GameState::mouse_click_in_grid()
         if (pipe_start_ns)
         {
             mouse_rel.x -= 16;
-            if (mouse_rel.y < 0 && (pipe_start_grid_pos.y == 0 || current_circuit->blocked[pipe_start_grid_pos.y - 1][pipe_start_grid_pos.x]))
+            if (mouse_rel.y < 0 && (pipe_start_grid_pos.y == 0 || current_circuit->is_blocked(pipe_start_grid_pos + XYPos(0,-1))))
                 mouse_rel.y = -mouse_rel.y;
-            if (mouse_rel.y >= 0 && (pipe_start_grid_pos.y == 9 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
+            if (mouse_rel.y >= 0 && (pipe_start_grid_pos.y == 9 || current_circuit->is_blocked(pipe_start_grid_pos)))
                 mouse_rel.y = -mouse_rel.y - 1;
             if (mouse_rel.y < 0)    //south - northwards
             {
@@ -2156,9 +1974,9 @@ void GameState::mouse_click_in_grid()
         else
         {
             mouse_rel.y -= 16;
-            if (mouse_rel.x < 0 && (pipe_start_grid_pos.x == 0 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x - 1]))
+            if (mouse_rel.x < 0 && (pipe_start_grid_pos.x == 0 || current_circuit->is_blocked(pipe_start_grid_pos + XYPos(-1,0))))
                 mouse_rel.x = -mouse_rel.x;
-            if (mouse_rel.x >= 0 && (pipe_start_grid_pos.x == 9 || current_circuit->blocked[pipe_start_grid_pos.y][pipe_start_grid_pos.x]))
+            if (mouse_rel.x >= 0 && (pipe_start_grid_pos.x == 9 || current_circuit->is_blocked(pipe_start_grid_pos)))
                 mouse_rel.x = -mouse_rel.x - 1;
             if (mouse_rel.x < 0)    //east - westwards
             {
@@ -2269,7 +2087,7 @@ void GameState::mouse_click_in_panel()
                     panel_state = PANEL_STATE_LEVEL_SELECT;
                     break;
                 case 1:
-                    if (!level_set->is_playable(1))
+                    if (!level_set->is_playable(1) || current_circuit_is_read_only)
                         break;
                     panel_state = PANEL_STATE_EDITOR;
                     flash_editor_menu = false;
@@ -2326,7 +2144,7 @@ void GameState::mouse_click_in_panel()
             
         }
         return;
-    } else if (panel_state == PANEL_STATE_EDITOR)
+    } else if (panel_state == PANEL_STATE_EDITOR && !current_circuit_is_read_only)
     {
         XYPos panel_grid_pos = panel_pos / 32;
         if (panel_grid_pos.y == 0)
@@ -2361,21 +2179,18 @@ void GameState::mouse_click_in_panel()
             if (panel_grid_pos.x == 0)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-                current_circuit->updated_ports();
                 current_level->touched = true;
 
             }
             else if (panel_grid_pos.x == 1)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
-                current_circuit->updated_ports();
                 current_level->touched = true;
 
             }
             else if (panel_grid_pos.x == 2)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
-                current_circuit->updated_ports();
                 current_level->touched = true;
                 current_level->reset(level_set);
             }
@@ -2391,7 +2206,6 @@ void GameState::mouse_click_in_panel()
             {
                 current_level->select_test(t);
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
-                current_circuit->updated_ports();
                 current_level->touched = true;
             }
                 
@@ -2405,20 +2219,6 @@ void GameState::mouse_click_in_panel()
             current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
         }
         
-//         int mon_offset = 0;
-//         for (unsigned mon_index = 0; mon_index < 4; mon_index++)
-//         {
-//             XYPos button_offset = panel_pos - XYPos(200 + 6, mon_offset + 6);
-//             if (button_offset.inside(XYPos(16, 16)))
-//             {
-//                 selected_monitor = mon_index;
-//             }
-//             
-//             if (mon_index == selected_monitor)
-//                 mon_offset += 112 + 4;
-//             else
-//                 mon_offset += 48 + 4;
-//         }
     } else if (panel_state == PANEL_STATE_TEST)
     {
         int port_index = panel_pos.x / 48;
@@ -2427,7 +2227,6 @@ void GameState::mouse_click_in_panel()
         if (panel_pos.y <= (101 + 16))
         {
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-            current_circuit->updated_ports();
             current_level->touched = true;
 
             watch_slider(panel_offset.y + (101 + 8) * scale, DIRECTION_N, 100, &current_level->current_simpoint.values[port_index]);
@@ -2436,7 +2235,6 @@ void GameState::mouse_click_in_panel()
         else if (panel_pos.y <= (101 + 16 + 7 + 16))
         {
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-            current_circuit->updated_ports();
             current_level->touched = true;
 
             watch_slider(panel_offset.x + (port_index * 48 + 8) * scale, DIRECTION_E, 33, &current_level->current_simpoint.force[port_index], 100);
@@ -2571,10 +2369,13 @@ bool GameState::events()
                         break;
                     case SDL_SCANCODE_TAB:
                     {
-                        if (mouse_state == MOUSE_STATE_PLACING_VALVE)
-                            mouse_state = MOUSE_STATE_PLACING_SOURCE;
-                        else
-                            mouse_state = MOUSE_STATE_PLACING_VALVE;
+                        if (!current_circuit_is_read_only)
+                        {
+                            if (mouse_state == MOUSE_STATE_PLACING_VALVE)
+                                mouse_state = MOUSE_STATE_PLACING_SOURCE;
+                            else
+                                mouse_state = MOUSE_STATE_PLACING_VALVE;
+                        }
                         break;
                     }
                     case SDL_SCANCODE_Q:
@@ -2590,37 +2391,37 @@ bool GameState::events()
                             dragged_sign.rotate(true);
                         break;
                     case SDL_SCANCODE_W:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                             current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
                         break;
                     case SDL_SCANCODE_A:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                             current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
                         break;
                     case SDL_SCANCODE_S:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                             current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
                         break;
                     case SDL_SCANCODE_D:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                             current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
                         break;
                     case SDL_SCANCODE_X:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             current_circuit->delete_selected_elements(selected_elements);
                             selected_elements.clear();
                         }
                         break;
                     case SDL_SCANCODE_DELETE:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             current_circuit->delete_selected_elements(selected_elements);
                             selected_elements.clear();
                         }
                         break;
                     case SDL_SCANCODE_BACKSPACE:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             current_circuit->delete_selected_elements(selected_elements);
                             selected_elements.clear();
@@ -2648,7 +2449,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_Z:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (!keyboard_shift)
                                 current_circuit->undo(level_set);
@@ -2657,7 +2458,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_Y:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                             current_circuit->redo(level_set);
                         break;
                     case SDL_SCANCODE_PAGEDOWN:
@@ -2697,7 +2498,7 @@ bool GameState::events()
                         keyboard_ctrl = true;
                         break;
                     case SDL_SCANCODE_SPACE:
-                        if (!SDL_IsTextInputActive())
+                        if (!SDL_IsTextInputActive() && current_level->monitor_state != MONITOR_STATE_PAUSE)
                         {
                             skip_to_next_subtest = true;
                             skip_to_subtest_index = -1;
@@ -2882,17 +2683,21 @@ bool GameState::events()
                     else if (mouse.x < panel_offset.x)
                         if (e.button.clicks == 2)
                         {
-//                             XYPos pos = (mouse - grid_offset) / scale;
-//                             XYPos grid = pos / 32;
-//                             if (grid.inside(XYPos(9,9)))
-//                             {
-//                                 Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit();
-//                                 if (sub_circuit)
-//                                 {
-//                                     current_circuit = sub_circuit;
-//                                     mouse_state = MOUSE_STATE_NONE;
-//                                 }
-//                             }
+                            XYPos pos = (mouse - grid_offset) / scale;
+                            XYPos grid = pos / 32;
+                            if (grid.inside(XYPos(9,9)))
+                            {
+                                Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit();
+                                if (sub_circuit)
+                                {
+                                    current_circuit = sub_circuit;
+                                    current_circuit_is_inspected_subcircuit = true;
+                                    set_current_circuit_read_only();
+
+                                    mouse_state = MOUSE_STATE_NONE;
+                                    break;
+                                }
+                            }
                             mouse_click_in_grid();
                         }
                         else
@@ -2954,4 +2759,11 @@ void GameState::watch_slider(unsigned slider_pos_, Direction slider_direction_, 
     slider_value_tgt = slider_value_tgt_;
     slider_value_max = slider_value_max_;
     mouse_motion();
+}
+void GameState::set_current_circuit_read_only()
+{
+    current_circuit_is_read_only = true;
+    if (panel_state == PANEL_STATE_EDITOR)
+        panel_state == PANEL_STATE_MONITOR;
+    mouse_state = MOUSE_STATE_NONE;
 }

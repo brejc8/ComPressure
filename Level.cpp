@@ -149,6 +149,7 @@ void Level::init_tests(SaveObjectMap* omap)
     switch(level_index)
     {
         case 0:
+            name = "Cross";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;            // Cross
             pin_order[0] = 3; pin_order[1] = 0; pin_order[2] = 1; pin_order[3] = 2;
             substep_count = 2000;
@@ -176,6 +177,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 1:                                                                     // 50
+            name = "50";
             connection_mask = CONMASK_E;
             substep_count = 2000;
             level_version = 10;
@@ -190,6 +192,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 2:                                                                     // NPN
+            name = "NPN";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E;
             substep_count = 2000;
             level_version = 10;
@@ -213,6 +216,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 3:                                                                     // PNP
+            name = "PNP";
             connection_mask = CONMASK_S | CONMASK_W | CONMASK_E;
             substep_count = 2000;
             level_version = 10;
@@ -236,6 +240,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 4:                                                                     // select
+            name = "Switch";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
             substep_count = 7000;
             level_version = 10;
@@ -277,6 +282,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
 
         case 5:                                                                 // Buf
+            name = "Buffer";
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 11;
 
@@ -329,6 +335,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
 
         case 6:                                                                     // Inv
+            name = "Inverter";
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 10;
 
@@ -371,6 +378,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 7:                                                             // op amp
+            name = "Comparator";
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
             level_version = 10;
 
@@ -413,6 +421,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 8:                                                                 // amp
+            name = "Amp50";
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 10;
 
@@ -449,6 +458,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 9:                                                        // div 2
+            name = "Div2";
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 10;
 
@@ -494,6 +504,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 10:                                                        // mul 2
+            name = "Mul2";
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 10;
 
@@ -524,6 +535,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 11:                                                        // Encrypt
+            name = "Encrypt";
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 11;
             
@@ -586,6 +598,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
 
         case 12:                                                        // Decrypt
+            name = "Decrypt";
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 11;
             substep_count = 20000;
@@ -625,6 +638,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 13:                                                                 // Sensor
+            name = "Sensor";
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 11;
 
@@ -674,6 +688,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 14:                                                    // subtract
+            name = "Subtractor";
             substep_count = 30000;
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
             level_version = 11;
@@ -715,6 +730,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
 
         case 15:                                                    // add
+            name = "Adder";
             substep_count = 30000;
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
             level_version = 10;
@@ -761,6 +777,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
  
         case 16:                                                    // latch
+            name = "Latch";
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
             level_version = 10;
             NEW_TEST;// N   E   S   W
@@ -797,6 +814,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 17:                                                    // tabulator
+            name = "Tabulator";
             substep_count = 30000;
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
             level_version = 10;
@@ -851,6 +869,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 18:                                                    // broken link
+            name = "Broken Link";
             connection_mask = CONMASK_W | CONMASK_E;
             substep_count = 50000;
             level_version = 10;
@@ -901,7 +920,8 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT_F(  0,  0,  0,100,  0,  0,  0, 50);
             break;
 
-        case 19:                                                    // broken link
+        case 19:                                                    // end
+            name = "Not yet done...";
             connection_mask = CONMASK_W | CONMASK_E;
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0, 77);

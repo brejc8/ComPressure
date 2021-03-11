@@ -75,7 +75,7 @@ public:
 class Level
 {
 public:
-    const char* name;
+    const char* name = "";
     CircuitPressure ports[4];
     SimPoint current_simpoint;
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
