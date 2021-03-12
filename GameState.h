@@ -22,6 +22,7 @@ struct ServerResp
 
 class GameState
 {
+public:
     SDL_Window* sdl_window;
     SDL_Renderer* sdl_renderer;
     SDL_Texture* sdl_texture;
@@ -70,6 +71,7 @@ class GameState
     ServerResp scores_from_server;
 
     LevelSet* level_set;
+    LevelSet* edited_level_set;
     Level* current_level;
 
     Circuit* current_circuit = NULL;
@@ -78,6 +80,7 @@ class GameState
     
     std::vector<std::pair<unsigned, Circuit*>> inspection_stack;
     bool current_circuit_is_inspected_subcircuit = false;
+    bool current_level_set_is_inspected = false;
     bool current_circuit_is_read_only = false;
 
     bool skip_to_next_subtest = false;
@@ -139,7 +142,6 @@ class GameState
     Sign dragged_sign;
     bool dragged_sign_motion;
 
-public:
     GameState(const char* filename);
     SaveObject* save(bool lite = false);
     void save(std::ostream& outfile, bool lite = false);
@@ -147,7 +149,7 @@ public:
     void post_to_server(SaveObject* send, bool sync);
     void fetch_from_server(SaveObject* send, ServerResp* resp);
     void save_to_server(bool sync = false);
-    void score_submit(bool sync = false);
+    void score_submit(unsigned level_index, bool sync = false);
     void score_fetch(unsigned level);
 
     ~GameState();

@@ -32,13 +32,7 @@
 
 static void DisplayWebsite(const char* url)
 {
-    #ifdef _WIN32
-        ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
-    #else
-        char buf[1024];
-        snprintf(buf, sizeof(buf), "xdg-open %s", url);
-        system(buf);
-    #endif
+    SDL_OpenURL(url);
 }
 
 GameState::GameState(const char* filename)
@@ -52,9 +46,10 @@ GameState::GameState(const char* filename)
             SaveObjectMap* omap;
             omap = SaveObject::load(loadfile)->get_map();
             level_set = new LevelSet(omap->get_item("levels"));
+            edited_level_set = level_set;
 
             current_level_index = omap->get_num("current_level_index");
-            if (!level_set->is_playable(current_level_index))
+            if (!edited_level_set->is_playable(current_level_index))
                 current_level_index = 0;
             game_speed = omap->get_num("game_speed");
             show_debug = omap->get_num("show_debug");
@@ -84,6 +79,7 @@ GameState::GameState(const char* filename)
     if (!load_was_good)
     {
         level_set = new LevelSet();
+        edited_level_set = level_set;
         current_level_index = 0;
         update_scale(3);
     }
@@ -120,15 +116,13 @@ GameState::GameState(const char* filename)
     music = Mix_LoadMUS("music.ogg");
     Mix_PlayMusic(music, -1);
     
-    top_level_allowed = level_set->top_playable();
-    
-    
+    top_level_allowed = edited_level_set->top_playable();
 }
     
 SaveObject* GameState::save(bool lite)
 {
     SaveObjectMap* omap = new SaveObjectMap;
-    omap->add_item("levels", level_set->save(lite));
+    omap->add_item("levels", edited_level_set->save(false));
     omap->add_num("current_level_index", current_level_index);
     omap->add_num("game_speed", game_speed);
     omap->add_num("show_debug", show_debug);
@@ -285,11 +279,12 @@ void GameState::save_to_server(bool sync)
     post_to_server(omap, sync);
 }
 
-void GameState::score_submit(bool sync)
+void GameState::score_submit(unsigned level, bool sync)
 {
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "score_submit");
-    omap->add_item("levels", level_set->save(true));
+    omap->add_num("level_index", level);
+    omap->add_item("levels", edited_level_set->save(level));
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
     post_to_server(omap, sync);
@@ -321,7 +316,7 @@ GameState::~GameState()
 	SDL_DestroyTexture(sdl_levels_texture);
 	SDL_DestroyRenderer(sdl_renderer);
 	SDL_DestroyWindow(sdl_window);
-    delete level_set;
+    delete edited_level_set;
 }
 
 extern const char embedded_data_binary_texture_png_start;
@@ -379,10 +374,12 @@ void GameState::advance()
                 skip_to_next_subtest = false;
         }
     }
-    if (current_level->best_score_set)
+    if (current_level->best_score_set && !current_level_set_is_inspected)
     {
         current_level->best_score_set = false;
-        score_submit(false);
+        score_submit(current_level_index, false);
+        edited_level_set->record_best_score(current_level_index);
+
     }
 }
 
@@ -621,14 +618,14 @@ void GameState::render()
         {
             SaveObjectMap* omap = scores_from_server.resp->get_map();
             unsigned level = omap->get_num("level");
-            level_set->levels[level]->global_fetched_score = omap->get_num("score");
+            edited_level_set->levels[level]->global_fetched_score = omap->get_num("score");
             SaveObjectList* glist = omap->get_item("graph")->get_list();
             for (unsigned i = 0; i < 200; i++)
             {
-                level_set->levels[level]->global_score_graph[i] = glist->get_num(i);
+                edited_level_set->levels[level]->global_score_graph[i] = glist->get_num(i);
             }
-            level_set->levels[level]->global_score_graph_set = true;
-            level_set->levels[level]->global_score_graph_time = SDL_GetTicks();
+            edited_level_set->levels[level]->global_score_graph_set = true;
+            edited_level_set->levels[level]->global_score_graph_time = SDL_GetTicks();
         }
         catch (const std::runtime_error& error)
         {
@@ -658,9 +655,9 @@ void GameState::render()
     frame_index++;
     debug_frames++;
     
-    if (top_level_allowed != level_set->top_playable())
+    if (top_level_allowed != edited_level_set->top_playable())
     {
-        top_level_allowed = level_set->top_playable();
+        top_level_allowed = edited_level_set->top_playable();
         level_win_animation = 100;
     
     }
@@ -973,7 +970,7 @@ void GameState::render()
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
-            XYPos pos = level_set->levels[placing_subcircuit_level]->getimage(direction);
+            XYPos pos = edited_level_set->levels[placing_subcircuit_level]->getimage(direction);
             if (pos != XYPos(0,0))
             {
                 SDL_Rect src_rect = {pos.x, pos.y, 32, 32};
@@ -982,7 +979,7 @@ void GameState::render()
             }
 
 
-            pos = level_set->levels[placing_subcircuit_level]->getimage_fg(direction);
+            pos = edited_level_set->levels[placing_subcircuit_level]->getimage_fg(direction);
             if (pos != XYPos(0,0))
             {
                 SDL_Rect src_rect = {pos.x, pos.y, 24, 24};
@@ -1116,16 +1113,25 @@ void GameState::render()
 
     {
         int x = 0;
-        render_button(XYPos(x * scale, 0 * scale), XYPos(0, 184 + current_level_index * 24), current_circuit_is_inspected_subcircuit?0:1);
+        render_button(XYPos(x * scale, 0 * scale), XYPos(0, 184 + current_level_index * 24), current_circuit_is_inspected_subcircuit ? 0 : 1);
         x += 32;
 
         if (current_circuit_is_inspected_subcircuit)
         {
             for (auto &i : inspection_stack)
             {
+                if (x == 32*5)
+                    x += 32;
                 render_button(XYPos(x * scale, 0 * scale), XYPos(0, 184 + i.first * 24), &i == &inspection_stack.back());
                 x += 32;
             }
+        }
+
+        if (current_level_set_is_inspected)
+        {
+            if (!current_circuit_is_inspected_subcircuit)
+                render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0);
+            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0);
         }
     }
 
@@ -1157,13 +1163,13 @@ void GameState::render()
             render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 16, 11*32 + 8), panel_colour);
         }
         {                                                                                               // Top Menu
-            bool flash_next_level = level_set->is_playable(next_dialogue_level) && (frame_index % 60 < 30);
+            bool flash_next_level = edited_level_set->is_playable(next_dialogue_level) && (frame_index % 60 < 30);
             render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT);
-            if (!current_circuit_is_read_only && level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
+            if (!current_circuit_is_read_only && edited_level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
                 render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR);
-            if (level_set->is_playable(3))
+            if (edited_level_set->is_playable(3))
                 render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR);
-            if (level_set->is_playable(7))
+            if (edited_level_set->is_playable(7))
                 render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST);
             render_box(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(32, 32), panel_state == PANEL_STATE_SCORES);
             render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
@@ -1191,15 +1197,16 @@ void GameState::render()
     
     if (panel_state == PANEL_STATE_LEVEL_SELECT)
     {
-        unsigned level_index = 0;
+        
         
         for (pos.y = 0; pos.y < 8; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
+            unsigned level_index =  pos.y * 8 + pos.x;
             if (level_index >= LEVEL_COUNT)
                 break;
             if (!level_set->is_playable(level_index))
-                break;
+                continue;
             if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue)
                 continue;
             render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0);
@@ -1207,7 +1214,6 @@ void GameState::render()
             unsigned score = pressure_as_percent(level_set->levels[level_index]->best_score);
 
             render_number_2digit(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), score);
-            level_index++;
         }
             render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0);
         {
@@ -1244,7 +1250,7 @@ void GameState::render()
         if (mouse_state == MOUSE_STATE_PLACING_VALVE)
             flash_valve = false;
 
-        if (level_set->is_playable(2))
+        if (edited_level_set->is_playable(2))
             render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)));
         render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet));
 
@@ -1252,7 +1258,7 @@ void GameState::render()
         render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(400+24, 112), 0);
         
         
-        if (level_set->is_playable(8))
+        if (edited_level_set->is_playable(8))
             render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN);
 
 
@@ -1263,18 +1269,18 @@ void GameState::render()
         {
             if (level_index >= LEVEL_COUNT)
                 break;
-            if (!level_set->is_playable(level_index))
+            if (!edited_level_set->is_playable(level_index))
                 break;
             SDL_Rect src_rect = {256, 80, 32, 32};
             if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level)
                 src_rect.x = 256 + 32;
 
             SDL_Rect dst_rect = {pos.x * 32 * scale + panel_offset.x, (32 + 8 + pos.y * 32) * scale + panel_offset.y, 32 * scale, 32 * scale};
-            if (level_index != current_level_index && !level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, level_set))
+            if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
                  render_texture(src_rect, dst_rect);
-            XYPos level_pos = level_set->levels[level_index]->getimage_fg(direction);
+            XYPos level_pos = edited_level_set->levels[level_index]->getimage_fg(direction);
             src_rect = {level_pos.x, level_pos.y, 24, 24};
-            dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, (32 + 8 + pos.y * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};
+            dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, (32 + 8 + pos.y * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};         // FIXME buttons
             render_texture(src_rect, dst_rect);
             level_index++;
         }
@@ -1293,7 +1299,7 @@ void GameState::render()
             panel_grid_pos = (panel_pos - XYPos(0,8)) / 32;
             int level_index = panel_grid_pos.x + (panel_grid_pos.y - 1) * 8;
 
-            if (level_set->is_playable(level_index))
+            if (edited_level_set->is_playable(level_index))
             {
                 SDL_Rect src_rect = {192, 184 + level_index * 24, 64, 16};
                 SDL_Rect dst_rect = {(panel_pos.x - 64)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 64 * scale, 16 * scale};
@@ -1378,6 +1384,7 @@ void GameState::render()
             render_texture(src_rect, dst_rect);
         }
         
+        if (current_level->best_design)
         {
             SDL_Rect src_rect = {336, 32, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + (0) * scale, panel_offset.y + (32 + 8 + 16) * scale, 16 * scale, 16 * scale};
@@ -1799,7 +1806,7 @@ void GameState::set_level(unsigned level_index)
     if (level_set->is_playable(level_index))
     {
         current_circuit_is_inspected_subcircuit = false;
-        current_circuit_is_read_only = false;
+        current_circuit_is_read_only = current_level_set_is_inspected;
 
         mouse_state = MOUSE_STATE_NONE;
         current_level_index = level_index;
@@ -1809,7 +1816,7 @@ void GameState::set_level(unsigned level_index)
         current_level->reset(level_set);
         show_hint = false;
         selected_elements.clear();
-        if (level_index == next_dialogue_level)
+        if (level_index == next_dialogue_level && !current_level_set_is_inspected)
         {
             show_dialogue = true;
             dialogue_index = 0;
@@ -1843,14 +1850,14 @@ void GameState::mouse_click_in_grid()
     if (current_circuit_is_read_only)
     {
         XYPos pos = mouse/scale;
-        if (pos.inside(XYPos(320,32)))
+        if (pos.inside(XYPos(32*11,32)))
         {
             unsigned i = pos.x / 32;
             
             if (i == 0)
             {
                 inspection_stack.clear();
-                current_circuit_is_read_only = false;
+                current_circuit_is_read_only = current_level_set_is_inspected;
                 current_circuit_is_inspected_subcircuit = false;
                 current_circuit = current_level->circuit;
             }
@@ -1859,6 +1866,19 @@ void GameState::mouse_click_in_grid()
                 inspection_stack.resize(i);
                 i--;
                 current_circuit = inspection_stack[i].second;
+            }
+            else if (i == 10 && current_level_set_is_inspected)
+            {
+                current_level_set_is_inspected = false;
+                level_set = edited_level_set;
+                set_level(current_level_index);
+            }
+            else if (i == 9 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit)
+            {
+                edited_level_set->levels[current_level_index]->circuit->copy_elements(*current_circuit);
+                current_level_set_is_inspected = false;
+                level_set = edited_level_set;
+                set_level(current_level_index);
             }
         }
         return;
@@ -2092,7 +2112,7 @@ void GameState::mouse_click_in_grid()
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-            current_circuit->set_element_subcircuit(mouse_grid, direction, placing_subcircuit_level, level_set);
+            current_circuit->set_element_subcircuit(mouse_grid, direction, placing_subcircuit_level, edited_level_set);
             current_level->touched = true;
         }
     }
@@ -2107,7 +2127,7 @@ void GameState::mouse_click_in_grid()
     }
     else if (mouse_state == MOUSE_STATE_DELETING)
     {
-        current_circuit->undo(level_set);
+        current_circuit->undo(edited_level_set);
         first_deletion = true;
     }
     else
@@ -2132,18 +2152,18 @@ void GameState::mouse_click_in_panel()
                     panel_state = PANEL_STATE_LEVEL_SELECT;
                     break;
                 case 1:
-                    if (!level_set->is_playable(1) || current_circuit_is_read_only)
+                    if (!edited_level_set->is_playable(1) || current_circuit_is_read_only)
                         break;
                     panel_state = PANEL_STATE_EDITOR;
                     flash_editor_menu = false;
                     break;
                 case 2:
-                    if (!level_set->is_playable(3))
+                    if (!edited_level_set->is_playable(3))
                         break;
                     panel_state = PANEL_STATE_MONITOR;
                     break;
                 case 3:
-                    if (!level_set->is_playable(7))
+                    if (!edited_level_set->is_playable(7))
                         break;
                     panel_state = PANEL_STATE_TEST;
                     break;
@@ -2194,7 +2214,7 @@ void GameState::mouse_click_in_panel()
         XYPos panel_grid_pos = panel_pos / 32;
         if (panel_grid_pos.y == 0)
         {
-            if (panel_grid_pos.x == 0 && level_set->is_playable(2))
+            if (panel_grid_pos.x == 0 && edited_level_set->is_playable(2))
                 mouse_state = MOUSE_STATE_PLACING_VALVE;
             else if (panel_grid_pos.x == 1)
                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
@@ -2209,8 +2229,8 @@ void GameState::mouse_click_in_panel()
         panel_grid_pos = (panel_pos - XYPos(0, 32 + 8)) / 32;
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
 
-        if (level_index < LEVEL_COUNT && level_index != current_level_index && !level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, level_set)
-                   && level_set->is_playable(level_index))
+        if (level_index < LEVEL_COUNT && level_index != current_level_index && !current_circuit->contains_subcircuit_level(current_level_index, edited_level_set)
+                   && edited_level_set->is_playable(level_index))
         {
             mouse_state = MOUSE_STATE_PLACING_SUBCIRCUIT;
             placing_subcircuit_level = level_index;
@@ -2253,8 +2273,13 @@ void GameState::mouse_click_in_panel()
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
                 current_level->touched = true;
             }
-                
-
+        }
+        if (panel_grid_pos == XYPos(0, 3) && current_level->best_design)
+        {
+            level_set = current_level->best_design;
+            set_current_circuit_read_only();
+            current_level_set_is_inspected = true;
+            set_level(current_level_index);
         }
         XYPos subtest_pos = panel_pos - XYPos(8 + 16, 32 + 32 + 16);
         if (subtest_pos.inside(XYPos(current_level->tests[current_level->test_index].sim_points.size() * 16, popcount(current_level->connection_mask) * 16 + 32)))
@@ -2497,31 +2522,41 @@ bool GameState::events()
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (!keyboard_shift)
-                                current_circuit->undo(level_set);
+                                current_circuit->undo(edited_level_set);
                             else
-                                current_circuit->redo(level_set);
+                                current_circuit->redo(edited_level_set);
                         }
                         break;
                     case SDL_SCANCODE_Y:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
-                            current_circuit->redo(level_set);
+                            current_circuit->redo(edited_level_set);
                         break;
                     case SDL_SCANCODE_PAGEDOWN:
                         if (!SDL_IsTextInputActive())
                         {
-                            if (level_set->is_playable(current_level_index + 1))
-                                set_level(current_level_index + 1);
-                            else
-                                set_level(0);
+                            while (true)
+                            {
+                                current_level_index++;
+                                if (current_level_index >= LEVEL_COUNT)
+                                    current_level_index = 0;
+                                if (level_set->is_playable(current_level_index))
+                                    break;
+                            }
+                            set_level(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_PAGEUP:
                         if (!SDL_IsTextInputActive())
                         {
-                            if (current_level_index)
-                                set_level(current_level_index - 1);
-                            else
-                                set_level(level_set->top_playable());
+                            while (true)
+                            {
+                                if (!current_level_index)
+                                    current_level_index = LEVEL_COUNT;
+                                current_level_index--;
+                                if (level_set->is_playable(current_level_index))
+                                    break;
+                            }
+                            set_level(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_F1:
@@ -2726,6 +2761,7 @@ bool GameState::events()
                             show_dialogue = false;
                     }
                     else if (mouse.x < panel_offset.x)
+                    {
                         if (e.button.clicks == 2)
                         {
                             XYPos pos = (mouse - grid_offset) / scale;
@@ -2749,28 +2785,38 @@ bool GameState::events()
                         }
                         else
                             mouse_click_in_grid();
+                    }
                     else
+                    {
                         mouse_click_in_panel();
+                    }
                 }
                 else if (e.button.button == SDL_BUTTON_RIGHT)
                 {
-                    selected_elements.clear();
-                    if (mouse_state == MOUSE_STATE_NONE)
+                    if (!current_circuit_is_read_only)
                     {
-                        mouse_state = MOUSE_STATE_DELETING;
-                        first_deletion = true;
-                        mouse_motion();
+                        selected_elements.clear();
+                        if (mouse_state == MOUSE_STATE_NONE)
+                        {
+                            mouse_state = MOUSE_STATE_DELETING;
+                            first_deletion = true;
+                            mouse_motion();
+                        }
+                        else
+                            mouse_state = MOUSE_STATE_NONE;
                     }
                     else
                         mouse_state = MOUSE_STATE_NONE;
                 }
                 else if (e.button.button == SDL_BUTTON_MIDDLE)
                 {
+                    if (!current_circuit_is_read_only)
+                    {
                         if (mouse_state == MOUSE_STATE_PLACING_VALVE)
                             mouse_state = MOUSE_STATE_PLACING_SOURCE;
                         else
                             mouse_state = MOUSE_STATE_PLACING_VALVE;
-                        break;
+                    }
                 }
                 break;
             }
@@ -2807,8 +2853,10 @@ void GameState::watch_slider(unsigned slider_pos_, Direction slider_direction_, 
     slider_value_max = slider_value_max_;
     mouse_motion();
 }
+
 void GameState::set_current_circuit_read_only()
 {
+    selected_elements.clear();
     current_circuit_is_read_only = true;
     if (panel_state == PANEL_STATE_EDITOR)
         panel_state = PANEL_STATE_MONITOR;

@@ -68,7 +68,6 @@ void mainloop()
 	}
     game_state->save(save_filename.c_str());
     game_state->save_to_server(true);
-    game_state->score_submit(true);
     delete game_state;
 }
 

@@ -82,6 +82,7 @@ public:
 
     unsigned level_index;
     Circuit* circuit;
+    LevelSet *best_design = NULL;
     
     unsigned pin_order[4];
 
@@ -142,13 +143,16 @@ class LevelSet
 {
 public:
     Level* levels[LEVEL_COUNT];
-    LevelSet(SaveObject* sobj);
+    bool read_only = false;
+    LevelSet(SaveObject* sobj, bool inspect = false);
     LevelSet();
     ~LevelSet();
     SaveObject* save(bool lite = false);
+    SaveObject* save(unsigned level_index);
     bool is_playable(unsigned level);
     int top_playable();
     Pressure test_level(unsigned level_index);
+    void record_best_score(unsigned level_index);
 
 
 };

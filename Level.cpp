@@ -72,42 +72,46 @@ Level::Level(unsigned level_index_, SaveObject* sobj):
     level_index(level_index_)
 {
     pin_order[0] = 0; pin_order[1] = 1; pin_order[2] = 2; pin_order[3] = 3;
-    if (sobj)
+    SaveObjectMap* omap = sobj->get_map();
+    circuit = new Circuit(omap->get_item("circuit")->get_map());
+    if (omap->has_key("best_design"))
     {
-        SaveObjectMap* omap = sobj->get_map();
-        circuit = new Circuit(omap->get_item("circuit")->get_map());
-        int level_version = omap->get_num("level_version");
+        best_design = new LevelSet(omap->get_item("best_design"), true);
+    }
 
-        init_tests(omap);
-    }
-    else
-    {
-        circuit = new Circuit;
-        init_tests();
-    }
+    init_tests(omap);
     set_monitor_state(monitor_state);
 }
 
 Level::~Level()
 {
     delete circuit;
+    delete best_design;
 }
 
 SaveObject* Level::save(bool lite)
 {
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_item("circuit", circuit->save());
-    omap->add_num("level_version", level_version);
-    omap->add_num("best_score", best_score);
 
     if (!lite)
     {
+        omap->add_num("level_version", level_version);
+        omap->add_num("best_score", best_score);
+        omap->add_num("last_score", last_score);
         SaveObjectList* slist = new SaveObjectList;
         unsigned test_count = tests.size();
         for (unsigned i = 0; i < test_count; i++)
             slist->add_item(tests[i].save());
         omap->add_item("tests", slist);
+        if (best_design)
+            omap->add_item("best_design", best_design->save(level_index));
     }
+    else
+    {
+        omap->add_num("best_score", last_score);
+    }
+
     return omap;
 }
 
@@ -144,7 +148,9 @@ void Level::init_tests(SaveObjectMap* omap)
     {
     }
 
-    unsigned loaded_level_version = omap ? omap->get_num("level_version") : 0;
+    unsigned loaded_level_version = 0;
+    if (omap && omap->has_key("level_version"))
+        loaded_level_version = omap->get_num("level_version");
 
     switch(level_index)
     {
@@ -1008,8 +1014,13 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
     }
 
-    if (loaded_level_version == level_version)
-        best_score = omap ? omap->get_num("best_score") : 0;
+    if (loaded_level_version == level_version && omap)
+    {
+        if (omap->has_key("best_score"))
+            best_score = omap->get_num("best_score");
+        if (omap->has_key("last_score"))
+            last_score = omap->get_num("last_score");
+    }
 }
 
 void Level::reset(LevelSet* level_set)
@@ -1131,7 +1142,7 @@ void Level::update_score(bool fin)
     }
     score /= test_count;
     last_score = score;
-    if (score > best_score && fin)
+    if ((score > best_score || !best_design) && fin)
     {
         best_score = score;
         for (unsigned t = 0; t < test_count; t++)
@@ -1154,15 +1165,28 @@ void Level::set_monitor_state(TestExecType monitor_state_)
         current_simpoint = tests[test_index].sim_points[sim_point_index];
 }
 
-LevelSet::LevelSet(SaveObject* sobj)
+LevelSet::LevelSet(SaveObject* sobj, bool inspect)
 {
+    read_only = inspect;
     SaveObjectList* slist = sobj->get_list();
     for (int i = 0; i < LEVEL_COUNT; i++)
     {
+        SaveObject *sobj = NULL;
         if (i < slist->get_count())
-            levels[i] = new Level(i, slist->get_item(i));
+        {
+            sobj = slist->get_item(i);
+            if (sobj->is_null())
+                sobj = NULL;
+        }
+        if (sobj)
+            levels[i] = new Level(i, sobj);
         else
-            levels[i] = new Level(i);
+        {
+            if (inspect)
+                levels[i] = NULL;
+            else
+                levels[i] = new Level(i);
+        }
     }
 }
 
@@ -1188,7 +1212,24 @@ SaveObject* LevelSet::save(bool lite)
     
     for (int i = 0; i < LEVEL_COUNT; i++)
     {
-        slist->add_item(levels[i]->save(lite));
+        if (levels[i])
+            slist->add_item(levels[i]->save(lite));
+        else
+            slist->add_item(new SaveObjectNull);
+    }
+    return slist;
+}
+
+SaveObject* LevelSet::save(unsigned level_index)
+{
+    SaveObjectList* slist = new SaveObjectList;
+    
+    for (int i = 0; i < LEVEL_COUNT; i++)
+    {
+        if (levels[level_index]->circuit->contains_subcircuit_level(i, this) || i == level_index)
+            slist->add_item(levels[i]->save(true));
+        else
+            slist->add_item(new SaveObjectNull);
     }
     return slist;
 }
@@ -1197,6 +1238,8 @@ bool LevelSet::is_playable(unsigned level)
 {
     if (level >= LEVEL_COUNT)
         return false;
+    if (read_only)
+        return (levels[level] != NULL);
     for (int i = 0; i < level; i++)
     {
         if (levels[i]->best_score < percent_as_pressure(75))
@@ -1207,6 +1250,8 @@ bool LevelSet::is_playable(unsigned level)
 
 int LevelSet::top_playable()
 {
+    if (read_only)
+        return -1;
     for (int i = 0; i < LEVEL_COUNT; i++)
     {
         if (levels[i]->best_score < percent_as_pressure(75))
@@ -1222,4 +1267,12 @@ Pressure LevelSet::test_level(unsigned level_index)
     while (!levels[level_index]->score_set)
         levels[level_index]->advance(1000);
     return levels[level_index]->last_score;
+}
+
+void LevelSet::record_best_score(unsigned level_index)
+{
+    SaveObject* sobj = save(level_index);
+    delete levels[level_index]->best_design;
+    levels[level_index]->best_design =  new LevelSet(sobj, true);
+    delete sobj;
 }
