@@ -1378,13 +1378,26 @@ void GameState::render()
         pos = XYPos(0,0);
         for (int i = 0; i < 3; i++)                         // Play/ pause
         {
-            render_box(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(32, 32), current_level->monitor_state == i ? 1 : 0);
-            SDL_Rect src_rect = {448 + i * 24, 176, 24, 24};
-            SDL_Rect dst_rect = {panel_offset.x + (i * 32 + 4) * scale, panel_offset.y + 4 * scale, 24 * scale, 24 * scale};
-            render_texture(src_rect, dst_rect);
+            render_button(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(448 + i * 24, 176), current_level->monitor_state == i);
         }
-        
-        if (current_level->best_design)
+
+        if (edited_level_set->is_playable(8) && !current_level_set_is_inspected)
+        {
+            for (int i = 0; i < 4; i++)                         // save/restore
+            {
+                SDL_Rect src_rect = {432 + i * 96, 0, 16, 16};
+                SDL_Rect dst_rect = {panel_offset.x + (i * 16 + 32 * 6) * scale, panel_offset.y + 20 * scale, 16 * scale, 16 * scale};
+                if (i == 3)
+                    src_rect = {432 + 2 * 96, 80, 16, 16};
+                render_texture(src_rect, dst_rect);
+                src_rect.y += 32;
+                dst_rect.y -= 16 * scale;
+                if (current_level->saved_designs[i])                     // restore stars star
+                    render_texture(src_rect, dst_rect);
+            }
+        }
+
+
 
         if (current_level->best_design)                     // Little star
         {
@@ -2261,7 +2274,33 @@ void GameState::mouse_click_in_panel()
                 current_level->touched = true;
                 current_level->reset(level_set);
             }
-            return;
+            
+            
+            panel_grid_pos = (panel_pos - XYPos(32 * 5 + 16, 0)) / 16;
+            {
+                if (panel_grid_pos.y == 0)
+                {
+                    int index = panel_grid_pos.x - 1;
+                    if (index >= 0 && index < 4)
+                    {
+                        if (current_level->saved_designs[index])
+                        {
+                            level_set = current_level->saved_designs[index];
+                            set_current_circuit_read_only();
+                            current_level_set_is_inspected = true;
+                            set_level(current_level_index);
+                        }
+                    }
+                }
+                if (panel_grid_pos.y == 1)
+                {
+                    int index = panel_grid_pos.x - 1;
+                    if (index >= 0 && index < 4)
+                    {
+                        edited_level_set->save_design(current_level_index, index);
+                    }
+                }
+            }
         }
 
         panel_grid_pos = (panel_pos - XYPos(0, 8)) / 16;

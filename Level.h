@@ -83,7 +83,8 @@ public:
     unsigned level_index;
     Circuit* circuit;
     LevelSet *best_design = NULL;
-    
+    LevelSet *saved_designs[4] = {NULL};
+
     unsigned pin_order[4];
 
     unsigned connection_mask = 0;
@@ -153,6 +154,5 @@ public:
     int top_playable();
     Pressure test_level(unsigned level_index);
     void record_best_score(unsigned level_index);
-
-
+    void save_design(unsigned level_index, unsigned save_slot);
 };

@@ -75,8 +75,20 @@ Level::Level(unsigned level_index_, SaveObject* sobj):
     SaveObjectMap* omap = sobj->get_map();
     circuit = new Circuit(omap->get_item("circuit")->get_map());
     if (omap->has_key("best_design"))
-    {
         best_design = new LevelSet(omap->get_item("best_design"), true);
+    if (omap->has_key("saved_designs"))
+    {
+        SaveObjectList* slist = omap->get_item("saved_designs")->get_list();
+        for (unsigned i = 0; i < 4; i++)
+        {
+            if (i < slist->get_count())
+            {
+                SaveObject *sobj = slist->get_item(i);
+                if (!sobj->is_null())
+                    saved_designs[i] = new LevelSet(sobj, true);
+            }
+                
+        }
     }
 
     init_tests(omap);
@@ -106,6 +118,15 @@ SaveObject* Level::save(bool lite)
         omap->add_item("tests", slist);
         if (best_design)
             omap->add_item("best_design", best_design->save(level_index));
+
+        slist = new SaveObjectList;
+        for (unsigned i = 0; i < 4; i++)
+            if (saved_designs[i])
+                slist->add_item(saved_designs[i]->save());
+            else
+                slist->add_item(new SaveObjectNull);
+        omap->add_item("saved_designs", slist);
+
     }
     else
     {
@@ -1276,3 +1297,12 @@ void LevelSet::record_best_score(unsigned level_index)
     levels[level_index]->best_design =  new LevelSet(sobj, true);
     delete sobj;
 }
+
+void LevelSet::save_design(unsigned level_index, unsigned save_slot)
+{
+    SaveObject* sobj = save(level_index);
+    delete levels[level_index]->saved_designs[save_slot];
+    levels[level_index]->saved_designs[save_slot] =  new LevelSet(sobj, true);
+    delete sobj;
+}
+
