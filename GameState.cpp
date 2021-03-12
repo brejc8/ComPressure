@@ -1385,6 +1385,8 @@ void GameState::render()
         }
         
         if (current_level->best_design)
+
+        if (current_level->best_design)                     // Little star
         {
             SDL_Rect src_rect = {336, 32, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + (0) * scale, panel_offset.y + (32 + 8 + 16) * scale, 16 * scale, 16 * scale};
