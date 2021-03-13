@@ -2966,6 +2966,8 @@ void GameState::set_current_circuit_read_only()
 void GameState::check_clipboard()
 {
     char* new_clip = SDL_GetClipboardText();
+    if (!new_clip)
+        return;
     if (last_clip && (strcmp(new_clip, last_clip) == 0))
     {
         SDL_free(new_clip);
