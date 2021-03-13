@@ -11,6 +11,8 @@
 
 std::string compress_string(const std::string& str, int compressionlevel)
 {
+    if (str.empty())
+        return "";
     z_stream zs;                        // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
     zs.zalloc = Z_NULL;
@@ -53,6 +55,8 @@ std::string compress_string(const std::string& str, int compressionlevel)
 
 std::string decompress_string(const std::string& str)
 {
+    if (str.empty())
+        return "";
     z_stream zs;                        // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
 
