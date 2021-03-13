@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <codecvt>
 
 #ifdef _WIN32
     #define NOMINMAX
@@ -317,6 +318,10 @@ GameState::~GameState()
 	SDL_DestroyRenderer(sdl_renderer);
 	SDL_DestroyWindow(sdl_window);
     delete edited_level_set;
+    delete clipboard_level_set;
+
+    if (last_clip)
+        SDL_free(last_clip);
 }
 
 extern const char embedded_data_binary_texture_png_start;
@@ -612,6 +617,7 @@ void GameState::update_scale(int newscale)
 
 void GameState::render()
 {
+    check_clipboard();
     if (scores_from_server.done && !scores_from_server.error)
     {
         try 
@@ -1383,10 +1389,14 @@ void GameState::render()
 
         if (edited_level_set->is_playable(8) && !current_level_set_is_inspected)
         {
+            render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 136), 0);
+            if (clipboard_level_set)
+                render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(424, 136), 0);
+
             for (int i = 0; i < 4; i++)                         // save/restore
             {
                 SDL_Rect src_rect = {432 + i * 96, 0, 16, 16};
-                SDL_Rect dst_rect = {panel_offset.x + (i * 16 + 32 * 6) * scale, panel_offset.y + 20 * scale, 16 * scale, 16 * scale};
+                SDL_Rect dst_rect = {panel_offset.x + (i * 16 + 32 * 6) * scale, panel_offset.y + 16 * scale, 16 * scale, 16 * scale};
                 if (i == 3)
                     src_rect = {432 + 2 * 96, 80, 16, 16};
                 render_texture(src_rect, dst_rect);
@@ -1818,25 +1828,28 @@ void GameState::render()
 
 void GameState::set_level(unsigned level_index)
 {
-    if (level_set->is_playable(level_index))
+    while (!level_set->is_playable(level_index))
     {
-        current_circuit_is_inspected_subcircuit = false;
-        current_circuit_is_read_only = current_level_set_is_inspected;
+        if (level_index == 0)
+            level_index = LEVEL_COUNT;
+        level_index--;
+    }
+    current_circuit_is_inspected_subcircuit = false;
+    current_circuit_is_read_only = current_level_set_is_inspected;
 
-        mouse_state = MOUSE_STATE_NONE;
-        current_level_index = level_index;
-        current_level = level_set->levels[current_level_index];
-        current_circuit = current_level->circuit;
-        inspection_stack.clear();
-        current_level->reset(level_set);
-        show_hint = false;
-        selected_elements.clear();
-        if (level_index == next_dialogue_level && !current_level_set_is_inspected)
-        {
-            show_dialogue = true;
-            dialogue_index = 0;
-            next_dialogue_level++;
-        }
+    mouse_state = MOUSE_STATE_NONE;
+    current_level_index = level_index;
+    current_level = level_set->levels[current_level_index];
+    current_circuit = current_level->circuit;
+    inspection_stack.clear();
+    current_level->reset(level_set);
+    show_hint = false;
+    selected_elements.clear();
+    if (level_index == next_dialogue_level && !current_level_set_is_inspected)
+    {
+        show_dialogue = true;
+        dialogue_index = 0;
+        next_dialogue_level++;
     }
 }
 
@@ -2274,9 +2287,55 @@ void GameState::mouse_click_in_panel()
                 current_level->touched = true;
                 current_level->reset(level_set);
             }
-            
-            
+            else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
+            {
+                SaveObjectMap* omap = new SaveObjectMap;
+                omap->add_num("level_index", current_level_index);
+                omap->add_item("levels", edited_level_set->save(current_level_index));
+                std::ostringstream stream;
+                omap->save(stream);
+                delete omap;
+                std::string comp = compress_string(stream.str());
+                std::u32string s32;
+                std::string reply= "ComPressure Level ";
+                reply += std::to_string(current_level_index);
+                reply += ": \"";
+                reply += level_set->levels[current_level_index]->name;
+                reply += "\" (";
+                reply += std::to_string(pressure_as_percent(level_set->levels[current_level_index]->last_score));
+                reply += "%)\n";
+                
+                s32 += 0x1F682;                 // steam engine
+                unsigned spaces = 2;
+                for(char& c : comp)
+                {
+                    if (spaces >= 80)
+                    {
+                        s32 += '\n';
+                        spaces = 0;
+                    }
+                    spaces++;
+                    s32 += uint32_t(0x2800 + (unsigned char)(c));
+
+                } 
+                s32 += 0x1F6D1;                 // stop sign
+                
+                std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+                reply += conv.to_bytes(s32);
+                reply += "\n";
+
+                SDL_SetClipboardText(reply.c_str());
+            }
+            else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
+            {
+                level_set = clipboard_level_set;
+                set_current_circuit_read_only();
+                current_level_set_is_inspected = true;
+                set_level(clipboard_level_index);
+            }
+
             panel_grid_pos = (panel_pos - XYPos(32 * 5 + 16, 0)) / 16;
+            if (edited_level_set->is_playable(8) && !current_level_set_is_inspected)
             {
                 if (panel_grid_pos.y == 0)
                 {
@@ -2903,3 +2962,51 @@ void GameState::set_current_circuit_read_only()
         panel_state = PANEL_STATE_MONITOR;
     mouse_state = MOUSE_STATE_NONE;
 }
+
+void GameState::check_clipboard()
+{
+    char* new_clip = SDL_GetClipboardText();
+    if (last_clip && (strcmp(new_clip, last_clip) == 0))
+    {
+        SDL_free(new_clip);
+        return;
+    }
+    if (last_clip)
+        SDL_free(last_clip);
+    last_clip = new_clip;
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    std::u32string s32 = conv.from_bytes(std::string(new_clip));
+    std::string comp;
+    for(uint32_t c : s32)
+    {
+        if ((c & 0xFF00) == 0x2800)
+        {
+            char asc = c & 0xFF;
+            comp += asc;
+        }
+    }
+    
+    delete clipboard_level_set;
+    clipboard_level_set = NULL;
+ 
+    SaveObjectMap* omap = NULL;
+    try 
+    {
+        std::string decomp = decompress_string(comp);
+        std::istringstream decomp_stream(decomp);
+        omap = SaveObject::load(decomp_stream)->get_map();
+        clipboard_level_index = omap->get_num("level_index");
+        LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
+        clipboard_level_set = new_set;
+    }
+    catch (const std::runtime_error& error)
+    {
+        std::cerr << error.what() << "\n";
+    }
+    delete omap;
+}
+
+
+
+
+

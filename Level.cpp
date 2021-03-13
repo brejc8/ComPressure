@@ -99,6 +99,8 @@ Level::~Level()
 {
     delete circuit;
     delete best_design;
+    for (unsigned i = 0; i < 4; i++)
+        delete saved_designs[i];
 }
 
 SaveObject* Level::save(bool lite)
