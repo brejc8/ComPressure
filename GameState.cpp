@@ -174,8 +174,8 @@ static int fetch_from_server_thread(void *ptr)
     TCPsocket tcpsock;
     ServerComms* comms = (ServerComms*)ptr;
     
-//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1)
-    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
+    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1)
+//    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
     {
         printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
         if (comms->resp)

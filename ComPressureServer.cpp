@@ -118,16 +118,29 @@ public:
 
 };
 
+class Player
+{
+public:
+    std::string steam_username;
+    bool priv;
+};
+
 class Database
 {
 public:
-    std::map<uint64_t, std::string> names;
+    std::map<uint64_t, Player> players;
     std::vector<ScoreTable> levels;
 
     void update_name(uint64_t steam_id, std::string& steam_username)
     {
-        names[steam_id] = steam_username;
+        players[steam_id].steam_username = steam_username;
     }
+
+    void update_priv(uint64_t steam_id, bool priv)
+    {
+        players[steam_id].priv = priv;
+    }
+
     void update_score(uint64_t steam_id, unsigned level, Pressure score, SaveObject* sobj)
     {
         if (level >= levels.size())
@@ -144,7 +157,9 @@ public:
             std::string name;
             uint64_t id = omap->get_num("id");
             omap->get_string("name", name);
+            bool priv = omap->get_num("priv");
             update_name(id, name);
+            update_priv(id, priv);
         }
 ;
         SaveObjectList* level_list = omap->get_item("levels")->get_list();
@@ -164,11 +179,12 @@ public:
         
         SaveObjectList* name_list = new SaveObjectList;
         
-        for(auto const &name_pair : names)
+        for(auto const &player_pair : players)
         {
             SaveObjectMap* name_map = new SaveObjectMap;
-            name_map->add_num("id", name_pair.first);
-            name_map->add_string("name", name_pair.second);
+            name_map->add_num("id", player_pair.first);
+            name_map->add_num("priv", player_pair.second.priv);
+            name_map->add_string("steam_username", player_pair.second.steam_username);
             name_list->add_item(name_map);
         }
         omap->add_item("names", name_list);
@@ -589,7 +605,7 @@ void ScoreTable::fetch_scores(SaveObjectMap* omap, std::set<uint64_t>& friends, 
         {
             SaveObjectMap* omap = new SaveObjectMap;
             omap->add_num("steam_id", score.second);
-            omap->add_string("steam_username", db.names[score.second]);
+            omap->add_string("steam_username", db.players[score.second].steam_username);
             omap->add_num("score", score.first);
             friend_scores->add_item(omap);
         }
