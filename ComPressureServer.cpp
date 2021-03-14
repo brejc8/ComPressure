@@ -28,17 +28,16 @@ public:
     Score(const Score& other)
     {
         score = other.score;
-        sobj = other.sobj->dup();
+        if (other.sobj)
+            sobj = other.sobj->dup();
     }
     ~Score()
     {
-        if (sobj)
-            delete sobj;
+        delete sobj;
     }
     void update_design(SaveObject* sobj_)
     {
-        if (sobj)
-            delete sobj;
+        delete sobj;
         sobj = sobj_;
     }
 };
