@@ -155,7 +155,7 @@ public:
             SaveObjectMap* omap = name_list->get_item(i)->get_map();
             std::string name;
             uint64_t id = omap->get_num("id");
-            omap->get_string("name", name);
+            omap->get_string("steam_username", name);
             bool priv = omap->get_num("priv");
             update_name(id, name);
             update_priv(id, priv);
