@@ -3042,7 +3042,7 @@ void GameState::deal_with_scores()
             for (unsigned i = 0; i < glist->get_count(); i++)
             {
                 SaveObjectMap* fmap = glist->get_item(i)->get_map();
-                edited_level_set->levels[level]->friend_scores.push_back((Level::FriendScore){fmap->get_string("steam_username"), uint64_t(fmap->get_num("steam_id")), Pressure(fmap->get_num("score"))});
+                edited_level_set->levels[level]->friend_scores.push_back(Level::FriendScore{fmap->get_string("steam_username"), uint64_t(fmap->get_num("steam_id")), Pressure(fmap->get_num("score"))});
             }
             
         }

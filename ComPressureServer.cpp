@@ -372,12 +372,15 @@ public:
                         std::ofstream outfile (steam_username.c_str());
                         omap->get_item("content")->save(outfile);
                         outfile.close();
-                        SaveObjectMap* score_map = new SaveObjectMap;
-                        score_map->add_item("levels", omap->get_item("content")->get_map()->get_item("levels")->dup());
-                        score_map->add_num("steam_id", omap->get_num("steam_id"));
-                        score_map->add_string("steam_username", steam_username);
-                        resp = new SubmitScore(db, score_map);
-                        delete score_map;
+                        if (0)
+                        {
+                            SaveObjectMap* score_map = new SaveObjectMap;
+                            score_map->add_item("levels", omap->get_item("content")->get_map()->get_item("levels")->dup());
+                            score_map->add_num("steam_id", omap->get_num("steam_id"));
+                            score_map->add_string("steam_username", steam_username);
+                            resp = new SubmitScore(db, score_map);
+                            delete score_map;
+                        }
                     }
                     else if (command == "score_submit")
                     {
