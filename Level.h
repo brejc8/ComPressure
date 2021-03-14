@@ -115,7 +115,16 @@ public:
     int test_pressure_histroy_index = 0;
     int test_pressure_histroy_sample_downcounter = 0;
 
-    
+    class FriendScore
+    {
+    public:
+        std::string steam_username;
+        uint64_t steam_id;
+        Pressure score;
+    };
+    std::vector<FriendScore> friend_scores;
+
+
     Pressure global_score_graph[200];
     Pressure global_fetched_score;
     bool global_score_graph_set = false;
@@ -155,4 +164,9 @@ public:
     Pressure test_level(unsigned level_index);
     void record_best_score(unsigned level_index);
     void save_design(unsigned level_index, unsigned save_slot);
+    void reset(unsigned level_index);
+    void remove_circles(unsigned level_index);
+    void undo(unsigned level_index);
+    void redo(unsigned level_index);
+
 };

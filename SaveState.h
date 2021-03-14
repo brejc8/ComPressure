@@ -16,7 +16,7 @@ public:
     virtual ~SaveObject(){};
     virtual void save(std::ostream& f)=0;
     static SaveObject* load(std::istream& f);
-    virtual int get_num(){throw(std::runtime_error("Not a num"));};
+    virtual int64_t get_num(){throw(std::runtime_error("Not a num"));};
     virtual std::string get_string(){throw(std::runtime_error("Not a string"));};
     virtual SaveObjectMap* get_map(){throw(std::runtime_error("Not a map"));};
     virtual SaveObjectList* get_list(){throw(std::runtime_error("Not a list"));};
@@ -31,7 +31,7 @@ public:
     int64_t number;
     SaveObjectNumber(int64_t number_):number(number_){};
     SaveObjectNumber(std::istream& stream) {stream >> number;};
-    int get_num(){return number;};
+    int64_t get_num(){return number;};
     void save(std::ostream& f){f << number;};
     SaveObject* dup() {return new SaveObjectNumber(number);};
 };
@@ -62,11 +62,13 @@ public:
     
     void add_item(std::string key, SaveObject* value);
     SaveObject* get_item(std::string key);
-    int get_num(std::string key);
+    int64_t get_num(std::string key);
     void get_num(std::string key, int& value);
-    void add_num(std::string key, int value);
+    void add_num(std::string key, int64_t value);
     void add_string(std::string key, std::string value);
     void get_string(std::string key, std::string& value);
+    std::string get_string(std::string key);
+
     bool has_key(std::string key);
 
     SaveObject* dup();
@@ -89,8 +91,8 @@ public:
     void add_item(SaveObject* value);
     SaveObject* get_item(unsigned index);
     unsigned get_count();
-    void add_num(int value);
-    int get_num(int index);
+    void add_num(int64_t value);
+    int64_t get_num(int index);
     void add_string(std::string value);
     std::string get_string(int index);
     SaveObject* dup();

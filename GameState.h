@@ -68,6 +68,8 @@ public:
     
     uint64_t steam_id = 0;
     const char* steam_username = "none";
+    std::set<uint64_t> friends;
+
     ServerResp scores_from_server;
 
     LevelSet* level_set;
@@ -182,11 +184,15 @@ public:
     void watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_ = 0);
     void set_current_circuit_read_only();
     void check_clipboard();
+    void deal_with_scores();
 
     void set_steam_user(uint64_t id, const char* name)
     {
         steam_id = id;
         steam_username = name;
     }
-
+    void add_friend(uint64_t id)
+    {
+        friends.insert(id);
+    }
 };

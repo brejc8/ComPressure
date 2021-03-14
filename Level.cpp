@@ -162,14 +162,8 @@ void Level::init_tests(SaveObjectMap* omap)
 #define NEW_POINT_F(a, b, c, d, fa, fb, fc, fd) tests.back().sim_points.push_back(SimPoint(a, b, c, d, fa, fb, fc, fd))
 
     SaveObjectList* slist = NULL;
-    try 
-    {
-        if (omap)
-            slist = omap->get_item("tests")->get_list();
-    }
-    catch (const std::runtime_error& error)
-    {
-    }
+    if (omap && omap->has_key("tests"))
+        slist = omap->get_item("tests")->get_list();
 
     unsigned loaded_level_version = 0;
     if (omap && omap->has_key("level_version"))
@@ -1211,6 +1205,8 @@ LevelSet::LevelSet(SaveObject* sobj, bool inspect)
                 levels[i] = new Level(i);
         }
     }
+    for (int i = 0; i < LEVEL_COUNT; i++)
+        remove_circles(i);
 }
 
 LevelSet::LevelSet()
@@ -1285,7 +1281,7 @@ int LevelSet::top_playable()
 
 Pressure LevelSet::test_level(unsigned level_index)
 {
-    levels[level_index]->reset(this);
+    reset(level_index);
     levels[level_index]->set_monitor_state(MONITOR_STATE_PLAY_ALL);
     while (!levels[level_index]->score_set)
         levels[level_index]->advance(1000);
@@ -1306,5 +1302,32 @@ void LevelSet::save_design(unsigned level_index, unsigned save_slot)
     delete levels[level_index]->saved_designs[save_slot];
     levels[level_index]->saved_designs[save_slot] =  new LevelSet(sobj, true);
     delete sobj;
+}
+
+void LevelSet::reset(unsigned level_index)
+{
+    levels[level_index]->circuit->remove_circles(this);
+    levels[level_index]->reset(this);
+}
+
+
+void LevelSet::remove_circles(unsigned level_index)
+{
+    if (levels[level_index])
+        levels[level_index]->circuit->remove_circles(this);
+}
+
+
+void LevelSet::undo(unsigned level_index)
+{
+    if (levels[level_index])
+        levels[level_index]->circuit->undo(level_index, this);
+}
+
+
+void LevelSet::redo(unsigned level_index)
+{
+    if (levels[level_index])
+        levels[level_index]->circuit->redo(level_index, this);
 }
 

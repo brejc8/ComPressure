@@ -437,7 +437,9 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(Direction direction_, unsigne
     level = NULL;
     circuit = NULL;
     if (level_set)
+    {
         elaborate(level_set);
+    }
 }
 
 CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
@@ -470,6 +472,7 @@ void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
     level = level_set->levels[level_index];
     if (circuit)
         delete circuit;
+    level->circuit->remove_circles(level_set);
     circuit = new Circuit(*level->circuit);
     circuit->elaborate(level_set);
 };
@@ -897,6 +900,34 @@ void Circuit::sim_post(PressureAdjacent adj_)
     }
 }
 
+void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        Circuit* subcircuit;
+        unsigned level_index = 0xFFFFFFFF;
+        elements[pos.y][pos.x]->get_subcircuit(level_index);
+        if (level_index != 0xFFFFFFFF)
+        {
+            
+            if (seen.find(level_index) != seen.end())
+            {
+                set_element_empty(pos, true);
+                const char* name = level_set->levels[level_index]->name;
+                signs.push_front(Sign(pos*32+XYPos(16,16), DIRECTION_N, std::string("ERROR ") + name));
+            }
+            else
+            {
+                std::set<unsigned> sub_seen(seen);
+                sub_seen.insert(level_index);
+                level_set->levels[level_index]->circuit->remove_circles(level_set, sub_seen);
+            }
+        }
+    }
+}
+
 
 void Circuit::set_element_empty(XYPos pos, bool no_histoyy)
 {
@@ -1103,7 +1134,7 @@ void Circuit::ammend()
     redo_list.clear();
 }
 
-void Circuit::undo(LevelSet* level_set)
+void Circuit::undo(unsigned level_index, LevelSet* level_set)
 {
     if (!undo_list.empty())
     {
@@ -1113,11 +1144,12 @@ void Circuit::undo(LevelSet* level_set)
         undo_list.pop_front();
         copy_elements(*to);
         delete to;
+        remove_circles(level_set);
         elaborate(level_set);
     }
 }
 
-void Circuit::redo(LevelSet* level_set)
+void Circuit::redo(unsigned level_index, LevelSet* level_set)
 {
     if (!redo_list.empty())
     {
@@ -1127,12 +1159,10 @@ void Circuit::redo(LevelSet* level_set)
         redo_list.pop_front();
         copy_elements(*to);
         delete to;
+        remove_circles(level_set);
         elaborate(level_set);
     }
 }
-
-
-
 
 bool Circuit::contains_subcircuit_level(unsigned level_index, LevelSet* level_set)
 {

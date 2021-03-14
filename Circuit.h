@@ -386,12 +386,13 @@ public:
     void retire();
     void sim_pre(PressureAdjacent);
     void sim_post(PressureAdjacent);
+    void remove_circles(LevelSet* level_set, std::set<unsigned> seen = {});
     void updated_ports() {fast_prepped = false;};
     void ammend();
     void force_element(XYPos pos, CircuitElement* element);
     bool is_blocked(XYPos pos);
-    void undo(LevelSet* level_set);
-    void redo(LevelSet* level_set);
+    void undo(unsigned level_index, LevelSet* level_set);
+    void redo(unsigned level_index, LevelSet* level_set);
 
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
 

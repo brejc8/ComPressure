@@ -123,7 +123,7 @@ GameState::GameState(const char* filename)
 SaveObject* GameState::save(bool lite)
 {
     SaveObjectMap* omap = new SaveObjectMap;
-    omap->add_item("levels", edited_level_set->save(false));
+    omap->add_item("levels", edited_level_set->save(lite));
     omap->add_num("current_level_index", current_level_index);
     omap->add_num("game_speed", game_speed);
     omap->add_num("show_debug", show_debug);
@@ -174,8 +174,8 @@ static int fetch_from_server_thread(void *ptr)
     TCPsocket tcpsock;
     ServerComms* comms = (ServerComms*)ptr;
     
-    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1)
-//    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
+//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1)
+    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
     {
         printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
         if (comms->resp)
@@ -300,6 +300,12 @@ void GameState::score_fetch(unsigned level)
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
     omap->add_num("level", level);
+
+    SaveObjectList* slist = new SaveObjectList;
+    for (uint64_t f : friends)
+        slist->add_num(f);
+    omap->add_item("friends", slist);
+
     fetch_from_server(omap, &scores_from_server);
 }
 
@@ -618,31 +624,8 @@ void GameState::update_scale(int newscale)
 void GameState::render()
 {
     check_clipboard();
-    if (scores_from_server.done && !scores_from_server.error)
-    {
-        try 
-        {
-            SaveObjectMap* omap = scores_from_server.resp->get_map();
-            unsigned level = omap->get_num("level");
-            edited_level_set->levels[level]->global_fetched_score = omap->get_num("score");
-            SaveObjectList* glist = omap->get_item("graph")->get_list();
-            for (unsigned i = 0; i < 200; i++)
-            {
-                edited_level_set->levels[level]->global_score_graph[i] = glist->get_num(i);
-            }
-            edited_level_set->levels[level]->global_score_graph_set = true;
-            edited_level_set->levels[level]->global_score_graph_time = SDL_GetTicks();
-        }
-        catch (const std::runtime_error& error)
-        {
-            std::cerr << error.what() << "\n";
-        }
-        if (scores_from_server.resp)
-            delete scores_from_server.resp;
-        scores_from_server.resp = NULL;
-        scores_from_server.done = false;
-    }
-
+    deal_with_scores();
+    
     SDL_RenderClear(sdl_renderer);
     XYPos window_size;
     SDL_GetWindowSize(sdl_window, &window_size.x, &window_size.y);
@@ -1841,8 +1824,9 @@ void GameState::set_level(unsigned level_index)
     current_level_index = level_index;
     current_level = level_set->levels[current_level_index];
     current_circuit = current_level->circuit;
+    level_set->remove_circles(current_level_index);
     inspection_stack.clear();
-    current_level->reset(level_set);
+    level_set->reset(current_level_index);
     show_hint = false;
     selected_elements.clear();
     if (level_index == next_dialogue_level && !current_level_set_is_inspected)
@@ -1903,6 +1887,7 @@ void GameState::mouse_click_in_grid()
             }
             else if (i == 9 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit)
             {
+                edited_level_set->levels[current_level_index]->circuit->ammend();
                 edited_level_set->levels[current_level_index]->circuit->copy_elements(*current_circuit);
                 current_level_set_is_inspected = false;
                 level_set = edited_level_set;
@@ -2141,6 +2126,7 @@ void GameState::mouse_click_in_grid()
         {
             XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
             current_circuit->set_element_subcircuit(mouse_grid, direction, placing_subcircuit_level, edited_level_set);
+            level_set->remove_circles(current_level_index);
             current_level->touched = true;
         }
     }
@@ -2155,7 +2141,7 @@ void GameState::mouse_click_in_grid()
     }
     else if (mouse_state == MOUSE_STATE_DELETING)
     {
-        current_circuit->undo(edited_level_set);
+        level_set->undo(current_level_index);
         first_deletion = true;
     }
     else
@@ -2257,8 +2243,7 @@ void GameState::mouse_click_in_panel()
         panel_grid_pos = (panel_pos - XYPos(0, 32 + 8)) / 32;
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
 
-        if (level_index < LEVEL_COUNT && level_index != current_level_index && !current_circuit->contains_subcircuit_level(current_level_index, edited_level_set)
-                   && edited_level_set->is_playable(level_index))
+        if ((level_index != current_level_index) && edited_level_set->is_playable(level_index) && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
         {
             mouse_state = MOUSE_STATE_PLACING_SUBCIRCUIT;
             placing_subcircuit_level = level_index;
@@ -2285,7 +2270,7 @@ void GameState::mouse_click_in_panel()
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
                 current_level->touched = true;
-                current_level->reset(level_set);
+                level_set->reset(current_level_index);
             }
             else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
             {
@@ -2622,14 +2607,14 @@ bool GameState::events()
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (!keyboard_shift)
-                                current_circuit->undo(edited_level_set);
+                                level_set->undo(current_level_index);
                             else
-                                current_circuit->redo(edited_level_set);
+                                level_set->redo(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_Y:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
-                            current_circuit->redo(edited_level_set);
+                            level_set->redo(current_level_index);
                         break;
                     case SDL_SCANCODE_PAGEDOWN:
                         if (!SDL_IsTextInputActive())
@@ -2992,23 +2977,59 @@ void GameState::check_clipboard()
     clipboard_level_set = NULL;
  
     SaveObjectMap* omap = NULL;
-    try 
+    if (!comp.empty())
     {
-        std::string decomp = decompress_string(comp);
-        std::istringstream decomp_stream(decomp);
-        omap = SaveObject::load(decomp_stream)->get_map();
-        clipboard_level_index = omap->get_num("level_index");
-        LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
-        clipboard_level_set = new_set;
-    }
-    catch (const std::runtime_error& error)
-    {
-        std::cerr << error.what() << "\n";
+        try 
+        {
+            std::string decomp = decompress_string(comp);
+            std::istringstream decomp_stream(decomp);
+            omap = SaveObject::load(decomp_stream)->get_map();
+            clipboard_level_index = omap->get_num("level_index");
+            LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
+            clipboard_level_set = new_set;
+        }
+        catch (const std::runtime_error& error)
+        {
+            std::cerr << error.what() << "\n";
+        }
     }
     delete omap;
 }
 
-
-
-
+void GameState::deal_with_scores()
+{
+    if (scores_from_server.done && !scores_from_server.error)
+    {
+        try 
+        {
+            SaveObjectMap* omap = scores_from_server.resp->get_map();
+            unsigned level = omap->get_num("level");
+            edited_level_set->levels[level]->global_fetched_score = omap->get_num("score");
+            SaveObjectList* glist = omap->get_item("graph")->get_list();
+            for (unsigned i = 0; i < 200; i++)
+            {
+                edited_level_set->levels[level]->global_score_graph[i] = glist->get_num(i);
+            }
+            edited_level_set->levels[level]->global_score_graph_set = true;
+            edited_level_set->levels[level]->global_score_graph_time = SDL_GetTicks();
+            edited_level_set->levels[level]->friend_scores.clear();
+            
+            glist = omap->get_item("friend_scores")->get_list();
+            for (unsigned i = 0; i < glist->get_count(); i++)
+            {
+                SaveObjectMap* fmap = glist->get_item(i)->get_map();
+                edited_level_set->levels[level]->friend_scores.push_back((Level::FriendScore){fmap->get_string("steam_username"), uint64_t(fmap->get_num("steam_id")), Pressure(fmap->get_num("score"))});
+            }
+            
+        }
+        catch (const std::runtime_error& error)
+        {
+            std::cerr << error.what() << "\n";
+        }
+        if (scores_from_server.resp)
+            delete scores_from_server.resp;
+        scores_from_server.resp = NULL;
+        scores_from_server.done = false;
+    }
+}
 

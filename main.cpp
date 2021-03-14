@@ -40,6 +40,16 @@ void mainloop()
     GameState* game_state = new GameState(load_filename);
 #ifdef STEAM
     game_state->set_steam_user(SteamUser()->GetSteamID().CSteamID::ConvertToUint64(), SteamFriends()->GetPersonaName());
+
+    int friend_count = SteamFriends()->GetFriendCount( k_EFriendFlagImmediate );
+    for (int i = 0; i < friend_count; ++i)
+    {
+	    CSteamID friend_id = SteamFriends()->GetFriendByIndex(i, k_EFriendFlagImmediate);
+        game_state->add_friend(friend_id.ConvertToUint64());
+    }
+
+
+
 #endif
     int frame = 0;
     

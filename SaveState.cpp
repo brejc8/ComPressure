@@ -95,7 +95,7 @@ SaveObject* SaveObjectMap::get_item(std::string key)
     return omap[key];
 }
 
-int SaveObjectMap::get_num(std::string key)
+int64_t SaveObjectMap::get_num(std::string key)
 {
     if (omap.find(key) != omap.end())
         return omap[key]->get_num();
@@ -107,7 +107,7 @@ void SaveObjectMap::get_num(std::string key, int& value)
     if (omap.find(key) != omap.end())
         value = omap[key]->get_num();
 }
-void SaveObjectMap::add_num(std::string key, int value)
+void SaveObjectMap::add_num(std::string key, int64_t value)
 {
     add_item(key, new SaveObjectNumber(value));
 }
@@ -119,6 +119,13 @@ void SaveObjectMap::get_string(std::string key, std::string& value)
 {
     if (omap.find(key) != omap.end())
         value = omap[key]->get_string();
+}
+
+std::string SaveObjectMap::get_string(std::string key)
+{
+    if (omap.find(key) != omap.end())
+        throw(std::runtime_error("Bad map key"));
+    return omap[key]->get_string();
 }
 
 bool SaveObjectMap::has_key(std::string key)
@@ -195,12 +202,12 @@ unsigned SaveObjectList::get_count()
     return olist.size();
 }
 
-void SaveObjectList::add_num(int value)
+void SaveObjectList::add_num(int64_t value)
 {
     add_item(new SaveObjectNumber(value));
 }
 
-int SaveObjectList::get_num(int index)
+int64_t SaveObjectList::get_num(int index)
 {
     return get_item(index)->get_num();
 }
