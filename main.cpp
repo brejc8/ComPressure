@@ -48,8 +48,6 @@ void mainloop()
         game_state->add_friend(friend_id.ConvertToUint64());
     }
 
-
-
 #endif
     int frame = 0;
     

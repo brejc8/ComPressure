@@ -1255,6 +1255,10 @@ SaveObject* LevelSet::save(unsigned level_index)
 
 bool LevelSet::is_playable(unsigned level)
 {
+#ifdef COMPRESSURE_DEMO
+    if (level >= 14)
+        return false;
+#endif
     if (level >= LEVEL_COUNT)
         return false;
     if (read_only)

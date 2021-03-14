@@ -1524,6 +1524,15 @@ void GameState::render()
 
     } else if (panel_state == PANEL_STATE_SCORES)
     {
+        XYPos table_pos = XYPos((8 + 32 * 11 + 16), (8 + 8 + 32 + 32));;
+        
+        for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
+        {
+            render_text(table_pos, score.steam_username.c_str());
+            render_number_pressure((table_pos + XYPos(160,0)) * scale, score.score, 2);
+            table_pos.y += 10;
+        }
+
         render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256, 120), 5);
         XYPos graph_pos(8 * scale + panel_offset.x, (32 + 32 + 8 + 112 + 9) * scale + panel_offset.y);
         {
@@ -1531,8 +1540,7 @@ void GameState::render()
             SDL_Rect dst_rect = {graph_pos.x, graph_pos.y, 13 * scale, 101 * scale};
             render_texture(src_rect, dst_rect);
         }
-
-
+        
         if (current_level->global_score_graph_set)
         {
             Pressure my_score = current_level->global_fetched_score;
@@ -1551,10 +1559,9 @@ void GameState::render()
                 render_texture(src_rect, dst_rect);
             }
         }
-        if (!current_level->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), current_level->global_score_graph_set + 1000 * 60))
+        if (!current_level->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), current_level->global_score_graph_time + 1000 * 60))
         {
-            if (!scores_from_server.working)
-                score_fetch(current_level_index);
+            score_fetch(current_level_index);
         }
 
         XYPos pos = ((mouse - panel_offset) / scale) - graph_pos;                 // Tooltip
@@ -1580,7 +1587,7 @@ void GameState::render()
         show_dialogue = false;
 
 #ifdef COMPRESSURE_DEMO
-    if (current_level_index == (LEVEL_COUNT - 1) && dialogue_index)
+    if (current_level_index == (14 - 1) && dialogue_index)
         show_dialogue = false;
 #endif
 
@@ -1589,7 +1596,7 @@ void GameState::render()
         const char* text = dialogue[current_level_index][dialogue_index].text;
         DialogueCharacter character = dialogue[current_level_index][dialogue_index].character;
 #ifdef COMPRESSURE_DEMO
-        if (current_level_index == (LEVEL_COUNT - 1))
+        if (current_level_index == (14 - 1))
         {
             text = "Alas our journey must stop somewhere. The adventure continues\nin the full game. Be sure to join our Discord group to drive\nits direction.\n\nTo be continued...";
             character = DIALOGUE_ADA;
@@ -1882,6 +1889,11 @@ void GameState::mouse_click_in_grid()
             else if (i == 10 && current_level_set_is_inspected)
             {
                 current_level_set_is_inspected = false;
+                if (free_level_set_on_return)
+                {
+                    delete level_set;
+                    free_level_set_on_return = false;
+                }
                 level_set = edited_level_set;
                 set_level(current_level_index);
             }
@@ -1890,6 +1902,11 @@ void GameState::mouse_click_in_grid()
                 edited_level_set->levels[current_level_index]->circuit->ammend();
                 edited_level_set->levels[current_level_index]->circuit->copy_elements(*current_circuit);
                 current_level_set_is_inspected = false;
+                if (free_level_set_on_return)
+                {
+                    delete level_set;
+                    free_level_set_on_return = false;
+                }
                 level_set = edited_level_set;
                 set_level(current_level_index);
             }
@@ -2314,6 +2331,13 @@ void GameState::mouse_click_in_panel()
             else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
             {
                 level_set = clipboard_level_set;
+                free_level_set_on_return = true;
+                clipboard_level_set = NULL;
+                if (last_clip)
+                {
+                    SDL_free(last_clip);
+                    last_clip = NULL;
+                }
                 set_current_circuit_read_only();
                 current_level_set_is_inspected = true;
                 set_level(clipboard_level_index);

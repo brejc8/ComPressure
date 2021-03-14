@@ -6,11 +6,7 @@
 #include <stdlib.h>
 
 
-#ifdef COMPRESSURE_DEMO
-#define LEVEL_COUNT 14
-#else
 #define LEVEL_COUNT 20
-#endif
 #define HISTORY_POINT_COUNT 200
 
 

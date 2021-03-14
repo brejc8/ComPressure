@@ -74,6 +74,7 @@ public:
 
     LevelSet* level_set;
     LevelSet* edited_level_set;
+    bool free_level_set_on_return = false;
     Level* current_level;
 
     Circuit* current_circuit = NULL;

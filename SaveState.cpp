@@ -104,8 +104,9 @@ int64_t SaveObjectMap::get_num(std::string key)
 }
 void SaveObjectMap::get_num(std::string key, int& value)
 {
-    if (omap.find(key) != omap.end())
-        value = omap[key]->get_num();
+    if (omap.find(key) == omap.end())
+        throw(std::runtime_error("Bad map key"));
+    value = omap[key]->get_num();
 }
 void SaveObjectMap::add_num(std::string key, int64_t value)
 {
@@ -117,13 +118,14 @@ void SaveObjectMap::add_string(std::string key, std::string value)
 }
 void SaveObjectMap::get_string(std::string key, std::string& value)
 {
-    if (omap.find(key) != omap.end())
-        value = omap[key]->get_string();
+    if (omap.find(key) == omap.end())
+        throw(std::runtime_error("Bad map key"));
+    value = omap[key]->get_string();
 }
 
 std::string SaveObjectMap::get_string(std::string key)
 {
-    if (omap.find(key) != omap.end())
+    if (omap.find(key) == omap.end())
         throw(std::runtime_error("Bad map key"));
     return omap[key]->get_string();
 }
