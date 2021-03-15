@@ -276,7 +276,9 @@ static Dialogue dialogue11[] = {
         "July 6th\n"
         "\n"
         "I suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand-delivered note was received at our residence informing me his Laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost.\n"
-        "\n"
+    },
+
+    {DIALOGUE_ADA,
         "I stored the code securely. Surely Charles would not have done such a thing. I immediately had the door on my laboratory replaced. Charles would rather die than operate a Moorhouse steam door.\n"
         "\n"
     },

@@ -59,6 +59,7 @@ GameState::GameState(const char* filename)
             flash_editor_menu = omap->get_num("flash_editor_menu");
             flash_steam_inlet = omap->get_num("flash_steam_inlet");
             flash_valve = omap->get_num("flash_valve");
+//            requesting_help = omap->get_num("requesting_help");
 
             sound_volume = omap->get_num("sound_volume");
             music_volume = omap->get_num("music_volume");
@@ -132,6 +133,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("flash_editor_menu", flash_editor_menu);
     omap->add_num("flash_steam_inlet", flash_steam_inlet);
     omap->add_num("flash_valve", flash_valve);
+//    omap->add_num("requesting_help", requesting_help);
     omap->add_num("scale", scale);
     omap->add_num("full_screen", full_screen);
     omap->add_num("sound_volume", sound_volume);
@@ -173,16 +175,15 @@ static int fetch_from_server_thread(void *ptr)
     IPaddress ip;
     TCPsocket tcpsock;
     ServerComms* comms = (ServerComms*)ptr;
-    
-    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1)
-//    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
+//    if (SDLNet_ResolveHost(&ip, "compressure.brej.org", 42069) == -1)
+    if (SDLNet_ResolveHost(&ip, "192.168.0.81", 42069) == -1)
     {
         printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
         if (comms->resp)
         {
             comms->resp->error = true;
             comms->resp->done = true;
-            comms->resp->working = false;
+            SDL_AtomicUnlock(&comms->resp->working);
         }
         delete comms->send;
         delete comms;
@@ -197,7 +198,7 @@ static int fetch_from_server_thread(void *ptr)
         {
             comms->resp->error = true;
             comms->resp->done = true;
-            comms->resp->working = false;
+            SDL_AtomicUnlock(&comms->resp->working);
         }
         delete comms->send;
         delete comms;
@@ -237,13 +238,16 @@ static int fetch_from_server_thread(void *ptr)
     catch (const std::runtime_error& error)
     {
         std::cerr << error.what() << "\n";
-        comms->resp->error = true;
+        if (comms->resp)
+        {
+            comms->resp->error = true;
+        }
     }
     SDLNet_TCP_Close(tcpsock);
     if (comms->resp)
     {
         comms->resp->done = true;
-        comms->resp->working = false;
+        SDL_AtomicUnlock(&comms->resp->working);
     }
     delete comms->send;
     delete comms;
@@ -260,11 +264,10 @@ void GameState::post_to_server(SaveObject* send, bool sync)
 
 void GameState::fetch_from_server(SaveObject* send, ServerResp* resp)
 {
-    resp->working = true;
+    SDL_AtomicLock(&resp->working);
     resp->done = false;
     resp->error = false;
-    if (resp->resp)
-        delete resp->resp;
+    delete resp->resp;
     resp->resp = NULL;
     SDL_Thread *thread = SDL_CreateThread(fetch_from_server_thread, "FetchFromServer", (void *)new ServerComms(send, resp));
 }
@@ -274,7 +277,8 @@ void GameState::save_to_server(bool sync)
 {
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "save");
-    omap->add_item("content", save(true));
+    omap->add_num("level_index", current_level_index);
+    omap->add_item("levels", edited_level_set->save(true));
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
     post_to_server(omap, sync);
@@ -291,7 +295,7 @@ void GameState::score_submit(unsigned level, bool sync)
     post_to_server(omap, sync);
 }
 
-void GameState::score_fetch(unsigned level)
+void GameState::score_fetch(unsigned level_index)
 {
     if (scores_from_server.working)
         return;
@@ -299,7 +303,7 @@ void GameState::score_fetch(unsigned level)
     omap->add_string("command", "score_fetch");
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
-    omap->add_num("level", level);
+    omap->add_num("level_index", level_index);
 
     SaveObjectList* slist = new SaveObjectList;
     for (uint64_t f : friends)
@@ -309,6 +313,18 @@ void GameState::score_fetch(unsigned level)
     fetch_from_server(omap, &scores_from_server);
 }
 
+void GameState::design_fetch(uint64_t level_steam_id, unsigned level_index)
+{
+    if (design_from_server.working)
+        return;
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "design_fetch");
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    omap->add_num("level_steam_id", level_steam_id);
+    omap->add_num("level_index", level_index);
+    fetch_from_server(omap, &design_from_server);
+}
 
 GameState::~GameState()
 {
@@ -359,6 +375,7 @@ void GameState::advance()
         debug_frames = 0;
         debug_last_time = SDL_GetTicks();
     }
+    deal_with_design_fetch();
 
     int count = pow(1.2, game_speed) * 2;
     {
@@ -625,7 +642,7 @@ void GameState::render()
 {
     check_clipboard();
     deal_with_scores();
-    
+
     SDL_RenderClear(sdl_renderer);
     XYPos window_size;
     SDL_GetWindowSize(sdl_window, &window_size.x, &window_size.y);
@@ -1204,9 +1221,13 @@ void GameState::render()
 
             render_number_2digit(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), score);
         }
-            render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0);
+        render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0);                                     // Blah
+//        render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(352, 160), requesting_help);        // Help
+//        render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0);                      // Letter
+
+
         {
-            SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};
+            SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};                    // Requirements
             SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
             render_texture_custom(sdl_levels_texture, src_rect, dst_rect);
         }
@@ -1524,13 +1545,18 @@ void GameState::render()
 
     } else if (panel_state == PANEL_STATE_SCORES)
     {
-        XYPos table_pos = XYPos((8 + 32 * 11 + 16), (8 + 8 + 32 + 32));;
+        XYPos table_pos = XYPos((8 + 32 * 11 + 16), (8 + 8 + 32 + 32));
         
         for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
         {
             render_text(table_pos, score.steam_username.c_str());
-            render_number_pressure((table_pos + XYPos(160,0)) * scale, score.score, 2);
-            table_pos.y += 10;
+            render_number_pressure((table_pos + XYPos(160,3)) * scale, score.score, 2);
+
+            SDL_Rect src_rect = {336, 32, 16, 16};
+            SDL_Rect dst_rect = {(table_pos.x + 160 + 20*2) * scale, table_pos.y * scale, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+
+            table_pos.y += 16;
         }
 
         render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256, 120), 5);
@@ -1541,15 +1567,15 @@ void GameState::render()
             render_texture(src_rect, dst_rect);
         }
         
-        if (current_level->global_score_graph_set)
+        if (edited_level_set->levels[current_level_index]->global_score_graph_set)
         {
-            Pressure my_score = current_level->global_fetched_score;
+            Pressure my_score = edited_level_set->levels[current_level_index]->global_fetched_score;
             for (int i = 0; i < 200-1; i++)
             {
                 unsigned colour = 6;
-                int v1 = pressure_as_percent(current_level->global_score_graph[i]);
-                int v2 = pressure_as_percent(current_level->global_score_graph[i + 1]);
-                if ((current_level->global_score_graph[i] >= my_score) && (current_level->global_score_graph[i + 1] <= my_score))
+                int v1 = pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[i]);
+                int v2 = pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[i + 1]);
+                if ((edited_level_set->levels[current_level_index]->global_score_graph[i] >= my_score) && (edited_level_set->levels[current_level_index]->global_score_graph[i + 1] <= my_score))
                     colour = 3;
                 int top = 100 - std::max(v1, v2);
                 int size = abs(v1 - v2) + 1;
@@ -1559,22 +1585,22 @@ void GameState::render()
                 render_texture(src_rect, dst_rect);
             }
         }
-        if (!current_level->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), current_level->global_score_graph_time + 1000 * 60))
+        if (!edited_level_set->levels[current_level_index]->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), edited_level_set->levels[current_level_index]->global_score_graph_time + 1000 * 60))
         {
             score_fetch(current_level_index);
         }
 
-        XYPos pos = ((mouse - panel_offset) / scale) - graph_pos;                 // Tooltip
-        if (pos.y >= 0 && pos.x >= 0 && pos.x < 200)
-        {
-            {
-                SDL_Rect src_rect = {0, 0, 64, 64};
-                SDL_Rect dst_rect = {(pos.x - 64)* scale + panel_offset.x, pos.y * scale + panel_offset.y, 64 * scale, 64 * scale};
-                render_texture(src_rect, dst_rect);
-            }
-
-        }
-
+//         XYPos pos = ((mouse - panel_offset) / scale) - graph_pos;
+//         if (pos.y >= 0 && pos.x >= 0 && pos.x < 200)
+//         {
+//             {
+//                 SDL_Rect src_rect = {0, 0, 64, 64};
+//                 SDL_Rect dst_rect = {(pos.x - 64)* scale + panel_offset.x, pos.y * scale + panel_offset.y, 64 * scale, 64 * scale};
+//                 render_texture(src_rect, dst_rect);
+//             }
+// 
+//         }
+// 
     }
 
     if (show_debug)
@@ -2233,12 +2259,19 @@ void GameState::mouse_click_in_panel()
         {
             show_hint = true;
         }
-        else if ((panel_pos - XYPos(0,144)).inside(XYPos(32,32)))
+        else if ((panel_pos - XYPos(0,144)).inside(XYPos(32,32)))   // Blah
         {
             show_dialogue = true;
             dialogue_index = 0;
             
         }
+//         else if ((panel_pos - XYPos(6*32,144)).inside(XYPos(32,32)))  // Help
+//         {
+//             requesting_help = !requesting_help;
+//         }
+//         else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)))  // Letters
+//         {
+//         }
         return;
     } else if (panel_state == PANEL_STATE_EDITOR && !current_circuit_is_read_only)
     {
@@ -2419,8 +2452,19 @@ void GameState::mouse_click_in_panel()
             watch_slider(panel_offset.x + (port_index * 48 + 8) * scale, DIRECTION_E, 33, &current_level->current_simpoint.force[port_index], 100);
             return;
         }
-
-            
+        return;
+    } else if (panel_state == PANEL_STATE_SCORES)
+    {
+        XYPos table_pos = XYPos((8 + 32 * 11 + 16 + 160 + 20*2), (8 + 8 + 32 + 32));
+        
+        for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
+        {
+            if ((mouse / scale - table_pos).inside(XYPos(16,16)))
+            {
+                design_fetch(score.steam_id, current_level_index);
+            }
+            table_pos.y += 16;
+        }
         return;
     }
 }
@@ -3057,3 +3101,29 @@ void GameState::deal_with_scores()
     }
 }
 
+void GameState::deal_with_design_fetch()
+{
+    if (design_from_server.done && !design_from_server.error)
+    {
+        try 
+        {
+            SaveObjectMap* omap = design_from_server.resp->get_map();
+            
+            if (free_level_set_on_return)
+                delete level_set;
+            level_set = new LevelSet(omap->get_item("levels"), true);
+            free_level_set_on_return = true;
+
+            set_current_circuit_read_only();
+            current_level_set_is_inspected = true;
+            set_level(omap->get_num("level_index"));
+        }
+        catch (const std::runtime_error& error)
+        {
+            std::cerr << error.what() << "\n";
+        }
+        delete design_from_server.resp;
+        design_from_server.resp = NULL;
+        design_from_server.done = false;
+    }
+}

@@ -117,11 +117,19 @@ public:
 
 };
 
+class ChatMessage
+{
+public:
+    uint64_t steam_id;
+    std::string text;
+};
+
 class Player
 {
 public:
     std::string steam_username;
     bool priv;
+    std::list<ChatMessage> messages;
 };
 
 class Database
@@ -149,16 +157,24 @@ public:
     void load(SaveObject* sobj)
     {
         SaveObjectMap* omap = sobj->get_map();
-        SaveObjectList* name_list = omap->get_item("names")->get_list();
-        for (unsigned i = 0; i < name_list->get_count(); i++)
+        SaveObjectList* player_list = omap->get_item("players")->get_list();
+        for (unsigned i = 0; i < player_list->get_count(); i++)
         {
-            SaveObjectMap* omap = name_list->get_item(i)->get_map();
+            SaveObjectMap* omap = player_list->get_item(i)->get_map();
             std::string name;
             uint64_t id = omap->get_num("id");
             omap->get_string("steam_username", name);
             bool priv = omap->get_num("priv");
             update_name(id, name);
             update_priv(id, priv);
+            if (omap->has_key("chat"))
+            {
+                SaveObjectList* chat_list = omap->get_item("chat")->get_list();
+                for (unsigned i = 0; i < chat_list->get_count(); i++)
+                {
+                    
+                }
+            }
         }
 ;
         SaveObjectList* level_list = omap->get_item("levels")->get_list();
@@ -176,20 +192,28 @@ public:
     {
         SaveObjectMap* omap = new SaveObjectMap;
         
-        SaveObjectList* name_list = new SaveObjectList;
+        SaveObjectList* player_list = new SaveObjectList;
         
-        for(auto const &player_pair : players)
+        for(auto &player_pair : players)
         {
-            SaveObjectMap* name_map = new SaveObjectMap;
-            name_map->add_num("id", player_pair.first);
-            name_map->add_num("priv", player_pair.second.priv);
-            name_map->add_string("steam_username", player_pair.second.steam_username);
-            name_list->add_item(name_map);
+            SaveObjectMap* player_map = new SaveObjectMap;
+            player_map->add_num("id", player_pair.first);
+            player_map->add_num("priv", player_pair.second.priv);
+            player_map->add_string("steam_username", player_pair.second.steam_username);
+            SaveObjectList* chat_list = new SaveObjectList;
+            for (ChatMessage& msg : player_pair.second.messages)
+            {
+                SaveObjectMap* message_map = new SaveObjectMap;
+                message_map->add_num("steam_id", msg.steam_id);
+                message_map->add_string("text", msg.text);
+                chat_list->add_item(message_map);
+            }
+            player_map->add_item("chat", chat_list);
+
+            player_list->add_item(player_map);
         }
-        omap->add_item("names", name_list);
-        
-        
-        
+        omap->add_item("players", player_list);
+
         unsigned highest = levels.size();
         SaveObjectList* level_list = new SaveObjectList;
         for (int i = 0; i < highest; i++)
@@ -343,6 +367,7 @@ public:
             if (length < 0 && inbuf.length() >= 4)
             {
                 length = *(uint32_t*)inbuf.c_str(),
+                printf("Payload length:%d\n", length);
                 inbuf.erase(0, 4);
                 if (length > 1024*1024)
                 {
@@ -416,6 +441,17 @@ public:
                         outbuf.append(comp);
                         delete scores;
                     }
+                    else if (command == "help_fetch")
+                    {
+                        omap->save(std::cout);
+                        close();
+                    }
+                    else
+                    {
+                        printf("unknown command: %s \n", command.c_str());
+                        close();
+                    }
+                    
                     delete omap;
                 }
                 catch (const std::runtime_error& error)

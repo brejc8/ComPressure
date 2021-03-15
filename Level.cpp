@@ -108,9 +108,9 @@ SaveObject* Level::save(bool lite)
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_item("circuit", circuit->save());
 
+    omap->add_num("level_version", level_version);
     if (!lite)
     {
-        omap->add_num("level_version", level_version);
         omap->add_num("best_score", best_score);
         omap->add_num("last_score", last_score);
         SaveObjectList* slist = new SaveObjectList;
@@ -128,7 +128,6 @@ SaveObject* Level::save(bool lite)
             else
                 slist->add_item(new SaveObjectNull);
         omap->add_item("saved_designs", slist);
-
     }
     else
     {
@@ -1046,6 +1045,7 @@ void Level::reset(LevelSet* level_set)
     sim_point_index = 0;
     substep_index = 0;
     touched = false;
+    current_simpoint = tests[test_index].sim_points[sim_point_index];
 
     circuit->elaborate(level_set);
     circuit->reset();

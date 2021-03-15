@@ -54,7 +54,6 @@ void mainloop()
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
-        const char* username = "non-steam-user";
 		if (game_state->events())
             break;
         game_state->advance();

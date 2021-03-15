@@ -15,9 +15,9 @@
 struct ServerResp
 {
     SaveObject* resp = NULL;
-    bool working = false;
     bool done = false;
     bool error = false;
+    SDL_SpinLock working = 0;
 };
 
 class GameState
@@ -67,10 +67,11 @@ public:
     XYPos panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
     
     uint64_t steam_id = 0;
-    const char* steam_username = "none";
+    const char* steam_username = "Charles Chavvington";
     std::set<uint64_t> friends;
 
     ServerResp scores_from_server;
+    ServerResp design_from_server;
 
     LevelSet* level_set;
     LevelSet* edited_level_set;
@@ -123,6 +124,9 @@ public:
     bool flash_steam_inlet = true;
     bool flash_valve = true;
 
+//    bool requesting_help = false;
+
+
     bool show_dialogue = false;
     int dialogue_index = 0;
     int next_dialogue_level = 0;
@@ -158,6 +162,7 @@ public:
     void save_to_server(bool sync = false);
     void score_submit(unsigned level_index, bool sync = false);
     void score_fetch(unsigned level);
+    void design_fetch(uint64_t design_steam_id, unsigned level_index);
 
     ~GameState();
     SDL_Texture* loadTexture(const char* filename);
@@ -186,6 +191,7 @@ public:
     void set_current_circuit_read_only();
     void check_clipboard();
     void deal_with_scores();
+    void deal_with_design_fetch();
 
     void set_steam_user(uint64_t id, const char* name)
     {
