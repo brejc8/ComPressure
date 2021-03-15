@@ -8,6 +8,8 @@
 #include <list>
 #include <stdexcept>
 #include <signal.h>
+#include <codecvt>
+#include <locale>
 
 #include <unistd.h>
 #include <sys/socket.h>
@@ -114,6 +116,13 @@ public:
         user_score[steam_id].update_design(sobj->dup());
     }
     void fetch_scores(SaveObjectMap* omap, std::set<uint64_t>& friends, Database& db);
+
+    SaveObject* get_design(uint64_t steam_id)
+    {
+        if (!user_score.count(steam_id))
+            throw(std::runtime_error("bad user id"));
+        return user_score[steam_id].sobj->dup();
+    }
 
 };
 
@@ -227,12 +236,28 @@ public:
 
     SaveObject* get_scores(unsigned level, uint64_t user_id, std::set<uint64_t>& friends)
     {
+        if (level >= LEVEL_COUNT)
+            throw(std::runtime_error("bad level id"));
         if (level >= levels.size())
             levels.resize(level + 1);
         SaveObjectMap* omap = new SaveObjectMap;
         omap->add_num("level", level);
         omap->add_num("score", levels[level].get_score(user_id));
         levels[level].fetch_scores(omap, friends, *this);
+        return omap;
+    }
+
+    SaveObject* get_design(uint64_t level_steam_id, unsigned level_index)
+    {
+        if (level_index >= LEVEL_COUNT)
+            throw(std::runtime_error("bad level id"));
+        if (level_index >= levels.size())
+            levels.resize(level_index + 1);
+        SaveObjectMap* omap = new SaveObjectMap;
+        omap->add_num("level_index", level_index);
+        omap->add_item("levels", levels[level_index].get_design(level_steam_id));
+        omap->add_num("steam_id", level_steam_id);
+        omap->add_string("steam_username", players[level_steam_id].steam_username);
         return omap;
     }
 
@@ -394,7 +419,32 @@ public:
                         db.update_name(omap->get_num("steam_id"), steam_username);
                         printf("save: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
                         std::ofstream outfile (steam_username.c_str());
-                        omap->get_item("content")->save(outfile);
+
+                        std::ostringstream stream;
+                        omap->save(stream);
+                        std::string comp = compress_string(stream.str());
+                        std::u32string s32;
+                        std::string reply;
+
+                        s32 += 0x1F682;                 // steam engine
+                        unsigned spaces = 2;
+                        for(char& c : comp)
+                        {
+                            if (spaces >= 80)
+                            {
+                                s32 += '\n';
+                                spaces = 0;
+                            }
+                            spaces++;
+                            s32 += uint32_t(0x2800 + (unsigned char)(c));
+
+                        } 
+                        s32 += 0x1F6D1;                 // stop sign
+
+                        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+                        reply += conv.to_bytes(s32);
+                        reply += "\n";
+                        outfile << reply;
                         outfile.close();
                         if (0)
                         {
@@ -420,7 +470,7 @@ public:
                         omap->get_string("steam_username", steam_username);
                         db.update_name(omap->get_num("steam_id"), steam_username);
                         printf("score_fetch: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
-                        unsigned level = omap->get_num("level");
+                        unsigned level = omap->get_num("level_index");
                         std::set<uint64_t> friends;
                         
                         if (omap->has_key("friends"))
@@ -440,6 +490,23 @@ public:
                         outbuf.append((char*)&length, 4);
                         outbuf.append(comp);
                         delete scores;
+                    }
+                    else if (command == "design_fetch")
+                    {
+                        std::string steam_username;
+                        omap->get_string("steam_username", steam_username);
+                        db.update_name(omap->get_num("steam_id"), steam_username);
+                        uint64_t level_steam_id = omap->get_num("level_steam_id");
+                        unsigned level_index = omap->get_num("level_index");
+                        printf("design_fetch: %s %lld  req %lld %u\n", steam_username.c_str(), omap->get_num("steam_id"), level_steam_id, level_index);
+                        SaveObject* design = db.get_design(level_steam_id, level_index);
+                        std::ostringstream stream;
+                        design->save(stream);
+                        std::string comp = compress_string(stream.str());
+                        uint32_t length = comp.length();
+                        outbuf.append((char*)&length, 4);
+                        outbuf.append(comp);
+                        delete design;
                     }
                     else if (command == "help_fetch")
                     {
