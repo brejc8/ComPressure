@@ -277,8 +277,7 @@ void GameState::save_to_server(bool sync)
 {
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "save");
-    omap->add_num("level_index", current_level_index);
-    omap->add_item("levels", edited_level_set->save(true));
+    omap->add_item("content", save(true));
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
     post_to_server(omap, sync);
@@ -727,7 +726,7 @@ void GameState::render()
         num_pos += XYPos(6, 11);
         num_pos *= scale;
         num_pos += grid_offset;
-        render_number_2digit(num_pos, value, 2, 6, 0);
+        render_number_2digit(num_pos, value, 2, 6, 0);                  // Values on input pipes
     }
 
     for (pos.y = 0; pos.y < 9; pos.y++)
@@ -1135,6 +1134,8 @@ void GameState::render()
 
         if (current_level_set_is_inspected)
         {
+            if (true)
+                render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0);
             if (!current_circuit_is_inspected_subcircuit)
                 render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0);
             render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0);
@@ -1677,6 +1678,12 @@ void GameState::render()
         level_win_animation--;
     }
 
+    if (show_confirm)
+    {
+        render_button((confirm_box_pos + XYPos(0,0))*scale, XYPos(352, 184), 1);
+        render_button((confirm_box_pos + XYPos(32,0))*scale, XYPos(376, 184), 0);
+    }
+
     if (show_help)
     {
         render_box(XYPos(16 * scale, 0 * scale), XYPos(592, 360), 0);
@@ -1920,6 +1927,7 @@ void GameState::mouse_click_in_grid()
                     delete level_set;
                     free_level_set_on_return = false;
                 }
+                deletable_level_set = NULL;
                 level_set = edited_level_set;
                 set_level(current_level_index);
             }
@@ -1933,8 +1941,15 @@ void GameState::mouse_click_in_grid()
                     delete level_set;
                     free_level_set_on_return = false;
                 }
+                deletable_level_set = NULL;
                 level_set = edited_level_set;
                 set_level(current_level_index);
+            }
+            else if (i == 8 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit && deletable_level_set)
+            {
+                show_confirm = true;
+                confirm_delete = true;
+                confirm_box_pos = XYPos(32*8 - 16, 32);
             }
         }
         return;
@@ -2364,6 +2379,7 @@ void GameState::mouse_click_in_panel()
             else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
             {
                 level_set = clipboard_level_set;
+                deletable_level_set = NULL;
                 free_level_set_on_return = true;
                 clipboard_level_set = NULL;
                 if (last_clip)
@@ -2386,6 +2402,7 @@ void GameState::mouse_click_in_panel()
                     {
                         if (current_level->saved_designs[index])
                         {
+                            deletable_level_set = &current_level->saved_designs[index];
                             level_set = current_level->saved_designs[index];
                             set_current_circuit_read_only();
                             current_level_set_is_inspected = true;
@@ -2398,7 +2415,17 @@ void GameState::mouse_click_in_panel()
                     int index = panel_grid_pos.x - 1;
                     if (index >= 0 && index < 4)
                     {
-                        edited_level_set->save_design(current_level_index, index);
+                        if (edited_level_set->levels[current_level_index]->saved_designs[index])
+                        {
+                            show_confirm = true;
+                            confirm_delete = false;
+                            confirm_box_pos = XYPos(552, 80);
+                            confirm_save_index = index;
+                        }
+                        else
+                        {
+                            edited_level_set->save_design(current_level_index, index);
+                        }
                     }
                 }
             }
@@ -2418,6 +2445,7 @@ void GameState::mouse_click_in_panel()
         }
         if (panel_grid_pos == XYPos(0, 3) && current_level->best_design)
         {
+            deletable_level_set = &current_level->best_design;
             level_set = current_level->best_design;
             set_current_circuit_read_only();
             current_level_set_is_inspected = true;
@@ -2907,11 +2935,40 @@ bool GameState::events()
                         show_help_page = (show_help_page + 1) % 10;
                         break;
                     }
+                    else if (show_confirm)
+                    {
+                        if (((mouse / scale) - confirm_box_pos).inside(XYPos(32,32)))
+                        {
+                            if (confirm_delete)
+                            {
+                                current_level_set_is_inspected = false;
+                                if (deletable_level_set)
+                                {
+                                    delete *deletable_level_set;
+                                    *deletable_level_set = NULL;
+                                }
+                                else if (free_level_set_on_return)
+                                {
+                                    delete level_set;
+                                    free_level_set_on_return = false;
+                                }
+                                level_set = edited_level_set;
+                                set_level(current_level_index);
+                            }
+                            else
+                            {
+                                edited_level_set->save_design(current_level_index, confirm_save_index);
+                            }
+                        }
+                        show_confirm = false;
+                        
+                    }
                     else if (show_dialogue)
                     {
                         dialogue_index++;
                         if (!dialogue[current_level_index][dialogue_index].text)
                             show_dialogue = false;
+                        break;
                     }
                     else if (mouse.x < panel_offset.x)
                     {
@@ -3111,6 +3168,7 @@ void GameState::deal_with_design_fetch()
             
             if (free_level_set_on_return)
                 delete level_set;
+            deletable_level_set = NULL;
             level_set = new LevelSet(omap->get_item("levels"), true);
             free_level_set_on_return = true;
 

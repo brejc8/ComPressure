@@ -419,13 +419,15 @@ public:
                         db.update_name(omap->get_num("steam_id"), steam_username);
                         printf("save: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
                         std::ofstream outfile (steam_username.c_str());
+                        omap->save(outfile);
 
                         std::ostringstream stream;
-                        omap->save(stream);
+                        omap->get_item("content")->get_map()->get_item("levels")->save(stream);
                         std::string comp = compress_string(stream.str());
                         std::u32string s32;
                         std::string reply;
 
+                        s32 += '\n';
                         s32 += 0x1F682;                 // steam engine
                         unsigned spaces = 2;
                         for(char& c : comp)

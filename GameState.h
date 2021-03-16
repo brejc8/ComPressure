@@ -91,6 +91,8 @@ public:
     LevelSet* clipboard_level_set = NULL;
     unsigned clipboard_level_index;
 
+    LevelSet** deletable_level_set = NULL;
+
     bool skip_to_next_subtest = false;
     int skip_to_subtest_index = -1;
 
@@ -125,6 +127,11 @@ public:
     bool flash_valve = true;
 
 //    bool requesting_help = false;
+
+    bool show_confirm = false;
+    XYPos confirm_box_pos;
+    bool confirm_delete = false;
+    int confirm_save_index = 0;
 
 
     bool show_dialogue = false;
