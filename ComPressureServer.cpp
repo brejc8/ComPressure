@@ -422,7 +422,7 @@ public:
                         omap->save(outfile);
 
                         std::ostringstream stream;
-                        omap->get_item("content")->get_map()->get_item("levels")->save(stream);
+                        omap->get_item("content")->save(stream);
                         std::string comp = compress_string(stream.str());
                         std::u32string s32;
                         std::string reply;

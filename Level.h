@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-#define LEVEL_COUNT 20
+#define LEVEL_COUNT 22
 #define HISTORY_POINT_COUNT 200
 
 
@@ -136,6 +136,7 @@ public:
 
     void init_tests(SaveObjectMap* omap = NULL);
     void reset(LevelSet* level_set);
+    void reset();
     void advance(unsigned ticks);
     void select_test(unsigned t);
 
