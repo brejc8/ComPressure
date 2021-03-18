@@ -1134,7 +1134,7 @@ void GameState::render()
 
         if (current_level_set_is_inspected)
         {
-            if (true)
+            if (deletable_level_set)
                 render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0);
             if (!current_circuit_is_inspected_subcircuit)
                 render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0);
@@ -1864,6 +1864,7 @@ void GameState::set_level(unsigned level_index)
     current_level_index = level_index;
     current_level = level_set->levels[current_level_index];
     current_circuit = current_level->circuit;
+    current_circuit->elaborate(level_set);
     level_set->remove_circles(current_level_index);
     inspection_stack.clear();
     level_set->reset(current_level_index);

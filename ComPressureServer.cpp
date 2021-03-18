@@ -115,7 +115,7 @@ public:
         user_score[steam_id].score = score;
         user_score[steam_id].update_design(sobj->dup());
     }
-    void fetch_scores(SaveObjectMap* omap, std::set<uint64_t>& friends, Database& db);
+    void fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<uint64_t>& friends, Database& db);
 
     SaveObject* get_design(uint64_t steam_id)
     {
@@ -243,7 +243,7 @@ public:
         SaveObjectMap* omap = new SaveObjectMap;
         omap->add_num("level", level);
         omap->add_num("score", levels[level].get_score(user_id));
-        levels[level].fetch_scores(omap, friends, *this);
+        levels[level].fetch_scores(omap, user_id, friends, *this);
         return omap;
     }
 
@@ -700,7 +700,7 @@ int main()
     return 0;
 }
 
-void ScoreTable::fetch_scores(SaveObjectMap* omap, std::set<uint64_t>& friends, Database& db)
+void ScoreTable::fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<uint64_t>& friends, Database& db)
 {
     SaveObjectList* friend_scores = new SaveObjectList;
 
@@ -708,7 +708,7 @@ void ScoreTable::fetch_scores(SaveObjectMap* omap, std::set<uint64_t>& friends, 
     for(auto const &score : sorted_scores)
     {
         scores.push_back(score.first);
-        if (friends.find(score.second) != friends.end())
+        if (!user_id || friends.find(score.second) != friends.end())
         {
             SaveObjectMap* omap = new SaveObjectMap;
             omap->add_num("steam_id", score.second);

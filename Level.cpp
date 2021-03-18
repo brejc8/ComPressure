@@ -1078,7 +1078,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
 void Level::reset(LevelSet* level_set)
 {
-    circuit->elaborate(level_set);
+//    circuit->elaborate(level_set);
     reset();
 }
 
