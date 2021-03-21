@@ -1090,7 +1090,7 @@ void GameState::render()
     {
         Sign& sign = current_circuit->signs.front();
         std::string text = sign.text;
-        text.append(u8"\u258F");
+        text.append(std::string((const char*)u8"\u258F"));
         render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), text.c_str());
     }
 
