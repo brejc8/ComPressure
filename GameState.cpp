@@ -119,6 +119,11 @@ GameState::GameState(const char* filename)
     Mix_PlayMusic(music, -1);
     
     top_level_allowed = edited_level_set->top_playable();
+    
+    for (unsigned i = 0; i < LEVEL_COUNT; i++)
+        if (level_set->is_playable(i))
+            score_submit(i, false);
+
 }
     
 SaveObject* GameState::save(bool lite)
@@ -563,13 +568,14 @@ void GameState::render_box(XYPos pos, XYPos size, unsigned colour)
     render_texture(src_rect, dst_rect);     //  Bottom Right
 }
 
-void GameState::render_button(XYPos pos, XYPos content, unsigned colour)
+void GameState::render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip)
 {
     render_box(pos, XYPos(32,32), colour);
     SDL_Rect src_rect = {content.x , content.y , 24, 24};
     SDL_Rect dst_rect = {pos.x + 4 * scale, pos.y + 4 * scale, 24 * scale, 24 * scale};
     render_texture(src_rect, dst_rect);
-
+    if (((mouse - pos)/scale).inside(XYPos(32,32)))
+        tooltip_string = tooltip;
 }
 
 void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
@@ -591,10 +597,9 @@ void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
 	SDL_FreeSurface(text_surface);
 }
 
-void GameState::render_text(XYPos tl, const char* string)
+void GameState::render_text(XYPos tl, const char* string, SDL_Color color)
 {
     std::string text = string;
-    SDL_Color color={0xff,0xff,0xff};
 
     XYPos rep = XYPos(0,0);
     std::string::size_type pos = 0;
@@ -639,6 +644,7 @@ void GameState::update_scale(int newscale)
 
 void GameState::render()
 {
+    tooltip_string = NULL;
     check_clipboard();
     deal_with_scores();
 
@@ -1118,7 +1124,7 @@ void GameState::render()
 
     {
         int x = 0;
-        render_button(XYPos(x * scale, 0 * scale), XYPos(0, 184 + current_level_index * 24), current_circuit_is_inspected_subcircuit ? 0 : 1);
+        render_button(XYPos(x * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), current_circuit_is_inspected_subcircuit ? 0 : 1, current_level->name);
         x += 32;
 
         if (current_circuit_is_inspected_subcircuit)
@@ -1127,7 +1133,7 @@ void GameState::render()
             {
                 if (x == 32*5)
                     x += 32;
-                render_button(XYPos(x * scale, 0 * scale), XYPos(0, 184 + i.first * 24), &i == &inspection_stack.back());
+                render_button(XYPos(x * scale, 0 * scale), edited_level_set->levels[i.first]->getimage_fg(DIRECTION_N), &i == &inspection_stack.back(), edited_level_set->levels[i.first]->name);
                 x += 32;
             }
         }
@@ -1135,10 +1141,10 @@ void GameState::render()
         if (current_level_set_is_inspected)
         {
             if (deletable_level_set)
-                render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0);
+                render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
             if (!current_circuit_is_inspected_subcircuit)
-                render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0);
-            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0);
+                render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0, "Copy to\ncurrent");
+            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Pop out");
         }
     }
 
@@ -1171,13 +1177,13 @@ void GameState::render()
         }
         {                                                                                               // Top Menu
             bool flash_next_level = edited_level_set->is_playable(next_dialogue_level) && (frame_index % 60 < 30);
-            render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT);
+            render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT, "Level select");
             if (!current_circuit_is_read_only && edited_level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
-                render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR);
+                render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR, "Design");
             if (edited_level_set->is_playable(3))
-                render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR);
+                render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR, "Test");
             if (edited_level_set->is_playable(7))
-                render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST);
+                render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST, "Experiment");
             render_box(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(32, 32), panel_state == PANEL_STATE_SCORES);
             render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
         }
@@ -1195,7 +1201,7 @@ void GameState::render()
             render_number_2digit(XYPos((8 + 32 * 11 + 32 * 4 + 3) * scale, (8 + 8) * scale), pressure_as_percent(current_level->best_score), 3);
         }
         {                                                                                               // Help Button
-            render_button(XYPos((8 + 32 * 11 + 7 * 32) * scale, (8) * scale), XYPos(256+24*5, 112), show_help);
+            render_button(XYPos((8 + 32 * 11 + 7 * 32) * scale, (8) * scale), XYPos(256+24*5, 112), show_help, "Help");
         }
 
     }
@@ -1216,13 +1222,13 @@ void GameState::render()
                 continue;
             if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue)
                 continue;
-            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0);
+            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0, level_set->levels[level_index]->name);
             
             unsigned score = pressure_as_percent(level_set->levels[level_index]->best_score);
 
             render_number_2digit(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), score);
         }
-        render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0);                                     // Blah
+        render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
 //        render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(352, 160), requesting_help);        // Help
 //        render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0);                      // Letter
 
@@ -1232,24 +1238,6 @@ void GameState::render()
             SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
             render_texture_custom(sdl_levels_texture, src_rect, dst_rect);
         }
-
-
-        XYPos panel_pos = ((mouse - panel_offset) / scale);                 // Tooltip
-        XYPos panel_grid_pos = panel_pos / 32;
-        if (panel_pos.y >= 0 && panel_pos.x >= 0 && panel_grid_pos.x < 8)
-        {
-            XYPos panel_grid_pos = panel_pos / 32;
-            int level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
-
-            if (level_set->is_playable(level_index))
-            {
-                SDL_Rect src_rect = {192, 184 + level_index * 24, 64, 16};
-                SDL_Rect dst_rect = {(panel_pos.x - 64)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 64 * scale, 16 * scale};
-                render_texture(src_rect, dst_rect);
-            }
-
-        }
-
 
     } else if (panel_state == PANEL_STATE_EDITOR)
     {
@@ -1270,7 +1258,7 @@ void GameState::render()
         
         
         if (edited_level_set->is_playable(8))
-            render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN);
+            render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
 
 
         unsigned level_index = 0;
@@ -1282,17 +1270,9 @@ void GameState::render()
                 break;
             if (!edited_level_set->is_playable(level_index))
                 break;
-            SDL_Rect src_rect = {256, 80, 32, 32};
-            if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level)
-                src_rect.x = 256 + 32;
-
-            SDL_Rect dst_rect = {pos.x * 32 * scale + panel_offset.x, (32 + 8 + pos.y * 32) * scale + panel_offset.y, 32 * scale, 32 * scale};
+            
             if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
-                 render_texture(src_rect, dst_rect);
-            XYPos level_pos = edited_level_set->levels[level_index]->getimage_fg(direction);
-            src_rect = {level_pos.x, level_pos.y, 24, 24};
-            dst_rect = {(pos.x * 32 + 4) * scale + panel_offset.x, (32 + 8 + pos.y * 32 + 4) * scale + panel_offset.y, 24 * scale, 24 * scale};         // FIXME buttons
-            render_texture(src_rect, dst_rect);
+                render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(direction), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name);
             level_index++;
         }
 
@@ -1307,16 +1287,6 @@ void GameState::render()
                 SDL_Rect dst_rect = {(panel_pos.x - 28)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 28 * scale, 12 * scale};
                 render_texture(src_rect, dst_rect);
             }
-            panel_grid_pos = (panel_pos - XYPos(0,8)) / 32;
-            int level_index = panel_grid_pos.x + (panel_grid_pos.y - 1) * 8;
-
-            if (edited_level_set->is_playable(level_index))
-            {
-                SDL_Rect src_rect = {192, 184 + level_index * 24, 64, 16};
-                SDL_Rect dst_rect = {(panel_pos.x - 64)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 64 * scale, 16 * scale};
-                render_texture(src_rect, dst_rect);
-            }
-
         }
 
     } else if (panel_state == PANEL_STATE_TEST)
@@ -1387,16 +1357,15 @@ void GameState::render()
         unsigned test_index = current_level->test_index;
         unsigned test_count = current_level->tests.size();
         pos = XYPos(0,0);
-        for (int i = 0; i < 3; i++)                         // Play/ pause
-        {
-            render_button(XYPos(panel_offset.x + i * 32 * scale, panel_offset.y), XYPos(448 + i * 24, 176), current_level->monitor_state == i);
-        }
+        render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(448 + 0 * 24, 176), current_level->monitor_state == MONITOR_STATE_PAUSE, "Pause");
+        render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(448 + 1 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_1, "Repeat 1 test");
+        render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(448 + 2 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_ALL, "Run all tests");
 
         if (edited_level_set->is_playable(8) && !current_level_set_is_inspected)
         {
-            render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 136), 0);
+            render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 136), 0, "Export to\nclipboard");
             if (clipboard_level_set)
-                render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(424, 136), 0);
+                render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(424, 136), 0, "Import from\nclipboard");
 
             for (int i = 0; i < 4; i++)                         // save/restore
             {
@@ -1603,6 +1572,19 @@ void GameState::render()
 //         }
 // 
     }
+    if (tooltip_string)
+    {
+        std::string tip_str(tooltip_string);
+        XYPos tip_size = get_text_size(tip_str) + XYPos(2,0);
+        XYPos tip_pos = mouse / scale - XYPos(tip_size.x, 0);
+        {
+            SDL_Rect src_rect = {503, 83, 1, 1};
+            SDL_Rect dst_rect = {tip_pos.x * scale, tip_pos.y * scale, tip_size.x * scale, tip_size.y * scale};
+            render_texture(src_rect, dst_rect);
+        }
+
+        render_text(tip_pos + XYPos(1,0), tip_str.c_str(), SDL_Color{0x0,0x0,0x0});
+    }
 
     if (show_debug)
     {
@@ -1680,8 +1662,8 @@ void GameState::render()
 
     if (show_confirm)
     {
-        render_button((confirm_box_pos + XYPos(0,0))*scale, XYPos(352, 184), 1);
-        render_button((confirm_box_pos + XYPos(32,0))*scale, XYPos(376, 184), 0);
+        render_button((confirm_box_pos + XYPos(0,0))*scale, XYPos(352, 184), 1, "Confirm");
+        render_button((confirm_box_pos + XYPos(32,0))*scale, XYPos(376, 184), 0, "Cancel");
     }
 
     if (show_help)
@@ -1730,7 +1712,7 @@ void GameState::render()
                 {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab, or middle mouse button, is a shortcut to enter valve placement mode. Pressing Tab, or middle mouse button, again switches to steam inlet placement."},
                 {XYPos(0,7),  5,10, "A steam inlet will supply steam at pressure 100. Any pipes with open ends will vent the steam to the atmosphere at pressure 0."},
                 {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe connections. Note how each pipe has a little resistance."},
-                {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the (+) side or the valve is at a higher pressure than the (-) side. The higher it is, the more the valve is open. Steam on the (+) and (-) sides is not consumed. Here, the (-) side is vented to atmosphere and thus at 0 pressure."},
+                {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the (+) side of the valve is at a higher pressure than the (-) side. The higher it is, the more the valve is open. Steam on the (+) and (-) sides is not consumed. Here, the (-) side is vented to atmosphere and thus at 0 pressure."},
                 {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower than the (-) side, the valve becomes closed and no steam will pass through."},
                 {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is low."},
                 {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close the valve."},
@@ -1861,6 +1843,7 @@ void GameState::set_level(unsigned level_index)
     current_circuit_is_read_only = current_level_set_is_inspected;
 
     mouse_state = MOUSE_STATE_NONE;
+    skip_to_next_subtest = false;
     current_level_index = level_index;
     current_level = level_set->levels[current_level_index];
     current_circuit = current_level->circuit;
@@ -1883,7 +1866,7 @@ void GameState::mouse_click_in_grid()
     XYPos pos = (mouse - grid_offset) / scale;
     XYPos grid = pos / 32;
 
-    if (mouse_state == MOUSE_STATE_NONE)
+    if (mouse_state == MOUSE_STATE_NONE && !keyboard_ctrl && !keyboard_shift)
     {
         if (grid.inside(XYPos(9,9)))
         {
@@ -2349,7 +2332,7 @@ void GameState::mouse_click_in_panel()
                 std::string comp = compress_string(stream.str());
                 std::u32string s32;
                 std::string reply= "ComPressure Level ";
-                reply += std::to_string(current_level_index);
+                reply += std::to_string(current_level_index + 1);
                 reply += ": \"";
                 reply += level_set->levels[current_level_index]->name;
                 reply += "\" (";

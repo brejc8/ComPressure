@@ -304,6 +304,7 @@ public:
                 Pressure score = level_set->levels[level_index]->last_score;
                 SaveObject* save_object = level_set->save(level_index);
                 db.update_score(steam_id, level_index, score, save_object);
+                printf("New score:%f\n", (float)score/65536);
                 delete save_object;
             }
         }
@@ -322,6 +323,8 @@ public:
         }
         if (!init_level)
         {
+            level_set->levels[current_level]->circuit->elaborate(level_set);
+
             level_set->reset(current_level);
             level_set->levels[current_level]->last_score = 0;
             level_set->levels[current_level]->best_score = 0;

@@ -7,7 +7,9 @@ ComPressure_SOURCES =  GameState.cpp GameState.h \
                     Level.cpp Level.h \
                     Dialogue.cpp Dialogue.h \
                     Compress.cpp Compress.h
-ComPressure_LDADD=@SDL_LIBS@ -lSDL2_image -lSDL2_mixer -lSDL2_net -lSDL2_ttf -lz -lsteam_api
+                    
+ComPressure_CXXFLAGS = @SDL2_CFLAGS@ @SDL2_image_CFLAGS@ @SDL2_mixer_CFLAGS@ @SDL2_net_CFLAGS@ @SDL2_ttf_CFLAGS@ @ZLIB_CFLAGS@ -I. 
+ComPressure_LDADD=@SDL2_LIBS@ @SDL2_image_LIBS@ @SDL2_mixer_LIBS@ @SDL2_net_LIBS@ @SDL2_ttf_LIBS@ @ZLIB_LIBS@ -lsteam_api
 ComPressure_LDFLAGS=-L.
 
 ComPressureServer_SOURCES =  ComPressureServer.cpp \
@@ -16,6 +18,7 @@ ComPressureServer_SOURCES =  ComPressureServer.cpp \
                     Circuit.cpp Circuit.h \
                     Level.cpp Level.h
 
+ComPressureServer_CXXFLAGS = @SDL2_CFLAGS@
 ComPressureServer_LDADD= -lz 
 ComPressureServer_LDFLAGS= -static
 

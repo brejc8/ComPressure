@@ -125,6 +125,8 @@ public:
     bool flash_editor_menu = true;
     bool flash_steam_inlet = true;
     bool flash_valve = true;
+    
+    const char* tooltip_string = "test";
 
 //    bool requesting_help = false;
 
@@ -182,10 +184,10 @@ public:
     void render_number_pressure(XYPos pos, Pressure value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_long(XYPos pos, unsigned value, unsigned scale_mul = 1);
     void render_box(XYPos pos, XYPos size, unsigned colour);
-    void render_button(XYPos pos, XYPos content, unsigned colour);
+    void render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip = NULL);
 
     void render_text_wrapped(XYPos tl, const char* string, int width);
-    void render_text(XYPos tl, const char* string);
+    void render_text(XYPos tl, const char* string, SDL_Color color = {0xff,0xff,0xff});
     void update_scale(int ewscale);
     void render();
     void advance();
