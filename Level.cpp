@@ -139,7 +139,7 @@ SaveObject* Level::save(bool lite)
 
 XYPos Level::getimage(Direction direction)
 {
-    int mask = connection_mask << direction | connection_mask >> (4 - direction) & 0xF;
+    int mask = (connection_mask << direction | connection_mask >> (4 - direction)) & 0xF;
     return XYPos(128 + (mask & 0x3) * 32, 32 + ((mask >> 2) & 0x3) * 32);
 }
 
