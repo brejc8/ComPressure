@@ -330,7 +330,7 @@ public:
             level_set->levels[current_level]->best_score = 0;
             init_level = true;
         }
-        level_set->levels[current_level]->advance(10000);
+        level_set->levels[current_level]->advance(1000);
         if (level_set->levels[current_level]->score_set)
         {
             current_level++;

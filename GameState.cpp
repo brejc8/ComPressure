@@ -119,11 +119,6 @@ GameState::GameState(const char* filename)
     Mix_PlayMusic(music, -1);
     
     top_level_allowed = edited_level_set->top_playable();
-    
-    for (unsigned i = 0; i < LEVEL_COUNT; i++)
-        if (level_set->is_playable(i))
-            score_submit(i, false);
-
 }
     
 SaveObject* GameState::save(bool lite)
@@ -293,7 +288,7 @@ void GameState::score_submit(unsigned level, bool sync)
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "score_submit");
     omap->add_num("level_index", level);
-    omap->add_item("levels", edited_level_set->save(level));
+    omap->add_item("levels", edited_level_set->levels[level]->best_design->save(true));
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
     post_to_server(omap, sync);
@@ -409,8 +404,8 @@ void GameState::advance()
     if (current_level->best_score_set && !current_level_set_is_inspected)
     {
         current_level->best_score_set = false;
-        score_submit(current_level_index, false);
         edited_level_set->record_best_score(current_level_index);
+        score_submit(current_level_index, false);
 
     }
 }
@@ -1577,6 +1572,8 @@ void GameState::render()
         std::string tip_str(tooltip_string);
         XYPos tip_size = get_text_size(tip_str) + XYPos(2,0);
         XYPos tip_pos = mouse / scale - XYPos(tip_size.x, 0);
+        if (tip_pos.x < 0)
+            tip_pos.x = 0;
         {
             SDL_Rect src_rect = {503, 83, 1, 1};
             SDL_Rect dst_rect = {tip_pos.x * scale, tip_pos.y * scale, tip_size.x * scale, tip_size.y * scale};

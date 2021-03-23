@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-#define LEVEL_COUNT 22
+#define LEVEL_COUNT 25
 #define HISTORY_POINT_COUNT 200
 
 
@@ -97,7 +97,7 @@ public:
     
     bool touched = false;
     bool score_set = false;
-    bool best_score_set = false;
+    bool best_score_set = true;
 
     unsigned test_index = 0;
     unsigned sim_point_index = 0;
