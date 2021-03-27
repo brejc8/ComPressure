@@ -123,7 +123,13 @@ public:
             throw(std::runtime_error("bad user id"));
         return user_score[steam_id].sobj->dup();
     }
-
+    
+    void clear()
+    {
+        sorted_scores.clear();
+        user_score.clear();
+    }
+    
 };
 
 class ChatMessage
@@ -563,7 +569,7 @@ void sig_handler(int signo)
     printf("shutting down\n");
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     Database db;
     signal(SIGUSR1, sig_handler);
@@ -583,6 +589,11 @@ int main()
     catch (const std::runtime_error& error)
     {
         std::cerr << error.what() << "\n";
+    }
+
+    if (argc >= 2) 
+    {
+        db.levels[atoi(argv[1])].clear();
     }
 
 

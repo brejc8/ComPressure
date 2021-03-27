@@ -1226,13 +1226,12 @@ void Level::advance(unsigned ticks)
         for (int p = 0; p < 4; p++)
             ports[p].pre();
 
-        circuit->sim_pre(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
         for (int p = 0; p < 4; p++)
         {
             if ((((connection_mask >> p) & 1) && p != tests[test_index].tested_direction) || (monitor_state == MONITOR_STATE_PAUSE))
                 ports[p].apply(current_simpoint.values[p], current_simpoint.force[p]);
         }
-        circuit->sim_post(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
+        circuit->sim_pre(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
 
         for (int p = 0; p < 4; p++)
             ports[p].post();

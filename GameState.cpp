@@ -388,7 +388,7 @@ void GameState::advance()
             current_level->advance(subcount);
             count -= subcount;
             debug_simticks += subcount;
-            if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 100))
+            if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 50))
             {
                 if (!skip_to_next_subtest)
                     game_speed--;
@@ -642,6 +642,7 @@ void GameState::render()
     tooltip_string = NULL;
     check_clipboard();
     deal_with_scores();
+    current_circuit->render_prep();
 
     SDL_RenderClear(sdl_renderer);
     XYPos window_size;
@@ -1040,9 +1041,9 @@ void GameState::render()
     for (pos.y = 0; pos.y < 10; pos.y++)                        // Print pressure numbers
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        if (!current_circuit->connections_ns[pos.y][pos.x].touched)
+        if (current_circuit->touched_ns[pos.y][pos.x] == 0)
             continue;
-        Pressure vented = (current_circuit->connections_ns[pos.y][pos.x].venting) ? (current_circuit->connections_ns[pos.y][pos.x].moved) : 0;
+        Pressure vented = (current_circuit->touched_ns[pos.y][pos.x] == 1) ? (current_circuit->connections_ns[pos.y][pos.x].value) : 0;
         unsigned value = pressure_as_percent(current_circuit->connections_ns[pos.y][pos.x].value);
         
         if (vented > 20)
@@ -1056,9 +1057,9 @@ void GameState::render()
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 10; pos.x++)
     {
-        if (!current_circuit->connections_ew[pos.y][pos.x].touched)
+        if (current_circuit->touched_ew[pos.y][pos.x] == 0)
             continue;
-        Pressure vented = (current_circuit->connections_ew[pos.y][pos.x].venting) ? (current_circuit->connections_ew[pos.y][pos.x].moved) : 0;
+        Pressure vented = (current_circuit->touched_ew[pos.y][pos.x] == 1) ? (current_circuit->connections_ew[pos.y][pos.x].value) : 0;
         unsigned value = pressure_as_percent(current_circuit->connections_ew[pos.y][pos.x].value);
         if (vented > 20)
         {
