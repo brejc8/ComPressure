@@ -34,6 +34,10 @@
 static void DisplayWebsite(const char* url)
 {
     SDL_OpenURL(url);
+//    char buf[1024];
+//    snprintf(buf, sizeof(buf), "xdg-open %s", url);
+//    system(buf);
+
 }
 
 GameState::GameState(const char* filename)
