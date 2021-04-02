@@ -33,10 +33,13 @@
 
 static void DisplayWebsite(const char* url)
 {
+#ifdef __linux__
+    char buf[1024];
+    snprintf(buf, sizeof(buf), "xdg-open %s", url);
+    system(buf);
+#else
     SDL_OpenURL(url);
-//    char buf[1024];
-//    snprintf(buf, sizeof(buf), "xdg-open %s", url);
-//    system(buf);
+#endif
 
 }
 
@@ -1707,7 +1710,7 @@ void GameState::render()
             pages[] =
             {
                 {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes the design requirements. Each design has four ports and the requirements state the expected output in terms of other ports. Each port has a colour identifier. Click on the requirements to recieve a hint."},
-                {XYPos(0,13),5,0.5, "Once you achieve a score of 75 or more, the next design becomes available. You can always come back to refine your solution.\n\nPress the pipe button below to continue the tutorial. You can return to the help by pressing F1."},
+                {XYPos(0,13),5,0.5, "Once you pass all the tests, the next design becomes available. You can always come back to refine your solution.\n\nPress the pipe button below to continue the tutorial. You can return to the help by pressing F1."},
                 {XYPos(0,0), 10, 1, "Pipes can be laid down by either left mouse button dragging the pipe from the source to the desination, or by clicking left mouse button to extend the pipe in the direction of the mouse. Right click to cancel pipe laying mode."},
                 {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and other elements."},
                 {XYPos(0,4), 15, 1, "The build menu allows you to add components into your design. Select the steam inlet component and hover over your design. The arrow buttons change the orientation. This can also be done using keys Q and E or the mouse scroll wheel. Clicking the left mouse button will place the component. Right click to exit steam inlet placing mode."},
@@ -1867,6 +1870,8 @@ void GameState::mouse_click_in_grid()
 {
     XYPos pos = (mouse - grid_offset) / scale;
     XYPos grid = pos / 32;
+    if (pos.x < 0) grid.x--;
+    if (pos.y < 0) grid.y--;
 
     if (mouse_state == MOUSE_STATE_NONE && !keyboard_ctrl && !keyboard_shift)
     {
@@ -1885,6 +1890,7 @@ void GameState::mouse_click_in_grid()
             }
         }
     }
+
     if (current_circuit_is_read_only)
     {
         XYPos pos = mouse/scale;
@@ -2958,29 +2964,7 @@ bool GameState::events()
                     }
                     else if (mouse.x < panel_offset.x)
                     {
-                        if (e.button.clicks == 2)
-                        {
-                            XYPos pos = (mouse - grid_offset) / scale;
-                            XYPos grid = pos / 32;
-                            if (grid.inside(XYPos(9,9)))
-                            {
-                                unsigned level_index;
-                                Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit(level_index);
-                                if (sub_circuit)
-                                {
-                                    inspection_stack.push_back(std::make_pair(level_index, sub_circuit));
-                                    current_circuit = sub_circuit;
-                                    current_circuit_is_inspected_subcircuit = true;
-                                    set_current_circuit_read_only();
-
-                                    mouse_state = MOUSE_STATE_NONE;
-                                    break;
-                                }
-                            }
-                            mouse_click_in_grid();
-                        }
-                        else
-                            mouse_click_in_grid();
+                        mouse_click_in_grid();
                     }
                     else
                     {

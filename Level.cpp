@@ -399,7 +399,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,100,  0,  0);
             break;
 
-        case 7:                                                             // op amp
+        case 7:                                                             // Comparator
             name = "Comparator";
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
             level_version = 10;
@@ -433,13 +433,10 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT( 40,  0, 50,  0);
             NEW_TEST;
             NEW_POINT( 40,  0, 50,  0);
-            NEW_POINT( 55,100, 50,  0);
+            NEW_POINT( 58,100, 50,  0);
             NEW_TEST;
-            NEW_POINT( 55,100, 50,  0);
-            NEW_POINT( 55,  0, 60,  0);
-            NEW_TEST;
-            NEW_POINT( 55,  0, 60,  0);
-            NEW_POINT(100,100, 95,  0);
+            NEW_POINT( 58,100, 50,  0);
+            NEW_POINT( 55,  0, 62,  0);
             break;
 
         case 8:                                                                 // amp
@@ -473,10 +470,10 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,100,  0, 70);
             NEW_TEST;
             NEW_POINT(  0,100,  0, 70);
-            NEW_POINT(  0,  0,  0, 40);
+            NEW_POINT(  0,  0,  0, 35);
             NEW_TEST;
-            NEW_POINT(  0,  0,  0, 40);
-            NEW_POINT(  0,100,  0, 60);
+            NEW_POINT(  0,  0,  0, 35);
+            NEW_POINT(  0,100,  0, 62);
             break;
 
         case 9:                                                        // div 2
@@ -744,7 +741,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 50, 50,100);
             NEW_TEST;
             NEW_POINT(  0, 50, 50,100);
-            NEW_POINT(  0,100,  0,100);
+            NEW_POINT(  0, 95,  0, 95);
             break;
 
 
@@ -980,7 +977,28 @@ void Level::init_tests(SaveObjectMap* omap)
         case 20:
             name = "Flow Detector";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
-            level_version = 1;
+            substep_count = 15000;
+            level_version = 2;
+            circuit->force_element(XYPos(4,0), new CircuitElementPipe(CONNECTIONS_NWS));
+            circuit->force_element(XYPos(3,0), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(2,0), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(1,0), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(0,0), new CircuitElementPipe(CONNECTIONS_ES));
+            circuit->force_element(XYPos(0,1), new CircuitElementValve(DIRECTION_E));
+            circuit->force_element(XYPos(1,1), new CircuitElementSource(DIRECTION_W));
+            circuit->force_element(XYPos(0,2), new CircuitElementPipe(CONNECTIONS_NS));
+            circuit->force_element(XYPos(0,3), new CircuitElementPipe(CONNECTIONS_NS));
+            circuit->force_element(XYPos(0,4), new CircuitElementPipe(CONNECTIONS_NS_WE));
+            circuit->force_element(XYPos(0,5), new CircuitElementPipe(CONNECTIONS_NS));
+            circuit->force_element(XYPos(0,6), new CircuitElementPipe(CONNECTIONS_NS));
+            circuit->force_element(XYPos(0,7), new CircuitElementValve(DIRECTION_E));
+            circuit->force_element(XYPos(1,7), new CircuitElementSource(DIRECTION_W));
+            circuit->force_element(XYPos(0,8), new CircuitElementPipe(CONNECTIONS_NE));
+            circuit->force_element(XYPos(1,8), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(2,8), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(3,8), new CircuitElementPipe(CONNECTIONS_EW));
+            circuit->force_element(XYPos(4,8), new CircuitElementPipe(CONNECTIONS_NWS));
+
             NEW_TEST;// N   E   S   W
             NEW_POINT(100,  0,  0,  0);
             NEW_TEST;
@@ -1014,6 +1032,9 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(100,  0,  0,  0);
             NEW_POINT(100,  0,100,  0);
             NEW_POINT(100,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT_F(  0,100,  0,  0, 50, 50, 50, 50);
+            NEW_POINT_F(  0,100,  0,  0, 50,  0, 50, 50);
             NEW_TEST;
             NEW_POINT(100,  0,  0, 70);
             NEW_POINT(100,  0,100, 70);
@@ -1228,7 +1249,7 @@ void Level::advance(unsigned ticks)
 
         for (int p = 0; p < 4; p++)
         {
-            if ((((connection_mask >> p) & 1) && p != tests[test_index].tested_direction) || (monitor_state == MONITOR_STATE_PAUSE))
+            if ((((connection_mask >> p) & 1)) || (monitor_state == MONITOR_STATE_PAUSE))
                 ports[p].apply(current_simpoint.values[p], current_simpoint.force[p]);
         }
         circuit->sim_pre(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
@@ -1253,16 +1274,7 @@ void Level::advance(unsigned ticks)
                 if (sim_point_index == tests[test_index].sim_points.size() - 1)
                 {
                     Direction p = tests[test_index].tested_direction;
-                    Pressure score = percent_as_pressure(25) - abs(percent_as_pressure(current_simpoint.values[p]) - ports[p].value) * 100;
-                    if (score < 0)
-                        score /= 2;
-                    score += percent_as_pressure(25);
-                    if (score < 0)
-                        score /= 2;
-                    score += percent_as_pressure(25);
-                    if (score < 0)
-                        score /= 2;
-                    score += percent_as_pressure(25);
+                    Pressure score = percent_as_pressure(100) - abs(percent_as_pressure(current_simpoint.values[p]) - ports[p].value) * (100 / 5);
                     if (score < 0)
                         score = 0;
                     tests[test_index].last_score = score;
@@ -1314,12 +1326,12 @@ void Level::select_test(unsigned t)
 void Level::update_score(bool fin)
 {
     unsigned test_count = tests.size();
-    Pressure score = 0;
+    Pressure score = percent_as_pressure(100);
     for (unsigned i = 0; i < test_count; i++)
     {
-        score += tests[i].last_score;
+        if (tests[i].last_score < score)
+            score = tests[i].last_score;
     }
-    score /= test_count;
     last_score = score;
     if ((score > best_score || !best_design) && fin)
     {
@@ -1427,7 +1439,7 @@ bool LevelSet::is_playable(unsigned level)
         return (levels[level] != NULL);
     for (int i = 0; i < level; i++)
     {
-        if (levels[i]->best_score < percent_as_pressure(75))
+        if (levels[i]->best_score <= percent_as_pressure(0))
             return false;
     }
     return true;
@@ -1439,7 +1451,7 @@ int LevelSet::top_playable()
         return -1;
     for (int i = 0; i < LEVEL_COUNT; i++)
     {
-        if (levels[i]->best_score < percent_as_pressure(75))
+        if (levels[i]->best_score <= percent_as_pressure(0))
             return i;
     }
     return LEVEL_COUNT - 1;

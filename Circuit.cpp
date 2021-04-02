@@ -108,13 +108,13 @@ SDL_Rect CircuitElementPipe::getimage_bg(void)
     if (connections == CONNECTIONS_NS)
     {
         int x = (pressure_as_percent(pressure) * (48 - 6)) / 101;
-        unsigned offset = unsigned(moved_pos / 10) % (48 - 14);
+        unsigned offset = unsigned(moved_pos / 50) % (48 - 14);
         return SDL_Rect{256 + x, 208 + int(offset), 6, 14};
     }
     if (connections == CONNECTIONS_EW || connections == CONNECTIONS_NS_WE)
     {
         int y = (pressure_as_percent(pressure) * (48 - 6)) / 101;
-        unsigned offset = unsigned(moved_pos / 100) % (48 - 14);
+        unsigned offset = unsigned(moved_pos / 50) % (48 - 14);
         return SDL_Rect{304 + int(offset), 208 + y, 14, 6};
     }
     return SDL_Rect{0, 0, 0, 0};
@@ -288,14 +288,14 @@ SDL_Rect CircuitElementValve::getimage_bg(void)
     if (direction == DIRECTION_E || direction == DIRECTION_W)
     {
         int x = (pressure_as_percent(pressure) * (48 - 6)) / 101;
-        unsigned offset = unsigned(moved_pos / 10) % (48 - 14);
+        unsigned offset = unsigned(moved_pos / 50) % (48 - 14);
         return SDL_Rect{256 + x, 208 + int(offset), 6, 14};
     }
     else
     {
         
         int y = (pressure_as_percent(pressure) * (48 - 6)) / 101;
-        unsigned offset = unsigned(moved_pos / 100) % (48 - 14);
+        unsigned offset = unsigned(moved_pos / 50) % (48 - 14);
         return SDL_Rect{304 + int(offset), 208 + y, 14, 6};
     }
 }
