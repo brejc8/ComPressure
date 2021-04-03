@@ -187,6 +187,39 @@ void CircuitElementPipe::sim_prep(PressureAdjacent adj, FastSim& fast_sim)
     }
 }
 
+Pressure CircuitElementPipe::get_moved(PressureAdjacent adj)
+{
+    switch(connections)
+    {
+        case CONNECTIONS_NW:
+            return abs((adj.N.value - adj.W.value) / 2);
+        case CONNECTIONS_NE:
+            return abs((adj.N.value - adj.E.value) / 2);
+        case CONNECTIONS_NS:
+            return abs((adj.N.value - adj.S.value) / 2);
+        case CONNECTIONS_EW:
+            return abs((adj.E.value - adj.W.value) / 2);
+        case CONNECTIONS_ES:
+            return abs((adj.E.value - adj.S.value) / 2);
+        case CONNECTIONS_WS:
+            return abs((adj.W.value - adj.S.value) / 2);
+        case CONNECTIONS_NS_WE:
+            return abs((adj.E.value - adj.W.value) / 2) + abs((adj.N.value - adj.S.value) / 2);
+        case CONNECTIONS_NW_ES:
+            return abs((adj.N.value - adj.W.value) / 2) + abs((adj.E.value - adj.S.value) / 2);
+        case CONNECTIONS_NE_WS:
+            return abs((adj.N.value - adj.E.value) / 2) + abs((adj.W.value - adj.S.value) / 2);
+        case CONNECTIONS_NONE:
+        case CONNECTIONS_NWE:
+        case CONNECTIONS_NES:
+        case CONNECTIONS_NWS:
+        case CONNECTIONS_EWS:
+        case CONNECTIONS_ALL:
+        default:
+            return 0;
+    }
+}
+
 
 XYPos CircuitElementPipe::getimage(void)
 {
@@ -750,6 +783,10 @@ void Circuit::retire()
 void Circuit::render_prep()
 {
     XYPos pos;
+
+    last_vented = 0;
+    last_moved = 0;
+
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
@@ -758,7 +795,19 @@ void Circuit::render_prep()
                                  connections_ns[pos.y+1][pos.x],
                                  connections_ew[pos.y][pos.x]);
         elements[pos.y][pos.x]->render_prep(adjl);
+        
+        last_moved += elements[pos.y][pos.x]->get_moved(adjl);
     }
+    for (pos.y = 0; pos.y < 10; pos.y++)
+    for (pos.x = 0; pos.x < 10; pos.x++)
+    {
+        if (touched_ns[pos.y][pos.x] == 1)
+            last_vented += connections_ns[pos.y][pos.x].value;
+        if (touched_ew[pos.y][pos.x] == 1)
+            last_vented += connections_ew[pos.y][pos.x].value;
+    }
+
+
 }
 
 void Circuit::sim_prep(PressureAdjacent adj, FastSim& fast_sim)
@@ -836,7 +885,6 @@ void Circuit::sim_prep(PressureAdjacent adj, FastSim& fast_sim)
 
 void Circuit::sim_pre(PressureAdjacent adj)
 {
-
     if (!fast_prepped)
     {
     	fast_sim.clear();
@@ -845,9 +893,6 @@ void Circuit::sim_pre(PressureAdjacent adj)
 
 
     fast_sim.sim();
-
-    last_vented = 0;
-    last_moved = 0;
 }
 
 void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)

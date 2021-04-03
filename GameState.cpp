@@ -419,8 +419,8 @@ void GameState::advance()
 
 void GameState::audio()
 {
-    Mix_Volume(0, pressure_as_percent(current_circuit->last_vented*40) * sound_volume / 100 / 5);
-    Mix_Volume(1, pressure_as_percent(current_circuit->last_moved*1) * sound_volume / 100/ 2);
+    Mix_Volume(0, pressure_as_percent(current_circuit->last_vented*10) * sound_volume / 100);
+    Mix_Volume(1, pressure_as_percent(current_circuit->last_moved*10) * sound_volume / 100);
     Mix_VolumeMusic(music_volume);
 }
 

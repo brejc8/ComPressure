@@ -33,15 +33,11 @@ class CircuitPressure
 public:
     Pressure value = 0;
     Pressure move_next = 0;
-//    bool touched = false;
-//    bool venting = false;
 
     void clear()
     {
         value = 0;
         move_next = 0;
-//        touched = false;
-//        venting = false;
     }
     void apply(Pressure vol, Pressure drive)
     {
@@ -51,16 +47,12 @@ public:
 
     void move(Pressure vol)
     {
-//        assert (vol > -(PRESSURE_SCALAR * 100));
         move_next += vol;
     }
     
     void vent(void)
     {
-//        if (value)
-        {
-            move_next -= value / 2;
-        }
+        move_next -= value / 2;
     }
 
     void pre(void)
@@ -69,15 +61,8 @@ public:
     
     void post(void)
     {
-//        if (move_next)
-        {
-            value += move_next;
-            move_next = 0;
-//             if (value > 100 * PRESSURE_SCALAR)
-//                 value = 100 * PRESSURE_SCALAR;
-//             if (value < 0)
-//                 value = 0;
-        }
+        value += move_next;
+        move_next = 0;
     }
     
     CircuitPressure(Pressure value_):
@@ -358,6 +343,7 @@ public:
     virtual XYPos getimage_fg(void)  {return XYPos(0,0);}
     virtual SDL_Rect getimage_bg(void)  {return SDL_Rect{0, 0, 0, 0};}
     virtual bool is_empty() {return false;};
+    virtual Pressure get_moved(PressureAdjacent adj) {return 0;};
 
     virtual CircuitElementType get_type() = 0;
     virtual void extend_pipe(Connections con){assert(0);}
@@ -387,6 +373,7 @@ public:
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     XYPos getimage(void);
     SDL_Rect getimage_bg(void);
+    virtual Pressure get_moved(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_PIPE;}
 
     void extend_pipe(Connections con);
