@@ -752,6 +752,8 @@ void GameState::render()
             src_rect.x += 32;
         if (current_circuit_is_read_only)
             src_rect.y += 96;
+        else if (current_circuit_is_inspected_subcircuit)
+            src_rect.y += 96 * 2;
 
         SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
         render_texture(src_rect, dst_rect);
@@ -985,13 +987,17 @@ void GameState::render()
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             XYPos pos = edited_level_set->levels[placing_subcircuit_level]->getimage(direction);
+            {
+                SDL_Rect src_rect = {208, 160, 24, 24};
+                SDL_Rect dst_rect = {(mouse_grid.x * 32 + 4) * scale + grid_offset.x, (mouse_grid.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
+                render_texture(src_rect, dst_rect);
+            }
             if (pos != XYPos(0,0))
             {
                 SDL_Rect src_rect = {pos.x, pos.y, 32, 32};
                 SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
                 render_texture(src_rect, dst_rect);
             }
-
 
             pos = edited_level_set->levels[placing_subcircuit_level]->getimage_fg(direction);
             if (pos != XYPos(0,0))
@@ -1127,18 +1133,37 @@ void GameState::render()
 
     {
         int x = 0;
-        render_button(XYPos(x * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), current_circuit_is_inspected_subcircuit ? 0 : 1, current_level->name);
+        render_button(XYPos(x * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), 0, current_level->name);
         x += 32;
 
         if (current_circuit_is_inspected_subcircuit)
         {
-            for (auto &i : inspection_stack)
+            bool editable = true;
+            for (auto &sub : inspection_stack)
             {
                 if (x == 32*5)
                     x += 32;
-                render_button(XYPos(x * scale, 0 * scale), edited_level_set->levels[i.first]->getimage_fg(DIRECTION_N), &i == &inspection_stack.back(), edited_level_set->levels[i.first]->name);
+                unsigned l_index;
+                sub->get_subcircuit(&l_index);
+                if (!sub->get_custom())
+                    editable = false;
+                
+                unsigned color = editable ? 1 : 4;
+                
+                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, level_set->levels[l_index]->name);
                 x += 32;
             }
+        }
+
+        if (current_circuit_is_inspected_subcircuit)
+        {
+            for (auto &sub : inspection_stack)
+                if (!sub->get_custom())
+                {
+                    if (sub == inspection_stack.back())
+                        render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Customize");
+                    break;
+                }
         }
 
         if (current_level_set_is_inspected)
@@ -1877,21 +1902,22 @@ void GameState::mouse_click_in_grid()
     {
         if (grid.inside(XYPos(9,9)))
         {
-            unsigned level_index;
-            Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit(level_index);
+            Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit();
             if (sub_circuit)
             {
-                inspection_stack.push_back(std::make_pair(level_index, sub_circuit));
+                if (!current_circuit->elements[grid.y][grid.x]->get_custom())
+                    current_circuit_is_read_only = true;
+                inspection_stack.push_back(current_circuit->elements[grid.y][grid.x]);
                 current_circuit = sub_circuit;
                 current_circuit_is_inspected_subcircuit = true;
-                set_current_circuit_read_only();
+                selected_elements.clear();
                 mouse_state = MOUSE_STATE_NONE;
                 return;
             }
         }
     }
 
-    if (current_circuit_is_read_only)
+
     {
         XYPos pos = mouse/scale;
         if (pos.inside(XYPos(32*11,32)))
@@ -1909,7 +1935,24 @@ void GameState::mouse_click_in_grid()
             {
                 inspection_stack.resize(i);
                 i--;
-                current_circuit = inspection_stack[i].second;
+                current_circuit = inspection_stack[i]->get_subcircuit();
+                current_circuit_is_read_only = false;
+                for (auto &sub : inspection_stack)
+                    if (!sub->get_custom())
+                        current_circuit_is_read_only = true;
+            }
+            else if (i == 10 && current_circuit_is_inspected_subcircuit)
+            {
+                for (auto &sub : inspection_stack)
+                    if (!sub->get_custom())
+                    {
+                        if (sub == inspection_stack.back())
+                        {
+                            sub->set_custom();
+                            current_circuit_is_read_only = false;
+                        }
+                        break;
+                    }
             }
             else if (i == 10 && current_level_set_is_inspected)
             {
@@ -1944,6 +1987,7 @@ void GameState::mouse_click_in_grid()
                 confirm_box_pos = XYPos(32*8 - 16, 32);
             }
         }
+    if (current_circuit_is_read_only)
         return;
     }
 
@@ -2149,7 +2193,7 @@ void GameState::mouse_click_in_grid()
                 }
             }
         }
-        current_level->touched = true;
+        current_level->touch();
     }
     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
     {
@@ -2157,7 +2201,7 @@ void GameState::mouse_click_in_grid()
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             current_circuit->set_element_valve(mouse_grid, direction);
-            current_level->touched = true;
+            current_level->touch();
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_SOURCE)
@@ -2166,7 +2210,7 @@ void GameState::mouse_click_in_grid()
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             current_circuit->set_element_source(mouse_grid, direction);
-            current_level->touched = true;
+            current_level->touch();
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
@@ -2177,7 +2221,7 @@ void GameState::mouse_click_in_grid()
             XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
             current_circuit->set_element_subcircuit(mouse_grid, direction, placing_subcircuit_level, edited_level_set);
             level_set->remove_circles(current_level_index);
-            current_level->touched = true;
+            current_level->touch();
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_SIGN)
@@ -2314,19 +2358,19 @@ void GameState::mouse_click_in_panel()
             if (panel_grid_pos.x == 0)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-                current_level->touched = true;
+                current_level->touch();
 
             }
             else if (panel_grid_pos.x == 1)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
-                current_level->touched = true;
+                current_level->touch();
 
             }
             else if (panel_grid_pos.x == 2)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
-                current_level->touched = true;
+                current_level->touch();
                 level_set->reset(current_level_index);
             }
             else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
@@ -2432,7 +2476,7 @@ void GameState::mouse_click_in_panel()
             {
                 current_level->select_test(t);
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
-                current_level->touched = true;
+                current_level->touch();
             }
         }
         if (panel_grid_pos == XYPos(0, 3) && current_level->best_design)
@@ -2459,7 +2503,7 @@ void GameState::mouse_click_in_panel()
         if (panel_pos.y <= (101 + 16))
         {
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-            current_level->touched = true;
+            current_level->touch();
 
             watch_slider(panel_offset.y + (101 + 8) * scale, DIRECTION_N, 100, &current_level->current_simpoint.values[port_index]);
             return;
@@ -2467,7 +2511,7 @@ void GameState::mouse_click_in_panel()
         else if (panel_pos.y <= (101 + 16 + 7 + 16))
         {
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-            current_level->touched = true;
+            current_level->touch();
 
             watch_slider(panel_offset.x + (port_index * 48 + 8) * scale, DIRECTION_E, 33, &current_level->current_simpoint.force[port_index], 100);
             return;
@@ -2554,7 +2598,7 @@ void GameState::mouse_motion()
 
         current_circuit->set_element_empty(grid, !first_deletion);
         first_deletion = false;
-        current_level->touched = true;
+        current_level->touch();
 
     }
     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
@@ -2695,7 +2739,7 @@ bool GameState::events()
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (!keyboard_shift)
-                                level_set->undo(current_level_index);
+                                level_set->undo(current_level_index);           // FIXME direct to circuit
                             else
                                 level_set->redo(current_level_index);
                         }
@@ -2810,6 +2854,7 @@ bool GameState::events()
                         current_circuit->add_pipe_drag_list(pipe_drag_list);
                         pipe_drag_list.clear();
                         mouse_state = MOUSE_STATE_NONE;
+                        current_level->touch();
                     }
                     if (mouse_state == MOUSE_STATE_AREA_SELECT)
                     {

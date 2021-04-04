@@ -471,19 +471,45 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
     level_index = Direction(omap->get_num("level_index"));
     level = NULL;
     circuit = NULL;
+    if (omap->has_key("circuit"))
+    {
+        circuit = new Circuit(omap->get_item("circuit")->get_map());
+        custom = true;
+    }
+}
 
+CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& other)
+{
+    direction = other.direction;
+    level_index = other.level_index;
+    level = other.level;
+    custom  = other.custom;
+    if (custom)
+    {
+        circuit = new Circuit(*other.circuit);
+    }
 }
 
 void CircuitElementSubCircuit::save(SaveObjectMap* omap)
 {
     omap->add_num("direction", direction);
     omap->add_num("level_index", level_index);
+    if (custom)
+    {
+        omap->add_item("circuit", circuit->save());
+    }
 }
 
 uint16_t CircuitElementSubCircuit::get_desc()
 {
-    return (level_index << 2) | direction;
+    return (level_index << 3) | direction << 1 | custom;
 }
+
+CircuitElement* CircuitElementSubCircuit::copy()
+{
+    return new CircuitElementSubCircuit(*this);
+}
+
 
 void CircuitElementSubCircuit::reset()
 {
@@ -493,26 +519,34 @@ void CircuitElementSubCircuit::reset()
 void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
 {
     level = level_set->levels[level_index];
-    if (circuit)
-        delete circuit;
-    level->circuit->remove_circles(level_set);
-    circuit = new Circuit(*level->circuit);
+    if (!custom)
+    {
+        if (circuit)
+            delete circuit;
+        level->circuit->remove_circles(level_set);
+        circuit = new Circuit(*level->circuit);
+    }
+    assert(circuit);
     circuit->elaborate(level_set);
 };
 
 void CircuitElementSubCircuit::retire()
 {
-    if (circuit)
+    if (!custom && circuit)
+    {
         delete circuit;
-    level = NULL;
-    circuit = NULL;
+        circuit = NULL;
+    }
 }
 
 bool CircuitElementSubCircuit::contains_subcircuit_level(unsigned level_index_q, LevelSet* level_set)
 {
     if (level_index_q == level_index)
         return true;
-    return level_set->levels[level_index]->circuit->contains_subcircuit_level(level_index_q, level_set);
+    if (circuit)
+        return circuit->contains_subcircuit_level(level_index_q, level_set);
+    else
+        return level_set->levels[level_index]->circuit->contains_subcircuit_level(level_index_q, level_set);
 }
 
 unsigned CircuitElementSubCircuit::getconnections(void)
@@ -527,6 +561,11 @@ unsigned CircuitElementSubCircuit::getconnections(void)
     con |= con >> 4;
     con &= 0xF;
     return con;
+}
+
+SDL_Rect CircuitElementSubCircuit::getimage_bg(void)
+{
+    return SDL_Rect{custom ? 232 : 208, 160, 24, 24};
 }
 
 XYPos CircuitElementSubCircuit::getimage(void)
@@ -901,9 +940,8 @@ void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        Circuit* subcircuit;
         unsigned level_index = 0xFFFFFFFF;
-        elements[pos.y][pos.x]->get_subcircuit(level_index);
+        Circuit* subcircuit = elements[pos.y][pos.x]->get_subcircuit(&level_index);
         if (level_index != 0xFFFFFFFF)
         {
             
@@ -919,6 +957,10 @@ void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)
                 sub_seen.insert(level_index);
                 level_set->levels[level_index]->circuit->remove_circles(level_set, sub_seen);
             }
+        }
+        else if (subcircuit)
+        {
+            subcircuit->remove_circles(level_set, seen);
         }
     }
 }

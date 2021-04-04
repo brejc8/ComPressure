@@ -347,9 +347,9 @@ public:
 
     virtual CircuitElementType get_type() = 0;
     virtual void extend_pipe(Connections con){assert(0);}
-    virtual Circuit* get_subcircuit(unsigned& level_index_) {return NULL;}
-
-
+    virtual Circuit* get_subcircuit(unsigned *level_index_ = NULL) {return NULL;}
+    virtual bool get_custom() {return false;}
+    virtual void set_custom() {}
 };
 
 class CircuitElementPipe : public CircuitElement
@@ -456,25 +456,30 @@ public:
     Direction direction;
     unsigned level_index;
     Level* level = NULL;;
-    Circuit* circuit = NULL;;
+    Circuit* circuit = NULL;
+    bool custom = false;
 
     CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set = NULL);
     CircuitElementSubCircuit(SaveObjectMap*);
+    CircuitElementSubCircuit(CircuitElementSubCircuit& other);
     ~CircuitElementSubCircuit();
 
     void save(SaveObjectMap*);
     virtual uint16_t get_desc();
-    virtual CircuitElement* copy() { return new CircuitElementSubCircuit(direction, level_index);}
+    virtual CircuitElement* copy();
     void reset();
     void elaborate(LevelSet* level_set);
     void retire();
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
     unsigned getconnections(void);
     XYPos getimage(void);
+    SDL_Rect getimage_bg(void);
     XYPos getimage_fg(void);
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
-    Circuit* get_subcircuit(unsigned& level_index_) {level_index_ = level_index; return circuit;}
+    Circuit* get_subcircuit(unsigned *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}
+    virtual bool get_custom() {return custom;}
+    virtual void set_custom() {custom = true;}
 };
 
 class Sign

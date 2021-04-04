@@ -82,7 +82,7 @@ public:
     unsigned current_level_index = 0;
     unsigned placing_subcircuit_level;
     
-    std::vector<std::pair<unsigned, Circuit*>> inspection_stack;
+    std::vector<CircuitElement*> inspection_stack;
     bool current_circuit_is_inspected_subcircuit = false;
     bool current_level_set_is_inspected = false;
     bool current_circuit_is_read_only = false;

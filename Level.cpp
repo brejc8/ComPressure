@@ -1356,6 +1356,12 @@ void Level::set_monitor_state(TestExecType monitor_state_)
         current_simpoint = tests[test_index].sim_points[sim_point_index];
 }
 
+void Level::touch()
+{
+    touched = true;
+    circuit->fast_prepped = false;
+}
+
 LevelSet::LevelSet(SaveObject* sobj, bool inspect)
 {
     read_only = inspect;

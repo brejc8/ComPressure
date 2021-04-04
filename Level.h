@@ -142,6 +142,7 @@ public:
 
     void update_score(bool fin);
     void set_monitor_state(TestExecType monitor_state_);
+    void touch();
 
 };
 
