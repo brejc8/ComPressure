@@ -351,6 +351,7 @@ public:
     virtual Circuit* get_subcircuit(unsigned *level_index_ = NULL) {return NULL;}
     virtual bool get_custom() {return false;}
     virtual void set_custom() {}
+    virtual void rotate(bool clockwise) = 0;
 };
 
 class CircuitElementPipe : public CircuitElement
@@ -376,6 +377,7 @@ public:
     SDL_Rect getimage_bg(void);
     virtual Pressure get_moved(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_PIPE;}
+    void rotate(bool clockwise);
 
     void extend_pipe(Connections con);
 };
@@ -410,6 +412,7 @@ public:
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     void sim(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_VALVE;}
+    void rotate(bool clockwise) {direction = direction_rotate(direction, clockwise);};
 };
 
 class CircuitElementSource : public CircuitElement
@@ -431,6 +434,7 @@ public:
     XYPos getimage(void);
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SOURCE;}
+    void rotate(bool clockwise) {direction = direction_rotate(direction, clockwise);};
 };
 
 class CircuitElementEmpty : public CircuitElement
@@ -447,7 +451,7 @@ public:
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim) {};
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_EMPTY;}
     virtual bool is_empty() {return true;};
-
+    void rotate(bool clockwise) {};
 };
 
 class CircuitElementSubCircuit : public CircuitElement
@@ -481,6 +485,7 @@ public:
     Circuit* get_subcircuit(unsigned *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}
     virtual bool get_custom() {return custom;}
     virtual void set_custom() {custom = true;}
+    void rotate(bool clockwise) {direction = direction_rotate(direction, clockwise);};
 };
 
 class Sign
@@ -597,4 +602,6 @@ public:
     void copy(std::set<XYPos> &selected_elements, Circuit &circuit);
     void repos();
     XYPos size();
+    void rotate(bool clockwise);
+
 };

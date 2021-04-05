@@ -2726,12 +2726,16 @@ bool GameState::events()
                     case SDL_SCANCODE_Q:
                         if (!SDL_IsTextInputActive())
                             direction = Direction((int(direction) + 4 - 1) % 4);
+                        if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                            clipboard.rotate(false);
                         if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
                             dragged_sign.rotate(false);
                         break;
                     case SDL_SCANCODE_E:
                         if (!SDL_IsTextInputActive())
                             direction = Direction((int(direction) + 1) % 4);
+                        if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                            clipboard.rotate(true);
                         if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
                             dragged_sign.rotate(true);
                         break;
@@ -2754,8 +2758,10 @@ bool GameState::events()
                     case SDL_SCANCODE_X:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
+                            clipboard.copy(selected_elements, *current_circuit);
                             current_circuit->delete_selected_elements(selected_elements);
                             selected_elements.clear();
+
                         }
                         break;
                     case SDL_SCANCODE_C:

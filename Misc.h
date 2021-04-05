@@ -16,6 +16,14 @@ enum Direction
     DIRECTION_W = 3
 };
 
+inline Direction direction_rotate(Direction direction, bool clockwise)
+{
+    if (clockwise)
+        return Direction((int(direction) + 1) % 4);
+    else
+        return Direction((int(direction) + 4 - 1) % 4);
+}
+
 class Rand
 {
 public:

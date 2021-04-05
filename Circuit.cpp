@@ -297,6 +297,48 @@ void CircuitElementPipe::extend_pipe(Connections con)
 
 }
 
+void CircuitElementPipe::rotate(bool clockwise)
+{
+    switch(connections)
+    {
+        case CONNECTIONS_NONE:
+            break;
+        case CONNECTIONS_NW:
+        case CONNECTIONS_NE:
+        case CONNECTIONS_NS:
+        case CONNECTIONS_EW:
+        case CONNECTIONS_ES:
+        case CONNECTIONS_WS:
+        case CONNECTIONS_NWE:
+        case CONNECTIONS_NES:
+        case CONNECTIONS_NWS:
+        case CONNECTIONS_EWS:
+        {
+            unsigned bm = con_to_bitmap(connections);
+            if (clockwise)
+                bm = (bm << 1) | (bm >> 3);
+            else
+                bm = (bm >> 1) | (bm << 3);
+            bm &= 0xF;
+            connections = bitmap_to_con(bm);
+            break;
+        }
+        case CONNECTIONS_NS_WE:
+            break;
+        case CONNECTIONS_NW_ES:
+            connections = CONNECTIONS_NE_WS;
+            break;
+        case CONNECTIONS_NE_WS:
+            connections = CONNECTIONS_NW_ES;
+            break;
+        case CONNECTIONS_ALL:
+            break;
+        default:
+            assert(0);
+    }
+
+}
+
 CircuitElementValve::CircuitElementValve(SaveObjectMap* omap)
 {
     direction = Direction(omap->get_num("direction"));
@@ -668,10 +710,7 @@ XYPos Sign::get_pos()
 
 void Sign::rotate(bool clockwise)
 {
-    if (clockwise)
-        direction = Direction((direction + 1) % 4);
-    else
-        direction = Direction((direction + 3) % 4);
+    direction = direction_rotate(direction, clockwise);
 }
 
 Circuit::Circuit(SaveObjectMap* omap)
@@ -1273,4 +1312,17 @@ XYPos Clipboard::size()
     }
     pos += XYPos(1, 1);
     return pos;
+}
+
+void Clipboard::rotate(bool clockwise)
+{
+    repos();
+    for (ClipboardElement& elem: elements)
+    {
+        int oldx = elem.pos.x;
+        elem.pos.x = clockwise ? elem.pos.y : -elem.pos.y;
+        elem.pos.y = clockwise ? -oldx : oldx;
+        elem.element->rotate(clockwise);
+    }
+    repos();
 }
