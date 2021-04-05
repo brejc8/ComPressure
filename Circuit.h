@@ -14,6 +14,7 @@ class LevelSet;
 class Level;
 
 class Circuit;
+class Clipboard;
 
 typedef int Pressure;
 
@@ -571,7 +572,29 @@ public:
     bool is_blocked(XYPos pos);
     void undo(unsigned level_index, LevelSet* level_set);
     void redo(unsigned level_index, LevelSet* level_set);
+    void paste(Clipboard& clipboard, XYPos pos, LevelSet* level_set);
 
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
+    
+};
 
+class Clipboard
+{
+public:
+    class ClipboardElement
+    {
+    public:
+        XYPos pos;
+        CircuitElement* element;
+        ClipboardElement(XYPos pos_, CircuitElement* element_):
+            pos(pos_),
+            element(element_)
+        {}
+
+    };
+    std::list<ClipboardElement> elements;
+
+    void copy(std::set<XYPos> &selected_elements, Circuit &circuit);
+    void repos();
+    XYPos size();
 };

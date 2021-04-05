@@ -800,6 +800,7 @@ void Circuit::reset()
 void Circuit::elaborate(LevelSet* level_set)
 {
     XYPos pos;
+    fast_prepped = false;
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
@@ -1175,7 +1176,6 @@ void Circuit::undo(unsigned level_index, LevelSet* level_set)
 {
     if (!undo_list.empty())
     {
-        fast_prepped = false;
         redo_list.push_front(new Circuit(*this));
         Circuit* to = undo_list.front();
         undo_list.pop_front();
@@ -1190,7 +1190,6 @@ void Circuit::redo(unsigned level_index, LevelSet* level_set)
 {
     if (!redo_list.empty())
     {
-        fast_prepped = false;
         undo_list.push_front(new Circuit(*this));
         Circuit* to = redo_list.front();
         redo_list.pop_front();
@@ -1199,6 +1198,26 @@ void Circuit::redo(unsigned level_index, LevelSet* level_set)
         remove_circles(level_set);
         elaborate(level_set);
     }
+}
+
+void Circuit::paste(Clipboard& clipboard, XYPos offset, LevelSet* level_set)
+{
+    ammend();
+    for (Clipboard::ClipboardElement& clip_elem: clipboard.elements)
+    {
+        XYPos pos = clip_elem.pos + offset;
+        CircuitElement* element = clip_elem.element;
+
+        if (elements[pos.y][pos.x]->get_type() == CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT
+         || elements[pos.y][pos.x]->get_type() != element->get_type()
+         || elements[pos.y][pos.x]->get_desc() != element->get_desc())
+        {
+            delete elements[pos.y][pos.x];
+            elements[pos.y][pos.x] = element->copy();
+        }
+    }
+    remove_circles(level_set);
+    elaborate(level_set);
 }
 
 bool Circuit::contains_subcircuit_level(unsigned level_index, LevelSet* level_set)
@@ -1211,4 +1230,47 @@ bool Circuit::contains_subcircuit_level(unsigned level_index, LevelSet* level_se
             return true;
     }
     return false;
+}
+
+void Clipboard::copy(std::set<XYPos> &selected_elements, Circuit &circuit)
+{
+    for (const ClipboardElement& elem: elements)
+    {
+        delete elem.element;
+    }
+    elements.clear();
+
+    for (const XYPos& pos: selected_elements)
+    {
+        elements.push_back(ClipboardElement(pos, circuit.elements[pos.y][pos.x]->copy()));
+    }
+    repos();
+}
+
+void Clipboard::repos()
+{
+    if (elements.empty())
+        return;
+    XYPos pos = elements.front().pos;
+    for (ClipboardElement& elem: elements)
+    {
+        pos.x = std::min(pos.x, elem.pos.x);
+        pos.y = std::min(pos.y, elem.pos.y);
+    }
+    for (ClipboardElement& elem: elements)
+    {
+        elem.pos -= pos;
+    }
+}
+
+XYPos Clipboard::size()
+{
+    XYPos pos(0,0);
+    for (ClipboardElement& elem: elements)
+    {
+        pos.x = std::max(pos.x, elem.pos.x);
+        pos.y = std::max(pos.y, elem.pos.y);
+    }
+    pos += XYPos(1, 1);
+    return pos;
 }

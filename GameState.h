@@ -45,6 +45,7 @@ public:
         MOUSE_STATE_AREA_SELECT,
         MOUSE_STATE_DRAGGING_SIGN,
         MOUSE_STATE_ENTERING_TEXT_INTO_SIGN,
+        MOUSE_STATE_PASTING_CLIPBOARD
 
     } mouse_state = MOUSE_STATE_NONE;
 
@@ -107,6 +108,7 @@ public:
     
     std::set<XYPos> selected_elements;
     XYPos select_area_pos;
+    Clipboard clipboard;
 
     bool show_debug = false;
     unsigned debug_last_time = 0;

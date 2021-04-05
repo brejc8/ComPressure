@@ -1009,6 +1009,55 @@ void GameState::render()
 
         }
     }
+    else if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+    {
+        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+        
+        mouse_grid.x = std::max(std::min(mouse_grid.x, 9 - clipboard.size().x), 0);
+        mouse_grid.y = std::max(std::min(mouse_grid.y, 9 - clipboard.size().y), 0);
+        
+        for (Clipboard::ClipboardElement& clip_elem: clipboard.elements)
+        {
+            XYPos pos = clip_elem.pos + mouse_grid;
+            
+            
+            CircuitElement* element = clip_elem.element;
+            {
+                SDL_Rect src_rect = element->getimage_bg();
+                if (src_rect.w)
+                {
+                    int xoffset = (32 - src_rect.w) / 2;
+                    int yoffset = (32 - src_rect.h) / 2;
+                    SDL_Rect dst_rect = {(pos.x * 32  + xoffset) * scale + grid_offset.x, (pos.y * 32 + yoffset) * scale + grid_offset.y, src_rect.w * scale, src_rect.h * scale};
+                    render_texture(src_rect, dst_rect);
+                }
+            }
+
+
+            XYPos src_pos = element->getimage();
+            if (src_pos != XYPos(0,0))
+            {
+                SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};
+                SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+
+            src_pos = element->getimage_fg();
+            if (src_pos != XYPos(0,0))
+            {
+                SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
+                SDL_Rect dst_rect = {(pos.x * 32 + 4) * scale + grid_offset.x, (pos.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+            {
+                SDL_Rect src_rect =  {256, 176, 32, 32};
+                SDL_Rect dst_rect = {(pos.x * 32) * scale + grid_offset.x, (pos.y * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+
+        }
+
+    }
     else if (mouse_state == MOUSE_STATE_AREA_SELECT)
     {
         XYPos mouse_pos = ((mouse - grid_offset) / scale);
@@ -1941,7 +1990,7 @@ void GameState::mouse_click_in_grid()
                     if (!sub->get_custom())
                         current_circuit_is_read_only = true;
             }
-            else if (i == 10 && current_circuit_is_inspected_subcircuit)
+            else if (i == 10 && current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
             {
                 for (auto &sub : inspection_stack)
                     if (!sub->get_custom())
@@ -2224,6 +2273,14 @@ void GameState::mouse_click_in_grid()
             current_level->touch();
         }
     }
+    else if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+    {
+        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+        
+        mouse_grid.x = std::max(std::min(mouse_grid.x, 9 - clipboard.size().x), 0);
+        mouse_grid.y = std::max(std::min(mouse_grid.y, 9 - clipboard.size().y), 0);
+        current_circuit->paste(clipboard, mouse_grid, edited_level_set);
+    }
     else if (mouse_state == MOUSE_STATE_PLACING_SIGN)
     {
         XYPos mouse_grid = ((mouse - grid_offset) / scale);
@@ -2236,6 +2293,7 @@ void GameState::mouse_click_in_grid()
     else if (mouse_state == MOUSE_STATE_DELETING)
     {
         level_set->undo(current_level_index);
+        selected_elements.clear();
         first_deletion = true;
     }
     else
@@ -2700,6 +2758,22 @@ bool GameState::events()
                             selected_elements.clear();
                         }
                         break;
+                    case SDL_SCANCODE_C:
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                            clipboard.copy(selected_elements, *current_circuit);
+                        if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                            mouse_state = MOUSE_STATE_NONE;
+                        break;
+                    case SDL_SCANCODE_V:
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        {
+                            if (!clipboard.elements.empty())
+                                mouse_state = MOUSE_STATE_PASTING_CLIPBOARD;
+                            else
+                                mouse_state = MOUSE_STATE_NONE;
+                            selected_elements.clear();
+                        }
+                        break;
                     case SDL_SCANCODE_DELETE:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
@@ -2742,11 +2816,15 @@ bool GameState::events()
                                 level_set->undo(current_level_index);           // FIXME direct to circuit
                             else
                                 level_set->redo(current_level_index);
+                            selected_elements.clear();
                         }
                         break;
                     case SDL_SCANCODE_Y:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        {
                             level_set->redo(current_level_index);
+                            selected_elements.clear();
+                        }
                         break;
                     case SDL_SCANCODE_PAGEDOWN:
                         if (!SDL_IsTextInputActive())
