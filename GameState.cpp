@@ -1979,6 +1979,7 @@ void GameState::mouse_click_in_grid()
                 current_circuit_is_read_only = current_level_set_is_inspected;
                 current_circuit_is_inspected_subcircuit = false;
                 current_circuit = current_level->circuit;
+                return;
             }
             else if (inspection_stack.size() > i)
             {
@@ -1989,6 +1990,7 @@ void GameState::mouse_click_in_grid()
                 for (auto &sub : inspection_stack)
                     if (!sub->get_custom())
                         current_circuit_is_read_only = true;
+                return;
             }
             else if (i == 10 && current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
             {
@@ -2002,6 +2004,7 @@ void GameState::mouse_click_in_grid()
                         }
                         break;
                     }
+                return;
             }
             else if (i == 10 && current_level_set_is_inspected)
             {
@@ -2014,6 +2017,7 @@ void GameState::mouse_click_in_grid()
                 deletable_level_set = NULL;
                 level_set = edited_level_set;
                 set_level(current_level_index);
+                return;
             }
             else if (i == 9 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit)
             {
@@ -2028,12 +2032,14 @@ void GameState::mouse_click_in_grid()
                 deletable_level_set = NULL;
                 level_set = edited_level_set;
                 set_level(current_level_index);
+                return;
             }
             else if (i == 8 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit && deletable_level_set)
             {
                 show_confirm = true;
                 confirm_delete = true;
                 confirm_box_pos = XYPos(32*8 - 16, 32);
+                return;
             }
         }
     if (current_circuit_is_read_only)
@@ -2242,7 +2248,7 @@ void GameState::mouse_click_in_grid()
                 }
             }
         }
-        current_level->touch();
+        level_set->touch(current_level_index);
     }
     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
     {
@@ -2250,7 +2256,7 @@ void GameState::mouse_click_in_grid()
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             current_circuit->set_element_valve(mouse_grid, direction);
-            current_level->touch();
+            level_set->touch(current_level_index);
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_SOURCE)
@@ -2259,7 +2265,7 @@ void GameState::mouse_click_in_grid()
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             current_circuit->set_element_source(mouse_grid, direction);
-            current_level->touch();
+            level_set->touch(current_level_index);
         }
     }
     else if (mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT)
@@ -2270,7 +2276,7 @@ void GameState::mouse_click_in_grid()
             XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
             current_circuit->set_element_subcircuit(mouse_grid, direction, placing_subcircuit_level, edited_level_set);
             level_set->remove_circles(current_level_index);
-            current_level->touch();
+            level_set->touch(current_level_index);
         }
     }
     else if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -2280,6 +2286,8 @@ void GameState::mouse_click_in_grid()
         mouse_grid.x = std::max(std::min(mouse_grid.x, 9 - clipboard.size().x), 0);
         mouse_grid.y = std::max(std::min(mouse_grid.y, 9 - clipboard.size().y), 0);
         current_circuit->paste(clipboard, mouse_grid, edited_level_set);
+        level_set->touch(current_level_index);
+
     }
     else if (mouse_state == MOUSE_STATE_PLACING_SIGN)
     {
@@ -2392,9 +2400,31 @@ void GameState::mouse_click_in_panel()
             else if (panel_grid_pos.x == 1)
                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
             else if (panel_grid_pos.x == 2)
+            {
                 direction = Direction((int(direction) + 4 - 1) % 4);
+                if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                    clipboard.rotate(false);
+                if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                    dragged_sign.rotate(false);
+                if (!selected_elements.empty())
+                {
+                    current_circuit->rotate_selected_elements(selected_elements, false);
+                    level_set->touch(current_level_index);
+                }
+            }
             else if (panel_grid_pos.x == 3)
+            {
                 direction = Direction((int(direction) + 1) % 4);
+                if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                    clipboard.rotate(true);
+                if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                    dragged_sign.rotate(true);
+                if (!selected_elements.empty())
+                {
+                    current_circuit->rotate_selected_elements(selected_elements, true);
+                    level_set->touch(current_level_index);
+                }
+            }
             else if (panel_grid_pos.x == 7)
                 mouse_state = MOUSE_STATE_PLACING_SIGN;
             return;
@@ -2416,19 +2446,19 @@ void GameState::mouse_click_in_panel()
             if (panel_grid_pos.x == 0)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-                current_level->touch();
+                level_set->touch(current_level_index);
 
             }
             else if (panel_grid_pos.x == 1)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
-                current_level->touch();
+                level_set->touch(current_level_index);
 
             }
             else if (panel_grid_pos.x == 2)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
-                current_level->touch();
+                level_set->touch(current_level_index);
                 level_set->reset(current_level_index);
             }
             else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
@@ -2534,7 +2564,7 @@ void GameState::mouse_click_in_panel()
             {
                 current_level->select_test(t);
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
-                current_level->touch();
+                level_set->touch(current_level_index);
             }
         }
         if (panel_grid_pos == XYPos(0, 3) && current_level->best_design)
@@ -2561,7 +2591,7 @@ void GameState::mouse_click_in_panel()
         if (panel_pos.y <= (101 + 16))
         {
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-            current_level->touch();
+            level_set->touch(current_level_index);
 
             watch_slider(panel_offset.y + (101 + 8) * scale, DIRECTION_N, 100, &current_level->current_simpoint.values[port_index]);
             return;
@@ -2569,7 +2599,7 @@ void GameState::mouse_click_in_panel()
         else if (panel_pos.y <= (101 + 16 + 7 + 16))
         {
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-            current_level->touch();
+            level_set->touch(current_level_index);
 
             watch_slider(panel_offset.x + (port_index * 48 + 8) * scale, DIRECTION_E, 33, &current_level->current_simpoint.force[port_index], 100);
             return;
@@ -2656,7 +2686,7 @@ void GameState::mouse_motion()
 
         current_circuit->set_element_empty(grid, !first_deletion);
         first_deletion = false;
-        current_level->touch();
+        level_set->touch(current_level_index);
 
     }
     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
@@ -2725,35 +2755,57 @@ bool GameState::events()
                     }
                     case SDL_SCANCODE_Q:
                         if (!SDL_IsTextInputActive())
-                            direction = Direction((int(direction) + 4 - 1) % 4);
+                            direction = direction_rotate(direction, false);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             clipboard.rotate(false);
                         if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
                             dragged_sign.rotate(false);
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        {
+                            current_circuit->rotate_selected_elements(selected_elements, false);
+                            level_set->touch(current_level_index);
+                        }
                         break;
                     case SDL_SCANCODE_E:
                         if (!SDL_IsTextInputActive())
-                            direction = Direction((int(direction) + 1) % 4);
+                            direction = direction_rotate(direction, true);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             clipboard.rotate(true);
                         if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
                             dragged_sign.rotate(true);
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        {
+                            current_circuit->rotate_selected_elements(selected_elements, true);
+                            level_set->touch(current_level_index);
+                        }
                         break;
                     case SDL_SCANCODE_W:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        {
                             current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
+                            level_set->touch(current_level_index);
+                        }
                         break;
                     case SDL_SCANCODE_A:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        {
                             current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
+                            level_set->touch(current_level_index);
+                        }
                         break;
                     case SDL_SCANCODE_S:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        {
                             current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
+                            level_set->touch(current_level_index);
+                        }
                         break;
                     case SDL_SCANCODE_D:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        {
                             current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                            level_set->touch(current_level_index);
+                        }
                         break;
                     case SDL_SCANCODE_X:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
@@ -2761,7 +2813,7 @@ bool GameState::events()
                             clipboard.copy(selected_elements, *current_circuit);
                             current_circuit->delete_selected_elements(selected_elements);
                             selected_elements.clear();
-
+                            level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_C:
@@ -2785,6 +2837,7 @@ bool GameState::events()
                         {
                             current_circuit->delete_selected_elements(selected_elements);
                             selected_elements.clear();
+                            level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_BACKSPACE:
@@ -2792,6 +2845,7 @@ bool GameState::events()
                         {
                             current_circuit->delete_selected_elements(selected_elements);
                             selected_elements.clear();
+                            level_set->touch(current_level_index);
                         }
                         else
                         {
@@ -2823,6 +2877,7 @@ bool GameState::events()
                             else
                                 level_set->redo(current_level_index);
                             selected_elements.clear();
+                            level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_Y:
@@ -2830,6 +2885,7 @@ bool GameState::events()
                         {
                             level_set->redo(current_level_index);
                             selected_elements.clear();
+                            level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_PAGEDOWN:
@@ -2938,7 +2994,7 @@ bool GameState::events()
                         current_circuit->add_pipe_drag_list(pipe_drag_list);
                         pipe_drag_list.clear();
                         mouse_state = MOUSE_STATE_NONE;
-                        current_level->touch();
+                        level_set->touch(current_level_index);
                     }
                     if (mouse_state == MOUSE_STATE_AREA_SELECT)
                     {
@@ -3131,10 +3187,24 @@ bool GameState::events()
             }
             case SDL_MOUSEWHEEL:
             {
+
                 if(e.wheel.y > 0)
+                {
                     direction = Direction((int(direction) + 4 - 1) % 4);
+                    if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                        clipboard.rotate(false);
+                    if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                        dragged_sign.rotate(false);
+                }
+
                 if(e.wheel.y < 0)
+                {
                     direction = Direction((int(direction) + 1) % 4);
+                    if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                        clipboard.rotate(true);
+                    if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                        dragged_sign.rotate(true);
+                }
 
                 break;
             }

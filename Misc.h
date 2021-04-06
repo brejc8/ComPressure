@@ -110,11 +110,11 @@ public:
         case DIRECTION_N:
             return XYPos(x, y);
         case DIRECTION_E:
-            return XYPos(y, -x);
+            return XYPos(-y, x);
         case DIRECTION_S:
             return XYPos(-x,-y);
         case DIRECTION_W:
-            return XYPos(-y, x);
+            return XYPos(y, -x);
         }
         assert(0);
     }

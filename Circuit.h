@@ -559,6 +559,7 @@ public:
     void add_sign(Sign sign, bool no_undo = false);
 
     void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
+    void rotate_selected_elements(std::set<XYPos> &selected_elements, bool clockwise);
     void delete_selected_elements(std::set<XYPos> &selected_elements);
     void add_pipe_drag_list(std::list<XYPos> &pipe_drag_list);
 

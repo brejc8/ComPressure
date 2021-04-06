@@ -1222,7 +1222,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
 void Level::reset(LevelSet* level_set)
 {
-//    circuit->elaborate(level_set);
+    circuit->elaborate(level_set);
     reset();
 }
 
@@ -1360,6 +1360,7 @@ void Level::touch()
 {
     touched = true;
     circuit->fast_prepped = false;
+//    remove_circles();
 }
 
 LevelSet::LevelSet(SaveObject* sobj, bool inspect)
@@ -1501,6 +1502,11 @@ void LevelSet::remove_circles(unsigned level_index)
         levels[level_index]->circuit->remove_circles(this);
 }
 
+void LevelSet::touch(unsigned level_index)
+{
+    levels[level_index]->touch();
+    levels[level_index]->circuit->remove_circles(this);
+}
 
 void LevelSet::undo(unsigned level_index)
 {

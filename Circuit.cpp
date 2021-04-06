@@ -565,7 +565,7 @@ void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
     {
         if (circuit)
             delete circuit;
-        level->circuit->remove_circles(level_set);
+//        level->circuit->remove_circles(level_set);
         circuit = new Circuit(*level->circuit);
     }
     assert(circuit);
@@ -583,7 +583,7 @@ void CircuitElementSubCircuit::retire()
 
 bool CircuitElementSubCircuit::contains_subcircuit_level(unsigned level_index_q, LevelSet* level_set)
 {
-    if (level_index_q == level_index)
+    if (!custom && level_index_q == level_index)
         return true;
     if (circuit)
         return circuit->contains_subcircuit_level(level_index_q, level_set);
@@ -845,7 +845,6 @@ void Circuit::elaborate(LevelSet* level_set)
     {
         elements[pos.y][pos.x]->elaborate(level_set);
     }
-
 }
 
 void Circuit::retire()
@@ -969,8 +968,6 @@ void Circuit::sim_pre(PressureAdjacent adj)
     	fast_sim.clear();
         sim_prep(adj, fast_sim);
     }
-
-
     fast_sim.sim();
 }
 
@@ -984,23 +981,25 @@ void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)
         Circuit* subcircuit = elements[pos.y][pos.x]->get_subcircuit(&level_index);
         if (level_index != 0xFFFFFFFF)
         {
-            
-            if (seen.find(level_index) != seen.end())
+            if (elements[pos.y][pos.x]->get_custom())
             {
-                set_element_empty(pos, true);
-                const char* name = level_set->levels[level_index]->name;
-                signs.push_front(Sign(pos*32+XYPos(16,16), DIRECTION_N, std::string("ERROR ") + name));
+                subcircuit->remove_circles(level_set, seen);
             }
             else
             {
-                std::set<unsigned> sub_seen(seen);
-                sub_seen.insert(level_index);
-                level_set->levels[level_index]->circuit->remove_circles(level_set, sub_seen);
+                if (seen.find(level_index) != seen.end())
+                {
+                    set_element_empty(pos, true);
+                    const char* name = level_set->levels[level_index]->name;
+                    signs.push_front(Sign(pos*32+XYPos(16,16), DIRECTION_N, std::string("ERROR ") + name));
+                }
+                else
+                {
+                    std::set<unsigned> sub_seen(seen);
+                    sub_seen.insert(level_index);
+                    level_set->levels[level_index]->circuit->remove_circles(level_set, sub_seen);
+                }
             }
-        }
-        else if (subcircuit)
-        {
-            subcircuit->remove_circles(level_set, seen);
         }
     }
 }
@@ -1107,6 +1106,61 @@ void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Directi
     for (const XYPos& old: selected_elements)
     {
         new_sel.insert(old + mov);
+    }
+    selected_elements.clear();
+    selected_elements = new_sel;
+}
+
+void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool clockwise)
+{
+    std::map<XYPos, CircuitElement*> elems;
+    if (selected_elements.empty())
+        return;
+    
+    XYPos min = XYPos(9,9);
+    XYPos max = XYPos(0,0);
+    
+    for (const XYPos& old: selected_elements)
+    {
+        min.x = std::min(min.x, old.x);
+        min.y = std::min(min.y, old.y);
+        max.x = std::max(max.x, old.x);
+        max.y = std::max(max.y, old.y);
+    }
+    XYPos center = (min + max) / 2;
+    
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        if (is_blocked(pos))
+            return;
+        if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
+            return;
+        if (selected_elements.find(pos) == selected_elements.end() && !elements[pos.y][pos.x]->is_empty())
+            return;
+    }
+
+    ammend();
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        elems[pos] = elements[old.y][old.x];
+        elements[old.y][old.x] = new CircuitElementEmpty();
+    }
+    
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        delete elements[pos.y][pos.x];
+        elements[pos.y][pos.x] = elems[pos];
+        elements[pos.y][pos.x]->rotate(clockwise);
+    }
+    
+    std::set<XYPos> new_sel;
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        new_sel.insert(pos);
     }
     selected_elements.clear();
     selected_elements = new_sel;
@@ -1320,8 +1374,8 @@ void Clipboard::rotate(bool clockwise)
     for (ClipboardElement& elem: elements)
     {
         int oldx = elem.pos.x;
-        elem.pos.x = clockwise ? elem.pos.y : -elem.pos.y;
-        elem.pos.y = clockwise ? -oldx : oldx;
+        elem.pos.x = clockwise ? -elem.pos.y : elem.pos.y;
+        elem.pos.y = clockwise ? oldx : -oldx;
         elem.element->rotate(clockwise);
     }
     repos();

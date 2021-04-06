@@ -164,6 +164,7 @@ public:
     void save_design(unsigned level_index, unsigned save_slot);
     void reset(unsigned level_index);
     void remove_circles(unsigned level_index);
+    void touch(unsigned level_index);
     void undo(unsigned level_index);
     void redo(unsigned level_index);
 
