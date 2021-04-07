@@ -576,8 +576,8 @@ public:
     void ammend();
     void force_element(XYPos pos, CircuitElement* element);
     bool is_blocked(XYPos pos);
-    void undo(unsigned level_index, LevelSet* level_set);
-    void redo(unsigned level_index, LevelSet* level_set);
+    void undo(LevelSet* level_set);
+    void redo(LevelSet* level_set);
     void paste(Clipboard& clipboard, XYPos pos, LevelSet* level_set);
 
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);

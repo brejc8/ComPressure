@@ -2300,7 +2300,7 @@ void GameState::mouse_click_in_grid()
     }
     else if (mouse_state == MOUSE_STATE_DELETING)
     {
-        level_set->undo(current_level_index);
+        current_circuit->undo(level_set);
         selected_elements.clear();
         first_deletion = true;
     }
@@ -2873,9 +2873,9 @@ bool GameState::events()
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (!keyboard_shift)
-                                level_set->undo(current_level_index);           // FIXME direct to circuit
+                                current_circuit->undo(level_set);
                             else
-                                level_set->redo(current_level_index);
+                                current_circuit->redo(level_set);
                             selected_elements.clear();
                             level_set->touch(current_level_index);
                         }
@@ -2883,7 +2883,7 @@ bool GameState::events()
                     case SDL_SCANCODE_Y:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            level_set->redo(current_level_index);
+                            current_circuit->redo(level_set);
                             selected_elements.clear();
                             level_set->touch(current_level_index);
                         }

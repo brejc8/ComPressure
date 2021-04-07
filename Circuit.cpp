@@ -757,8 +757,7 @@ Circuit::Circuit(Circuit& other) :
     {
         elements[pos.y][pos.x] = other.elements[pos.y][pos.x]->copy();
     }
-
-
+    signs = other.signs;
 }
 
 Circuit::~Circuit()
@@ -1265,7 +1264,7 @@ void Circuit::ammend()
     redo_list.clear();
 }
 
-void Circuit::undo(unsigned level_index, LevelSet* level_set)
+void Circuit::undo(LevelSet* level_set)
 {
     if (!undo_list.empty())
     {
@@ -1279,7 +1278,7 @@ void Circuit::undo(unsigned level_index, LevelSet* level_set)
     }
 }
 
-void Circuit::redo(unsigned level_index, LevelSet* level_set)
+void Circuit::redo(LevelSet* level_set)
 {
     if (!redo_list.empty())
     {

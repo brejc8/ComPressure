@@ -1508,16 +1508,3 @@ void LevelSet::touch(unsigned level_index)
     levels[level_index]->circuit->remove_circles(this);
 }
 
-void LevelSet::undo(unsigned level_index)
-{
-    if (levels[level_index])
-        levels[level_index]->circuit->undo(level_index, this);
-}
-
-
-void LevelSet::redo(unsigned level_index)
-{
-    if (levels[level_index])
-        levels[level_index]->circuit->redo(level_index, this);
-}
-
