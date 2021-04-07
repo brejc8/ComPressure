@@ -751,6 +751,12 @@ void Sign::rotate(bool clockwise)
     direction = direction_rotate(direction, clockwise);
 }
 
+void Sign::flip(bool vertically)
+{
+    direction = direction_flip(direction, vertically);
+}
+
+
 Circuit::Circuit(SaveObjectMap* omap)
 {
     SaveObjectList* slist_y = omap->get_item("elements")->get_list();
@@ -1198,6 +1204,60 @@ void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool 
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        new_sel.insert(pos);
+    }
+    selected_elements.clear();
+    selected_elements = new_sel;
+}
+
+void Circuit::flip_selected_elements(std::set<XYPos> &selected_elements, bool vertically)
+{
+    std::map<XYPos, CircuitElement*> elems;
+    if (selected_elements.empty())
+        return;
+    
+    XYPos min = XYPos(9,9);
+    XYPos max = XYPos(0,0);
+    
+    for (const XYPos& old: selected_elements)
+    {
+        min.x = std::min(min.x, old.x);
+        min.y = std::min(min.y, old.y);
+        max.x = std::max(max.x, old.x);
+        max.y = std::max(max.y, old.y);
+    }
+    
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = XYPos(vertically ? old.x : max.x - old.x + min.x, vertically ? max.y - old.y + min.y : old.y);
+        if (is_blocked(pos))
+            return;
+        if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
+            return;
+        if (selected_elements.find(pos) == selected_elements.end() && !elements[pos.y][pos.x]->is_empty())
+            return;
+    }
+
+    ammend();
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = XYPos(vertically ? old.x : max.x - old.x + min.x, vertically ? max.y - old.y + min.y : old.y);
+        elems[pos] = elements[old.y][old.x];
+        elements[old.y][old.x] = new CircuitElementEmpty();
+    }
+    
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = XYPos(vertically ? old.x : max.x - old.x + min.x, vertically ? max.y - old.y + min.y : old.y);
+        delete elements[pos.y][pos.x];
+        elements[pos.y][pos.x] = elems[pos];
+        elements[pos.y][pos.x]->flip(vertically);
+    }
+    
+    std::set<XYPos> new_sel;
+    for (const XYPos& old: selected_elements)
+    {
+        XYPos pos = XYPos(vertically ? old.x : max.x - old.x + min.x, vertically ? max.y - old.y + min.y : old.y);
         new_sel.insert(pos);
     }
     selected_elements.clear();

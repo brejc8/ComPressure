@@ -518,6 +518,7 @@ public:
     void set_size(XYPos size);
     XYPos get_pos();
     void rotate(bool clockwise);
+    void flip(bool vertically);
 };
 
 class Circuit
@@ -575,6 +576,7 @@ public:
 
     void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
     void rotate_selected_elements(std::set<XYPos> &selected_elements, bool clockwise);
+    void flip_selected_elements(std::set<XYPos> &selected_elements, bool vertically);
     void delete_selected_elements(std::set<XYPos> &selected_elements);
     void add_pipe_drag_list(std::list<XYPos> &pipe_drag_list);
 

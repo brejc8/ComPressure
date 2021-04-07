@@ -1332,7 +1332,9 @@ void GameState::render()
 
         render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(400, 112), 0);
         render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(400+24, 112), 0);
-        
+        render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 184), 0, "Reflect\nvertically");
+        render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(400+24, 184), 0, "Reflect\nhorizontally");
+
         
         if (edited_level_set->is_playable(8))
             render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
@@ -2425,6 +2427,32 @@ void GameState::mouse_click_in_panel()
                     level_set->touch(current_level_index);
                 }
             }
+            else if (panel_grid_pos.x == 4)
+            {
+                dir_flip = dir_flip.rotate(true);
+                if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                    clipboard.flip(true);
+                if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                    dragged_sign.flip(true);
+                if (!selected_elements.empty())
+                {
+                    current_circuit->flip_selected_elements(selected_elements, true);
+                    level_set->touch(current_level_index);
+                }
+            }
+            else if (panel_grid_pos.x == 5)
+            {
+                dir_flip = dir_flip.rotate(true);
+                if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                    clipboard.flip(false);
+                if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                    dragged_sign.flip(true);
+                if (!selected_elements.empty())
+                {
+                    current_circuit->flip_selected_elements(selected_elements, false);
+                    level_set->touch(current_level_index);
+                }
+            }
             else if (panel_grid_pos.x == 7)
                 mouse_state = MOUSE_STATE_PLACING_SIGN;
             return;
@@ -2787,10 +2815,16 @@ bool GameState::events()
                                 dir_flip = dir_flip.flip(true);
                                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                                     clipboard.flip(true);
+                                if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                                    dragged_sign.flip(true);
                             }
                             else
                             {
-                                current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
+                                if (!keyboard_shift)
+                                    current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
+                                else
+                                    current_circuit->flip_selected_elements(selected_elements, true);
+
                                 level_set->touch(current_level_index);
                             }
                         }
@@ -2803,10 +2837,15 @@ bool GameState::events()
                                 dir_flip = dir_flip.flip(false);
                                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                                     clipboard.flip(false);
+                                if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                                    dragged_sign.flip(false);
                             }
                             else
                             {
-                                current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
+                                if (!keyboard_shift)
+                                    current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
+                                else
+                                    current_circuit->flip_selected_elements(selected_elements, false);
                                 level_set->touch(current_level_index);
                             }
                         }
@@ -2819,10 +2858,15 @@ bool GameState::events()
                                 dir_flip = dir_flip.flip(true);
                                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                                     clipboard.flip(true);
+                                if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                                    dragged_sign.flip(true);
                             }
                             else
                             {
-                                current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
+                                if (!keyboard_shift)
+                                    current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
+                                else
+                                    current_circuit->flip_selected_elements(selected_elements, true);
                                 level_set->touch(current_level_index);
                             }
                         }
@@ -2835,10 +2879,15 @@ bool GameState::events()
                                 dir_flip = dir_flip.flip(false);
                                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                                     clipboard.flip(false);
+                                if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                                    dragged_sign.flip(false);
                             }
                             else
                             {
-                                current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                                if (!keyboard_shift)
+                                    current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                                else
+                                    current_circuit->flip_selected_elements(selected_elements, false);
                                 level_set->touch(current_level_index);
                             }
                         }
