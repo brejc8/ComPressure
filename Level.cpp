@@ -1197,9 +1197,81 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_TEST;
             NEW_POINT( 95, 40,  0, 10);
             break;
+        case 25:
+            name = "MIN";
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+            level_version = 10;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(100,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(100,  0,  0,  0);
+            NEW_POINT(100, 50, 50,  0);
+            NEW_TEST;
+            NEW_POINT(100, 50, 50,  0);
+            NEW_POINT(100,100,100,  0);
+            NEW_TEST;
+            NEW_POINT(100,100,100,  0);
+            NEW_POINT( 50, 50,100,  0);
+            NEW_TEST;
+            NEW_POINT( 50, 50,100,  0);
+            NEW_POINT(  0,  0,100,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,100,  0);
+            NEW_POINT( 60, 60, 80,  0);
+            NEW_TEST;
+            NEW_POINT( 60, 60, 80,  0);
+            NEW_POINT( 60, 30, 30,  0);
+            NEW_TEST;
+            NEW_POINT( 60, 30, 30,  0);
+            NEW_POINT( 20, 20, 30,  0);
+            NEW_TEST;
+            NEW_POINT( 20, 20, 30,  0);
+            NEW_POINT( 60, 30, 30,  0);
+            NEW_TEST;
+            NEW_POINT( 60, 30, 30,  0);
+            NEW_POINT( 60, 60, 80,  0);
+            break;
+        case 26:
+            name = "MAX";
+            connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
+            level_version = 10;
+
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_TEST;
+            NEW_POINT(  0,  0,  0,  0);
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_TEST;
+            NEW_POINT(  0, 50, 50,  0);
+            NEW_POINT(100,100, 50,  0);
+            NEW_TEST;
+            NEW_POINT(100,100, 50,  0);
+            NEW_POINT( 50,100,100,  0);
+            NEW_TEST;
+            NEW_POINT( 50,100,100,  0);
+            NEW_POINT( 50, 50,  0,  0);
+            NEW_TEST;
+            NEW_POINT( 50, 50,  0,  0);
+            NEW_POINT( 50, 70, 70,  0);
+            NEW_TEST;
+            NEW_POINT( 50, 70, 70,  0);
+            NEW_POINT( 90, 90, 70,  0);
+            NEW_TEST;
+            NEW_POINT( 90, 90, 70,  0);
+            NEW_POINT( 30, 40, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 30, 40, 40,  0);
+            NEW_POINT( 60, 60, 40,  0);
+            NEW_TEST;
+            NEW_POINT( 60, 60, 40,  0);
+            NEW_POINT(  0, 10, 10,  0);
+            break;
 
 
-        case 25:                                                    // end
+        case 27:                                                    // end
             name = "Not yet done...";
             connection_mask = CONMASK_W | CONMASK_E;
             NEW_TEST;// N   E   S   W
