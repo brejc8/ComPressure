@@ -59,7 +59,7 @@ public:
 
     } panel_state = PANEL_STATE_LEVEL_SELECT;
 
-    Direction direction = DIRECTION_N;
+    DirFlip dir_flip;
 
     bool full_screen = false;
     int scale = 0;

@@ -339,19 +339,59 @@ void CircuitElementPipe::rotate(bool clockwise)
 
 }
 
+void CircuitElementPipe::flip(bool vertically)
+{
+    switch(connections)
+    {
+        case CONNECTIONS_NONE:
+            break;
+        case CONNECTIONS_NW:
+        case CONNECTIONS_NE:
+        case CONNECTIONS_NS:
+        case CONNECTIONS_EW:
+        case CONNECTIONS_ES:
+        case CONNECTIONS_WS:
+        case CONNECTIONS_NWE:
+        case CONNECTIONS_NES:
+        case CONNECTIONS_NWS:
+        case CONNECTIONS_EWS:
+        {
+            unsigned bm = con_to_bitmap(connections);
+            unsigned mask = vertically ? 0x5 : 0xA;
+            bm = (bm & ~mask) | ((bm & mask) << 2) | ((bm & mask) >> 2);
+            bm &= 0xF;
+            connections = bitmap_to_con(bm);
+            break;
+        }
+        case CONNECTIONS_NS_WE:
+            break;
+        case CONNECTIONS_NW_ES:
+            connections = CONNECTIONS_NE_WS;
+            break;
+        case CONNECTIONS_NE_WS:
+            connections = CONNECTIONS_NW_ES;
+            break;
+        case CONNECTIONS_ALL:
+            break;
+        default:
+            assert(0);
+    }
+
+}
+
 CircuitElementValve::CircuitElementValve(SaveObjectMap* omap)
 {
-    direction = Direction(omap->get_num("direction"));
+    dir_flip = DirFlip(omap->get_num("direction"));
 }
 
 void CircuitElementValve::save(SaveObjectMap* omap)
 {
-    omap->add_num("direction", direction);
+    omap->add_num("direction", dir_flip.as_int());
 }
 
 uint16_t CircuitElementValve::get_desc()
 {
-    return direction;
+    return dir_flip.as_int();
 }
 
 void CircuitElementValve::reset()
@@ -360,7 +400,7 @@ void CircuitElementValve::reset()
 
 SDL_Rect CircuitElementValve::getimage_bg(void)
 {
-    if (direction == DIRECTION_E || direction == DIRECTION_W)
+    if (dir_flip.dir == DIRECTION_E || dir_flip.dir == DIRECTION_W)
     {
         int x = (pressure_as_percent(pressure) * (48 - 6)) / 101;
         unsigned offset = unsigned(moved_pos / 50) % (48 - 14);
@@ -368,7 +408,6 @@ SDL_Rect CircuitElementValve::getimage_bg(void)
     }
     else
     {
-        
         int y = (pressure_as_percent(pressure) * (48 - 6)) / 101;
         unsigned offset = unsigned(moved_pos / 50) % (48 - 14);
         return SDL_Rect{304 + int(offset), 208 + y, 14, 6};
@@ -377,7 +416,7 @@ SDL_Rect CircuitElementValve::getimage_bg(void)
 
 XYPos CircuitElementValve::getimage_fg(void)
 {
-    if (direction == DIRECTION_E || direction == DIRECTION_W)
+    if (dir_flip.dir == DIRECTION_E || dir_flip.dir == DIRECTION_W)
         return XYPos(472 + openness * 24, 240);
     else
         return XYPos(472 + openness * 24, 240 + 24);
@@ -385,12 +424,14 @@ XYPos CircuitElementValve::getimage_fg(void)
 
 XYPos CircuitElementValve::getimage(void)
 {
-    return XYPos(direction * 32, 4 * 32);
+    Direction dir = dir_flip.get_n();
+    
+    return XYPos(int(dir) * 32, 4 * 32);
 }
 
 void CircuitElementValve::render_prep(PressureAdjacent adj_)
 {
-    PressureAdjacent adj(adj_, direction);
+    PressureAdjacent adj(adj_, dir_flip);
     int percent = pressure_as_percent((adj.N.value - adj.S.value));
     if (percent < 5)
         openness = 0;
@@ -415,7 +456,7 @@ void CircuitElementValve::render_prep(PressureAdjacent adj_)
     pressure = (adj.W.value + adj.E.value) / 2;
 
     int move_by = (mov * 100) / PRESSURE_SCALAR;
-    if (direction == DIRECTION_E || direction == DIRECTION_N)
+    if ((dir_flip.dir == DIRECTION_E || dir_flip.dir == DIRECTION_N))
         move_by = -move_by;
     move_by = std::min(move_by, 100);
     move_by = std::max(move_by, -100);
@@ -425,7 +466,7 @@ void CircuitElementValve::render_prep(PressureAdjacent adj_)
 
 void CircuitElementValve::sim_prep(PressureAdjacent adj_, FastSim& fast_sim)
 {
-     PressureAdjacent adj(adj_, direction);
+     PressureAdjacent adj(adj_, dir_flip);
      fast_sim.add_valve(*this, adj);
 }
 void CircuitElementValve::sim(PressureAdjacent adj)
@@ -495,8 +536,8 @@ CircuitElementSubCircuit::~CircuitElementSubCircuit()
         delete circuit;
 }
 
-CircuitElementSubCircuit::CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set):
-    direction(direction_),
+CircuitElementSubCircuit::CircuitElementSubCircuit(DirFlip dir_flip_, unsigned level_index_, LevelSet* level_set):
+    dir_flip(dir_flip_),
     level_index(level_index_)
 {
     level = NULL;
@@ -509,7 +550,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(Direction direction_, unsigne
 
 CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
 {
-    direction = Direction(omap->get_num("direction"));
+    dir_flip = Direction(omap->get_num("direction"));
     level_index = Direction(omap->get_num("level_index"));
     level = NULL;
     circuit = NULL;
@@ -522,7 +563,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
 
 CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& other)
 {
-    direction = other.direction;
+    dir_flip = other.dir_flip;
     level_index = other.level_index;
     level = other.level;
     custom  = other.custom;
@@ -534,7 +575,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& oth
 
 void CircuitElementSubCircuit::save(SaveObjectMap* omap)
 {
-    omap->add_num("direction", direction);
+    omap->add_num("direction", dir_flip.as_int());
     omap->add_num("level_index", level_index);
     if (custom)
     {
@@ -544,7 +585,7 @@ void CircuitElementSubCircuit::save(SaveObjectMap* omap)
 
 uint16_t CircuitElementSubCircuit::get_desc()
 {
-    return (level_index << 3) | direction << 1 | custom;
+    return (level_index << 4) | dir_flip.as_int() << 1 | custom;
 }
 
 CircuitElement* CircuitElementSubCircuit::copy()
@@ -599,10 +640,7 @@ unsigned CircuitElementSubCircuit::getconnections(void)
     con |= circuit->elements[8][4]->getconnections() & (1 << DIRECTION_S);
     con |= circuit->elements[4][0]->getconnections() & (1 << DIRECTION_W);
     
-    con <<= direction;
-    con |= con >> 4;
-    con &= 0xF;
-    return con;
+    return dir_flip.mask(con);
 }
 
 SDL_Rect CircuitElementSubCircuit::getimage_bg(void)
@@ -613,19 +651,19 @@ SDL_Rect CircuitElementSubCircuit::getimage_bg(void)
 XYPos CircuitElementSubCircuit::getimage(void)
 {
     assert(level);
-    return level->getimage(direction);
+    return level->getimage(dir_flip);
 }
 
 XYPos CircuitElementSubCircuit::getimage_fg(void)
 {
     assert(level);
-    return level->getimage_fg(direction);
+    return level->getimage_fg(dir_flip);
 }
 
 void CircuitElementSubCircuit::sim_prep(PressureAdjacent adj_, FastSim& fast_sim)
 {
     static CircuitPressure def;
-    PressureAdjacent adj(PressureAdjacent(adj_, getconnections(), def), direction);
+    PressureAdjacent adj(PressureAdjacent(adj_, getconnections(), def), dir_flip);
 
     assert(circuit);
     circuit->sim_prep(adj, fast_sim);
@@ -809,7 +847,8 @@ void Circuit::copy_elements(Circuit& other)
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        if (elements[pos.y][pos.x]->get_type() != other.elements[pos.y][pos.x]->get_type()
+        if (elements[pos.y][pos.x]->get_custom()
+         || elements[pos.y][pos.x]->get_type() != other.elements[pos.y][pos.x]->get_type()
          || elements[pos.y][pos.x]->get_desc() != other.elements[pos.y][pos.x]->get_desc())
         {
             delete elements[pos.y][pos.x];
@@ -1034,13 +1073,13 @@ void Circuit::set_element_pipe(XYPos pos, Connections con)
     }
 }
 
-void Circuit::set_element_valve(XYPos pos, Direction direction)
+void Circuit::set_element_valve(XYPos pos, DirFlip dir_flip)
 {
     if (is_blocked(pos))
         return;
     ammend();
     delete elements[pos.y][pos.x];
-    elements[pos.y][pos.x] = new CircuitElementValve(direction);
+    elements[pos.y][pos.x] = new CircuitElementValve(dir_flip);
 }
 
 void Circuit::set_element_source(XYPos pos, Direction direction)
@@ -1052,13 +1091,13 @@ void Circuit::set_element_source(XYPos pos, Direction direction)
     elements[pos.y][pos.x] = new CircuitElementSource(direction);
 }
 
-void Circuit::set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set)
+void Circuit::set_element_subcircuit(XYPos pos, DirFlip dir_flip, unsigned level_index, LevelSet* level_set)
 {
     if (is_blocked(pos))
         return;
     ammend();
     delete elements[pos.y][pos.x];
-    elements[pos.y][pos.x] = new CircuitElementSubCircuit(direction, level_index, level_set);
+    elements[pos.y][pos.x] = new CircuitElementSubCircuit(dir_flip, level_index, level_set);
 }
 
 void Circuit::add_sign(Sign sign, bool no_undo)
@@ -1300,7 +1339,7 @@ void Circuit::paste(Clipboard& clipboard, XYPos offset, LevelSet* level_set)
         XYPos pos = clip_elem.pos + offset;
         CircuitElement* element = clip_elem.element;
 
-        if (elements[pos.y][pos.x]->get_type() == CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT
+        if (elements[pos.y][pos.x]->get_custom()
          || elements[pos.y][pos.x]->get_type() != element->get_type()
          || elements[pos.y][pos.x]->get_desc() != element->get_desc())
         {
@@ -1376,6 +1415,20 @@ void Clipboard::rotate(bool clockwise)
         elem.pos.x = clockwise ? -elem.pos.y : elem.pos.y;
         elem.pos.y = clockwise ? oldx : -oldx;
         elem.element->rotate(clockwise);
+    }
+    repos();
+}
+
+void Clipboard::flip(bool vertically)
+{
+    repos();
+    for (ClipboardElement& elem: elements)
+    {
+        if (vertically)
+            elem.pos.y = -elem.pos.y;
+        else
+            elem.pos.x = -elem.pos.x;
+        elem.element->flip(vertically);
     }
     repos();
 }

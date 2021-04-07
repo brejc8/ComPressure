@@ -137,15 +137,15 @@ SaveObject* Level::save(bool lite)
     return omap;
 }
 
-XYPos Level::getimage(Direction direction)
+XYPos Level::getimage(DirFlip dir_flip)
 {
-    int mask = (connection_mask << direction | connection_mask >> (4 - direction)) & 0xF;
+    int mask = dir_flip.mask(connection_mask);
     return XYPos(128 + (mask & 0x3) * 32, 32 + ((mask >> 2) & 0x3) * 32);
 }
 
-XYPos Level::getimage_fg(Direction direction)
+XYPos Level::getimage_fg(DirFlip dir_flip)
 {
-    return XYPos(direction * 24, 184 + (int(level_index) * 24));
+    return XYPos(dir_flip.as_int() * 24, 184 + (int(level_index) * 24));
 }
 
 

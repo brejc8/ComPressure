@@ -131,8 +131,8 @@ public:
     ~Level();
     SaveObject* save(bool lite = false);
 
-    XYPos getimage(Direction direction);
-    XYPos getimage_fg(Direction direction);
+    XYPos getimage(DirFlip dir_flip);
+    XYPos getimage_fg(DirFlip dir_flip);
 
     void init_tests(SaveObjectMap* omap = NULL);
     void reset(LevelSet* level_set);

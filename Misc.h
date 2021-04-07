@@ -24,6 +24,79 @@ inline Direction direction_rotate(Direction direction, bool clockwise)
         return Direction((int(direction) + 4 - 1) % 4);
 }
 
+inline Direction direction_flip(Direction direction, bool vertically)
+{
+    if ((int(direction) ^ vertically) & 1)
+        return Direction((int(direction) + 2) % 4);
+    else
+        return direction;
+}
+
+class DirFlip
+{
+public:
+    Direction dir = DIRECTION_N;
+    bool flp = false;
+    DirFlip() {}
+    DirFlip(Direction dir_, bool flp_):
+        dir(dir_),
+        flp(flp_)
+    {}
+
+    DirFlip(int in):
+        dir(Direction(in & 0x3)),
+        flp((in >> 2)& 0x1)
+    {}
+    
+    Direction get_n()
+    {
+        return get_dir(DIRECTION_N);
+    }
+
+    Direction get_dir(Direction t)
+    {
+        t = Direction((int(dir) + int(t)) % 4);
+        if (!flp)
+            return t;
+        if (t == DIRECTION_N)
+            return DIRECTION_S;
+        if (t == DIRECTION_S)
+            return DIRECTION_N;
+        return t;
+    }
+    
+    unsigned mask(unsigned in)
+    {
+        in <<= int(dir);
+        in |= in >> 4;
+        if (flp)
+        {
+            in = (in & 0xA) | ((in & 1) << 2) | ((in >> 2) & 1);
+        }
+        return in & 0xF;
+    }
+
+    int as_int()
+    {
+        return int(dir) + (int(flp) << 2);
+    }
+
+    DirFlip rotate(bool clockwise)
+    {
+        if (clockwise != flp)
+            return DirFlip(Direction((int(dir) + 1) % 4), flp);
+        else
+            return DirFlip(Direction((int(dir) + 3) % 4), flp);
+    }
+
+    DirFlip flip(bool vertically)
+    {
+        if (vertically)
+            return DirFlip(dir, !flp);
+        return DirFlip(Direction((int(dir) + 2) % 4), !flp);
+    }
+};
+
 class Rand
 {
 public:

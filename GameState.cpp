@@ -966,7 +966,7 @@ void GameState::render()
         XYPos mouse_grid = ((mouse - grid_offset)/ scale) / 32;
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
-            SDL_Rect src_rect = {direction * 32, 4 * 32, 32, 32};
+            SDL_Rect src_rect = {dir_flip.get_n() * 32, 4 * 32, 32, 32};
             SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
             render_texture(src_rect, dst_rect);
         }
@@ -976,7 +976,7 @@ void GameState::render()
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
-            SDL_Rect src_rect = {128 + direction * 32, 0, 32, 32};
+            SDL_Rect src_rect = {128 + dir_flip.get_n() * 32, 0, 32, 32};
             SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
             render_texture(src_rect, dst_rect);
         }
@@ -986,7 +986,7 @@ void GameState::render()
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
-            XYPos pos = edited_level_set->levels[placing_subcircuit_level]->getimage(direction);
+            XYPos pos = edited_level_set->levels[placing_subcircuit_level]->getimage(dir_flip);
             {
                 SDL_Rect src_rect = {208, 160, 24, 24};
                 SDL_Rect dst_rect = {(mouse_grid.x * 32 + 4) * scale + grid_offset.x, (mouse_grid.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
@@ -999,7 +999,7 @@ void GameState::render()
                 render_texture(src_rect, dst_rect);
             }
 
-            pos = edited_level_set->levels[placing_subcircuit_level]->getimage_fg(direction);
+            pos = edited_level_set->levels[placing_subcircuit_level]->getimage_fg(dir_flip);
             if (pos != XYPos(0,0))
             {
                 SDL_Rect src_rect = {pos.x, pos.y, 24, 24};
@@ -1156,7 +1156,7 @@ void GameState::render()
     if (mouse_state == MOUSE_STATE_PLACING_SIGN)
     {
         XYPos mouse_grid = (mouse - grid_offset) / scale;
-        Sign sign(mouse_grid, direction, "");
+        Sign sign(mouse_grid, dir_flip.get_n(), "");
         sign.set_size(get_text_size(sign.text));
         render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4);
         {
@@ -1327,15 +1327,15 @@ void GameState::render()
             flash_valve = false;
 
         if (edited_level_set->is_playable(2))
-            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)));
-        render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet));
+            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)));
+        render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet));
 
         render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(400, 112), 0);
         render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(400+24, 112), 0);
         
         
         if (edited_level_set->is_playable(8))
-            render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + direction * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
+            render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
 
 
         unsigned level_index = 0;
@@ -1349,7 +1349,7 @@ void GameState::render()
                 break;
             
             if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
-                render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(direction), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name);
+                render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(dir_flip), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name);
             level_index++;
         }
 
@@ -2255,7 +2255,7 @@ void GameState::mouse_click_in_grid()
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
-            current_circuit->set_element_valve(mouse_grid, direction);
+            current_circuit->set_element_valve(mouse_grid, dir_flip);
             level_set->touch(current_level_index);
         }
     }
@@ -2264,7 +2264,7 @@ void GameState::mouse_click_in_grid()
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
-            current_circuit->set_element_source(mouse_grid, direction);
+            current_circuit->set_element_source(mouse_grid, dir_flip.get_n());
             level_set->touch(current_level_index);
         }
     }
@@ -2274,7 +2274,7 @@ void GameState::mouse_click_in_grid()
         if (mouse_grid.inside(XYPos(9,9)) && !current_circuit->is_blocked(mouse_grid))
         {
             XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
-            current_circuit->set_element_subcircuit(mouse_grid, direction, placing_subcircuit_level, edited_level_set);
+            current_circuit->set_element_subcircuit(mouse_grid, dir_flip, placing_subcircuit_level, edited_level_set);
             level_set->remove_circles(current_level_index);
             level_set->touch(current_level_index);
         }
@@ -2294,7 +2294,7 @@ void GameState::mouse_click_in_grid()
         XYPos mouse_grid = ((mouse - grid_offset) / scale);
         if (mouse_grid.inside(XYPos(9*32,9*32)))
         {
-            Sign sign(mouse_grid, direction, "");
+            Sign sign(mouse_grid, dir_flip.get_n(), "");
             current_circuit->add_sign(sign);
         }
     }
@@ -2401,7 +2401,7 @@ void GameState::mouse_click_in_panel()
                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
             else if (panel_grid_pos.x == 2)
             {
-                direction = Direction((int(direction) + 4 - 1) % 4);
+                dir_flip = dir_flip.rotate(false);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                     clipboard.rotate(false);
                 if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
@@ -2414,7 +2414,7 @@ void GameState::mouse_click_in_panel()
             }
             else if (panel_grid_pos.x == 3)
             {
-                direction = Direction((int(direction) + 1) % 4);
+                dir_flip = dir_flip.rotate(true);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                     clipboard.rotate(true);
                 if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
@@ -2755,7 +2755,7 @@ bool GameState::events()
                     }
                     case SDL_SCANCODE_Q:
                         if (!SDL_IsTextInputActive())
-                            direction = direction_rotate(direction, false);
+                            dir_flip = dir_flip.rotate(false);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             clipboard.rotate(false);
                         if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
@@ -2768,7 +2768,7 @@ bool GameState::events()
                         break;
                     case SDL_SCANCODE_E:
                         if (!SDL_IsTextInputActive())
-                            direction = direction_rotate(direction, true);
+                            dir_flip = dir_flip.rotate(true);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             clipboard.rotate(true);
                         if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
@@ -2782,29 +2782,65 @@ bool GameState::events()
                     case SDL_SCANCODE_W:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
-                            level_set->touch(current_level_index);
+                            if (selected_elements.empty())
+                            {
+                                dir_flip = dir_flip.flip(true);
+                                if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                                    clipboard.flip(true);
+                            }
+                            else
+                            {
+                                current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
+                                level_set->touch(current_level_index);
+                            }
                         }
                         break;
                     case SDL_SCANCODE_A:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
-                            level_set->touch(current_level_index);
+                            if (selected_elements.empty())
+                            {
+                                dir_flip = dir_flip.flip(false);
+                                if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                                    clipboard.flip(false);
+                            }
+                            else
+                            {
+                                current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
+                                level_set->touch(current_level_index);
+                            }
                         }
                         break;
                     case SDL_SCANCODE_S:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
-                            level_set->touch(current_level_index);
+                            if (selected_elements.empty())
+                            {
+                                dir_flip = dir_flip.flip(true);
+                                if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                                    clipboard.flip(true);
+                            }
+                            else
+                            {
+                                current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
+                                level_set->touch(current_level_index);
+                            }
                         }
                         break;
                     case SDL_SCANCODE_D:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
-                            level_set->touch(current_level_index);
+                            if (selected_elements.empty())
+                            {
+                                dir_flip = dir_flip.flip(false);
+                                if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                                    clipboard.flip(false);
+                            }
+                            else
+                            {
+                                current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                                level_set->touch(current_level_index);
+                            }
                         }
                         break;
                     case SDL_SCANCODE_X:
@@ -3187,10 +3223,9 @@ bool GameState::events()
             }
             case SDL_MOUSEWHEEL:
             {
-
                 if(e.wheel.y > 0)
                 {
-                    direction = Direction((int(direction) + 4 - 1) % 4);
+                    dir_flip = dir_flip.rotate(true);
                     if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                         clipboard.rotate(false);
                     if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
@@ -3199,7 +3234,7 @@ bool GameState::events()
 
                 if(e.wheel.y < 0)
                 {
-                    direction = Direction((int(direction) + 1) % 4);
+                    dir_flip = dir_flip.rotate(false);
                     if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                         clipboard.rotate(true);
                     if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)

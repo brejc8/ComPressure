@@ -124,6 +124,14 @@ public:
     {
     }
 
+    PressureAdjacent(PressureAdjacent adj, DirFlip dir_flip):
+        N(dir_flip.dir == DIRECTION_N ? (dir_flip.flp ? adj.S : adj.N) : dir_flip.dir == DIRECTION_E ? (dir_flip.flp ? adj.W : adj.E) : dir_flip.dir == DIRECTION_S ? (dir_flip.flp ? adj.N : adj.S) : (dir_flip.flp ? adj.E : adj.W)),
+        E(dir_flip.dir == DIRECTION_N ? adj.E : dir_flip.dir == DIRECTION_E ? adj.S : dir_flip.dir == DIRECTION_S ? adj.W : adj.N),
+        S(dir_flip.dir == DIRECTION_N ? (dir_flip.flp ? adj.N : adj.S) : dir_flip.dir == DIRECTION_E ? (dir_flip.flp ? adj.E : adj.W) : dir_flip.dir == DIRECTION_S ? (dir_flip.flp ? adj.S : adj.N) : (dir_flip.flp ? adj.W : adj.E)),
+        W(dir_flip.dir == DIRECTION_N ? adj.W : dir_flip.dir == DIRECTION_E ? adj.N : dir_flip.dir == DIRECTION_S ? adj.E : adj.S)
+    {
+    }
+
     PressureAdjacent(PressureAdjacent adj, unsigned con_mask, CircuitPressure& def):
         N(((con_mask >>  DIRECTION_N) & 1) ? adj.N : def),
         E(((con_mask >>  DIRECTION_E) & 1) ? adj.E : def),
@@ -352,6 +360,7 @@ public:
     virtual bool get_custom() {return false;}
     virtual void set_custom() {}
     virtual void rotate(bool clockwise) = 0;
+    virtual void flip(bool vertically) = 0;
 };
 
 class CircuitElementPipe : public CircuitElement
@@ -378,6 +387,7 @@ public:
     virtual Pressure get_moved(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_PIPE;}
     void rotate(bool clockwise);
+    void flip(bool vertically);
 
     void extend_pipe(Connections con);
 };
@@ -391,17 +401,17 @@ class CircuitElementValve : public CircuitElement
     int moved_pos = 0;
 
 public:
-    Direction direction = DIRECTION_N;
+    DirFlip dir_flip;
 
     CircuitElementValve(){}
-    CircuitElementValve(Direction direction_):
-        direction(direction_)
+    CircuitElementValve(DirFlip dir_flip_):
+        dir_flip(dir_flip_)
         {}
     CircuitElementValve(SaveObjectMap*);
 
     void save(SaveObjectMap*);
     virtual uint16_t get_desc();
-    virtual CircuitElement* copy() { return new CircuitElementValve(direction);}
+    virtual CircuitElement* copy() { return new CircuitElementValve(dir_flip);}
     void reset();
     unsigned getconnections(void) {return 0xF;};
     XYPos getimage(void);
@@ -412,7 +422,8 @@ public:
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     void sim(PressureAdjacent adj);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_VALVE;}
-    void rotate(bool clockwise) {direction = direction_rotate(direction, clockwise);};
+    void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
+    void flip(bool vertically) {dir_flip = dir_flip.flip(vertically);};
 };
 
 class CircuitElementSource : public CircuitElement
@@ -435,6 +446,8 @@ public:
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SOURCE;}
     void rotate(bool clockwise) {direction = direction_rotate(direction, clockwise);};
+    void flip(bool vertically) {direction = direction_flip(direction, vertically);};
+
 };
 
 class CircuitElementEmpty : public CircuitElement
@@ -452,19 +465,20 @@ public:
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_EMPTY;}
     virtual bool is_empty() {return true;};
     void rotate(bool clockwise) {};
+    void flip(bool vertically) {};
 };
 
 class CircuitElementSubCircuit : public CircuitElement
 {
 private:
 public:
-    Direction direction;
+    DirFlip dir_flip;
     unsigned level_index;
     Level* level = NULL;;
     Circuit* circuit = NULL;
     bool custom = false;
 
-    CircuitElementSubCircuit(Direction direction_, unsigned level_index_, LevelSet* level_set = NULL);
+    CircuitElementSubCircuit(DirFlip dir_flip_, unsigned level_index_, LevelSet* level_set = NULL);
     CircuitElementSubCircuit(SaveObjectMap*);
     CircuitElementSubCircuit(CircuitElementSubCircuit& other);
     ~CircuitElementSubCircuit();
@@ -485,7 +499,8 @@ public:
     Circuit* get_subcircuit(unsigned *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}
     virtual bool get_custom() {return custom;}
     virtual void set_custom() {custom = true;}
-    void rotate(bool clockwise) {direction = direction_rotate(direction, clockwise);};
+    void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
+    void flip(bool vertically) {dir_flip = dir_flip.flip(vertically);};
 };
 
 class Sign
@@ -553,9 +568,9 @@ public:
 
     void set_element_empty(XYPos pos, bool no_history = false);
     void set_element_pipe(XYPos pos, Connections con);
-    void set_element_valve(XYPos pos, Direction direction);
+    void set_element_valve(XYPos pos, DirFlip dir_flip);
     void set_element_source(XYPos pos, Direction direction);
-    void set_element_subcircuit(XYPos pos, Direction direction, unsigned level_index, LevelSet* level_set);
+    void set_element_subcircuit(XYPos pos, DirFlip dir_flip, unsigned level_index, LevelSet* level_set);
     void add_sign(Sign sign, bool no_undo = false);
 
     void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
@@ -604,5 +619,6 @@ public:
     void repos();
     XYPos size();
     void rotate(bool clockwise);
+    void flip(bool vertically);
 
 };
