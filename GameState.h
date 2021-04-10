@@ -139,6 +139,7 @@ public:
 
 
     bool show_dialogue = false;
+    bool show_dialogue_hint = false;
     int dialogue_index = 0;
     int next_dialogue_level = 0;
 

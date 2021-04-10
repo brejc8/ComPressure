@@ -214,7 +214,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 2:                                                                     // NPN
-            name = "NPN";
+            name = "Normally Open";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E;
             substep_count = 2000;
             level_version = 10;
@@ -238,7 +238,7 @@ void Level::init_tests(SaveObjectMap* omap)
             break;
 
         case 3:                                                                     // PNP
-            name = "PNP";
+            name = "Normally Closed";
             connection_mask = CONMASK_S | CONMASK_W | CONMASK_E;
             substep_count = 2000;
             level_version = 10;

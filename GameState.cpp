@@ -1306,7 +1306,7 @@ void GameState::render()
             render_number_2digit(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), score);
         }
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
-//        render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(352, 160), requesting_help);        // Help
+        render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
 //        render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0);                      // Letter
 
 
@@ -1453,10 +1453,16 @@ void GameState::render()
                 if (i == 3)
                     src_rect = {432 + 2 * 96, 80, 16, 16};
                 render_texture(src_rect, dst_rect);
+                if (((mouse - XYPos(dst_rect.x, dst_rect.y))/scale).inside(XYPos(16,16)))
+                    tooltip_string = "Save";
                 src_rect.y += 32;
                 dst_rect.y -= 16 * scale;
                 if (current_level->saved_designs[i])                     // restore stars star
+                {
                     render_texture(src_rect, dst_rect);
+                    if (((mouse - XYPos(dst_rect.x, dst_rect.y))/scale).inside(XYPos(16,16)))
+                        tooltip_string = "Restore";
+                }
             }
         }
 
@@ -1467,6 +1473,9 @@ void GameState::render()
             SDL_Rect src_rect = {336, 32, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + (0) * scale, panel_offset.y + (32 + 8 + 16) * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
+            if (((mouse - XYPos(panel_offset.x + (0) * scale, panel_offset.y + (32 + 8 + 16) * scale))/scale).inside(XYPos(16,16)))
+                tooltip_string = "Best solution";
+
         }
 
         for (int i = 0; i < test_count; i++)
@@ -1651,6 +1660,14 @@ void GameState::render()
 //         }
 // 
     }
+
+
+    if (show_confirm)
+    {
+        render_button((confirm_box_pos + XYPos(0,0))*scale, XYPos(352, 184), 1, "Confirm");
+        render_button((confirm_box_pos + XYPos(32,0))*scale, XYPos(376, 184), 0, "Cancel");
+    }
+
     if (tooltip_string)
     {
         std::string tip_str(tooltip_string);
@@ -1672,19 +1689,21 @@ void GameState::render()
         render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
         render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
     }
-
-    if (!dialogue[current_level_index][dialogue_index].text)
-        show_dialogue = false;
-
-#ifdef COMPRESSURE_DEMO
-    if (current_level_index == (14 - 1) && dialogue_index)
-        show_dialogue = false;
-#endif
-
-    if (show_dialogue)
+    if (show_dialogue || show_dialogue_hint)
     {
-        const char* text = dialogue[current_level_index][dialogue_index].text;
-        DialogueCharacter character = dialogue[current_level_index][dialogue_index].character;
+#ifdef COMPRESSURE_DEMO
+        if (current_level_index == (14 - 1) && dialogue_index)
+            show_dialogue = false;
+#endif
+        Dialogue& dia = show_dialogue_hint ? hint[current_level_index][dialogue_index] : dialogue[current_level_index][dialogue_index];
+        const char* text = dia.text;
+        DialogueCharacter character = dia.character;
+        if (!text)
+        {
+            show_dialogue = false;
+            show_dialogue_hint = false;
+        }
+
 #ifdef COMPRESSURE_DEMO
         if (current_level_index == (14 - 1))
         {
@@ -1740,13 +1759,6 @@ void GameState::render()
         render_texture(src_rect, dst_rect);
         level_win_animation--;
     }
-
-    if (show_confirm)
-    {
-        render_button((confirm_box_pos + XYPos(0,0))*scale, XYPos(352, 184), 1, "Confirm");
-        render_button((confirm_box_pos + XYPos(32,0))*scale, XYPos(376, 184), 0, "Cancel");
-    }
-
     if (show_help)
     {
         render_box(XYPos(16 * scale, 0 * scale), XYPos(592, 360), 0);
@@ -1934,6 +1946,8 @@ void GameState::set_level(unsigned level_index)
     level_set->reset(current_level_index);
     show_hint = false;
     selected_elements.clear();
+    show_dialogue = false;
+    show_dialogue_hint = false;
     if (level_index == next_dialogue_level && !current_level_set_is_inspected)
     {
         show_dialogue = true;
@@ -2381,6 +2395,12 @@ void GameState::mouse_click_in_panel()
         else if ((panel_pos - XYPos(0,144)).inside(XYPos(32,32)))   // Blah
         {
             show_dialogue = true;
+            dialogue_index = 0;
+            
+        }
+        else if ((panel_pos - XYPos(32,144)).inside(XYPos(32,32)))   // Hint
+        {
+            show_dialogue_hint = true;
             dialogue_index = 0;
             
         }
@@ -3230,6 +3250,13 @@ bool GameState::events()
                         dialogue_index++;
                         if (!dialogue[current_level_index][dialogue_index].text)
                             show_dialogue = false;
+                        break;
+                    }
+                    else if (show_dialogue_hint)
+                    {
+                        dialogue_index++;
+                        if (!hint[current_level_index][dialogue_index].text)
+                            show_dialogue_hint = false;
                         break;
                     }
                     else if (mouse.x < panel_offset.x)

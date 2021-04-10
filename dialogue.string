@@ -114,7 +114,9 @@ static Dialogue dialogue5[] = {
 
     {DIALOGUE_ADA,
         "June 5th\n"
-        "I created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. This appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a \"buffer\".\n"
+        "I created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. Charles’s valves appear to open to the pressure on the “+” side, minus the pressure on the “-” side.\n"
+        "\n"
+        "This appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a \"buffer\".\n"
     },
 
     {DIALOGUE_ADA,

@@ -1,0 +1,232 @@
+static Dialogue hint0[] = {
+    {DIALOGUE_CHARLES,
+        "Click and hold the left mouse button to place a new pipe from the start point to the end. If you drag a new pipe over the old one, it will not connect them. If you get something wrong, you can remove the pipes using the right mouse button.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint1[] = {
+    {DIALOGUE_CHARLES,
+        "The build menu lets you place a steam source which supplies steam at 100 PSI. An open ended pipe will release the pressure to 0. By tapping off a pipe somewhere in the middle, it may be possible to create a pressure somewhere in between.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint2[] = {
+    {DIALOGUE_CHARLES,
+        "The build menu has the Valve component. By connecting the “+” side of the valve to the North, it allows the North input to control how open the valve is. You can then simply connect East and West to connect the two when North is at High Pressure.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint3[] = {
+    {DIALOGUE_NICOLA,
+        "If I understand correctly, we need to connect the “+” port of the valve to a high pressure steam source, and the port marked “-” to the South input. This will connect East and West only when the South port pressure is low. If it is high, it will close the valve.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint4[] = {
+    {DIALOGUE_NICOLA,
+        "When the input is high, we connect the North. We know how to do that from the “Normally Open” design. And when the input is low, we connect the South. That’s our “Normally Closed” design.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint5[] = {
+    {DIALOGUE_NICOLA,
+        "Well, let’s start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. We know how to do that from the previous designs. As Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint6[] = {
+    {DIALOGUE_NICOLA,
+        "I guess we need to make a design nearly identical to our buffer. Instead of supplying steam when the input is high, that is when we went it to atmosphere. When the input is low is when we supply the steam.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint7[] = {
+    {DIALOGUE_NICOLA,
+        "We can use valves to measure which of North and South is higher. If North is higher, we connect the output to steam. If South is higher, we connect it to atmosphere.\n"
+        "\n"
+        "Remember, the steam in the output pipe will not drain away by itself, we need to  actively release it using a valve.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint8[] = {
+    {DIALOGUE_NICOLA,
+        "I guess we already have a comparator, and we have a source of a precise value of 50.\n"
+        "When the input is 100, we want the output to be 50. So I guess we connect our 50 generator to the output using a valve. And when the input is 0, we vent the output to atmosphere.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint9[] = {
+    {DIALOGUE_NICOLA,
+        "This sounds like our buffer design again, but when the input is 50, we want the output to be 100. So the atmosphere venting valve should be closed once we reach 50. I guess instead using the 100 PSI on “-” side of the venting valve, we could switch it to 50.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint10[] = {
+    {DIALOGUE_NICOLA,
+        "I don’t remember there being any other components in this. I think we just need to connect what is there to the output.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint11[] = {
+    {DIALOGUE_NICOLA,
+        "If we pass the output through our encryption component, we can take determine what the input must have been.\n"
+        "\n"
+        "When the two inputs on the comparator are equal, the output is neither pressurised, nor vented. If we get too much wobble, we should go back to our comparator design and make it less strong.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint12[] = {
+    {DIALOGUE_NICOLA,
+        "We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint13[] = {
+    {DIALOGUE_NICOLA,
+        "We open one valve to the value of the West input minus the South input, we can then open a second valve to the same level of openness by looking for when the pressure between them is 50.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint14[] = {
+    {DIALOGUE_NICOLA,
+        "This one is somewhat harder. Using a subtracter gives us too much wobble.\n"
+        "\n"
+        "Comparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint15[] = {
+    {DIALOGUE_ANNIE,
+        "When the South input is high, we open our storage pipe. We can the use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the input and output valves.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint16[] = {
+    {DIALOGUE_NICOLA,
+        "The output is the value of a latch controled by the south input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint17[] = {
+    {DIALOGUE_NICOLA,
+        "For a change a wobble is actually desirable. Amplifiers in a ring with an inversion will be unstable and will wobble up and down.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint18[] = {
+    {DIALOGUE_NICOLA,
+        "When West is higher than South, start adding more steam. When West is lower than North, start releasing more steam.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint19[] = {
+    {DIALOGUE_NICOLA,
+        "You can put valves in series. Only if all the valves are open will steam flow through.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint20[] = {
+    {DIALOGUE_NICOLA,
+        "This is not much different than our normal latch design, expect when the output and the timing pulse are not connected when the North select input is low.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint21[] = {
+    {DIALOGUE_NICOLA,
+        "If the select is higher than 50, we enable one latch, otherwise we enable the other.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint22[] = {
+    {DIALOGUE_NICOLA,
+        "We need so man select signals. What if we chain a row of flow detectors with steam inlet at one end and atmosphere at the other? This would give us all the values we need to create.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint23[] = {
+    {DIALOGUE_NICOLA,
+        "We can use two Latch5 elements and switch between them bepending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100).\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint24[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint25[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint26[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint27[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint28[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint29[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint30[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint31[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* hint[] = {hint0, hint1, hint2, hint3, hint4, hint5, hint6, hint7, hint8, hint9, hint10, hint11, hint12, hint13, hint14, hint15, hint16, hint17, hint18, hint19, hint20, hint21, hint22, hint23, hint24, hint25, hint26, hint27, hint28, hint29, hint30, hint31, NULL};

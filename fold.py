@@ -5,12 +5,13 @@ import fileinput, textwrap
 dialogue_count = 0
 first_line = True
 for line_in in fileinput.input():
+    name = fileinput.filename().replace(".txt","")
     if line_in.rstrip().startswith("#"):
         continue
     if first_line:
         if not line_in.startswith("!"):
             continue
-        print ("static Dialogue " + fileinput.filename().replace(".txt","") + str(dialogue_count) + "[] = {")
+        print ("static Dialogue " + name + str(dialogue_count) + "[] = {")
     line_in = line_in.rstrip()
     if line_in.startswith("!"):
         if not first_line:
@@ -26,7 +27,7 @@ for line_in in fileinput.input():
         print ('        "' + line_in.replace('"','\\"') + '\\n"')
 
 
-print ('Dialogue* ' + fileinput.filename().replace(".txt","") + '[] = {', end ="")
+print ('Dialogue* ' + name + '[] = {', end ="")
 for x in range(dialogue_count):
-    print ("dialogue" + str(x) + ", ", end ="")
+    print (name + str(x) + ", ", end ="")
 print ('NULL};')

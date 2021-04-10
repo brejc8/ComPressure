@@ -29,4 +29,7 @@ CLEANFILES = dialogue.string
 dialogue.string: dialogue.txt fold.py
 	./fold.py dialogue.txt > dialogue.string
 
+hint.string: hint.txt fold.py
+	./fold.py hint.txt > hint.string
+
 CXXFLAGS = -std=c++2a

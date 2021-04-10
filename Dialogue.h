@@ -17,3 +17,4 @@ struct Dialogue
 };
 
 extern Dialogue* dialogue[];
+extern Dialogue* hint[];
