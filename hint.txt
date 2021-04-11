@@ -8,7 +8,7 @@ The build menu lets you place a steam source which supplies steam at 100 PSI. An
 !END
 #                    NPN
 !CHARLES
-The build menu has the Valve component. By connecting the “+” side of the valve to the North, it allows the North input to control how open the valve is. You can then simply connect East and West to connect the two when North is at High Pressure.
+The build menu has the valve component. By connecting the “+” side of the valve to the North, it allows the North input to control how open the valve is. You can then simply connect East and West to connect the two when North is at High Pressure.
 !END
 #                    PNP
 !NICOLA
@@ -25,7 +25,7 @@ Well, let’s start with the basics. When the input is high, we will connect the
 !END
 #                           Inverter
 !NICOLA
-I guess we need to make a design nearly identical to our buffer. Instead of supplying steam when the input is high, that is when we went it to atmosphere. When the input is low is when we supply the steam.
+I guess we need to make a design nearly identical to our buffer. Instead of supplying steam when the input is high, that is when we want it to be connected to atmosphere. When the input is low is when we supply the steam.
 !END
 #                           Comparator
 !NICOLA
@@ -36,7 +36,9 @@ Remember, the steam in the output pipe will not drain away by itself, we need to
 #                           Amp50
 !NICOLA
 I guess we already have a comparator, and we have a source of a precise value of 50.
+!END
 #                           div 2
+!NICOLA
 When the input is 100, we want the output to be 50. So I guess we connect our 50 generator to the output using a valve. And when the input is 0, we vent the output to atmosphere.
 !END
 #                           mul 2
@@ -65,15 +67,15 @@ We open one valve to the value of the West input minus the South input, we can t
 !NICOLA
 This one is somewhat harder. Using a subtracter gives us too much wobble.
 
-Comparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs.
+Comparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.
 !END
                                     #  Latch
 !ANNIE
-When the South input is high, we open our storage pipe. We can the use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the input and output valves.
+When the South input is high, we open our storage pipe. We can the use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the timing and output valves.
 !END
                               #  Tabulator
 !NICOLA
-The output is the value of a latch controled by the south input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them.
+The output is the value of a latch controled by the south input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, subtracter and a switch.
 !END
                               #  Diffuse the bomb
 !NICOLA
@@ -97,11 +99,11 @@ If the select is higher than 50, we enable one latch, otherwise we enable the ot
 !END
                               # Latch5
 !NICOLA
-We need so man select signals. What if we chain a row of flow detectors with steam inlet at one end and atmosphere at the other? This would give us all the values we need to create.
+We need so many select signals! What if we chain a row of flow detectors with steam inlet at one end and atmosphere at the other? This would give us all the values we need to create.
 !END
                               # Latch10
 !NICOLA
-We can use two Latch5 elements and switch between them bepending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100).
+We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100). I guess that zoom element is useful after all.
 !END
 !END 
 !END 
