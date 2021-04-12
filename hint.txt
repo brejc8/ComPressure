@@ -43,7 +43,7 @@ When the input is 100, we want the output to be 50. So I guess we connect our 50
 !END
 #                           mul 2
 !NICOLA
-This sounds like our buffer design again, but when the input is 50, we want the output to be 100. So the atmosphere venting valve should be closed once we reach 50. I guess instead using the 100 PSI on “-” side of the venting valve, we could switch it to 50. 
+This sounds like our buffer design again, but when the input is 50, we want the output to be 100. So the atmosphere venting valve should be closed once we reach 50. I guess, instead of using the 100 PSI on “-” side of the venting valve, we could switch it to 50. 
 !END
 #                    Encrypt
 !NICOLA
@@ -51,7 +51,7 @@ I don’t remember there being any other components in this. I think we just nee
 !END
 #                          Decrypt
 !NICOLA
-If we pass the output through our encryption component, we can take determine what the input must have been.
+If we pass the output through our encryption component, we can determine what the input must have been.
 
 When the two inputs on the comparator are equal, the output is neither pressurised, nor vented. If we get too much wobble, we should go back to our comparator design and make it less strong.
 !END
@@ -65,7 +65,7 @@ We open one valve to the value of the West input minus the South input, we can t
 !END
 #                                Add
 !NICOLA
-This one is somewhat harder. Using a subtracter gives us too much wobble.
+This one is somewhat harder. Using a subtractor gives us too much wobble.
 
 Comparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.
 !END
@@ -75,11 +75,11 @@ When the South input is high, we open our storage pipe. We can the use a buffer 
 !END
                               #  Tabulator
 !NICOLA
-The output is the value of a latch controled by the south input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, subtracter and a switch.
+The output is the value of a latch controlled by the South input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, a subtractor and a switch.
 !END
                               #  Diffuse the bomb
 !NICOLA
-For a change a wobble is actually desirable. Amplifiers in a ring with an inversion will be unstable and will wobble up and down.
+For a change a wobble is actually desirable. Amplifiers in a ring configuration with make the design unstable and will wobble up and down.
 !END
                             # Zoom
 !NICOLA
@@ -91,11 +91,11 @@ You can put valves in series. Only if all the valves are open will steam flow th
 !END
                                # LatchE
 !NICOLA
-This is not much different than our normal latch design, expect when the output and the timing pulse are not connected when the North select input is low.
+This is not much different than our normal latch design, except the output and the timing pulse are not connected when the North input is low.
 !END
                                # Latch2
 !NICOLA
-If the select is higher than 50, we enable one latch, otherwise we enable the other.
+If the North select input is higher than 50, we enable one latch, otherwise we enable the other.
 !END
                               # Latch5
 !NICOLA
@@ -103,7 +103,7 @@ We need so many select signals! What if we chain a row of flow detectors with st
 !END
                               # Latch10
 !NICOLA
-We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100). I guess that zoom element is useful after all.
+We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100). I guess that Zoom element is useful after all.
 !END
 !END 
 !END 

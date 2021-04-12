@@ -650,6 +650,8 @@ SDL_Rect CircuitElementSubCircuit::getimage_bg(void)
 
 XYPos CircuitElementSubCircuit::getimage(void)
 {
+    if (!level)
+        return XYPos(0,0);
     assert(level);
     return level->getimage(dir_flip);
 }

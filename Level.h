@@ -77,6 +77,7 @@ public:
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
 
     unsigned level_index;
+    bool hidden = false;
     Circuit* circuit;
     LevelSet *best_design = NULL;
     LevelSet *saved_designs[4] = {NULL};
@@ -127,7 +128,7 @@ public:
     unsigned global_score_graph_time = 0;
 
     Level(unsigned level_index_, SaveObject* sobj);
-    Level(unsigned level_index_);
+    Level(unsigned level_index_, bool hidden_ = false);
     ~Level();
     SaveObject* save(bool lite = false);
 

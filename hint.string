@@ -82,7 +82,7 @@ static Dialogue hint9[] = {
 
 static Dialogue hint10[] = {
     {DIALOGUE_NICOLA,
-        "This sounds like our buffer design again, but when the input is 50, we want the output to be 100. So the atmosphere venting valve should be closed once we reach 50. I guess instead using the 100 PSI on “-” side of the venting valve, we could switch it to 50.\n"
+        "This sounds like our buffer design again, but when the input is 50, we want the output to be 100. So the atmosphere venting valve should be closed once we reach 50. I guess, instead of using the 100 PSI on “-” side of the venting valve, we could switch it to 50.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -98,7 +98,7 @@ static Dialogue hint11[] = {
 
 static Dialogue hint12[] = {
     {DIALOGUE_NICOLA,
-        "If we pass the output through our encryption component, we can take determine what the input must have been.\n"
+        "If we pass the output through our encryption component, we can determine what the input must have been.\n"
         "\n"
         "When the two inputs on the comparator are equal, the output is neither pressurised, nor vented. If we get too much wobble, we should go back to our comparator design and make it less strong.\n"
     },
@@ -124,7 +124,7 @@ static Dialogue hint14[] = {
 
 static Dialogue hint15[] = {
     {DIALOGUE_NICOLA,
-        "This one is somewhat harder. Using a subtracter gives us too much wobble.\n"
+        "This one is somewhat harder. Using a subtractor gives us too much wobble.\n"
         "\n"
         "Comparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.\n"
     },
@@ -142,7 +142,7 @@ static Dialogue hint16[] = {
 
 static Dialogue hint17[] = {
     {DIALOGUE_NICOLA,
-        "The output is the value of a latch controled by the south input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, subtracter and a switch.\n"
+        "The output is the value of a latch controlled by the South input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, a subtractor and a switch.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -150,7 +150,7 @@ static Dialogue hint17[] = {
 
 static Dialogue hint18[] = {
     {DIALOGUE_NICOLA,
-        "For a change a wobble is actually desirable. Amplifiers in a ring with an inversion will be unstable and will wobble up and down.\n"
+        "For a change a wobble is actually desirable. Amplifiers in a ring configuration with make the design unstable and will wobble up and down.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -174,7 +174,7 @@ static Dialogue hint20[] = {
 
 static Dialogue hint21[] = {
     {DIALOGUE_NICOLA,
-        "This is not much different than our normal latch design, expect when the output and the timing pulse are not connected when the North select input is low.\n"
+        "This is not much different than our normal latch design, except the output and the timing pulse are not connected when the North input is low.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -182,7 +182,7 @@ static Dialogue hint21[] = {
 
 static Dialogue hint22[] = {
     {DIALOGUE_NICOLA,
-        "If the select is higher than 50, we enable one latch, otherwise we enable the other.\n"
+        "If the North select input is higher than 50, we enable one latch, otherwise we enable the other.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -198,7 +198,7 @@ static Dialogue hint23[] = {
 
 static Dialogue hint24[] = {
     {DIALOGUE_NICOLA,
-        "We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100). I guess that zoom element is useful after all.\n"
+        "We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100). I guess that Zoom element is useful after all.\n"
     },
 
     {DIALOGUE_END, NULL}

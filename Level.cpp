@@ -59,8 +59,9 @@ SaveObject* Test::save()
     return omap;
 }
 
-Level::Level(unsigned level_index_):
-    level_index(level_index_)
+Level::Level(unsigned level_index_, bool hidden_):
+    level_index(level_index_),
+    hidden(hidden_)
 {
     pin_order[0] = 0; pin_order[1] = 1; pin_order[2] = 2; pin_order[3] = 3;
     circuit = new Circuit;
@@ -1452,10 +1453,7 @@ LevelSet::LevelSet(SaveObject* sobj, bool inspect)
             levels[i] = new Level(i, sobj);
         else
         {
-            if (inspect)
-                levels[i] = NULL;
-            else
-                levels[i] = new Level(i);
+            levels[i] = new Level(i, inspect);
         }
     }
     for (int i = 0; i < LEVEL_COUNT; i++)
@@ -1515,7 +1513,7 @@ bool LevelSet::is_playable(unsigned level)
     if (level >= LEVEL_COUNT)
         return false;
     if (read_only)
-        return (levels[level] != NULL);
+        return (!levels[level]->hidden);
     for (int i = 0; i < level; i++)
     {
         if (levels[i]->best_score <= percent_as_pressure(0))
