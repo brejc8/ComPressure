@@ -2448,7 +2448,7 @@ void GameState::mouse_click_in_panel()
             }
             else if (panel_grid_pos.x == 4)
             {
-                dir_flip = dir_flip.rotate(true);
+                dir_flip = dir_flip.flip(true);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                     clipboard.flip(true);
                 if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
@@ -2461,7 +2461,7 @@ void GameState::mouse_click_in_panel()
             }
             else if (panel_grid_pos.x == 5)
             {
-                dir_flip = dir_flip.rotate(true);
+                dir_flip = dir_flip.flip(false);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                     clipboard.flip(false);
                 if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)

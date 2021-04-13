@@ -125,10 +125,10 @@ public:
     }
 
     PressureAdjacent(PressureAdjacent adj, DirFlip dir_flip):
-        N(dir_flip.dir == DIRECTION_N ? (dir_flip.flp ? adj.S : adj.N) : dir_flip.dir == DIRECTION_E ? (dir_flip.flp ? adj.W : adj.E) : dir_flip.dir == DIRECTION_S ? (dir_flip.flp ? adj.N : adj.S) : (dir_flip.flp ? adj.E : adj.W)),
-        E(dir_flip.dir == DIRECTION_N ? adj.E : dir_flip.dir == DIRECTION_E ? adj.S : dir_flip.dir == DIRECTION_S ? adj.W : adj.N),
-        S(dir_flip.dir == DIRECTION_N ? (dir_flip.flp ? adj.N : adj.S) : dir_flip.dir == DIRECTION_E ? (dir_flip.flp ? adj.E : adj.W) : dir_flip.dir == DIRECTION_S ? (dir_flip.flp ? adj.S : adj.N) : (dir_flip.flp ? adj.W : adj.E)),
-        W(dir_flip.dir == DIRECTION_N ? adj.W : dir_flip.dir == DIRECTION_E ? adj.N : dir_flip.dir == DIRECTION_S ? adj.E : adj.S)
+        N(dir_flip.get_dir(DIRECTION_N) == DIRECTION_N ? adj.N : dir_flip.get_dir(DIRECTION_N) == DIRECTION_E ? adj.E : dir_flip.get_dir(DIRECTION_N) == DIRECTION_S ? adj.S : adj.W),
+        E(dir_flip.get_dir(DIRECTION_E) == DIRECTION_N ? adj.N : dir_flip.get_dir(DIRECTION_E) == DIRECTION_E ? adj.E : dir_flip.get_dir(DIRECTION_E) == DIRECTION_S ? adj.S : adj.W),
+        S(dir_flip.get_dir(DIRECTION_S) == DIRECTION_N ? adj.N : dir_flip.get_dir(DIRECTION_S) == DIRECTION_E ? adj.E : dir_flip.get_dir(DIRECTION_S) == DIRECTION_S ? adj.S : adj.W),
+        W(dir_flip.get_dir(DIRECTION_W) == DIRECTION_N ? adj.N : dir_flip.get_dir(DIRECTION_W) == DIRECTION_E ? adj.E : dir_flip.get_dir(DIRECTION_W) == DIRECTION_S ? adj.S : adj.W)
     {
     }
 
