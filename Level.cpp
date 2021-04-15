@@ -176,7 +176,7 @@ void Level::init_tests(SaveObjectMap* omap)
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;            // Cross
             pin_order[0] = 3; pin_order[1] = 0; pin_order[2] = 1; pin_order[3] = 2;
             substep_count = 2000;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST; tests.back().tested_direction = DIRECTION_S;
             NEW_POINT(0  ,  0,  0,  0);
@@ -203,7 +203,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "50";
             connection_mask = CONMASK_E;
             substep_count = 2000;
-            level_version = 10;
+            level_version = 20;
             NEW_TEST;
             NEW_POINT(  0, 50,  0,  0);
             NEW_TEST;
@@ -218,7 +218,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Normally Open";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E;
             substep_count = 2000;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(100,  0,  0,  0);
@@ -242,7 +242,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Normally Closed";
             connection_mask = CONMASK_S | CONMASK_W | CONMASK_E;
             substep_count = 2000;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -266,7 +266,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Switch";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_E | CONMASK_S;
             substep_count = 7000;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -282,15 +282,6 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(100,100, 50,100);
             NEW_TEST;
             NEW_POINT(100,100,  0,100);
-            NEW_POINT(100, 50,  0, 50);
-            NEW_TEST;
-            NEW_POINT(100, 50,  0, 50);
-            NEW_POINT(  0, 50,100, 50);
-            NEW_TEST;
-            NEW_POINT(  0, 50,100, 50);
-            NEW_POINT( 20, 40, 60, 50);
-            NEW_TEST;
-            NEW_POINT( 20, 40, 60, 50);
             NEW_POINT(100,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(100,  0,  0,  0);
@@ -307,7 +298,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 5:                                                                 // Buf
             name = "Buffer";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 11;
+            level_version = 20;
 
             circuit->force_element(XYPos(3,0), new CircuitElementEmpty());
             circuit->force_element(XYPos(3,1), new CircuitElementEmpty());
@@ -360,7 +351,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 6:                                                                     // Inv
             name = "Inverter";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,100,  0,  0);
@@ -403,7 +394,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 7:                                                             // Comparator
             name = "Comparator";
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,100,  0);
@@ -443,7 +434,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 8:                                                                 // amp
             name = "Amp50";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -480,7 +471,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 9:                                                        // div 2
             name = "Div2";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
@@ -526,7 +517,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 10:                                                        // mul 2
             name = "Mul2";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -557,7 +548,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 11:                                                        // Encrypt
             name = "Encrypt";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 11;
+            level_version = 20;
             
             circuit->force_element(XYPos(0,1), new CircuitElementEmpty());
             circuit->force_element(XYPos(1,1), new CircuitElementEmpty());
@@ -620,7 +611,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 12:                                                        // Decrypt
             name = "Decrypt";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 11;
+            level_version = 20;
             substep_count = 20000;
             circuit->force_element(XYPos(3,4), new CircuitElementSubCircuit(DIRECTION_N, 7));
             circuit->force_element(XYPos(4,5), new CircuitElementSubCircuit(DIRECTION_S, 11));
@@ -657,7 +648,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 13:                                                                 // Sensor
             name = "Sensor";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 11;
+            level_version = 20;
 
             circuit->force_element(XYPos(0,3), new CircuitElementSource(DIRECTION_S));
             circuit->force_element(XYPos(0,4), new CircuitElementValve(DIRECTION_W));
@@ -708,7 +699,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Subtractor";
             substep_count = 30000;
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
-            level_version = 11;
+            level_version = 20;
             pin_order[0] = 3; pin_order[1] = 2; pin_order[2] = 1; pin_order[3] = 0;
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -750,7 +741,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Adder";
             substep_count = 30000;
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -796,7 +787,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 16:                                                    // latch
             name = "Latch";
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
             NEW_POINT(  0,  0,100,  0);
@@ -834,7 +825,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Tabulator";
             substep_count = 30000;
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0, 10);
             NEW_POINT(  0,  0,100, 10);
@@ -889,7 +880,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Broken Link";
             connection_mask = CONMASK_W | CONMASK_E;
             substep_count = 50000;
-            level_version = 10;
+            level_version = 20;
             circuit->force_element(XYPos(0,4), new CircuitElementPipe(CONNECTIONS_WS));
             circuit->force_element(XYPos(0,5), new CircuitElementPipe(CONNECTIONS_NE));
             circuit->force_element(XYPos(1,5), new CircuitElementPipe(CONNECTIONS_EW));
@@ -940,7 +931,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 19:                                                    // zoom
             name = "Zoom";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
             NEW_TEST;// N   E   S   W
             NEW_POINT(100,  0,  0,  0);
             NEW_POINT(100,  0,  0,  0);
@@ -979,7 +970,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Flow Detector";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
             substep_count = 15000;
-            level_version = 2;
+            level_version = 20;
             circuit->force_element(XYPos(4,0), new CircuitElementPipe(CONNECTIONS_NWS));
             circuit->force_element(XYPos(3,0), new CircuitElementPipe(CONNECTIONS_EW));
             circuit->force_element(XYPos(2,0), new CircuitElementPipe(CONNECTIONS_EW));
@@ -1028,7 +1019,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 21:
             name = "LatchE";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
-            level_version = 1;
+            level_version = 20;
             NEW_TEST;// N   E   S   W
             NEW_POINT(100,  0,  0,  0);
             NEW_POINT(100,  0,100,  0);
@@ -1068,12 +1059,14 @@ void Level::init_tests(SaveObjectMap* omap)
         case 22:                                                    // Latch2
             name = "Latch2";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
-            level_version = 1;
+            level_version = 20;
+            substep_count = 30000;
             NEW_TEST;// N   E   S   W
             NEW_POINT( 25,  0,  0,  0);
             NEW_POINT( 25,  0,100,  0);
             NEW_POINT( 25,  0,  0,  0);
             NEW_TEST;
+            NEW_POINT( 25,  0,  0, 80);
             NEW_POINT( 25,  0,  0, 80);
             NEW_TEST;
             NEW_POINT( 25,  0,  0, 80);
@@ -1086,9 +1079,12 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT( 75, 30,  0, 30);
             NEW_TEST;
             NEW_POINT( 75, 30,  0, 60);
+            NEW_POINT( 75, 30,  0, 60);
             NEW_TEST;
             NEW_POINT( 25, 80,  0, 60);
+            NEW_POINT( 25, 80,  0, 60);
             NEW_TEST;
+            NEW_POINT( 75, 30,  0, 60);
             NEW_POINT( 75, 30,  0, 60);
             NEW_TEST;
             NEW_POINT( 75, 30,  0, 60);
@@ -1100,6 +1096,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 23:                                                    // Latch5
             name = "Latch5";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
+            level_version = 20;
             substep_count = 30000;
             NEW_TEST;// N   E   S   W
             NEW_POINT( 10,  0,  0,  0);
@@ -1151,6 +1148,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 24:                                                    // Latch10
             name = "Latch10";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
+            level_version = 20;
             substep_count = 30000;
             NEW_TEST;// N   E   S   W
             NEW_POINT( 15,  0,  0,  0);
@@ -1169,7 +1167,9 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT( 25, 30,  0, 30);
             NEW_TEST;
             NEW_POINT( 15, 80,  0, 60);
+            NEW_POINT( 15, 80,  0, 60);
             NEW_TEST;
+            NEW_POINT( 25, 30,  0, 60);
             NEW_POINT( 25, 30,  0, 60);
             NEW_TEST;
             NEW_POINT( 55,  0,  0, 40);
@@ -1201,7 +1201,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 25:
             name = "MIN";
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -1237,7 +1237,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 26:
             name = "MAX";
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
-            level_version = 10;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -1273,6 +1273,13 @@ void Level::init_tests(SaveObjectMap* omap)
 
 
         case 27:                                                    // end
+            name = "Not yet done...";
+            connection_mask = CONMASK_W | CONMASK_E;
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  77,  77,  77, 77);
+            break;
+
+        case LEVEL_COUNT:                                            // end
             name = "Not yet done...";
             connection_mask = CONMASK_W | CONMASK_E;
             NEW_TEST;// N   E   S   W
@@ -1482,7 +1489,7 @@ SaveObject* LevelSet::save(bool lite)
     
     for (int i = 0; i < LEVEL_COUNT; i++)
     {
-        if (levels[i])
+        if (!levels[i]->hidden)
             slist->add_item(levels[i]->save(lite));
         else
             slist->add_item(new SaveObjectNull);
@@ -1504,7 +1511,7 @@ SaveObject* LevelSet::save(unsigned level_index)
     return slist;
 }
 
-bool LevelSet::is_playable(unsigned level)
+bool LevelSet::is_playable(unsigned level, unsigned highest_level)
 {
 #ifdef COMPRESSURE_DEMO
     if (level >= 14)
@@ -1514,11 +1521,8 @@ bool LevelSet::is_playable(unsigned level)
         return false;
     if (read_only)
         return (!levels[level]->hidden);
-    for (int i = 0; i < level; i++)
-    {
-        if (levels[i]->best_score <= percent_as_pressure(0))
-            return false;
-    }
+    if (level > highest_level)
+        return false;
     return true;
 }
 

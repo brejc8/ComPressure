@@ -121,7 +121,6 @@ public:
 
     bool show_help = false;
     int show_help_page = 0;
-    int top_level_allowed = 0;
     int level_win_animation = 0;
     bool show_hint = false;
     bool flash_editor_menu = true;
@@ -142,6 +141,7 @@ public:
     bool show_dialogue_hint = false;
     int dialogue_index = 0;
     int next_dialogue_level = 0;
+    int highest_level = 0;
 
     bool show_main_menu = false;
     bool display_about = false;

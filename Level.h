@@ -151,14 +151,14 @@ public:
 class LevelSet
 {
 public:
-    Level* levels[LEVEL_COUNT];
+    Level* levels[LEVEL_COUNT+1];
     bool read_only = false;
     LevelSet(SaveObject* sobj, bool inspect = false);
     LevelSet();
     ~LevelSet();
     SaveObject* save(bool lite = false);
     SaveObject* save(unsigned level_index);
-    bool is_playable(unsigned level);
+    bool is_playable(unsigned level, unsigned highest_level);
     int top_playable();
     Pressure test_level(unsigned level_index);
     void record_best_score(unsigned level_index);

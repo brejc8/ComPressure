@@ -56,12 +56,16 @@ GameState::GameState(const char* filename)
             level_set = new LevelSet(omap->get_item("levels"));
             edited_level_set = level_set;
 
+            next_dialogue_level = omap->get_num("next_dialogue_level");
+            highest_level = next_dialogue_level - 1;
+            if (omap->has_key("highest_level"))
+                highest_level = omap->get_num("highest_level");
             current_level_index = omap->get_num("current_level_index");
-            if (!edited_level_set->is_playable(current_level_index))
+            if (!edited_level_set->is_playable(current_level_index, highest_level))
                 current_level_index = 0;
             game_speed = omap->get_num("game_speed");
             show_debug = omap->get_num("show_debug");
-            next_dialogue_level = omap->get_num("next_dialogue_level");
+                
             show_help_page = omap->get_num("show_help_page");
             flash_editor_menu = omap->get_num("flash_editor_menu");
             flash_steam_inlet = omap->get_num("flash_steam_inlet");
@@ -125,7 +129,6 @@ GameState::GameState(const char* filename)
     music = Mix_LoadMUS("music.ogg");
     Mix_PlayMusic(music, -1);
     
-    top_level_allowed = edited_level_set->top_playable();
 }
     
 SaveObject* GameState::save(bool lite)
@@ -135,6 +138,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("current_level_index", current_level_index);
     omap->add_num("game_speed", game_speed);
     omap->add_num("show_debug", show_debug);
+    omap->add_num("highest_level", highest_level);
     omap->add_num("next_dialogue_level", next_dialogue_level);
     omap->add_num("show_help_page", show_help_page);
     omap->add_num("flash_editor_menu", flash_editor_menu);
@@ -413,7 +417,6 @@ void GameState::advance()
         current_level->best_score_set = false;
         edited_level_set->record_best_score(current_level_index);
         score_submit(current_level_index, false);
-
     }
 }
 
@@ -669,11 +672,10 @@ void GameState::render()
     frame_index++;
     debug_frames++;
     
-    if (top_level_allowed != edited_level_set->top_playable())
+    if (edited_level_set->levels[highest_level]->best_score && (highest_level + 1) < LEVEL_COUNT)
     {
-        top_level_allowed = edited_level_set->top_playable();
+        highest_level++;
         level_win_animation = 100;
-    
     }
     
     {
@@ -1253,13 +1255,13 @@ void GameState::render()
             render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 16, 11*32 + 8), panel_colour);
         }
         {                                                                                               // Top Menu
-            bool flash_next_level = edited_level_set->is_playable(next_dialogue_level) && (frame_index % 60 < 30);
+            bool flash_next_level = (next_dialogue_level == highest_level) && (frame_index % 60 < 30);
             render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT, "Level select");
-            if (!current_circuit_is_read_only && edited_level_set->is_playable(1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
+            if (!current_circuit_is_read_only && (next_dialogue_level > 1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
                 render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR, "Design");
-            if (edited_level_set->is_playable(3))
+            if (next_dialogue_level > 3)
                 render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR, "Test");
-            if (edited_level_set->is_playable(7))
+            if (next_dialogue_level > 7)
                 render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST, "Experiment");
             render_box(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(32, 32), panel_state == PANEL_STATE_SCORES);
             render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
@@ -1295,7 +1297,7 @@ void GameState::render()
             unsigned level_index =  pos.y * 8 + pos.x;
             if (level_index >= LEVEL_COUNT)
                 break;
-            if (!level_set->is_playable(level_index))
+            if (!level_set->is_playable(level_index, highest_level))
                 continue;
             if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue)
                 continue;
@@ -1326,7 +1328,7 @@ void GameState::render()
         if (mouse_state == MOUSE_STATE_PLACING_VALVE)
             flash_valve = false;
 
-        if (edited_level_set->is_playable(2))
+        if (next_dialogue_level > 2)
             render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)));
         render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet));
 
@@ -1336,7 +1338,7 @@ void GameState::render()
         render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(400+24, 184), 0, "Reflect\nhorizontally");
 
         
-        if (edited_level_set->is_playable(8))
+        if (next_dialogue_level > 8)
             render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
 
 
@@ -1347,7 +1349,7 @@ void GameState::render()
         {
             if (level_index >= LEVEL_COUNT)
                 break;
-            if (!edited_level_set->is_playable(level_index))
+            if (!edited_level_set->is_playable(level_index, highest_level))
                 break;
             
             if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
@@ -1440,7 +1442,7 @@ void GameState::render()
         render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(448 + 1 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_1, "Repeat 1 test");
         render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(448 + 2 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_ALL, "Run all tests");
 
-        if (edited_level_set->is_playable(8) && !current_level_set_is_inspected)
+        if ((next_dialogue_level > 8) && !current_level_set_is_inspected)
         {
             render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 136), 0, "Export to\nclipboard");
             if (clipboard_level_set)
@@ -1799,7 +1801,7 @@ void GameState::render()
             {
                 {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes the design requirements. Each design has four ports and the requirements state the expected output in terms of other ports. Each port has a colour identifier. Click on the requirements to recieve a hint."},
                 {XYPos(0,13),5,0.5, "Once you pass all the tests, the next design becomes available. You can always come back to refine your solution.\n\nPress the pipe button below to continue the tutorial. You can return to the help by pressing F1."},
-                {XYPos(0,0), 10, 1, "Pipes can be laid down by either left mouse button dragging the pipe from the source to the desination, or by clicking left mouse button to extend the pipe in the direction of the mouse. Right click to cancel pipe laying mode."},
+                {XYPos(0,0), 10, 1, "Pipes can be laid down by either left mouse button dragging the pipe from the source to the destination, or by clicking left mouse button to extend the pipe in the direction of the mouse. Right click to cancel pipe laying mode."},
                 {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and other elements."},
                 {XYPos(0,4), 15, 1, "The build menu allows you to add components into your design. Select the steam inlet component and hover over your design. The arrow buttons change the orientation. This can also be done using keys Q and E or the mouse scroll wheel. Clicking the left mouse button will place the component. Right click to exit steam inlet placing mode."},
                 {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab, or middle mouse button, is a shortcut to enter valve placement mode. Pressing Tab, or middle mouse button, again switches to steam inlet placement."},
@@ -1925,7 +1927,7 @@ void GameState::render()
 
 void GameState::set_level(unsigned level_index)
 {
-    while (!level_set->is_playable(level_index))
+    while (!level_set->is_playable(level_index, highest_level))
     {
         if (level_index == 0)
             level_index = LEVEL_COUNT;
@@ -1994,6 +1996,7 @@ void GameState::mouse_click_in_grid()
                 current_circuit_is_read_only = current_level_set_is_inspected;
                 current_circuit_is_inspected_subcircuit = false;
                 current_circuit = current_level->circuit;
+                selected_elements.clear();
                 return;
             }
             else if (inspection_stack.size() > i)
@@ -2005,6 +2008,7 @@ void GameState::mouse_click_in_grid()
                 for (auto &sub : inspection_stack)
                     if (!sub->get_custom())
                         current_circuit_is_read_only = true;
+                selected_elements.clear();
                 return;
             }
             else if (i == 10 && current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
@@ -2341,18 +2345,18 @@ void GameState::mouse_click_in_panel()
                     panel_state = PANEL_STATE_LEVEL_SELECT;
                     break;
                 case 1:
-                    if (!edited_level_set->is_playable(1) || current_circuit_is_read_only)
+                    if (!(next_dialogue_level > 1) || current_circuit_is_read_only)
                         break;
                     panel_state = PANEL_STATE_EDITOR;
                     flash_editor_menu = false;
                     break;
                 case 2:
-                    if (!edited_level_set->is_playable(3))
+                    if (!(next_dialogue_level > 3))
                         break;
                     panel_state = PANEL_STATE_MONITOR;
                     break;
                 case 3:
-                    if (!edited_level_set->is_playable(7))
+                    if (!(next_dialogue_level > 7))
                         break;
                     panel_state = PANEL_STATE_TEST;
                     break;
@@ -2383,7 +2387,7 @@ void GameState::mouse_click_in_panel()
     {
         XYPos panel_grid_pos = panel_pos / 32;
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
-        if (level_index < LEVEL_COUNT && level_set->is_playable(level_index))
+        if (level_index < LEVEL_COUNT && level_set->is_playable(level_index, highest_level))
         {
             set_level(level_index);
         }
@@ -2416,7 +2420,7 @@ void GameState::mouse_click_in_panel()
         XYPos panel_grid_pos = panel_pos / 32;
         if (panel_grid_pos.y == 0)
         {
-            if (panel_grid_pos.x == 0 && edited_level_set->is_playable(2))
+            if (panel_grid_pos.x == 0 && (next_dialogue_level > 2))
                 mouse_state = MOUSE_STATE_PLACING_VALVE;
             else if (panel_grid_pos.x == 1)
                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
@@ -2479,7 +2483,7 @@ void GameState::mouse_click_in_panel()
         panel_grid_pos = (panel_pos - XYPos(0, 32 + 8)) / 32;
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
 
-        if ((level_index != current_level_index) && edited_level_set->is_playable(level_index) && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
+        if ((level_index != current_level_index) && edited_level_set->is_playable(level_index, highest_level) && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
         {
             mouse_state = MOUSE_STATE_PLACING_SUBCIRCUIT;
             placing_subcircuit_level = level_index;
@@ -2508,7 +2512,7 @@ void GameState::mouse_click_in_panel()
                 level_set->touch(current_level_index);
                 level_set->reset(current_level_index);
             }
-            else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
+            else if ((next_dialogue_level > 8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
             {
                 SaveObjectMap* omap = new SaveObjectMap;
                 omap->add_num("level_index", current_level_index);
@@ -2547,7 +2551,7 @@ void GameState::mouse_click_in_panel()
 
                 SDL_SetClipboardText(reply.c_str());
             }
-            else if (edited_level_set->is_playable(8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
+            else if ((next_dialogue_level > 8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
             {
                 level_set = clipboard_level_set;
                 deletable_level_set = NULL;
@@ -2564,7 +2568,7 @@ void GameState::mouse_click_in_panel()
             }
 
             panel_grid_pos = (panel_pos - XYPos(32 * 5 + 16, 0)) / 16;
-            if (edited_level_set->is_playable(8) && !current_level_set_is_inspected)
+            if ((next_dialogue_level > 8) && !current_level_set_is_inspected)
             {
                 if (panel_grid_pos.y == 0)
                 {
@@ -3000,7 +3004,7 @@ bool GameState::events()
                                 current_level_index++;
                                 if (current_level_index >= LEVEL_COUNT)
                                     current_level_index = 0;
-                                if (level_set->is_playable(current_level_index))
+                                if (level_set->is_playable(current_level_index, highest_level))
                                     break;
                             }
                             set_level(current_level_index);
@@ -3014,7 +3018,7 @@ bool GameState::events()
                                 if (!current_level_index)
                                     current_level_index = LEVEL_COUNT;
                                 current_level_index--;
-                                if (level_set->is_playable(current_level_index))
+                                if (level_set->is_playable(current_level_index, highest_level))
                                     break;
                             }
                             set_level(current_level_index);

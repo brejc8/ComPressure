@@ -305,7 +305,7 @@ public:
     {
         for (unsigned level_index = 0; level_index < LEVEL_COUNT; level_index++)
         {
-            if (level_set->is_playable(level_index))
+            if (level_set->is_playable(level_index, LEVEL_COUNT))
             {
                 Pressure score = level_set->levels[level_index]->last_score;
                 SaveObject* save_object = level_set->save(level_index);
@@ -318,7 +318,7 @@ public:
 
     bool execute()
     {
-        while (!level_set->is_playable(current_level))
+        while (!level_set->is_playable(current_level, LEVEL_COUNT))
         {
             current_level++;
             if (current_level >= LEVEL_COUNT)

@@ -1177,7 +1177,7 @@ void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool 
     
     for (const XYPos& old: selected_elements)
     {
-        XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        XYPos pos = ((old - min) * (clockwise ? DIRECTION_E : DIRECTION_W) + XYPos(clockwise ? max.x : min.x, clockwise ? min.y : max.y));
         if (is_blocked(pos))
             return;
         if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
@@ -1189,14 +1189,14 @@ void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool 
     ammend();
     for (const XYPos& old: selected_elements)
     {
-        XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        XYPos pos = ((old - min) * (clockwise ? DIRECTION_E : DIRECTION_W) + XYPos(clockwise ? max.x : min.x, clockwise ? min.y : max.y));
         elems[pos] = elements[old.y][old.x];
         elements[old.y][old.x] = new CircuitElementEmpty();
     }
     
     for (const XYPos& old: selected_elements)
     {
-        XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        XYPos pos = ((old - min) * (clockwise ? DIRECTION_E : DIRECTION_W) + XYPos(clockwise ? max.x : min.x, clockwise ? min.y : max.y));
         delete elements[pos.y][pos.x];
         elements[pos.y][pos.x] = elems[pos];
         elements[pos.y][pos.x]->rotate(clockwise);
@@ -1205,7 +1205,7 @@ void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool 
     std::set<XYPos> new_sel;
     for (const XYPos& old: selected_elements)
     {
-        XYPos pos = ((old - center) * (clockwise ? DIRECTION_E : DIRECTION_W) + center);
+        XYPos pos = ((old - min) * (clockwise ? DIRECTION_E : DIRECTION_W) + XYPos(clockwise ? max.x : min.x, clockwise ? min.y : max.y));
         new_sel.insert(pos);
     }
     selected_elements.clear();
