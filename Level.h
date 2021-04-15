@@ -136,7 +136,6 @@ public:
     XYPos getimage_fg(DirFlip dir_flip);
 
     void init_tests(SaveObjectMap* omap = NULL);
-    void reset(LevelSet* level_set);
     void reset();
     void advance(unsigned ticks);
     void select_test(unsigned t);

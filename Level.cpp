@@ -1300,12 +1300,6 @@ void Level::init_tests(SaveObjectMap* omap)
     }
 }
 
-void Level::reset(LevelSet* level_set)
-{
-    circuit->elaborate(level_set);
-    reset();
-}
-
 void Level::reset()
 {
     test_index = 0;
@@ -1566,7 +1560,7 @@ void LevelSet::save_design(unsigned level_index, unsigned save_slot)
 void LevelSet::reset(unsigned level_index)
 {
     levels[level_index]->circuit->remove_circles(this);
-    levels[level_index]->reset(this);
+    levels[level_index]->reset();
 }
 
 
