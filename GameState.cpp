@@ -1489,7 +1489,16 @@ void GameState::render()
                 src_rect.x = 368;
             SDL_Rect dst_rect = {panel_offset.x + (16 + i * 16) * scale, panel_offset.y + (32 + 8) * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
-            render_number_2digit(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), pressure_as_percent(current_level->tests[i].last_score));
+            if (pressure_as_percent(current_level->tests[i].last_score))
+            {
+                render_number_2digit(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), pressure_as_percent(current_level->tests[i].last_score));
+            }
+            else
+            {
+                src_rect = {54, 160, 10, 5};
+                dst_rect = {panel_offset.x + (16 + i * 16 + 2) * scale, panel_offset.y + (32 + 8 + 5) * scale, 10 * scale, 5 * scale};
+                render_texture(src_rect, dst_rect);
+            }
             render_number_2digit(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), pressure_as_percent(current_level->tests[i].best_score));
         }
         

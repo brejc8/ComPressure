@@ -398,7 +398,7 @@ static Dialogue dialogue13[] = {
     {DIALOGUE_ADA,
         "Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.\n"
         "\n"
-        "Lord Moorhouse is most charming and smart as a whip, but often he refuses to share his innovations and at times his advances are most unwelcome.\n"
+        "Lord Moorhouse is most charming and smart as a whip, but often he refuses to share his innovations.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -422,7 +422,7 @@ static Dialogue dialogue14[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. God forbid one of those high pressure tankers explodes. The destruction would be immense. I would not rest until the world was rid of this high pressure horror and my darling Ada was in my loving arms...\n"
+        "That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. God forbid one of those high pressure tankers explodes. The destruction would be immense. I would not rest until the world was rid of this high pressure horror...\n"
         "\n"
         "Oh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure it's openness.\n"
     },
@@ -687,7 +687,7 @@ static Dialogue dialogue21[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "Believe me, these will be very useful components in the future. I have a plan.\n"
+        "Believe me, these will be very useful components in the future. I have a plan, and you are very much at the centre of it.\n"
     },
 
     {DIALOGUE_ANNIE,
@@ -745,21 +745,92 @@ static Dialogue dialogue24[] = {
 
 static Dialogue dialogue25[] = {
     {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+        "Well, I am impressed. We had only been gone a couple days and you have created the storage part of the Steamputer.\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "The what?\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "All will be revealed in good time.\n"
+        "\n"
+        "Well, I think my job here is done! I managed to design the storage. I will leave you to investigate the calculations and control?\n"
+        "\n"
+        "In the mean time George has predicted I would like tea at Madingley Hall and I think my answer is yes.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Well let’s start small. We need a component which gives us the smaller of the two input values. Should be simple enough.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue26[] = {
+    {DIALOGUE_CHARLES,
+        "Ada! My darling! Try this exciting new beverage George introduced me to! It is called “Froffee Coffee”. Try it!\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Hmmm, yes it is rather ni...\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "You know what would make it even better!?!\n"
+    },
+
+    {DIALOGUE_ADA,
+        "High press...\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "High Pressure Steam!\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the control elements?\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Already done! George is finalising the requirements.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Oh! Well we must quickly create the Max component and then you can have access to our engineers.\n"
+        "\n"
+        "The output this time must be the maximum of the two inputs.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue27[] = {
+    {DIALOGUE_CHARLES,
+        "That’s enough of this analogue nonsense. While you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
+        "\n"
+        "What I need is a contraption which between emitting High Pressure Steam between three outputs upon the reception of a timing steam pulse.\n"
+        "\n"
+        "Just like the marching orders I love to hear.\n"
+        "One! Two! Three! One! Two! Three!\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Should it not be one, two, one, two?\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Not in my regiment! We count to three!\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue28[] = {
+    {DIALOGUE_ADA,
+        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
@@ -807,4 +878,16 @@ static Dialogue dialogue39[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, NULL};
+static Dialogue dialogue40[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue41[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue42[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, NULL};

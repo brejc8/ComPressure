@@ -548,8 +548,8 @@ void Level::init_tests(SaveObjectMap* omap)
         case 11:                                                        // Encrypt
             name = "Encrypt";
             connection_mask = CONMASK_W | CONMASK_E;
-            level_version = 20;
-            
+            level_version = 21;
+            substep_count = 2000;
             circuit->force_element(XYPos(0,1), new CircuitElementEmpty());
             circuit->force_element(XYPos(1,1), new CircuitElementEmpty());
             circuit->force_element(XYPos(2,1), new CircuitElementEmpty());
@@ -1199,7 +1199,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT( 95, 40,  0, 10);
             break;
         case 25:
-            name = "MIN";
+            name = "Min";
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
             level_version = 20;
 
@@ -1235,7 +1235,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT( 60, 60, 80,  0);
             break;
         case 26:
-            name = "MAX";
+            name = "Max";
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
             level_version = 20;
 
@@ -1273,10 +1273,39 @@ void Level::init_tests(SaveObjectMap* omap)
 
 
         case 27:                                                    // end
-            name = "Not yet done...";
-            connection_mask = CONMASK_W | CONMASK_E;
-            NEW_TEST;// N   E   S   W
-            NEW_POINT(  77,  77,  77, 77);
+            name = "Toggle3";
+            connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
+            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
+                     // N   E   S   W  
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_N;
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_E;
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT(  0,  0,100,100);
+            NEW_POINT(100,  0,  0,  0);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_N;
+            NEW_POINT(100,  0,  0,  0);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_E;
+            NEW_POINT(100,  0,  0,  0);
+
+            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT(100,  0,100,  0);
+            NEW_POINT(  0,100,  0,  0);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_N;
+            NEW_POINT(  0,100,  0,  0);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_E;
+            NEW_POINT(  0,100,  0,  0);
+
+            NEW_TEST; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT(  0,100,100,  0);
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_N;
+            NEW_POINT(  0,  0,  0,100);
+            NEW_TEST; tests.back().tested_direction = DIRECTION_E;
+            NEW_POINT(  0,  0,  0,100);
+
             break;
 
         case LEVEL_COUNT:                                            // end

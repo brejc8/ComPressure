@@ -254,7 +254,7 @@ I could sense how open any valve is, by placing a second valve which vented the 
 !ADA
 Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.
 
-Lord Moorhouse is most charming and smart as a whip, but often he refuses to share his innovations and at times his advances are most unwelcome.
+Lord Moorhouse is most charming and smart as a whip, but often he refuses to share his innovations.
 !END
 #                                Subtract
 !NICOLA
@@ -266,7 +266,7 @@ I do agree. Having thought on this recently, the advancement of knowledge must c
 !NICOLA
 Lady Chavvington is alive and well, staying with her sister.
 !GEORGE
-That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. God forbid one of those high pressure tankers explodes. The destruction would be immense. I would not rest until the world was rid of this high pressure horror and my darling Ada was in my loving arms...
+That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. God forbid one of those high pressure tankers explodes. The destruction would be immense. I would not rest until the world was rid of this high pressure horror...
 
 Oh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure it's openness.
 !GEORGE
@@ -417,7 +417,7 @@ Now, by zooming into a range, I can now tell more precisely how much steam someo
 !ANNIE
 Has all this research been to solely to aid your company profits? This is not what our agreement was. 
 !GEORGE
-Believe me, these will be very useful components in the future. I have a plan.
+Believe me, these will be very useful components in the future. I have a plan, and you are very much at the centre of it.
 !ANNIE
 I highly doubt that. I think it is time for some pure research.
 
@@ -447,6 +447,52 @@ I admit, that flow detector was quite ingenious and was just the trick we needed
 The select ranges would be 0-10, 10-20, 20-30...
 !GEORGE
 And this is why I asked for the zoom element to be designed.
+!END
+                              # MIN
+!ADA
+Well, I am impressed. We had only been gone a couple days and you have created the storage part of the Steamputer.
+!NICOLA
+The what?
+!ANNIE
+All will be revealed in good time.
+
+Well, I think my job here is done! I managed to design the storage. I will leave you to investigate the calculations and control?
+
+In the mean time George has predicted I would like tea at Madingley Hall and I think my answer is yes.
+!ADA
+Well let’s start small. We need a component which gives us the smaller of the two input values. Should be simple enough.
+!END
+                              # MAX
+!CHARLES
+Ada! My darling! Try this exciting new beverage George introduced me to! It is called “Froffee Coffee”. Try it!
+!ADA
+Hmmm, yes it is rather ni...
+!CHARLES
+You know what would make it even better!?!
+!ADA
+High press...
+!CHARLES
+High Pressure Steam!
+!ADA
+Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the control elements?
+!CHARLES
+Already done! George is finalising the requirements.
+!ADA
+Oh! Well we must quickly create the Max component and then you can have access to our engineers.
+
+The output this time must be the maximum of the two inputs.
+!END
+!CHARLES
+That’s enough of this analogue nonsense. While you work for me, all I want to see is High Pressure Steam, or no steam at all.
+
+What I need is a contraption which between emitting High Pressure Steam between three outputs upon the reception of a timing steam pulse.
+
+Just like the marching orders I love to hear.
+One! Two! Three! One! Two! Three! 
+!NICOLA
+Should it not be one, two, one, two?
+!CHARLES
+Not in my regiment! We count to three!
 !END
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
