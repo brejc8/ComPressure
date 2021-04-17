@@ -193,7 +193,7 @@ public:
     void render_text_wrapped(XYPos tl, const char* string, int width);
     void render_text(XYPos tl, const char* string, SDL_Color color = {0xff,0xff,0xff});
     void update_scale(int ewscale);
-    void render();
+    void render(bool saving = false);
     void advance();
     void set_level(unsigned level_index);
     void mouse_click_in_grid();

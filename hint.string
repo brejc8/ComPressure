@@ -205,10 +205,18 @@ static Dialogue hint24[] = {
 };
 
 static Dialogue hint25[] = {
+    {DIALOGUE_ADA,
+        "It should be as easy as a comparator and a switch.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint26[] = {
+    {DIALOGUE_ADA,
+        "Is this not just the same as our Min component but selecting the other way round?\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
@@ -236,4 +244,8 @@ static Dialogue hint32[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* hint[] = {hint0, hint1, hint2, hint3, hint4, hint5, hint6, hint7, hint8, hint9, hint10, hint11, hint12, hint13, hint14, hint15, hint16, hint17, hint18, hint19, hint20, hint21, hint22, hint23, hint24, hint25, hint26, hint27, hint28, hint29, hint30, hint31, hint32, NULL};
+static Dialogue hint33[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* hint[] = {hint0, hint1, hint2, hint3, hint4, hint5, hint6, hint7, hint8, hint9, hint10, hint11, hint12, hint13, hint14, hint15, hint16, hint17, hint18, hint19, hint20, hint21, hint22, hint23, hint24, hint25, hint26, hint27, hint28, hint29, hint30, hint31, hint32, hint33, NULL};

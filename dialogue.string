@@ -367,7 +367,7 @@ static Dialogue dialogue13[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "What nonsense! Ada is perfectly fine and staying with sister until we resolve this matter of the missing High Pressure Steam.\n"
+        "What nonsense! Ada is perfectly fine and staying with her sister until we resolve this matter of the missing High Pressure Steam.\n"
     },
 
     {DIALOGUE_NICOLA,
@@ -629,7 +629,7 @@ static Dialogue dialogue19[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "I am also rather impressed. Ada, I cannot apologise enough for accusing you of ransacking my equipment. Would it be possible for Gertrude and Nicola to aid me in my designs? I think their input will be highly constructive.\n"
+        "I am also rather impressed. Ada, I cannot apologise enough for accusing you of ransacking my residence. Would it be possible for Gertrude and Nicola to aid me in my designs? I think their input will be highly constructive.\n"
     },
 
     {DIALOGUE_ADA,
@@ -693,7 +693,7 @@ static Dialogue dialogue21[] = {
     {DIALOGUE_ANNIE,
         "I highly doubt that. I think it is time for some pure research.\n"
         "\n"
-        "Let’s go back to our Latch design Ada and I were working on. I wanted a latch which can be enabled or disabled. If the North input is high, the latch operates as normal, but if it is low, it should neither drive the output, or accept a new input upon seeing a timing pulse. We can use the old design, although it may be more efficient to make a custom one.\n"
+        "Let’s go back to our Latch design Ada and I were working on. I wanted a latch which can be enabled or disabled. If the North input is high, the latch operates as normal, but if it is low, it should neither drive the output, nor accept a new input upon seeing a timing pulse. We can use the old design, although it may be more efficient to make a custom one.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -809,7 +809,7 @@ static Dialogue dialogue27[] = {
     {DIALOGUE_CHARLES,
         "That’s enough of this analogue nonsense. While you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
         "\n"
-        "What I need is a contraption which between emitting High Pressure Steam between three outputs upon the reception of a timing steam pulse.\n"
+        "What I need is a contraption which switches emitting High Pressure Steam between three outputs upon the reception of a timing High Pressure Steam pulse.\n"
         "\n"
         "Just like the marching orders I love to hear.\n"
         "One! Two! Three! One! Two! Three!\n"

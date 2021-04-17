@@ -158,8 +158,11 @@ void Level::init_tests(SaveObjectMap* omap)
 #define CONMASK_W          (8)
 
 #define NEW_TEST do {tests.push_back({}); if (loaded_level_version == level_version && slist && slist->get_count() > tests.size()-1) tests.back().load(slist->get_item(tests.size()-1));} while (false)
+#define RESET do {tests.back().reset = true;} while (false)
+
 #define NEW_POINT(a, b, c, d) tests.back().sim_points.push_back(SimPoint(a, b, c, d, tests.back().tested_direction == DIRECTION_N ? 0 : 50, tests.back().tested_direction == DIRECTION_E ? 0 : 50, tests.back().tested_direction == DIRECTION_S ? 0 : 50, tests.back().tested_direction == DIRECTION_W ? 0 : 50))
 #define NEW_POINT_F(a, b, c, d, fa, fb, fc, fd) tests.back().sim_points.push_back(SimPoint(a, b, c, d, fa, fb, fc, fd))
+#define END_PRESET tests.back().first_simpoint = tests.back().sim_points.size()
 
     SaveObjectList* slist = NULL;
     if (omap && omap->has_key("tests"))
@@ -180,22 +183,27 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST; tests.back().tested_direction = DIRECTION_S;
             NEW_POINT(0  ,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(100,  0,100,  0);
             NEW_TEST; tests.back().tested_direction = DIRECTION_S;
             NEW_POINT(100,  0,100,  0);
+            END_PRESET;
             NEW_POINT( 50,  0, 50,  0);
             NEW_TEST; tests.back().tested_direction = DIRECTION_S;
             NEW_POINT( 50,  0, 50,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
-
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,100,  0,100);
             NEW_TEST;
             NEW_POINT(  0,100,  0,100);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             break;
 
@@ -204,12 +212,6 @@ void Level::init_tests(SaveObjectMap* omap)
             connection_mask = CONMASK_E;
             substep_count = 2000;
             level_version = 20;
-            NEW_TEST;
-            NEW_POINT(  0, 50,  0,  0);
-            NEW_TEST;
-            NEW_POINT(  0, 50,  0,  0);
-            NEW_TEST;
-            NEW_POINT(  0, 50,  0,  0);
             NEW_TEST;
             NEW_POINT(  0, 50,  0,  0);
             break;
@@ -222,19 +224,24 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(100,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(100, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(100, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(100,100,  0,100);
             NEW_TEST;
             NEW_POINT(100,100,  0,100);
+            END_PRESET;
             NEW_POINT(  0,100,  0,100);
             NEW_POINT(  0,100,  0, 50);
             NEW_TEST;
             NEW_POINT(  0,100,  0, 50);
+            END_PRESET;
             NEW_POINT(  0,100,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,100,  0,  0);
+            END_PRESET;
             NEW_POINT(100, 50,  0, 50);
             break;
 
@@ -246,19 +253,24 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0,100,  0,100);
             NEW_TEST;
             NEW_POINT(  0,100,  0,100);
+            END_PRESET;
             NEW_POINT(  0,100,100,100);
             NEW_POINT(  0,100,100, 50);
             NEW_TEST;
-            NEW_POINT(  0,100,100, 50);
+            NEW_POINT(  0,100,  0,100);
+            END_PRESET;
+            NEW_POINT(  0,100,100,100);
             NEW_POINT(  0,100,100,  0);
             NEW_TEST;
-            NEW_POINT(  0,100,100,  0);
+            NEW_POINT(  0,100,  0,  0);
             NEW_POINT(  0, 50,  0, 50);
             break;
 
@@ -270,27 +282,35 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,100,100,  0);
             NEW_TEST;
             NEW_POINT(  0,100,100,  0);
+            END_PRESET;
             NEW_POINT(  0, 50, 50,  0);
             NEW_TEST;
             NEW_POINT(  0, 50, 50,  0);
+            END_PRESET;
             NEW_POINT(  0,  0, 50,100);
             NEW_TEST;
             NEW_POINT(  0,  0, 50,100);
+            END_PRESET;
             NEW_POINT(100,100, 50,100);
             NEW_TEST;
             NEW_POINT(100,100,  0,100);
+            END_PRESET;
             NEW_POINT(100,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(100,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(100,100,  0,100);
             NEW_TEST;
             NEW_POINT(100,100,  0,100);
+            END_PRESET;
             NEW_POINT( 40, 40,  0,100);
             NEW_TEST;
             NEW_POINT( 40, 40,  0,100);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             break;
 
@@ -311,39 +331,51 @@ void Level::init_tests(SaveObjectMap* omap)
             circuit->force_element(XYPos(3,8), new CircuitElementEmpty());
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 10,  0, 10);
             NEW_TEST;
             NEW_POINT(  0, 10,  0, 10);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0, 90,  0, 90);
             NEW_TEST;
             NEW_POINT(  0, 90,  0, 90);
+            END_PRESET;
             NEW_POINT(  0,100,  0,100);
             NEW_TEST;
             NEW_POINT(  0,100,  0,100);
+            END_PRESET;
             NEW_POINT(  0, 90,  0, 90);
             NEW_TEST;
             NEW_POINT(  0, 90,  0, 90);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0, 20,  0, 20);
             NEW_TEST;
             NEW_POINT(  0, 20,  0, 20);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0,100,  0,100);
             NEW_TEST;
             NEW_POINT(  0,100,  0,100);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             break;
 
@@ -355,39 +387,51 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,100,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,100,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,100,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 90,  0, 10);
             NEW_TEST;
             NEW_POINT(  0, 90,  0, 10);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0, 40,  0, 60);
             NEW_TEST;
             NEW_POINT(  0, 40,  0, 60);
+            END_PRESET;
             NEW_POINT(  0, 10,  0, 90);
             NEW_TEST;
             NEW_POINT(  0, 10,  0, 90);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,100);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,100);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0,100,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,100,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0,100,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,100,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,100);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,100);
+            END_PRESET;
             NEW_POINT(  0,100,  0,  0);
             break;
 
@@ -398,36 +442,47 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,100,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,100,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,100,  0);
+            END_PRESET;
             NEW_POINT(100,100,  0,  0);
             NEW_TEST;
             NEW_POINT(100,100,  0,  0);
+            END_PRESET;
             NEW_POINT( 10,  0, 90,  0);
             NEW_TEST;
             NEW_POINT( 10,  0, 90,  0);
+            END_PRESET;
             NEW_POINT( 80,100, 20,  0);
             NEW_TEST;
             NEW_POINT( 80,100, 20,  0);
+            END_PRESET;
             NEW_POINT( 30,  0, 70,  0);
             NEW_TEST;
             NEW_POINT( 30,  0, 70,  0);
+            END_PRESET;
             NEW_POINT( 60,100, 40,  0);
             NEW_TEST;
             NEW_POINT( 60,100, 40,  0);
+            END_PRESET;
             NEW_POINT( 20,  0, 30,  0);
             NEW_TEST;
             NEW_POINT( 20,  0, 30,  0);
+            END_PRESET;
             NEW_POINT( 80,100, 70,  0);
             NEW_TEST;
             NEW_POINT( 80,100, 70,  0);
+            END_PRESET;
             NEW_POINT( 40,  0, 50,  0);
             NEW_TEST;
             NEW_POINT( 40,  0, 50,  0);
+            END_PRESET;
             NEW_POINT( 58,100, 50,  0);
             NEW_TEST;
             NEW_POINT( 58,100, 50,  0);
+            END_PRESET;
             NEW_POINT( 55,  0, 62,  0);
             break;
 
@@ -438,33 +493,43 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,100,  0,100);
             NEW_TEST;
             NEW_POINT(  0,100,  0,100);
+            END_PRESET;
             NEW_POINT(  0,  0,  0, 10);
             NEW_TEST;
             NEW_POINT(  0,  0,  0, 10);
+            END_PRESET;
             NEW_POINT(  0,100,  0, 90);
             NEW_TEST;
             NEW_POINT(  0,100,  0, 90);
+            END_PRESET;
             NEW_POINT(  0,  0,  0, 20);
             NEW_TEST;
             NEW_POINT(  0,  0,  0, 20);
+            END_PRESET;
             NEW_POINT(  0,100,  0, 80);
             NEW_TEST;
             NEW_POINT(  0,100,  0, 80);
+            END_PRESET;
             NEW_POINT(  0,  0,  0, 30);
             NEW_TEST;
             NEW_POINT(  0,  0,  0, 30);
+            END_PRESET;
             NEW_POINT(  0,100,  0, 70);
             NEW_TEST;
             NEW_POINT(  0,100,  0, 70);
+            END_PRESET;
             NEW_POINT(  0,  0,  0, 35);
             NEW_TEST;
             NEW_POINT(  0,  0,  0, 35);
+            END_PRESET;
             NEW_POINT(  0,100,  0, 62);
             break;
 
@@ -475,42 +540,55 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
+            END_PRESET;
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
             NEW_TEST;
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 80);
+            END_PRESET;
             NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 80);
             NEW_TEST;
             NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 40);
+            END_PRESET;
             NEW_POINT_F(  0, 30,  0, 60, 50, 0, 50, 50);
             NEW_TEST;
             NEW_POINT_F(  0, 30,  0, 60, 50, 0, 50,100);
+            END_PRESET;
             NEW_POINT_F(  0, 25,  0, 50, 50, 0, 50,100);
             NEW_TEST;
             NEW_POINT_F(  0, 25,  0, 50, 50, 0, 50, 60);
+            END_PRESET;
             NEW_POINT_F(  0, 20,  0, 40, 50, 0, 50, 60);
             NEW_TEST;
             NEW_POINT_F(  0, 20,  0, 40, 50, 0, 50, 80);
+            END_PRESET;
             NEW_POINT_F(  0, 10,  0, 20, 50, 0, 50, 80);
             NEW_TEST;
             NEW_POINT_F(  0, 10,  0, 20, 50, 0, 50, 40);
+            END_PRESET;
             NEW_POINT_F(  0, 25,  0, 50, 50, 0, 50, 40);
             NEW_TEST;
             NEW_POINT_F(  0, 25,  0, 50, 50, 0, 50, 60);
+            END_PRESET;
             NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 60);
             NEW_TEST;
             NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 40);
+            END_PRESET;
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 40);
             NEW_TEST;
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
+            END_PRESET;
             NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 50);
             NEW_TEST;
             NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 40);
+            END_PRESET;
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 40);
             NEW_TEST;
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 50);
+            END_PRESET;
             NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 50);
             NEW_TEST;
             NEW_POINT_F(  0, 50,  0,100, 50, 0, 50, 20);
+            END_PRESET;
             NEW_POINT_F(  0,  0,  0,  0, 50, 0, 50, 20);
             break;
 
@@ -521,27 +599,35 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,100,  0, 50);
             NEW_TEST;
             NEW_POINT(  0,100,  0, 50);
+            END_PRESET;
             NEW_POINT(  0, 80,  0, 40);
             NEW_TEST;
             NEW_POINT(  0, 80,  0, 40);
+            END_PRESET;
             NEW_POINT(  0, 60,  0, 30);
             NEW_TEST;
             NEW_POINT(  0, 60,  0, 30);
+            END_PRESET;
             NEW_POINT(  0, 40,  0, 20);
             NEW_TEST;
             NEW_POINT(  0, 40,  0, 20);
+            END_PRESET;
             NEW_POINT(  0, 20,  0, 10);
             NEW_TEST;
             NEW_POINT(  0, 20,  0, 10);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 25);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 25);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             break;
 
@@ -574,36 +660,47 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 24,  0, 13);
             NEW_TEST;
             NEW_POINT(  0, 24,  0, 13);
+            END_PRESET;
             NEW_POINT(  0, 27,  0, 15);
             NEW_TEST;
             NEW_POINT(  0, 27,  0, 15);
+            END_PRESET;
             NEW_POINT(  0, 64,  0, 48);
             NEW_TEST;
             NEW_POINT(  0, 64,  0, 48);
+            END_PRESET;
             NEW_POINT(  0, 69,  0, 54);
             NEW_TEST;
             NEW_POINT(  0, 69,  0, 54);
+            END_PRESET;
             NEW_POINT(  0, 83,  0, 73);
             NEW_TEST;
             NEW_POINT(  0, 83,  0, 73);
+            END_PRESET;
             NEW_POINT(  0, 85,  0, 76);
             NEW_TEST;
             NEW_POINT(  0, 85,  0, 76);
+            END_PRESET;
             NEW_POINT(  0, 87,  0, 79);
             NEW_TEST;
             NEW_POINT(  0, 87,  0, 79);
+            END_PRESET;
             NEW_POINT(  0, 94,  0, 90);
             NEW_TEST;
             NEW_POINT(  0, 94,  0, 90);
+            END_PRESET;
             NEW_POINT(  0, 97,  0, 95);
             NEW_TEST;
             NEW_POINT(  0, 97,  0, 95);
+            END_PRESET;
             NEW_POINT(  0,100,  0,100);
             break;
 
@@ -618,30 +715,39 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 13,  0, 24);
             NEW_TEST;
             NEW_POINT(  0, 13,  0, 24);
+            END_PRESET;
             NEW_POINT(  0, 15,  0, 27);
             NEW_TEST;
             NEW_POINT(  0, 15,  0, 27);
+            END_PRESET;
             NEW_POINT(  0, 48,  0, 64);
             NEW_TEST;
             NEW_POINT(  0, 48,  0, 64);
+            END_PRESET;
             NEW_POINT(  0, 54,  0, 69);
             NEW_TEST;
             NEW_POINT(  0, 54,  0, 69);
+            END_PRESET;
             NEW_POINT(  0, 73,  0, 83);
             NEW_TEST;
             NEW_POINT(  0, 73,  0, 83);
+            END_PRESET;
             NEW_POINT(  0, 76,  0, 85);
             NEW_TEST;
             NEW_POINT(  0, 76,  0, 85);
+            END_PRESET;
             NEW_POINT(  0, 79,  0, 87);
             NEW_TEST;
             NEW_POINT(  0, 79,  0, 87);
+            END_PRESET;
             NEW_POINT(  0, 90,  0, 94);
             NEW_TEST;
             NEW_POINT(  0, 90,  0, 94);
+            END_PRESET;
             NEW_POINT(  0, 95,  0, 97);
             break;
 
@@ -659,43 +765,55 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 10,  0, 10);
             NEW_TEST;
             NEW_POINT(  0, 10,  0, 10);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0, 60,  0, 60);
             NEW_TEST;
             NEW_POINT(  0, 60,  0, 60);
+            END_PRESET;
             NEW_POINT(  0, 20,  0, 20);
             NEW_TEST;
             NEW_POINT(  0, 20,  0, 20);
+            END_PRESET;
             NEW_POINT(  0, 70,  0, 70);
             NEW_TEST;
             NEW_POINT(  0, 70,  0, 70);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0, 20,  0, 20);
             NEW_TEST;
             NEW_POINT(  0, 20,  0, 20);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(  0, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0, 30,  0, 30);
             NEW_TEST;
             NEW_POINT(  0, 30,  0, 30);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             break;
 
-        case 14:                                                    // subtract
+        case 14:                                                    // Subtract
             name = "Subtractor";
             substep_count = 30000;
             connection_mask = CONMASK_W | CONMASK_S | CONMASK_E;
@@ -703,36 +821,47 @@ void Level::init_tests(SaveObjectMap* omap)
             pin_order[0] = 3; pin_order[1] = 2; pin_order[2] = 1; pin_order[3] = 0;
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 40, 50, 90);
             NEW_TEST;
             NEW_POINT(  0, 40, 50, 90);
+            END_PRESET;
             NEW_POINT(  0, 50, 20, 70);
             NEW_TEST;
             NEW_POINT(  0, 50, 20, 70);
+            END_PRESET;
             NEW_POINT(  0,  0, 70, 70);
             NEW_TEST;
             NEW_POINT(  0,  0, 70, 70);
+            END_PRESET;
             NEW_POINT(  0, 25, 25, 50);
             NEW_TEST;
             NEW_POINT(  0, 25, 25, 50);
+            END_PRESET;
             NEW_POINT(  0, 50, 20, 70);
             NEW_TEST;
             NEW_POINT(  0, 50, 20, 70);
+            END_PRESET;
             NEW_POINT(  0, 20, 20, 40);
             NEW_TEST;
             NEW_POINT(  0, 20, 20, 40);
+            END_PRESET;
             NEW_POINT(  0, 40,  0, 40);
             NEW_TEST;
             NEW_POINT(  0, 40,  0, 40);
+            END_PRESET;
             NEW_POINT(  0,  0, 40, 40);
             NEW_TEST;
             NEW_POINT(  0,  0, 40, 40);
+            END_PRESET;
             NEW_POINT(  0, 50, 50,100);
             NEW_TEST;
             NEW_POINT(  0, 50, 50,100);
+            END_PRESET;
             NEW_POINT(  0, 95,  0, 95);
             break;
 
@@ -745,42 +874,55 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT( 20, 20,  0,  0);
             NEW_TEST;
             NEW_POINT( 20, 20,  0,  0);
+            END_PRESET;
             NEW_POINT( 70, 80, 10,  0);
             NEW_TEST;
             NEW_POINT( 70, 80, 10,  0);
+            END_PRESET;
             NEW_POINT( 40, 80, 40,  0);
             NEW_TEST;
             NEW_POINT( 40, 80, 40,  0);
+            END_PRESET;
             NEW_POINT( 50, 70, 20,  0);
             NEW_TEST;
             NEW_POINT( 50, 70, 20,  0);
+            END_PRESET;
             NEW_POINT( 70, 80, 10,  0);
             NEW_TEST;
             NEW_POINT( 70, 80, 10,  0);
+            END_PRESET;
             NEW_POINT( 25, 75, 50,  0);
             NEW_TEST;
             NEW_POINT( 25, 75, 50,  0);
+            END_PRESET;
             NEW_POINT(  0, 50, 50,  0);
             NEW_TEST;
             NEW_POINT(  0, 50, 50,  0);
+            END_PRESET;
             NEW_POINT( 10, 80, 70,  0);
             NEW_TEST;
             NEW_POINT( 10, 80, 70,  0);
+            END_PRESET;
             NEW_POINT( 80, 90, 10,  0);
             NEW_TEST;
             NEW_POINT( 80, 90, 10,  0);
+            END_PRESET;
             NEW_POINT( 20, 40, 20,  0);
             NEW_TEST;
             NEW_POINT( 20, 40, 20,  0);
+            END_PRESET;
             NEW_POINT( 60,100, 40,  0);
             NEW_TEST;
             NEW_POINT( 60,100, 40,  0);
+            END_PRESET;
             NEW_POINT( 20, 80, 60,  0);
             NEW_TEST;
             NEW_POINT( 20, 80, 60,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             break;
  
@@ -792,33 +934,79 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0,  0,  0,  0);
             NEW_POINT(  0,  0,100,  0);
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT(  0,  0,  0, 10);
+            NEW_POINT(  0,  0,100, 10);
+            NEW_POINT(  0, 10,  0, 10);
+
+            NEW_TEST;
+            NEW_POINT(  0,  0,100,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT(  0,  0,100, 40);
+            NEW_POINT(  0, 40,  0, 40);
+
             NEW_TEST;
             NEW_POINT(  0,  0,100, 40);
             NEW_POINT(  0, 40,  0, 40);
-            NEW_TEST;
+            END_PRESET;
             NEW_POINT(  0,  0,100, 80);
             NEW_POINT(  0, 80,  0, 80);
             NEW_POINT(  0, 80,  0,  0);
+
+            NEW_TEST; RESET;
+            NEW_POINT(  0,  0,100, 10);
+            NEW_POINT(  0, 10,  0, 10);
+            NEW_POINT(  0, 10,  0,100);
+            NEW_POINT_F(  0,  10,100,100,  0, 0, 10, 10);
+
+            NEW_TEST; RESET;
+            NEW_POINT(  0,  0,100, 90);
+            NEW_POINT(  0, 90,  0, 90);
+            NEW_POINT(  0, 90,  0,  0);
+            NEW_POINT_F(  0, 90,100,  0,  0, 0, 10, 10);
+
             NEW_TEST;
-            NEW_POINT(  0,  0,100, 60);
-            NEW_POINT(  0, 60,  0, 60);
-            NEW_POINT(  0, 60,100, 30);
-            NEW_TEST;
+            END_PRESET;
             NEW_POINT(  0, 60,100, 30);
             NEW_POINT(  0, 30,  0, 30);
             NEW_POINT(  0, 30,  0, 90);
+
             NEW_TEST;
-            NEW_POINT(  0, 60,100, 90);
+            NEW_POINT(  0, 30,100, 30);
+            NEW_POINT(  0, 30,  0, 30);
+            END_PRESET;
+            NEW_POINT(  0, 30,100, 90);
             NEW_POINT(  0, 90,  0, 90);
+
+            NEW_TEST;
+            NEW_POINT(  0, 30,100, 90);
+            NEW_POINT(  0, 90,  0, 90);
+            END_PRESET;
+            NEW_POINT(  0, 90,100, 40);
+            NEW_POINT(  0, 40,  0, 40);
+
             NEW_TEST;
             NEW_POINT(  0, 90,100, 40);
             NEW_POINT(  0, 40,  0, 40);
-            NEW_TEST;
+            END_PRESET;
             NEW_POINT(  0, 40,100,  0);
             NEW_POINT(  0,  0,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT(  0,  0,100,  0);
+            NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT(  0,  0,100,100);
+            NEW_POINT(  0,100,  0,100);
+
             NEW_TEST;
             NEW_POINT(  0,  0,100,100);
             NEW_POINT(  0,100,  0,100);
+            END_PRESET;
+            NEW_POINT(  0,  0,100,  0);
+            NEW_POINT(  0,  0,  0,  0);
+
             break;
 
         case 17:                                                    // tabulator
@@ -827,50 +1015,97 @@ void Level::init_tests(SaveObjectMap* omap)
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
             level_version = 20;
             NEW_TEST;// N   E   S   W
+            RESET;
             NEW_POINT(  0,  0,  0, 10);
             NEW_POINT(  0,  0,100, 10);
             NEW_POINT(  0, 10,  0, 10);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 10);
+            NEW_POINT(  0,  0,100, 10);
+            NEW_POINT(  0, 10,  0, 10);
+//            END_PRESET;
             NEW_POINT(  0, 10,  0, 10);
             NEW_POINT(  0, 10,100, 10);
             NEW_POINT(  0, 20,  0, 10);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 20);
+            NEW_POINT(  0,  0,100, 20);
+            NEW_POINT(  0, 20,  0, 20);
+//            END_PRESET;
             NEW_POINT(  0, 20,  0,  0);
             NEW_POINT(  0, 20,100,  0);
             NEW_POINT(  0, 20,  0,  0);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 20);
+            NEW_POINT(  0,  0,100, 20);
+            NEW_POINT(  0, 20,  0, 20);
+//            END_PRESET;
             NEW_POINT(  0, 20,  0, 60);
             NEW_POINT(  0, 20,100, 60);
             NEW_POINT(  0, 80,  0, 60);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 80);
+            NEW_POINT(  0,  0,100, 80);
+            NEW_POINT(  0, 80,  0, 80);
+//            END_PRESET;
             NEW_POINT(100, 80,  0, 40);
             NEW_POINT(100, 80,100, 40);
             NEW_POINT(100, 40,  0, 40);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 40);
+            NEW_POINT(  0,  0,100, 40);
+            NEW_POINT(  0, 40,  0, 40);
+//            END_PRESET;
             NEW_POINT(100, 40,  0, 40);
             NEW_POINT(100, 40,100, 40);
             NEW_POINT(100, 00,  0, 40);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(100,  0,  0,100);
+            NEW_POINT(100,  0,100,100);
+            NEW_POINT(100,  0,  0,100);
+//            END_PRESET;
             NEW_POINT(  0,  0,  0, 30);
             NEW_POINT(  0,  0,100, 30);
             NEW_POINT(  0, 30,  0, 30);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 30);
+            NEW_POINT(  0,  0,100, 30);
+            NEW_POINT(  0, 30,  0, 30);
+//            END_PRESET;
             NEW_POINT(  0, 30,  0, 50);
             NEW_POINT(  0, 30,100, 50);
             NEW_POINT(  0, 80,  0, 50);
-            NEW_TEST;
-            NEW_POINT(  0, 80,  0, 20);
-            NEW_POINT(  0, 80,100, 20);
-            NEW_POINT(  0,100,  0, 20);
-            NEW_TEST;
-            NEW_POINT(100,100,  0, 50);
-            NEW_POINT(100,100,100, 50);
-            NEW_POINT(100, 50,  0, 50);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 80);
+            NEW_POINT(  0,  0,100, 80);
+            NEW_POINT(  0, 80,  0, 80);
+//            END_PRESET;
+            NEW_POINT(  0, 80,  0, 10);
+            NEW_POINT(  0, 80,100, 10);
+            NEW_POINT(  0, 90,  0, 10);
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 50);
+            NEW_POINT(  0,  0,100, 50);
+            NEW_POINT(  0, 50,  0, 50);
+//            END_PRESET;
             NEW_POINT(100, 50,  0,  0);
             NEW_POINT(100, 50,100,  0);
             NEW_POINT(100, 50,  0,  0);
-            NEW_TEST;
+
+            NEW_TEST;RESET;
+            NEW_POINT(  0,  0,  0, 50);
+            NEW_POINT(  0,  0,100, 50);
+            NEW_POINT(  0, 50,  0, 50);
+//            END_PRESET;
             NEW_POINT(100, 50,  0, 50);
             NEW_POINT(100, 50,100, 50);
             NEW_POINT(100,  0,  0, 50);
@@ -879,7 +1114,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 18:                                                    // broken link
             name = "Broken Link";
             connection_mask = CONMASK_W | CONMASK_E;
-            substep_count = 50000;
+            substep_count = 10000;
             level_version = 20;
             circuit->force_element(XYPos(0,4), new CircuitElementPipe(CONNECTIONS_WS));
             circuit->force_element(XYPos(0,5), new CircuitElementPipe(CONNECTIONS_NE));
@@ -925,7 +1160,10 @@ void Level::init_tests(SaveObjectMap* omap)
             circuit->force_element(XYPos(8,8), new CircuitElementSource(DIRECTION_N));
 
             NEW_TEST;// N   E   S   W
-            NEW_POINT_F(  0,  0,  0,100,  0,  0,  0, 50);
+            NEW_POINT_F(  0,  0,  0, 25,  0,  0,  0, 1);
+            NEW_POINT_F(  0,  0,  0, 50,  0,  0,  0, 1);
+            NEW_POINT_F(  0,  0,  0, 75,  0,  0,  0, 1);
+            NEW_POINT_F(  0,  0,  0,100,  0,  0,  0, 1);
             break;
 
         case 19:                                                    // zoom
@@ -934,36 +1172,47 @@ void Level::init_tests(SaveObjectMap* omap)
             level_version = 20;
             NEW_TEST;// N   E   S   W
             NEW_POINT(100,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(100,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(100,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(100, 50,  0, 50);
             NEW_TEST;
             NEW_POINT(100, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(100,100,  0,100);
             NEW_TEST;
             NEW_POINT(100,100,  0,100);
+            END_PRESET;
             NEW_POINT( 50, 50,  0, 25);
             NEW_TEST;
             NEW_POINT( 50, 50,  0, 25);
+            END_PRESET;
             NEW_POINT( 50, 20,  0, 10);
             NEW_TEST;
             NEW_POINT( 50, 20,  0, 10);
+            END_PRESET;
             NEW_POINT( 50, 80,  0, 40);
             NEW_TEST;
             NEW_POINT( 50, 80,  0, 40);
+            END_PRESET;
             NEW_POINT(100, 60, 50, 80);
             NEW_TEST;
             NEW_POINT(100, 60, 50, 80);
+            END_PRESET;
             NEW_POINT( 60, 75, 20, 50);
             NEW_TEST;
             NEW_POINT( 60, 75, 20, 50);
+            END_PRESET;
             NEW_POINT( 60, 50, 40, 50);
             NEW_TEST;
             NEW_POINT( 60, 50, 40, 50);
+            END_PRESET;
             NEW_POINT( 60,  0, 40, 40);
             NEW_TEST;
             NEW_POINT( 60,  0, 40, 40);
+            END_PRESET;
             NEW_POINT( 60,100, 40, 60);
             break;
         case 20:
@@ -992,28 +1241,35 @@ void Level::init_tests(SaveObjectMap* omap)
             circuit->force_element(XYPos(4,8), new CircuitElementPipe(CONNECTIONS_NWS));
 
             NEW_TEST;// N   E   S   W
-            NEW_POINT(100,  0,  0,  0);
+            NEW_POINT(100,  0, 50,  0);
             NEW_TEST;
-            NEW_POINT(100,  0,  0,  0);
+            NEW_POINT(100,  0, 50,  0);
+            END_PRESET;
             NEW_POINT(100,100,  0, 50);
             NEW_TEST;
             NEW_POINT(100,100,  0, 50);
+            END_PRESET;
             NEW_POINT( 50,  0,  0, 80);
             NEW_TEST;
             NEW_POINT( 50,  0,  0, 80);
+            END_PRESET;
             NEW_POINT( 50,100,  0, 30);
             NEW_TEST;
             NEW_POINT( 50,100,  0, 30);
+            END_PRESET;
             NEW_POINT(100,  0, 50, 30);
             NEW_TEST;
             NEW_POINT(100,  0, 50, 30);
+            END_PRESET;
             NEW_POINT(100,100, 50, 80);
             NEW_TEST;
             NEW_POINT(100,100, 50, 80);
+            END_PRESET;
             NEW_POINT( 70,  0, 50, 80);
             NEW_TEST;
             NEW_POINT( 70,  0, 50, 80);
-            NEW_POINT( 70,100, 50, 60);
+            END_PRESET;
+            NEW_POINT( 75,100, 45, 60);
             break;
 
         case 21:
@@ -1021,35 +1277,65 @@ void Level::init_tests(SaveObjectMap* omap)
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
             level_version = 20;
             NEW_TEST;// N   E   S   W
+            RESET;
             NEW_POINT(100,  0,  0,  0);
             NEW_POINT(100,  0,100,  0);
             NEW_POINT(100,  0,  0,  0);
+            
             NEW_TEST;
+            NEW_POINT(100,  0,100,  0);
+            NEW_POINT(100,100,  0,  0);
+            END_PRESET;
             NEW_POINT_F(  0,100,  0,  0, 50, 50, 50, 50);
             NEW_POINT_F(  0,100,  0,  0, 50,  0, 50, 50);
+
             NEW_TEST;
-            NEW_POINT(100,  0,  0, 70);
             NEW_POINT(100,  0,100, 70);
             NEW_POINT(100, 70,  0, 70);
             NEW_POINT(100, 70,  0, 20);
+
             NEW_TEST;
+            NEW_POINT(100, 70,100, 70);
+            NEW_POINT(100, 70,  0, 70);
             NEW_POINT(  0, 70,  0, 20);
             NEW_POINT(  0, 70,100, 20);
             NEW_POINT(  0, 70,  0, 20);
+
+            NEW_TEST;
+            NEW_POINT(100, 70,100, 70);
+            NEW_POINT(100, 70,  0, 70);
+            END_PRESET;
+            NEW_POINT(100, 70,  0, 20);
+            NEW_POINT(100, 70,100, 20);
+            NEW_POINT(100, 20,  0, 20);
+
             NEW_TEST;
             NEW_POINT(100, 70,  0, 20);
             NEW_POINT(100, 70,100, 20);
             NEW_POINT(100, 20,  0, 20);
-            NEW_TEST;
+            END_PRESET;
             NEW_POINT(100, 20,  0, 50);
+
+            NEW_TEST;
+            NEW_POINT(100, 70,  0, 20);
+            NEW_POINT(100, 70,100, 20);
+            NEW_POINT(100, 20,  0, 20);
+            END_PRESET;
+            NEW_POINT(100, 20,100, 50);
+
             NEW_TEST;
             NEW_POINT(100, 20,100, 50);
-            NEW_TEST;
+            END_PRESET;
             NEW_POINT(100, 50,  0, 50);
+
             NEW_TEST;
+            NEW_POINT(100, 20,100, 50);
+            NEW_POINT(100, 50,  0, 50);
+            END_PRESET;
             NEW_POINT(  0, 50,  0, 30);
             NEW_POINT(  0, 50,100, 30);
             NEW_POINT(  0, 50,  0, 30);
+
             NEW_TEST;
             NEW_POINT(100, 70,  0, 30);
             NEW_POINT(100, 70,100, 30);
@@ -1062,142 +1348,423 @@ void Level::init_tests(SaveObjectMap* omap)
             level_version = 20;
             substep_count = 30000;
             NEW_TEST;// N   E   S   W
-            NEW_POINT( 25,  0,  0,  0);
-            NEW_POINT( 25,  0,100,  0);
-            NEW_POINT( 25,  0,  0,  0);
+            NEW_POINT( 25,  0,  0, 10);
+            NEW_POINT( 25,  0,100, 10);
+            NEW_POINT( 25, 10,  0, 10);
+            
             NEW_TEST;
-            NEW_POINT( 25,  0,  0, 80);
-            NEW_POINT( 25,  0,  0, 80);
+            NEW_POINT( 25,  0,  0, 10);
+            NEW_POINT( 25,  0,100, 10);
+            END_PRESET;
+            NEW_POINT( 25,  0,  0, 10);
+            NEW_POINT( 25, 10,  0, 80);
+
             NEW_TEST;
-            NEW_POINT( 25,  0,  0, 80);
-            NEW_POINT( 25,  0,100, 80);
+            NEW_POINT( 25,  0,  0, 10);
+            NEW_POINT( 25,  0,100, 10);
+            NEW_POINT( 25, 10,  0, 10);
+            NEW_POINT( 25, 10,  0, 80);
+            END_PRESET;
+            NEW_POINT( 25, 10,100, 80);
+
+            NEW_TEST;
+            NEW_POINT( 25, 10,100, 80);
+            END_PRESET;
             NEW_POINT( 25, 80,  0, 80);
-            NEW_POINT( 25, 80,  0, 30);
-            NEW_TEST;
             NEW_POINT( 75,  0,  0, 30);
             NEW_POINT( 75,  0,100, 30);
+            NEW_POINT( 75,  0,  0, 30);
+            NEW_POINT( 25, 80,  0, 30);
+
+            NEW_TEST;
+            NEW_POINT( 75,  0,100, 30);
             NEW_POINT( 75, 30,  0, 30);
+            NEW_POINT( 25,  0,  0, 80);
+            NEW_POINT( 25, 80,100, 80);
+            NEW_POINT( 25, 80,  0, 80);
+            END_PRESET;
+            NEW_POINT( 75, 30,  0, 80);
+
             NEW_TEST;
-            NEW_POINT( 75, 30,  0, 60);
-            NEW_POINT( 75, 30,  0, 60);
+            NEW_POINT( 75,  0,100, 70);
+            NEW_POINT( 75, 70,  0, 70);
+            NEW_POINT( 25,  0,  0, 40);
+            NEW_POINT( 25, 40,100, 40);
+            NEW_POINT( 25, 40,  0, 40);
+            NEW_POINT( 75, 70,  0, 40);
+
             NEW_TEST;
-            NEW_POINT( 25, 80,  0, 60);
-            NEW_POINT( 25, 80,  0, 60);
-            NEW_TEST;
-            NEW_POINT( 75, 30,  0, 60);
-            NEW_POINT( 75, 30,  0, 60);
-            NEW_TEST;
-            NEW_POINT( 75, 30,  0, 60);
-            NEW_POINT( 75, 30,100, 60);
-            NEW_POINT( 75, 60,  0, 60);
-            NEW_POINT( 75, 60,  0, 10);
+            NEW_POINT( 75,  0,100, 70);
+            NEW_POINT( 75, 70,  0, 70);
+            NEW_POINT( 25,  0,  0, 40);
+            NEW_POINT( 25, 40,100, 40);
+            NEW_POINT( 25, 40,  0, 40);
+            NEW_POINT( 75, 70,  0, 40);
+            END_PRESET;
+            NEW_POINT( 25, 40,  0,  0);
+
+
             break;
 
         case 23:                                                    // Latch5
             name = "Latch5";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
             level_version = 20;
-            substep_count = 30000;
+            substep_count = 40000;
             NEW_TEST;// N   E   S   W
-            NEW_POINT( 10,  0,  0,  0);
-            NEW_POINT( 10,  0,100,  0);
-            NEW_POINT( 10,  0,  0,  0);
+            NEW_POINT( 10,  0,  0, 50);
+            NEW_POINT( 10,  0,100, 50);
+            NEW_POINT( 10, 50,  0, 50);
+
             NEW_TEST;
-            NEW_POINT( 10,  0,  0, 80);
+            NEW_POINT( 10,  0,  0, 50);
+            NEW_POINT( 10,  0,100, 50);
+            NEW_POINT( 10, 50,  0, 50);
+            END_PRESET;
+            NEW_POINT( 30,  0,  0, 30);
+            NEW_POINT( 30,  0,100, 30);
+            NEW_POINT( 30, 50,  0, 30);
+            NEW_POINT( 10, 50,  0, 10);
+
             NEW_TEST;
-            NEW_POINT( 10,  0,  0, 80);
-            NEW_POINT( 10,  0,100, 80);
-            NEW_POINT( 10, 80,  0, 80);
-            NEW_POINT( 10, 80,  0, 30);
-            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 50);
+            NEW_POINT( 10,  0,100, 50);
+            NEW_POINT( 10, 50,  0, 50);
             NEW_POINT( 30,  0,  0, 30);
             NEW_POINT( 30,  0,100, 30);
             NEW_POINT( 30, 30,  0, 30);
-            NEW_TEST;
-            NEW_POINT( 10, 80,  0, 60);
-            NEW_TEST;
-            NEW_POINT( 30, 30,  0, 60);
-            NEW_TEST;
-            NEW_POINT( 50,  0,  0, 40);
-            NEW_POINT( 50,  0,100, 40);
-            NEW_POINT( 50, 40,  0, 40);
+            NEW_POINT( 10, 50,  0, 10);
+            END_PRESET;
             NEW_POINT( 30, 30,  0, 10);
+
             NEW_TEST;
-            NEW_POINT( 50, 40,  0, 80);
-            NEW_TEST;
-            NEW_POINT( 70,  0,  0, 20);
-            NEW_POINT( 70,  0,100, 20);
-            NEW_POINT( 70, 20,  0, 20);
-            NEW_POINT( 70, 20,  0, 40);
-            NEW_TEST;
-            NEW_POINT( 90,  0,  0, 40);
-            NEW_POINT( 90,  0,100, 40);
-            NEW_POINT( 90, 40,  0, 40);
-            NEW_POINT( 90, 40,  0, 80);
-            NEW_TEST;
-            NEW_POINT( 70, 20,  0, 20);
-            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 50);
+            NEW_POINT( 10,  0,100, 50);
+            NEW_POINT( 30,  0,  0, 50);
+            NEW_POINT( 30,  0,100, 30);
+            NEW_POINT( 50,  0,  0, 30);
+            NEW_POINT( 50,  0,100, 60);
             NEW_POINT( 70,  0,  0, 60);
-            NEW_POINT( 70,  0,100, 60);
-            NEW_POINT( 70, 60,  0, 60);
-            NEW_POINT( 70, 60,  0, 10);
+            NEW_POINT( 70,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 90,  0,100, 80);
+            NEW_POINT( 90,  0,  0, 80);
+            NEW_POINT( 10, 50,  0,  0);
+
             NEW_TEST;
-            NEW_POINT( 90, 40,  0, 10);
+            NEW_POINT( 10,  0,  0, 50);
+            NEW_POINT( 10,  0,100, 50);
+            NEW_POINT( 30,  0,  0, 50);
+            NEW_POINT( 30,  0,100, 30);
+            NEW_POINT( 50,  0,  0, 30);
+            NEW_POINT( 50,  0,100, 60);
+            NEW_POINT( 70,  0,  0, 60);
+            NEW_POINT( 70,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 90,  0,100, 80);
+            NEW_POINT( 90,  0,  0, 80);
+            NEW_POINT( 10, 50,  0,  0);
+            END_PRESET;
+            NEW_POINT( 30, 30,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 50);
+            NEW_POINT( 10,  0,100, 50);
+            NEW_POINT( 30,  0,  0, 50);
+            NEW_POINT( 30,  0,100, 30);
+            NEW_POINT( 50,  0,  0, 30);
+            NEW_POINT( 50,  0,100, 60);
+            NEW_POINT( 70,  0,  0, 60);
+            NEW_POINT( 70,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 90,  0,100, 80);
+            NEW_POINT( 90,  0,  0, 80);
+            NEW_POINT( 30, 30,  0,  0);
+            END_PRESET;
+            NEW_POINT( 50, 60,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 50);
+            NEW_POINT( 10,  0,100, 50);
+            NEW_POINT( 30,  0,  0, 50);
+            NEW_POINT( 30,  0,100, 30);
+            NEW_POINT( 50,  0,  0, 30);
+            NEW_POINT( 50,  0,100, 60);
+            NEW_POINT( 70,  0,  0, 60);
+            NEW_POINT( 70,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 90,  0,100, 80);
+            NEW_POINT( 90,  0,  0, 80);
+            NEW_POINT( 50, 60,  0,  0);
+            END_PRESET;
+            NEW_POINT( 70, 10,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 50);
+            NEW_POINT( 10,  0,100, 50);
+            NEW_POINT( 30,  0,  0, 50);
+            NEW_POINT( 30,  0,100, 30);
+            NEW_POINT( 50,  0,  0, 30);
+            NEW_POINT( 50,  0,100, 60);
+            NEW_POINT( 70,  0,  0, 60);
+            NEW_POINT( 70,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 90,  0,100, 80);
+            NEW_POINT( 90,  0,  0, 80);
+            NEW_POINT( 70, 10,  0,  0);
+            END_PRESET;
+            NEW_POINT( 90, 80,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 90);
+            NEW_POINT( 10,  0,100, 90);
+            NEW_POINT( 30,  0,  0, 90);
+            NEW_POINT( 30,  0,100, 70);
+            NEW_POINT( 50,  0,  0, 70);
+            NEW_POINT( 50,  0,100, 50);
+            NEW_POINT( 70,  0,  0, 50);
+            NEW_POINT( 70,  0,100, 30);
+            NEW_POINT( 90,  0,  0, 30);
+            NEW_POINT( 90,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 10, 90,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 90);
+            NEW_POINT( 10,  0,100, 90);
+            NEW_POINT( 30,  0,  0, 90);
+            NEW_POINT( 30,  0,100, 70);
+            NEW_POINT( 50,  0,  0, 70);
+            NEW_POINT( 50,  0,100, 50);
+            NEW_POINT( 70,  0,  0, 50);
+            NEW_POINT( 70,  0,100, 30);
+            NEW_POINT( 90,  0,  0, 30);
+            NEW_POINT( 90,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 10, 10,  0,  0);
+            END_PRESET;
+            NEW_POINT( 30, 70,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 90);
+            NEW_POINT( 10,  0,100, 90);
+            NEW_POINT( 30,  0,  0, 90);
+            NEW_POINT( 30,  0,100, 70);
+            NEW_POINT( 50,  0,  0, 70);
+            NEW_POINT( 50,  0,100, 50);
+            NEW_POINT( 70,  0,  0, 50);
+            NEW_POINT( 70,  0,100, 30);
+            NEW_POINT( 90,  0,  0, 30);
+            NEW_POINT( 90,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 30, 70,  0,  0);
+            END_PRESET;
+            NEW_POINT( 50, 50,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 90);
+            NEW_POINT( 10,  0,100, 90);
+            NEW_POINT( 30,  0,  0, 90);
+            NEW_POINT( 30,  0,100, 70);
+            NEW_POINT( 50,  0,  0, 70);
+            NEW_POINT( 50,  0,100, 50);
+            NEW_POINT( 70,  0,  0, 50);
+            NEW_POINT( 70,  0,100, 30);
+            NEW_POINT( 90,  0,  0, 30);
+            NEW_POINT( 90,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 50, 50,  0,  0);
+            END_PRESET;
+            NEW_POINT( 70, 30,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT( 10,  0,  0, 90);
+            NEW_POINT( 10,  0,100, 90);
+            NEW_POINT( 30,  0,  0, 90);
+            NEW_POINT( 30,  0,100, 70);
+            NEW_POINT( 50,  0,  0, 70);
+            NEW_POINT( 50,  0,100, 50);
+            NEW_POINT( 70,  0,  0, 50);
+            NEW_POINT( 70,  0,100, 30);
+            NEW_POINT( 90,  0,  0, 30);
+            NEW_POINT( 90,  0,100, 10);
+            NEW_POINT( 90,  0,  0, 10);
+            NEW_POINT( 70, 30,  0,  0);
+            END_PRESET;
+            NEW_POINT( 90, 10,  0,  0);
+
             break;
 
         case 24:                                                    // Latch10
             name = "Latch10";
             connection_mask = CONMASK_N | CONMASK_W | CONMASK_S | CONMASK_E;
             level_version = 20;
-            substep_count = 30000;
+            substep_count = 40000;
             NEW_TEST;// N   E   S   W
+            NEW_POINT(  5,  0,100, 50);
+            NEW_POINT(  5, 50,  0, 50);
+            NEW_POINT(  5, 50,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT(  5, 50,100, 50);
+            NEW_POINT(  5, 50,  0, 50);
+            NEW_POINT(  5, 50,  0, 90);
+            END_PRESET;
+            NEW_POINT(  5, 50,100, 90);
+
+            NEW_TEST;
+            NEW_POINT(  5,  0,100, 30);
+            NEW_POINT( 15,  0,  0, 30);
+            NEW_POINT( 15,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 20);
+            NEW_POINT( 65,  0,  0, 20);
+            NEW_POINT( 65,  0,100, 60);
+            NEW_POINT( 85,  0,  0, 60);
+            NEW_POINT( 85,  0,100, 80);
+            NEW_POINT( 85,  0,  0, 80);
+            NEW_POINT(  5, 30,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT(  5,  0,100, 30);
+            NEW_POINT( 15,  0,  0, 30);
+            NEW_POINT( 15,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 20);
+            NEW_POINT( 65,  0,  0, 20);
+            NEW_POINT( 65,  0,100, 60);
+            NEW_POINT( 85,  0,  0, 60);
+            NEW_POINT( 85,  0,100, 80);
+            NEW_POINT( 85,  0,  0, 80);
+            NEW_POINT(  5,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT( 15, 50,  0,  0);
+
+            NEW_TEST;
+            NEW_POINT(  5,  0,100, 30);
+            NEW_POINT( 15,  0,  0, 30);
+            NEW_POINT( 15,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 20);
+            NEW_POINT( 65,  0,  0, 20);
+            NEW_POINT( 65,  0,100, 60);
+            NEW_POINT( 85,  0,  0, 60);
+            NEW_POINT( 85,  0,100, 80);
+            NEW_POINT( 85,  0,  0, 80);
             NEW_POINT( 15,  0,  0,  0);
-            NEW_POINT( 15,  0,100,  0);
-            NEW_POINT( 15,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT( 25, 20,  0,  0);
+
             NEW_TEST;
-            NEW_POINT( 15,  0,  0, 80);
+            NEW_POINT(  5,  0,100, 30);
+            NEW_POINT( 15,  0,  0, 30);
+            NEW_POINT( 15,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 20);
+            NEW_POINT( 65,  0,  0, 20);
+            NEW_POINT( 65,  0,100, 60);
+            NEW_POINT( 85,  0,  0, 60);
+            NEW_POINT( 85,  0,100, 80);
+            NEW_POINT( 85,  0,  0, 80);
+            NEW_POINT( 25,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT( 65, 60,  0,  0);
+
             NEW_TEST;
-            NEW_POINT( 15,  0,  0, 80);
-            NEW_POINT( 15,  0,100, 80);
-            NEW_POINT( 15, 80,  0, 80);
-            NEW_POINT( 15, 80,  0, 30);
+            NEW_POINT(  5,  0,100, 30);
+            NEW_POINT( 15,  0,  0, 30);
+            NEW_POINT( 15,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 20);
+            NEW_POINT( 65,  0,  0, 20);
+            NEW_POINT( 65,  0,100, 60);
+            NEW_POINT( 85,  0,  0, 60);
+            NEW_POINT( 85,  0,100, 80);
+            NEW_POINT( 85,  0,  0, 80);
+            NEW_POINT( 65,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT( 85, 80,  0,  0);
+
+
             NEW_TEST;
-            NEW_POINT( 25,  0,  0, 30);
+            NEW_POINT(  5,  0,100, 40);
+            NEW_POINT( 75,  0,  0, 40);
+            NEW_POINT( 75,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
             NEW_POINT( 25,  0,100, 30);
-            NEW_POINT( 25, 30,  0, 30);
+            NEW_POINT( 35,  0,  0, 30);
+            NEW_POINT( 35,  0,100, 60);
+            NEW_POINT( 95,  0,  0, 60);
+            NEW_POINT( 95,  0,100, 80);
+            NEW_POINT( 95,  0,  0, 80);
+            NEW_POINT(  5, 40,  0,  0);
+
             NEW_TEST;
-            NEW_POINT( 15, 80,  0, 60);
-            NEW_POINT( 15, 80,  0, 60);
+            NEW_POINT(  5,  0,100, 40);
+            NEW_POINT( 75,  0,  0, 40);
+            NEW_POINT( 75,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 30);
+            NEW_POINT( 35,  0,  0, 30);
+            NEW_POINT( 35,  0,100, 60);
+            NEW_POINT( 95,  0,  0, 60);
+            NEW_POINT( 95,  0,100, 80);
+            NEW_POINT( 95,  0,  0, 80);
+            NEW_POINT(  5,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT( 75, 50,  0,  0);
+
             NEW_TEST;
-            NEW_POINT( 25, 30,  0, 60);
-            NEW_POINT( 25, 30,  0, 60);
+            NEW_POINT(  5,  0,100, 40);
+            NEW_POINT( 75,  0,  0, 40);
+            NEW_POINT( 75,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 30);
+            NEW_POINT( 35,  0,  0, 30);
+            NEW_POINT( 35,  0,100, 60);
+            NEW_POINT( 95,  0,  0, 60);
+            NEW_POINT( 95,  0,100, 80);
+            NEW_POINT( 95,  0,  0, 80);
+            NEW_POINT(  5,  0,  0,  0);
+            NEW_POINT( 75,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT( 25, 30,  0,  0);
+
             NEW_TEST;
-            NEW_POINT( 55,  0,  0, 40);
-            NEW_POINT( 55,  0,100, 40);
-            NEW_POINT( 55, 40,  0, 40);
-            NEW_POINT( 25, 30,  0, 10);
+            NEW_POINT(  5,  0,100, 40);
+            NEW_POINT( 75,  0,  0, 40);
+            NEW_POINT( 75,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 30);
+            NEW_POINT( 35,  0,  0, 30);
+            NEW_POINT( 35,  0,100, 60);
+            NEW_POINT( 95,  0,  0, 60);
+            NEW_POINT( 95,  0,100, 80);
+            NEW_POINT( 95,  0,  0, 80);
+            NEW_POINT( 75,  0,  0,  0);
+            NEW_POINT( 25,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT( 35, 60,  0,  0);
+
             NEW_TEST;
-            NEW_POINT( 55, 40,  0, 80);
-            NEW_TEST;
-            NEW_POINT( 75,  0,  0, 20);
-            NEW_POINT( 75,  0,100, 20);
-            NEW_POINT( 75, 20,  0, 20);
-            NEW_POINT( 75, 20,  0, 40);
-            NEW_TEST;
-            NEW_POINT( 95,  0,  0, 40);
-            NEW_POINT( 95,  0,100, 40);
-            NEW_POINT( 95, 40,  0, 40);
-            NEW_POINT( 95, 40,  0, 80);
-            NEW_TEST;
-            NEW_POINT( 75, 20,  0, 20);
-            NEW_TEST;
-            NEW_POINT( 75,  0,  0, 60);
-            NEW_POINT( 75,  0,100, 60);
-            NEW_POINT( 75, 60,  0, 60);
-            NEW_POINT( 75, 60,  0, 10);
-            NEW_TEST;
-            NEW_POINT( 95, 40,  0, 10);
+            NEW_POINT(  5,  0,100, 40);
+            NEW_POINT( 75,  0,  0, 40);
+            NEW_POINT( 75,  0,100, 50);
+            NEW_POINT( 25,  0,  0, 50);
+            NEW_POINT( 25,  0,100, 30);
+            NEW_POINT( 35,  0,  0, 30);
+            NEW_POINT( 35,  0,100, 60);
+            NEW_POINT( 95,  0,  0, 60);
+            NEW_POINT( 95,  0,100, 80);
+            NEW_POINT( 95,  0,  0, 80);
+            NEW_POINT( 25,  0,  0,  0);
+            NEW_POINT( 35,  0,  0,  0);
+            END_PRESET;
+            NEW_POINT( 95, 80,  0,  0);
+
+
             break;
+
         case 25:
             name = "Min";
             connection_mask = CONMASK_N | CONMASK_S | CONMASK_E;
@@ -1208,30 +1775,39 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(100,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(100,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(100, 50, 50,  0);
             NEW_TEST;
             NEW_POINT(100, 50, 50,  0);
+            END_PRESET;
             NEW_POINT(100,100,100,  0);
             NEW_TEST;
             NEW_POINT(100,100,100,  0);
+            END_PRESET;
             NEW_POINT( 50, 50,100,  0);
             NEW_TEST;
             NEW_POINT( 50, 50,100,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,100,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,100,  0);
+            END_PRESET;
             NEW_POINT( 60, 60, 80,  0);
             NEW_TEST;
             NEW_POINT( 60, 60, 80,  0);
+            END_PRESET;
             NEW_POINT( 60, 30, 30,  0);
             NEW_TEST;
             NEW_POINT( 60, 30, 30,  0);
+            END_PRESET;
             NEW_POINT( 20, 20, 30,  0);
             NEW_TEST;
             NEW_POINT( 20, 20, 30,  0);
+            END_PRESET;
             NEW_POINT( 60, 30, 30,  0);
             NEW_TEST;
             NEW_POINT( 60, 30, 30,  0);
+            END_PRESET;
             NEW_POINT( 60, 60, 80,  0);
             break;
         case 26:
@@ -1241,33 +1817,43 @@ void Level::init_tests(SaveObjectMap* omap)
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0,  0,  0,  0);
             NEW_TEST;
             NEW_POINT(  0,  0,  0,  0);
+            END_PRESET;
             NEW_POINT(  0, 50, 50,  0);
             NEW_TEST;
             NEW_POINT(  0, 50, 50,  0);
+            END_PRESET;
             NEW_POINT(100,100, 50,  0);
             NEW_TEST;
             NEW_POINT(100,100, 50,  0);
+            END_PRESET;
             NEW_POINT( 50,100,100,  0);
             NEW_TEST;
             NEW_POINT( 50,100,100,  0);
+            END_PRESET;
             NEW_POINT( 50, 50,  0,  0);
             NEW_TEST;
             NEW_POINT( 50, 50,  0,  0);
+            END_PRESET;
             NEW_POINT( 50, 70, 70,  0);
             NEW_TEST;
             NEW_POINT( 50, 70, 70,  0);
+            END_PRESET;
             NEW_POINT( 90, 90, 70,  0);
             NEW_TEST;
             NEW_POINT( 90, 90, 70,  0);
+            END_PRESET;
             NEW_POINT( 30, 40, 40,  0);
             NEW_TEST;
             NEW_POINT( 30, 40, 40,  0);
+            END_PRESET;
             NEW_POINT( 60, 60, 40,  0);
             NEW_TEST;
             NEW_POINT( 60, 60, 40,  0);
+            END_PRESET;
             NEW_POINT(  0, 10, 10,  0);
             break;
 
@@ -1308,6 +1894,13 @@ void Level::init_tests(SaveObjectMap* omap)
 
             break;
 
+        case 28:                                            // new
+            name = "Not yet done...";
+            connection_mask = CONMASK_W | CONMASK_E;
+            NEW_TEST;// N   E   S   W
+            NEW_POINT(  77,  77,  77, 77);
+            break;
+
         case LEVEL_COUNT:                                            // end
             name = "Not yet done...";
             connection_mask = CONMASK_W | CONMASK_E;
@@ -1332,7 +1925,7 @@ void Level::init_tests(SaveObjectMap* omap)
 void Level::reset()
 {
     test_index = 0;
-    sim_point_index = 0;
+    sim_point_index = tests[test_index].first_simpoint;
     substep_index = 0;
     touched = false;
     current_simpoint = tests[test_index].sim_points[sim_point_index];
@@ -1393,6 +1986,13 @@ void Level::advance(unsigned ticks)
                                 update_score(true);
                             reset();
                         }
+                        sim_point_index = tests[test_index].first_simpoint;
+                    }
+                    if (tests[test_index].reset)
+                    {
+                        circuit->reset();
+                        for (int i = 0; i < 4; i++)
+                            ports[i] = 0;
                     }
                 }
                 else
@@ -1424,6 +2024,12 @@ void Level::select_test(unsigned t)
     substep_index = 0;
     test_index = t;
     touched = true;
+    if (tests[test_index].reset)
+    {
+        circuit->reset();
+        for (int i = 0; i < 4; i++)
+            ports[i] = 0;
+    }
 }
 
 void Level::update_score(bool fin)

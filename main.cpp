@@ -61,15 +61,20 @@ void mainloop()
 #ifdef STEAM
         SteamGameServer_RunCallbacks();
 #endif
-        game_state->render();
-        unsigned newtime = SDL_GetTicks();
         frame++;
         if (frame > 100 * 60)
         {
+            game_state->render(true);
             game_state->save(save_filename.c_str());
             game_state->save_to_server();
             frame = 0;
         }
+        else
+        {
+            game_state->render();
+        }
+        
+        unsigned newtime = SDL_GetTicks();
         if ((newtime - oldtime) < 10)
             SDL_Delay(10 - (newtime - oldtime));
 	}

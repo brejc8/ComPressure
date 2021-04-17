@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-#define LEVEL_COUNT 28
+#define LEVEL_COUNT 29
 #define HISTORY_POINT_COUNT 200
 
 
@@ -58,6 +58,8 @@ public:
     Pressure best_score = 0;
     Direction tested_direction = DIRECTION_E;
 
+    unsigned first_simpoint = 0;
+    bool reset = false;
     std::vector<SimPoint> sim_points;
     Pressure best_pressure_log[HISTORY_POINT_COUNT];
     Pressure last_pressure_log[HISTORY_POINT_COUNT];

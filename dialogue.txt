@@ -235,7 +235,7 @@ Ah, yes, that would be Ada.
 !NICOLA
 B... But Lord Chavvington, you said Ada had died.
 !CHARLES
-What nonsense! Ada is perfectly fine and staying with sister until we resolve this matter of the missing High Pressure Steam.
+What nonsense! Ada is perfectly fine and staying with her sister until we resolve this matter of the missing High Pressure Steam.
 !NICOLA
 You called her your "dearly departed".
 !CHARLES
@@ -385,7 +385,7 @@ Indeed. But, perhaps we should diffuse that steam bomb first.
 !ADA
 Thank you Gertrude. If not for your quick thinking, we would have had a disaster on our hands.
 !GEORGE
-I am also rather impressed. Ada, I cannot apologise enough for accusing you of ransacking my equipment. Would it be possible for Gertrude and Nicola to aid me in my designs? I think their input will be highly constructive.
+I am also rather impressed. Ada, I cannot apologise enough for accusing you of ransacking my residence. Would it be possible for Gertrude and Nicola to aid me in my designs? I think their input will be highly constructive.
 !ADA
 Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this anyway. We shall return in a few days and I already look forward to inspecting your discoveries.
 !GEORGE
@@ -421,7 +421,7 @@ Believe me, these will be very useful components in the future. I have a plan, a
 !ANNIE
 I highly doubt that. I think it is time for some pure research.
 
-Let’s go back to our Latch design Ada and I were working on. I wanted a latch which can be enabled or disabled. If the North input is high, the latch operates as normal, but if it is low, it should neither drive the output, or accept a new input upon seeing a timing pulse. We can use the old design, although it may be more efficient to make a custom one.
+Let’s go back to our Latch design Ada and I were working on. I wanted a latch which can be enabled or disabled. If the North input is high, the latch operates as normal, but if it is low, it should neither drive the output, nor accept a new input upon seeing a timing pulse. We can use the old design, although it may be more efficient to make a custom one.
 !END
                                # Latch2
 
@@ -485,7 +485,7 @@ The output this time must be the maximum of the two inputs.
 !CHARLES
 That’s enough of this analogue nonsense. While you work for me, all I want to see is High Pressure Steam, or no steam at all.
 
-What I need is a contraption which between emitting High Pressure Steam between three outputs upon the reception of a timing steam pulse.
+What I need is a contraption which switches emitting High Pressure Steam between three outputs upon the reception of a timing High Pressure Steam pulse.
 
 Just like the marching orders I love to hear.
 One! Two! Three! One! Two! Three! 

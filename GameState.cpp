@@ -647,7 +647,7 @@ void GameState::update_scale(int newscale)
 }
 
 
-void GameState::render()
+void GameState::render(bool saving)
 {
     tooltip_string = NULL;
     check_clipboard();
@@ -1929,6 +1929,12 @@ void GameState::render()
             const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson\n\nBuild: " __DATE__ "  " __TIME__;
             render_text_wrapped(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
         }
+    }
+    if (saving)
+    {
+        SDL_Rect src_rect = {256, 305, 24, 24};
+        SDL_Rect dst_rect = {0,0, 24 * scale, 24 * scale};
+        render_texture(src_rect, dst_rect);
     }
 
     SDL_RenderPresent(sdl_renderer);
