@@ -1861,6 +1861,7 @@ void Level::init_tests(SaveObjectMap* omap)
         case 27:                                            // Fuse
             name = "Fuse";
             connection_mask = CONMASK_W | CONMASK_E; 
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -1914,6 +1915,7 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Counter";
             connection_mask = CONMASK_S | CONMASK_E;
             substep_count = 20000;
+            level_version = 20;
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -2078,6 +2080,8 @@ void Level::init_tests(SaveObjectMap* omap)
             name = "Poem";
             connection_mask = CONMASK_S | CONMASK_E;
             substep_count = 20000;
+            circuit->force_element(XYPos(4,8), new CircuitElementPipe(CONNECTIONS_NWS));
+
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);

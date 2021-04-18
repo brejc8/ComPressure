@@ -381,13 +381,19 @@ Actually darling, I think the story of steam computation is only just beginning.
 !CHARLES
 Indeed. But, perhaps we should diffuse that steam bomb first.
 !END
+
+
+
+
+
+
                             # Zoom
 !ADA
 Thank you Gertrude. If not for your quick thinking, we would have had a disaster on our hands.
 !GEORGE
 I am also rather impressed. Ada, I cannot apologise enough for accusing you of ransacking my residence. Would it be possible for Gertrude and Nicola to aid me in my designs? I think their input will be highly constructive.
 !ADA
-Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this anyway. We shall return in a few days and I already look forward to inspecting your discoveries.
+Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this commotion. We shall return in a few days and I already look forward to inspecting your discoveries.
 !GEORGE
 Thank you, and safe journey.
 
@@ -500,7 +506,7 @@ Please, do be discrete about its construction.
 !END
                               # Poem
 !GEORGE
-Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace your references to “High Pressure Steam”, with “Lady Easley”.
+Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace the object of affection from your “High Pressure Steam” to my “Lady Easley”.
 
 I have encoded it on a value selector I made by altering Lady Eastly’s Latch10 design. It uses the same address ranges, but I disabled the writing functionality.
 !GEORGE

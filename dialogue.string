@@ -90,7 +90,7 @@ static Dialogue dialogue4[] = {
 
 static Dialogue dialogue5[] = {
     {DIALOGUE_NICOLA,
-        "Lady Chavvington's notes talk about a steam connection between the Laboratory and Lady Easley's residence that was used for communication.\n"
+        "Lady Chavvington's notes talk about a steam connection between the laboratory and Lady Easley's residence that was used for communication.\n"
     },
 
     {DIALOGUE_CHARLES,
@@ -281,7 +281,7 @@ static Dialogue dialogue11[] = {
     {DIALOGUE_ADA,
         "July 6th\n"
         "\n"
-        "I suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand-delivered note was received at our residence informing me his Laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost.\n"
+        "I suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand-delivered note was received at our residence informing me his laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost.\n"
     },
 
     {DIALOGUE_ADA,
@@ -398,7 +398,7 @@ static Dialogue dialogue13[] = {
     {DIALOGUE_ADA,
         "Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.\n"
         "\n"
-        "Lord Moorhouse is most shy yet smart as a whip, alas often he becomes to afraid to share his innovations.\n"
+        "Lord Moorhouse is most shy yet smart as a whip, alas often he becomes too afraid to share his innovations.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -428,7 +428,7 @@ static Dialogue dialogue14[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "But now, you must leave. With Ada safe, I feel I must be brave and I have an important task I must prepare for.\n"
+        "But now, you must leave. With Ada safe, I have an important task I must prepare for.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -633,7 +633,7 @@ static Dialogue dialogue19[] = {
     },
 
     {DIALOGUE_ADA,
-        "Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this anyway. We shall return in a few days and I already look forward to inspecting your discoveries.\n"
+        "Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this commotion. We shall return in a few days and I already look forward to inspecting your discoveries.\n"
     },
 
     {DIALOGUE_GEORGE,
@@ -837,13 +837,13 @@ static Dialogue dialogue28[] = {
 
 static Dialogue dialogue29[] = {
     {DIALOGUE_GEORGE,
-        "Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace your references to “High Pressure Steam”, with “Lady Easley”.\n"
+        "Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace the object of affection from your “High Pressure Steam” to my “Lady Easley”.\n"
         "\n"
         "I have encoded it on a value selector I made by altering Lady Eastly’s Latch10 design. It uses the same address ranges, but I disabled the writing functionality.\n"
     },
 
     {DIALOGUE_GEORGE,
-        "At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants values 5, 15, 25, 35...\n"
+        "At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants a sequence 5, 15, 25, 35...\n"
     },
 
     {DIALOGUE_END, NULL}
