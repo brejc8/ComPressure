@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-#define LEVEL_COUNT 29
+#define LEVEL_COUNT 30
 #define HISTORY_POINT_COUNT 200
 
 
@@ -27,6 +27,7 @@ public:
         force[3] = 50;
 
     }
+
     SimPoint(unsigned N, unsigned E, unsigned S, unsigned W, unsigned NF, unsigned EF, unsigned SF, unsigned WF)
     {
         values[0] = N;
@@ -38,7 +39,7 @@ public:
         force[2] = SF;
         force[3] = WF;
     }
-    
+
     SimPoint()
     {
     }

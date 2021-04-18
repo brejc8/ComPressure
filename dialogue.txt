@@ -64,7 +64,7 @@ Never mind all that low pressure nonsense. When West control is High Pressure, c
 
 #                           Buffer
 !NICOLA
-Lady Chavvington's notes talk about a steam connection between the Laboratory and Lady Easley's residence that was used for communication.
+Lady Chavvington's notes talk about a steam connection between the laboratory and Lady Easley's residence that was used for communication.
 !CHARLES
 Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these walls.
 !NICOLA
@@ -183,7 +183,7 @@ My apologies. Too much time spent in the colonies. Here is the correct entry.
 !ADA
 July 6th
 
-I suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand-delivered note was received at our residence informing me his Laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost.
+I suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand-delivered note was received at our residence informing me his laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost.
 !ADA
 I stored the code securely. Surely Charles would not have done such a thing. I immediately had the door on my laboratory replaced. Charles would rather die than operate a Moorhouse steam door.
 
@@ -254,7 +254,7 @@ I could sense how open any valve is, by placing a second valve which vented the 
 !ADA
 Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.
 
-Lord Moorhouse is most charming and smart as a whip, but often he refuses to share his innovations.
+Lord Moorhouse is most shy yet smart as a whip, alas often he becomes too afraid to share his innovations.
 !END
 #                                Subtract
 !NICOLA
@@ -262,7 +262,7 @@ Well it works. We can now sense how open a valve is, but I don't see how this ge
 !NICOLA
 Lord Moorhouse. Thank you for allowing us to call upon you. In her absence, we are attempting to continue the steam computation work of Lady Chavvington. Only you know the construction of the pressure adding unit and we beg you share it with us.
 !GEORGE
-I do agree. Having thought on this recently, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of addition in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand.
+I do agree. Having thought on this, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of addition in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand.
 !NICOLA
 Lady Chavvington is alive and well, staying with her sister.
 !GEORGE
@@ -409,7 +409,7 @@ Good, now we can zoom into any pressure range we choose. What I need next is a w
 
 Ada made it for Charles to measure the amount of steam passing through it. When steam passes through a long pipe, it will lose some pressure. The faster the steam is passing through, the more pressure it loses. If the two sides are at same pressure, there must be no moving steam. She even put some valves in the pipe to increase the resistance and make the difference greater.
 !GEORGE
-What I need is a way of telling if the input reference is between the two pressures. It must be lower than the North, but higher than the South.
+What I need is a way of telling if the West input reference is between the two pressures. It must be lower than the North, but higher than the South.
 !END
                                # LatchE
 !GEORGE
@@ -417,7 +417,7 @@ Now, by zooming into a range, I can now tell more precisely how much steam someo
 !ANNIE
 Has all this research been to solely to aid your company profits? This is not what our agreement was. 
 !GEORGE
-Believe me, these will be very useful components in the future. I have a plan, and you are very much at the centre of it.
+But Lady Easley! I made these for you. Believe me, these will be very useful components in the future.
 !ANNIE
 I highly doubt that. I think it is time for some pure research.
 
@@ -446,7 +446,7 @@ I admit, that flow detector was quite ingenious and was just the trick we needed
 
 The select ranges would be 0-10, 10-20, 20-30...
 !GEORGE
-And this is why I asked for the zoom element to be designed.
+And this is why I asked for the zoom element to be designed. I have seen the genius in your ideas and have already planned ahead.
 !END
                               # MIN
 !ADA
@@ -458,13 +458,13 @@ All will be revealed in good time.
 
 Well, I think my job here is done! I managed to design the storage. I will leave you to investigate the calculations and control?
 
-In the mean time George has predicted I would like tea at Madingley Hall and I think my answer is yes.
+In the mean time George has predicted I would like tea at Madingley Hall and I think my answer may be yes.
 !ADA
 Well let’s start small. We need a component which gives us the smaller of the two input values. Should be simple enough.
 !END
                               # MAX
 !CHARLES
-Ada! My darling! Try this exciting new beverage George introduced me to! It is called “Froffee Coffee”. Try it!
+Ada! My darling! Try this exciting new beverage George introduced me to! It is called “Froffee Coffee”. Taste it!
 !ADA
 Hmmm, yes it is rather ni...
 !CHARLES
@@ -476,11 +476,35 @@ High Pressure Steam!
 !ADA
 Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the control elements?
 !CHARLES
-Already done! George is finalising the requirements.
+Already done! George is finalising the poem... or should I say requirements.
 !ADA
 Oh! Well we must quickly create the Max component and then you can have access to our engineers.
 
 The output this time must be the maximum of the two inputs.
+!END
+                              # Fuse
+!CHARLES
+If we have some time before George comes, we should spend it making his pressure vessels safer. They are safe up to 90 PSI, but beyond that they are liable to explode. What I require is a “steam fuse”. Allow the flow of steam from West to East, but once the pressure reaches beyond 90PSI, disconnect the supply and vent the vessel. Remember to disconnect the supply first, and only then vent the tank.
+!END
+                              # Counter
+!CHARLES
+Come George! I think we have some privacy!
+!GEORGE
+Are you sure about this Charles? Lady Easley barely acknowledges my existence.  
+!CHARLES
+Stiff upper lip old chap!
+!GEORGE
+Very well. This is somewhat of a sensitive matter. I require a device which increases by 10 PSI each cycle. It should start at 0 PSI and at each timing pulse should increase by 10 PSI. Instead of reaching 100 PSI, it should reset back to 0 PSI.
+
+Please, do be discrete about its construction.
+!END
+                              # Poem
+!GEORGE
+Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace your references to “High Pressure Steam”, with “Lady Easley”.
+
+I have encoded it on a value selector I made by altering Lady Eastly’s Latch10 design. It uses the same address ranges, but I disabled the writing functionality.
+!GEORGE
+At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants a sequence 5, 15, 25, 35...
 !END
 !CHARLES
 That’s enough of this analogue nonsense. While you work for me, all I want to see is High Pressure Steam, or no steam at all.
@@ -494,6 +518,7 @@ Should it not be one, two, one, two?
 !CHARLES
 Not in my regiment! We count to three!
 !END
+
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
 !END

@@ -398,7 +398,7 @@ static Dialogue dialogue13[] = {
     {DIALOGUE_ADA,
         "Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.\n"
         "\n"
-        "Lord Moorhouse is most charming and smart as a whip, but often he refuses to share his innovations.\n"
+        "Lord Moorhouse is most shy yet smart as a whip, alas often he becomes to afraid to share his innovations.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -414,7 +414,7 @@ static Dialogue dialogue14[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "I do agree. Having thought on this recently, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of addition in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand.\n"
+        "I do agree. Having thought on this, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of addition in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand.\n"
     },
 
     {DIALOGUE_NICOLA,
@@ -428,7 +428,7 @@ static Dialogue dialogue14[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "But now, you must leave. With Ada safe, I have an important task I must prepare for.\n"
+        "But now, you must leave. With Ada safe, I feel I must be brave and I have an important task I must prepare for.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -671,7 +671,7 @@ static Dialogue dialogue20[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "What I need is a way of telling if the input reference is between the two pressures. It must be lower than the North, but higher than the South.\n"
+        "What I need is a way of telling if the West input reference is between the two pressures. It must be lower than the North, but higher than the South.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -687,7 +687,7 @@ static Dialogue dialogue21[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "Believe me, these will be very useful components in the future. I have a plan, and you are very much at the centre of it.\n"
+        "But Lady Easley! I made these for you. Believe me, these will be very useful components in the future.\n"
     },
 
     {DIALOGUE_ANNIE,
@@ -737,7 +737,7 @@ static Dialogue dialogue24[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "And this is why I asked for the zoom element to be designed.\n"
+        "And this is why I asked for the zoom element to be designed. I have seen the genius in your ideas and have already planned ahead.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -757,7 +757,7 @@ static Dialogue dialogue25[] = {
         "\n"
         "Well, I think my job here is done! I managed to design the storage. I will leave you to investigate the calculations and control?\n"
         "\n"
-        "In the mean time George has predicted I would like tea at Madingley Hall and I think my answer is yes.\n"
+        "In the mean time George has predicted I would like tea at Madingley Hall and I think my answer may be yes.\n"
     },
 
     {DIALOGUE_ADA,
@@ -769,7 +769,7 @@ static Dialogue dialogue25[] = {
 
 static Dialogue dialogue26[] = {
     {DIALOGUE_CHARLES,
-        "Ada! My darling! Try this exciting new beverage George introduced me to! It is called “Froffee Coffee”. Try it!\n"
+        "Ada! My darling! Try this exciting new beverage George introduced me to! It is called “Froffee Coffee”. Taste it!\n"
     },
 
     {DIALOGUE_ADA,
@@ -793,7 +793,7 @@ static Dialogue dialogue26[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "Already done! George is finalising the requirements.\n"
+        "Already done! George is finalising the poem... or should I say requirements.\n"
     },
 
     {DIALOGUE_ADA,
@@ -806,6 +806,50 @@ static Dialogue dialogue26[] = {
 };
 
 static Dialogue dialogue27[] = {
+    {DIALOGUE_CHARLES,
+        "If we have some time before George comes, we should spend it making his pressure vessels safer. They are safe up to 90 PSI, but beyond that they are liable to explode. What I require is a “steam fuse”. Allow the flow of steam from West to East, but once the pressure reaches beyond 90PSI, disconnect the supply and vent the vessel. Remember to disconnect the supply first, and only then vent the tank.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue28[] = {
+    {DIALOGUE_CHARLES,
+        "Come George! I think we have some privacy!\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "Are you sure about this Charles? Lady Easley barely acknowledges my existence.\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Stiff upper lip old chap!\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "Very well. This is somewhat of a sensitive matter. I require a device which increases by 10 PSI each cycle. It should start at 0 PSI and at each timing pulse should increase by 10 PSI. Instead of reaching 100 PSI, it should reset back to 0 PSI.\n"
+        "\n"
+        "Please, do be discrete about its construction.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue29[] = {
+    {DIALOGUE_GEORGE,
+        "Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace your references to “High Pressure Steam”, with “Lady Easley”.\n"
+        "\n"
+        "I have encoded it on a value selector I made by altering Lady Eastly’s Latch10 design. It uses the same address ranges, but I disabled the writing functionality.\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants values 5, 15, 25, 35...\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue30[] = {
     {DIALOGUE_CHARLES,
         "That’s enough of this analogue nonsense. While you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
         "\n"
@@ -826,23 +870,11 @@ static Dialogue dialogue27[] = {
     {DIALOGUE_END, NULL}
 };
 
-static Dialogue dialogue28[] = {
+static Dialogue dialogue31[] = {
     {DIALOGUE_ADA,
         "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
     },
 
-    {DIALOGUE_END, NULL}
-};
-
-static Dialogue dialogue29[] = {
-    {DIALOGUE_END, NULL}
-};
-
-static Dialogue dialogue30[] = {
-    {DIALOGUE_END, NULL}
-};
-
-static Dialogue dialogue31[] = {
     {DIALOGUE_END, NULL}
 };
 
@@ -890,4 +922,16 @@ static Dialogue dialogue42[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, NULL};
+static Dialogue dialogue43[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue44[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue45[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, NULL};
