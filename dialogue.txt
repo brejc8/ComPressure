@@ -282,7 +282,7 @@ Yes, well, when a Chavvington says he will do something, it will get done. You d
 
 Could you please send her a message from me?
 
-80, 94, 75, 52, 68, 71
+80, 94, 76, 52, 68, 70
 !NICOLA
 I see you have learned the codes!
 !CHARLES
@@ -292,10 +292,10 @@ Be a good chap and send it off at once.
 !NICOLA
 80 PSI [Hello]
 94 PSI [This is Charles Chavvington]
-75 PSI [My sweetest angel]
+76 PSI [My sweetest angel]
 52 PSI [My heart yearns for you]
 68 PSI [I longingly await your return]
-71 PSI [Without you life has lost all meaning]
+70 PSI [Without you life has lost all meaning]
 
 !CHARLES
 Good, now, I see the subtractor design is complete. Excellent! As my dearly departed Ada once said... 
@@ -419,7 +419,7 @@ What I need is a way of telling if the West input reference is between the two p
 !END
                                # LatchE
 !GEORGE
-Now, by zooming into a range, I can now tell more precisely how much steam someone is using, but I can also tell if I am within the range I am inspecting. I shall tell my customers to prepare for an extra decimal place on their next steam bills!
+Now, by zooming into a range, I can tell more precisely how much steam someone is using, but I can also tell if I am within the range I am inspecting. I shall tell my customers to prepare for an extra decimal place on their next steam bills!
 !ANNIE
 Has all this research been to solely to aid your company profits? This is not what our agreement was. 
 !GEORGE
@@ -427,18 +427,18 @@ But Lady Easley! I made these for you. Believe me, these will be very useful com
 !ANNIE
 I highly doubt that. I think it is time for some pure research.
 
-Let’s go back to our Latch design Ada and I were working on. I wanted a latch which can be enabled or disabled. If the North input is high, the latch operates as normal, but if it is low, it should neither drive the output, nor accept a new input upon seeing a timing pulse. We can use the old design, although it may be more efficient to make a custom one.
+Let’s go back to the Latch design Ada and I were working on. I wanted a latch which can be enabled or disabled. If the North input is high, the latch operates as normal, but if it is low, it should neither drive the output, nor accept a new input upon seeing a timing pulse. We can use the old design, although it may be more efficient to make a custom one.
 !END
                                # Latch2
 
 !ANNIE
-Now the reason I wanted that design was to be able to construct an “addressable latch” where the North input selects between one of several latches. This way I could store several values and access each at will.
+Now, the reason I wanted that design was to be able to construct an “addressable latch” where the North input selects between one of several latches. This way I could store several values and access each at will.
 
 Let’s start with two. The North input selects between two latches. North value 0 to 50 will select one, and North value 50 to 100 will select the second.
 !END
                               # Latch5
 !ANNIE
-Exactly, unfortunately this is how far we got. Next I wanted a latch that could store five values, but Ada and I could never fit it all into a single design. The select ranges would be 0-20, 20-40, 40-60, 60-80 and 80-100. Unfortunately detecting which of the ranges the select signal was in was too difficult.
+Exactly, unfortunately this is as far as we got. Next I wanted a latch that could store five values, but Ada and I could never fit it all into a single design. The select ranges would be 0-20, 20-40, 40-60, 60-80 and 80-100. Unfortunately detecting which of the ranges the select signal was in was too difficult.
 !GEORGE
 If only one had a range detecting design.
 !ANNIE
@@ -463,8 +463,6 @@ The what?
 All will be revealed in good time.
 
 Well, I think my job here is done! I managed to design the storage. I will leave you to investigate the calculations and control?
-
-In the mean time George has predicted I would like tea at Madingley Hall and I think my answer may be yes.
 !ADA
 Well let’s start small. We need a component which gives us the smaller of the two input values. Should be simple enough.
 !END
@@ -502,7 +500,7 @@ Stiff upper lip old chap!
 !GEORGE
 Very well. This is somewhat of a sensitive matter. I require a device which increases by 10 PSI each cycle. It should start at 0 PSI and at each timing pulse should increase by 10 PSI. Instead of reaching 100 PSI, it should reset back to 0 PSI.
 
-Please, do be discrete about its construction.
+Please, do be discreet about its construction.
 !END
                               # Poem
 !GEORGE
@@ -512,8 +510,10 @@ I have encoded it on a value selector I made by altering Lady Eastly’s Latch10
 !GEORGE
 At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants a sequence 5, 15, 25, 35...
 !END
+
+
 !CHARLES
-That’s enough of this analogue nonsense. While you work for me, all I want to see is High Pressure Steam, or no steam at all.
+That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.
 
 What I need is a contraption which switches emitting High Pressure Steam between three outputs upon the reception of a timing High Pressure Steam pulse.
 

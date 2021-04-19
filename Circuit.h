@@ -359,6 +359,7 @@ public:
     virtual Circuit* get_subcircuit(unsigned *level_index_ = NULL) {return NULL;}
     virtual bool get_custom() {return false;}
     virtual void set_custom() {}
+    virtual bool get_read_only() {return true;}
     virtual void rotate(bool clockwise) = 0;
     virtual void flip(bool vertically) = 0;
 };
@@ -477,9 +478,10 @@ public:
     Level* level = NULL;;
     Circuit* circuit = NULL;
     bool custom = false;
+    bool read_only = false;
 
     CircuitElementSubCircuit(DirFlip dir_flip_, unsigned level_index_, LevelSet* level_set = NULL);
-    CircuitElementSubCircuit(SaveObjectMap*);
+    CircuitElementSubCircuit(SaveObjectMap*, bool read_only_ = false);
     CircuitElementSubCircuit(CircuitElementSubCircuit& other);
     ~CircuitElementSubCircuit();
 
@@ -499,6 +501,7 @@ public:
     Circuit* get_subcircuit(unsigned *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}
     virtual bool get_custom() {return custom;}
     virtual void set_custom() {custom = true;}
+    virtual bool get_read_only() {return read_only;}
     void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
     void flip(bool vertically) {dir_flip = dir_flip.flip(vertically);};
 };

@@ -548,8 +548,9 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(DirFlip dir_flip_, unsigned l
     }
 }
 
-CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap)
+CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap, bool read_only_)
 {
+    read_only = read_only_;
     dir_flip = Direction(omap->get_num("direction"));
     level_index = Direction(omap->get_num("level_index"));
     level = NULL;

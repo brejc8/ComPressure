@@ -1196,7 +1196,7 @@ void GameState::render(bool saving)
                     x += 32;
                 unsigned l_index;
                 sub->get_subcircuit(&l_index);
-                if (!sub->get_custom())
+                if (!sub->get_custom() || sub->get_read_only())
                     editable = false;
                 
                 unsigned color = editable ? 1 : 4;
@@ -1209,7 +1209,7 @@ void GameState::render(bool saving)
         if (current_circuit_is_inspected_subcircuit)
         {
             for (auto &sub : inspection_stack)
-                if (!sub->get_custom())
+                if (!sub->get_custom() && !sub->get_read_only())
                 {
                     if (sub == inspection_stack.back())
                         render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Customize");
@@ -1986,7 +1986,7 @@ void GameState::mouse_click_in_grid()
             Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit();
             if (sub_circuit)
             {
-                if (!current_circuit->elements[grid.y][grid.x]->get_custom() || current_circuit->is_blocked(grid))
+                if (!current_circuit->elements[grid.y][grid.x]->get_custom() || current_circuit->elements[grid.y][grid.x]->get_read_only())
                     current_circuit_is_read_only = true;
                 inspection_stack.push_back(current_circuit->elements[grid.y][grid.x]);
                 current_circuit = sub_circuit;
@@ -2021,7 +2021,7 @@ void GameState::mouse_click_in_grid()
                 current_circuit = inspection_stack[i]->get_subcircuit();
                 current_circuit_is_read_only = false;
                 for (auto &sub : inspection_stack)
-                    if (!sub->get_custom())
+                    if (!sub->get_custom() || sub->get_read_only())
                         current_circuit_is_read_only = true;
                 selected_elements.clear();
                 return;
@@ -2029,7 +2029,7 @@ void GameState::mouse_click_in_grid()
             else if (i == 10 && current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
             {
                 for (auto &sub : inspection_stack)
-                    if (!sub->get_custom())
+                    if (!sub->get_custom() && !sub->get_read_only())
                     {
                         if (sub == inspection_stack.back())
                         {
