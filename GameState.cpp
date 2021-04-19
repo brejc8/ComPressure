@@ -1986,7 +1986,7 @@ void GameState::mouse_click_in_grid()
             Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit();
             if (sub_circuit)
             {
-                if (!current_circuit->elements[grid.y][grid.x]->get_custom())
+                if (!current_circuit->elements[grid.y][grid.x]->get_custom() || current_circuit->is_blocked(grid))
                     current_circuit_is_read_only = true;
                 inspection_stack.push_back(current_circuit->elements[grid.y][grid.x]);
                 current_circuit = sub_circuit;
@@ -3045,6 +3045,15 @@ bool GameState::events()
                     case SDL_SCANCODE_F5:
                         show_debug = !show_debug;
                         break;
+                    case SDL_SCANCODE_F8:
+                    {
+                        SaveObject* sav = current_circuit->save();
+                        sav->save(std::cout);
+                        std::cout << "\n";
+                        
+                        delete sav;
+                        break;
+                    }
                     case SDL_SCANCODE_F11:
                         full_screen = !full_screen;
                         SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
