@@ -590,6 +590,7 @@ public:
     void render_prep();
 
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
+    void prep(PressureAdjacent);
     void sim_pre(PressureAdjacent);
     void remove_circles(LevelSet* level_set, std::set<unsigned> seen = {});
     void updated_ports() {fast_prepped = false;};

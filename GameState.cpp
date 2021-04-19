@@ -388,11 +388,17 @@ void GameState::advance()
     deal_with_design_fetch();
 
     int count = pow(1.2, game_speed) * 2;
+    if (game_speed == 0)
+        count = 0;
+    if (game_speed == 1)
+        count = 1;
     {
         if (skip_to_next_subtest)
         {
             count = current_level->substep_count - current_level->substep_index;
         }
+        if (!count)
+            current_level->advance(0);
         while (count)
         {
             int subcount = count < 1000 ? count : 1000;
@@ -818,7 +824,7 @@ void GameState::render(bool saving)
                 tl.y = br.y;
                 br.y = t;
             }
-            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty() && !current_circuit->is_blocked(pos))
+            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty())
                 selected = true;
         }
         
@@ -2076,8 +2082,6 @@ void GameState::mouse_click_in_grid()
                 return;
             }
         }
-    if (current_circuit_is_read_only)
-        return;
     }
 
     if (keyboard_shift)
@@ -2094,8 +2098,6 @@ void GameState::mouse_click_in_grid()
             return;
         if (current_circuit->elements[grid.y][grid.x]->is_empty())
             return;
-        if (current_circuit->is_blocked(grid))
-            return;
         if (selected_elements.find(grid) == selected_elements.end())
             selected_elements.insert(grid);
         else
@@ -2108,6 +2110,10 @@ void GameState::mouse_click_in_grid()
         selected_elements.clear();
         return;
     }
+    
+    if (current_circuit_is_read_only)
+        return;
+
     if (mouse_state == MOUSE_STATE_NONE)
     {
         for (auto it = current_circuit->signs.begin(); it != current_circuit->signs.end(); it++)
@@ -2940,7 +2946,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_C:
-                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        if (!SDL_IsTextInputActive())
                             clipboard.copy(selected_elements, *current_circuit);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             mouse_state = MOUSE_STATE_NONE;
@@ -3148,7 +3154,7 @@ bool GameState::events()
                         for (pos.y = 0; pos.y < 9; pos.y++)
                         for (pos.x = 0; pos.x < 9; pos.x++)
                         {
-                            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty() && !current_circuit->is_blocked(pos))
+                            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty())
                                 selected_elements.insert(pos);
                         }
                         mouse_state = MOUSE_STATE_NONE;

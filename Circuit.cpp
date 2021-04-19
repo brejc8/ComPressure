@@ -1008,13 +1008,17 @@ void Circuit::sim_prep(PressureAdjacent adj, FastSim& fast_sim)
     fast_prepped = true;
 }
 
-void Circuit::sim_pre(PressureAdjacent adj)
+void Circuit::prep(PressureAdjacent adj)
 {
     if (!fast_prepped)
     {
     	fast_sim.clear();
         sim_prep(adj, fast_sim);
     }
+}
+
+void Circuit::sim_pre(PressureAdjacent adj)
+{
     fast_sim.sim();
 }
 
@@ -1126,6 +1130,8 @@ void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Directi
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = old + mov;
+        if (is_blocked(old))
+            return;
         if (is_blocked(pos))
             return;
         if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
@@ -1179,6 +1185,8 @@ void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool 
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = ((old - min) * (clockwise ? DIRECTION_E : DIRECTION_W) + XYPos(clockwise ? max.x : min.x, clockwise ? min.y : max.y));
+        if (is_blocked(old))
+            return;
         if (is_blocked(pos))
             return;
         if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
