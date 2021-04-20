@@ -480,7 +480,7 @@ public:
     bool custom = false;
     bool read_only = false;
 
-    CircuitElementSubCircuit(DirFlip dir_flip_, unsigned level_index_, LevelSet* level_set = NULL);
+    CircuitElementSubCircuit(DirFlip dir_flip_, unsigned level_index_, LevelSet* level_set = NULL, bool read_only_ = false);
     CircuitElementSubCircuit(SaveObjectMap*, bool read_only_ = false);
     CircuitElementSubCircuit(CircuitElementSubCircuit& other);
     ~CircuitElementSubCircuit();

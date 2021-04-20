@@ -716,8 +716,8 @@ void Level::init_tests(SaveObjectMap* omap)
             connection_mask = CONMASK_W | CONMASK_E;
             level_version = 20;
             substep_count = 20000;
-            circuit->force_element(XYPos(3,4), new CircuitElementSubCircuit(DIRECTION_N, 7));
-            circuit->force_element(XYPos(4,5), new CircuitElementSubCircuit(DIRECTION_S, 11));
+            circuit->force_element(XYPos(3,4), new CircuitElementSubCircuit(DIRECTION_N, 7, NULL, true));
+            circuit->force_element(XYPos(4,5), new CircuitElementSubCircuit(DIRECTION_S, 11, NULL, true));
 
             NEW_TEST;// N   E   S   W
             NEW_POINT(  0,  0,  0,  0);
@@ -2101,7 +2101,7 @@ void Level::init_tests(SaveObjectMap* omap)
 
             }
 
-            substep_count = 40000;
+            substep_count = 30000;
             level_version = 20;
 
 
@@ -2114,6 +2114,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 25,100,  0);
             //END_PRESET;
             NEW_POINT(  0, 38,  0,  0);
+            NEW_POINT(  0, 38,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
             NEW_POINT(  0, 38,  0,  0);
@@ -2128,6 +2129,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 38,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 38,100,  0);
+            NEW_POINT(  0, 33,  0,  0);
             NEW_POINT(  0, 33,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
@@ -2138,6 +2140,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 33,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 33,100,  0);
+            NEW_POINT(  0, 29,  0,  0);
             NEW_POINT(  0, 29,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
@@ -2150,6 +2153,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 29,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 29,100,  0);
+            NEW_POINT(  0, 76,  0,  0);
             NEW_POINT(  0, 76,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
@@ -2164,6 +2168,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 76,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 76,100,  0);
+            NEW_POINT(  0, 82,  0,  0);
             NEW_POINT(  0, 82,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
@@ -2180,6 +2185,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 82,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 82,100,  0);
+            NEW_POINT(  0, 52,  0,  0);
             NEW_POINT(  0, 52,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
@@ -2198,6 +2204,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 52,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 52,100,  0);
+            NEW_POINT(  0, 85,  0,  0);
             NEW_POINT(  0, 85,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
@@ -2218,6 +2225,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 85,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 85,100,  0);
+            NEW_POINT(  0, 57,  0,  0);
             NEW_POINT(  0, 57,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
@@ -2240,6 +2248,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 57,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 57,100,  0);
+            NEW_POINT(  0, 25,  0,  0);
             NEW_POINT(  0, 25,  0,  0);
             NEW_TEST;RESET;
             NEW_POINT(  0,  0,100,  0);
@@ -2264,6 +2273,7 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT(  0, 25,  0,  0);
             //END_PRESET;
             NEW_POINT(  0, 25,100,  0);
+            NEW_POINT(  0, 38,  0,  0);
             NEW_POINT(  0, 38,  0,  0);
             break;
 
