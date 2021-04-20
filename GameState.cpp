@@ -2559,7 +2559,7 @@ void GameState::mouse_click_in_panel()
                 reply += ": \"";
                 reply += level_set->levels[current_level_index]->name;
                 reply += "\" (";
-                reply += std::to_string(pressure_as_percent(level_set->levels[current_level_index]->last_score));
+                reply += level_set->levels[current_level_index]->score_set ? std::to_string(pressure_as_percent(level_set->levels[current_level_index]->last_score)) : "Err";
                 reply += "%)\n";
                 
                 s32 += 0x1F682;                 // steam engine

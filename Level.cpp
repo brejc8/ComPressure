@@ -131,14 +131,14 @@ SaveObject* Level::save(bool lite)
         slist = new SaveObjectList;
         for (unsigned i = 0; i < 4; i++)
             if (saved_designs[i])
-                slist->add_item(saved_designs[i]->save());
+                slist->add_item(saved_designs[i]->save(true));
             else
                 slist->add_item(new SaveObjectNull);
         omap->add_item("saved_designs", slist);
     }
     else
     {
-        omap->add_num("best_score", last_score);
+        omap->add_num("best_score", score_set ? last_score : 0);
     }
 
     return omap;
@@ -2511,6 +2511,7 @@ void Level::set_monitor_state(TestExecType monitor_state_)
 void Level::touch()
 {
     touched = true;
+    score_set = false;
     circuit->fast_prepped = false;
 //    remove_circles();
 }
