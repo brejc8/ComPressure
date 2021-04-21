@@ -1518,12 +1518,14 @@ void GameState::render(bool saving)
             render_number_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), pressure_as_percent(current_level->tests[i].last_score));
             render_number_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), pressure_as_percent(current_level->tests[i].best_score));
         }
-        
+
         render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_score);
         render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_score);
 
-        
-        unsigned sim_point_count = current_level->tests[test_index].sim_points.size();
+        int sim_point_count = current_level->tests[test_index].sim_points.size();
+        int sim_point_index = current_level->sim_point_index;
+        int sim_point_offset = std::max(std::min(sim_point_count - 12, sim_point_index - 6), 0);
+
         render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8) * scale), XYPos(8*32, 112), 4);
         int y_pos = panel_offset.y + (32 + 32 + 16) * scale;
         
@@ -1531,8 +1533,20 @@ void GameState::render(bool saving)
             SDL_Rect src_rect = {448, 144, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
-            y_pos+= 16 * scale;
         }
+        if (sim_point_offset)
+        {
+            SDL_Rect src_rect = {448, 128, 8, 8};
+            SDL_Rect dst_rect = {panel_offset.x + 28 * scale, y_pos + 4 * scale, 8 * scale, 8 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        if (sim_point_count > (sim_point_offset + 12))
+        {
+            SDL_Rect src_rect = {456, 128, 8, 8};
+            SDL_Rect dst_rect = {panel_offset.x + (28 + 11 * 16) * scale, y_pos + 4 * scale, 8 * scale, 8 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        y_pos+= 16 * scale;
         for (int i = 0; i < 4; i++)                 // Inputs
         {
             int pin_index = current_level->pin_order[i];
@@ -1542,10 +1556,10 @@ void GameState::render(bool saving)
                 SDL_Rect src_rect = {256 + pin_index * 16, 144, 16, 16};
                 SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
                 render_texture(src_rect, dst_rect);
-                for (int i2 = 0; i2 < sim_point_count; i2++)
+                for (int i2 = sim_point_offset; (i2 < sim_point_count) && (i2 < (sim_point_offset + 12)); i2++)
                 {
                     unsigned value = current_level->tests[test_index].sim_points[i2].values[pin_index];
-                    render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + i2 * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == i2 ? 4 : 0);
+                    render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (i2 - sim_point_offset) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == i2 ? 4 : 0);
                 }
                 y_pos += 16 * scale;
             }
@@ -1563,14 +1577,18 @@ void GameState::render(bool saving)
             SDL_Rect src_rect = {256 + pin_index * 16, 144, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
-            unsigned value = current_level->tests[test_index].sim_points[sim_point_count-1].values[pin_index];
-            render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (sim_point_count-1) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == sim_point_count - 1 ? 4 : 0);
-            render_number_pressure(XYPos(panel_offset.x + (8 + 16 + 3 + 16 + (sim_point_count-1) * 16) * scale, y_pos + (5) * scale), current_level->tests[test_index].last_pressure_log[HISTORY_POINT_COUNT - 1] , 1, 9, 1);
+            if ((sim_point_count  - sim_point_offset) <= 12)
+            {
+                unsigned value = current_level->tests[test_index].sim_points[sim_point_count-1].values[pin_index];
+                render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == sim_point_count - 1 ? 4 : 0);
+                render_number_pressure(XYPos(panel_offset.x + (8 + 16 + 3 + 16 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), current_level->tests[test_index].last_pressure_log[HISTORY_POINT_COUNT - 1] , 1, 9, 1);
+            }
             y_pos += 16 * scale;
         }
+
         {
             SDL_Rect src_rect = {320, 144, 16, 8};
-            SDL_Rect dst_rect = {panel_offset.x + int(8 + 16 + current_level->sim_point_index * 16) * scale, panel_offset.y + (32 + 32 + 16) * scale, 16 * scale, 8 * scale};
+            SDL_Rect dst_rect = {panel_offset.x + int(8 + 16 + (sim_point_index  - sim_point_offset) * 16) * scale, panel_offset.y + (32 + 32 + 16) * scale, 16 * scale, 8 * scale};
             render_texture(src_rect, dst_rect);
             src_rect.y += 8;
             src_rect.h = 1;
@@ -2661,7 +2679,10 @@ void GameState::mouse_click_in_panel()
         XYPos subtest_pos = panel_pos - XYPos(8 + 16, 32 + 32 + 16);
         if (subtest_pos.inside(XYPos(current_level->tests[current_level->test_index].sim_points.size() * 16, popcount(current_level->connection_mask) * 16 + 32)))
         {
-            skip_to_subtest_index = subtest_pos.x / 16;
+            int sim_point_count = current_level->tests[current_level->test_index].sim_points.size();
+            int sim_point_index = current_level->sim_point_index;
+            int sim_point_offset = std::max(std::min(sim_point_count - 12, sim_point_index - 6), 0);
+            skip_to_subtest_index = subtest_pos.x / 16 + sim_point_offset;
             skip_to_next_subtest = true;
             current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
         }
