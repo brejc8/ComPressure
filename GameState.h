@@ -209,7 +209,7 @@ public:
     void set_steam_user(uint64_t id, const char* name)
     {
         steam_id = id;
-        steam_username = name;
+        steam_username = strdup(name);
     }
     void add_friend(uint64_t id)
     {

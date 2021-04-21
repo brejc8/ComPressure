@@ -22,6 +22,64 @@
 #endif
 
 
+#ifdef STEAM
+
+static const char* const achievement_names[] = { "LEVEL_6", NULL};
+
+class SteamGameManager
+{
+private:
+	STEAM_CALLBACK( SteamGameManager, OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived);
+	STEAM_CALLBACK( SteamGameManager, OnGameOverlayActivated, GameOverlayActivated_t, m_CallbackGameOverlayActivated );
+    ISteamUserStats *m_pSteamUserStats;
+    bool stats_ready = false;
+    bool achievement_got[10] = {false};
+    bool needs_send = false;
+
+public:
+    SteamGameManager():
+    	m_CallbackUserStatsReceived( this, &SteamGameManager::OnUserStatsReceived ),
+	    m_CallbackGameOverlayActivated( this, &SteamGameManager::OnGameOverlayActivated )
+    {
+        m_pSteamUserStats = SteamUserStats();
+        m_pSteamUserStats->RequestCurrentStats();
+    };
+    void set_achievements(unsigned index)
+    {
+        if (achievement_got[index])
+            return;
+        achievement_got[index] = true;
+        m_pSteamUserStats->SetAchievement(achievement_names[index]);
+        needs_send = true;
+    }
+    void update_achievements(GameState* game_state);
+};
+
+void SteamGameManager::OnUserStatsReceived( UserStatsReceived_t *pCallback )
+{
+    stats_ready = true;
+    for (int i = 0; achievement_names[i]; i++)
+        m_pSteamUserStats->GetAchievement( achievement_names[i], &achievement_got[i]);
+}
+
+void SteamGameManager::OnGameOverlayActivated( GameOverlayActivated_t* pCallback )
+{
+}
+
+void SteamGameManager::update_achievements(GameState* game_state)
+{
+    if (game_state->highest_level >= 6)
+        set_achievements(0);
+
+    if (needs_send)
+    {
+        m_pSteamUserStats->StoreStats();
+        needs_send = false;
+    }
+}
+
+#endif
+
 void mainloop()
 {
     char* save_path = SDL_GetPrefPath("CharlieBrej", "ComPressure");
@@ -39,6 +97,7 @@ void mainloop()
 
     GameState* game_state = new GameState(load_filename);
 #ifdef STEAM
+    SteamGameManager steam_manager;
     game_state->set_steam_user(SteamUser()->GetSteamID().CSteamID::ConvertToUint64(), SteamFriends()->GetPersonaName());
 
     int friend_count = SteamFriends()->GetFriendCount( k_EFriendFlagImmediate );
@@ -59,7 +118,8 @@ void mainloop()
         game_state->advance();
         game_state->audio();
 #ifdef STEAM
-        SteamGameServer_RunCallbacks();
+        steam_manager.update_achievements(game_state);
+        SteamAPI_RunCallbacks();
 #endif
         frame++;
         if (frame > 100 * 60)
