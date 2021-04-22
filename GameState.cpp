@@ -389,7 +389,8 @@ void GameState::advance()
 
     int count = pow(1.2, game_speed) * 2;
     if (game_speed == 0)
-        count = 0;
+        count = ((frame_index % 10) == 0);
+    
     if (game_speed == 1)
         count = 1;
     {
@@ -1816,7 +1817,7 @@ void GameState::render(bool saving)
                 render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 0) * scale), XYPos(32, 32+28), 1);
             else
                 render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale), XYPos(32, 32), 0);
-            SDL_Rect src_rect = {352 + (i % 5) * 24, 240 + (i / 5) * 24, 24, 24};
+            SDL_Rect src_rect = {352 + (i % 5) * 24, 224 + (i / 5) * 24, 24, 24};
             SDL_Rect dst_rect = {(32 + 48 + 4 + i * 32) * scale, (2 * (128 + 16) + 4 + 28) * scale, 24 * scale, 24 * scale};
             render_texture(src_rect, dst_rect);
         }
@@ -2560,7 +2561,6 @@ void GameState::mouse_click_in_panel()
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
                 level_set->touch(current_level_index);
-                level_set->reset(current_level_index);
             }
             else if ((next_dialogue_level > 8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
             {
@@ -2664,7 +2664,6 @@ void GameState::mouse_click_in_panel()
             if (t < test_count)
             {
                 current_level->select_test(t);
-                current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
                 level_set->touch(current_level_index);
             }
         }
