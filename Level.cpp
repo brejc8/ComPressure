@@ -2341,7 +2341,7 @@ void Level::init_tests(SaveObjectMap* omap)
 //             NEW_POINT_F(  0,  0,  0,100,  0,  0, 50,  0);
 // 
 //             break;
-        case LEVEL_COUNT:                                            // end
+        case LEVEL_COUNT - 1:                                            // end
             name = "Not yet done...";
             connection_mask = CONMASK_W | CONMASK_E;
             NEW_TEST;// N   E   S   W

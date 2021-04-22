@@ -848,6 +848,14 @@ static Dialogue dialogue29[] = {
 };
 
 static Dialogue dialogue30[] = {
+    {DIALOGUE_ADA,
+        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue31[] = {
     {DIALOGUE_CHARLES,
         "That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
         "\n"
@@ -868,15 +876,11 @@ static Dialogue dialogue30[] = {
     {DIALOGUE_END, NULL}
 };
 
-static Dialogue dialogue31[] = {
+static Dialogue dialogue32[] = {
     {DIALOGUE_ADA,
         "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
     },
 
-    {DIALOGUE_END, NULL}
-};
-
-static Dialogue dialogue32[] = {
     {DIALOGUE_END, NULL}
 };
 
@@ -932,4 +936,8 @@ static Dialogue dialogue45[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, NULL};
+static Dialogue dialogue46[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, NULL};

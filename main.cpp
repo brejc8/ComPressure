@@ -24,7 +24,7 @@
 
 #ifdef STEAM
 
-static const char* const achievement_names[] = { "LEVEL_6", NULL};
+static const char* const achievement_names[] = { "LEVEL_6", "LEVEL_12", "LEVEL_19", "LEVEL_25", "LEVEL_30", NULL};
 
 class SteamGameManager
 {
@@ -70,6 +70,19 @@ void SteamGameManager::update_achievements(GameState* game_state)
 {
     if (game_state->highest_level >= 6)
         set_achievements(0);
+
+    if (game_state->highest_level >= 12)
+        set_achievements(1);
+
+    if (game_state->highest_level >= 19)
+        set_achievements(2);
+
+    if (game_state->highest_level >= 25)
+        set_achievements(3);
+
+    if (game_state->highest_level >= 30)
+        set_achievements(4);
+
 
     if (needs_send)
     {

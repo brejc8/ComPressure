@@ -511,6 +511,10 @@ I have encoded it on a value selector I made by altering Lady Eastly’s Latch10
 At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants a sequence 5, 15, 25, 35...
 !END
 
+!ADA
+The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
+!END
+
 
 !CHARLES
 That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.

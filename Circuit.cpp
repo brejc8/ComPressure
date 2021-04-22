@@ -1405,6 +1405,10 @@ void Circuit::redo(LevelSet* level_set)
 
 void Circuit::paste(Clipboard& clipboard, XYPos offset, LevelSet* level_set)
 {
+    for (Clipboard::ClipboardElement& clip_elem: clipboard.elements)
+        if (is_blocked(clip_elem.pos + offset))
+            return;
+
     ammend();
     for (Clipboard::ClipboardElement& clip_elem: clipboard.elements)
     {

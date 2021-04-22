@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-#define LEVEL_COUNT 30
+#define LEVEL_COUNT 31
 #define HISTORY_POINT_COUNT 200
 
 
