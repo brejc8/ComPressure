@@ -1280,13 +1280,18 @@ void Circuit::delete_selected_elements(std::set<XYPos> &selected_elements)
 {
     bool all_empty = true;
     for (const XYPos& pos: selected_elements)
-        if (!elements[pos.y][pos.x]->is_empty())
+    {
+        if (!elements[pos.y][pos.x]->is_empty() && !is_blocked(pos))
             all_empty = false;
+    }
     if (all_empty)
         return;
+
     ammend();
     for (const XYPos& pos: selected_elements)
     {
+        if (is_blocked(pos))
+            continue;
         delete elements[pos.y][pos.x];
         elements[pos.y][pos.x] = new CircuitElementEmpty();
     }

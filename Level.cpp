@@ -2297,7 +2297,7 @@ void Level::init_tests(SaveObjectMap* omap)
             substep_count = 30000;
 
 
-            NEW_TEST; RESET_1;// tests.back().tested_direction = DIRECTION_S;
+            NEW_TEST; RESET_1; tests.back().tested_direction = DIRECTION_E;
                      // N   E   S   W
             NEW_POINT_F(  0,  0,  0,  0, 50,  0,  0, 50);
             NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
@@ -2307,7 +2307,7 @@ void Level::init_tests(SaveObjectMap* omap)
             END_PRESET;
             NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
 
-            NEW_TEST; RESET_1;// tests.back().tested_direction = DIRECTION_S;
+            NEW_TEST; RESET_1; tests.back().tested_direction = DIRECTION_E;
             NEW_POINT_F(  0,  0,  0,  0, 50,  0,  0, 50);
             NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
             NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
@@ -2321,14 +2321,14 @@ void Level::init_tests(SaveObjectMap* omap)
             END_PRESET;
             NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
 
-            NEW_TEST; RESET_1;
+            NEW_TEST; RESET_1; tests.back().tested_direction = DIRECTION_E;
             NEW_POINT_F(  0,  0,  0,  0, 50,  0,  0, 50);
             NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
             NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
             NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
             NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
             END_PRESET;
-            NEW_POINT_F( 40, 50, 40, 50, 50,  0,  0, 50);
+            NEW_POINT_F( 10, 90, 10, 90, 50,  0,  0, 50);
 
             NEW_TEST;  RESET_1;tests.back().tested_direction = DIRECTION_S;
             NEW_POINT_F(  0,  0,  0,  0, 50,  0,  0, 50);
@@ -2336,31 +2336,53 @@ void Level::init_tests(SaveObjectMap* omap)
             NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
             NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
             NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
-            NEW_POINT_F( 40, 50, 40, 50, 50,  0,  0, 50);
+            NEW_POINT_F( 10, 90, 10, 90, 50,  0,  0, 50);
             END_PRESET;
-            NEW_POINT_F( 40, 50, 40, 50, 50,  0,  0, 50);
+            NEW_POINT_F( 10, 90, 10, 90, 50,  0,  0, 50);
 
-            NEW_TEST; RESET_1;
-            NEW_POINT_F(  0,  0,  0,  0, 50,  0,  0, 50);
-            NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
-            NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
-            NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
-            NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
-            NEW_POINT_F( 40, 50, 40, 50, 50,  0,  0, 50);
-            NEW_POINT_F( 40, 50, 40, 50, 50,  0,  0, 50);
+
+            NEW_TEST; RESET_1; RESET_ALL; tests.back().tested_direction = DIRECTION_W;
+                     // N   E   S   W
+            NEW_POINT_F(  0,  0,  0,  0,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+            NEW_TEST; RESET_1;tests.back().tested_direction = DIRECTION_N;
+            NEW_POINT_F(  0,  0,  0,  0,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
             END_PRESET;
-            NEW_POINT_F( 70, 80, 70, 80, 50,  0,  0, 50);
-            NEW_TEST;  RESET_1; tests.back().tested_direction = DIRECTION_S;
-            NEW_POINT_F(  0,  0,  0,  0, 50,  0,  0, 50);
-            NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
-            NEW_POINT_F( 20, 70, 20, 70, 50,  0,  0, 50);
-            NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
-            NEW_POINT_F( 80, 30, 80, 30, 50,  0,  0, 50);
-            NEW_POINT_F( 40, 50, 40, 50, 50,  0,  0, 50);
-            NEW_POINT_F( 40, 50, 40, 50, 50,  0,  0, 50);
-            NEW_POINT_F( 70, 80, 70, 80, 50,  0,  0, 50);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+
+            NEW_TEST; RESET_1; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT_F(  0,  0,  0,  0,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
             END_PRESET;
-            NEW_POINT_F( 70, 80, 70, 80, 50,  0,  0, 50);
+            NEW_POINT_F( 80, 30, 80, 30,  0, 50, 50,  0);
+            NEW_TEST; RESET_1;tests.back().tested_direction = DIRECTION_N;
+            NEW_POINT_F(  0,  0,  0,  0,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+            NEW_POINT_F( 80, 30, 80, 30,  0, 50, 50,  0);
+            END_PRESET;
+            NEW_POINT_F( 80, 30, 80, 30,  0, 50, 50,  0);
+
+            NEW_TEST; RESET_1; tests.back().tested_direction = DIRECTION_W;
+            NEW_POINT_F(  0,  0,  0,  0,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+            NEW_POINT_F( 80, 30, 80, 30,  0, 50, 50,  0);
+            NEW_POINT_F( 80, 30, 80, 30,  0, 50, 50,  0);
+            END_PRESET;
+            NEW_POINT_F( 10, 90, 10, 90,  0, 50, 50,  0);
+
+            NEW_TEST;  RESET_1;tests.back().tested_direction = DIRECTION_N;
+            NEW_POINT_F(  0,  0,  0,  0,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+            NEW_POINT_F( 20, 70, 20, 70,  0, 50, 50,  0);
+            NEW_POINT_F( 80, 30, 80, 30,  0, 50, 50,  0);
+            NEW_POINT_F( 80, 30, 80, 30,  0, 50, 50,  0);
+            NEW_POINT_F( 10, 90, 10, 90,  0, 50, 50,  0);
+            END_PRESET;
+            NEW_POINT_F( 10, 90, 10, 90,  0, 50, 50,  0);
 
 
             break;

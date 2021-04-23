@@ -512,10 +512,27 @@ At every steam pulse, the next value should be read out. This won’t be trivial
 !END
 
 !ADA
-The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
+What have you two been up to?
+!CHARLES
+George and I have just delivered a most marvellous poetry reciting machine to Lady Easley. It has been programmed to recite George’s feelings towards her.
+
+With sufficient refinement one could reduce such a device to the size of a horse.
+!ADA
+That sounds lovely. Although I do hope you reversed the pressures as Annie’s codes are all negated.
+!GEORGE
+WHAT!?! Nicola! What did I just send her?
+!NICOLA
+Hmm... It appears you complemented her on her magnificent beard ... requested her lewd etchings ... and instructed her to attack the enemy at dawn.
+!GEORGE
+...
+On that note, I am shall return to my residence to spend some time with a bottle of wiskey.
+!ADA
+Charles! Go and sort this mess out!
+
+While they are gone, perhaps you two can help. Charles was supposed to install two pipes into this wall, but it only has one. I need North connected to South, and West to East. Is there any way we can do this without waiting for a new pipe to be installed?
+!NICOLA
+Good thing we live in a clockwork universe because I think I have an idea. Gertrude, do you remember how you diffused that bomb?
 !END
-
-
 !CHARLES
 That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.
 

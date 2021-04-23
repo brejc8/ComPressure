@@ -741,7 +741,7 @@ void GameState::render(bool saving)
         render_texture(src_rect, dst_rect);
     }
 
-    if (current_level->tests[current_level->test_index].sim_points.size() == current_level->sim_point_index + 1)
+    if ((current_level->tests[current_level->test_index].sim_points.size() == current_level->sim_point_index + 1) && !current_circuit_is_inspected_subcircuit)
     {
         unsigned test_index = current_level->test_index;
         int pin_index = current_level->tests[test_index].tested_direction;
@@ -1811,7 +1811,7 @@ void GameState::render(bool saving)
         render_box(XYPos(16 * scale, 0 * scale), XYPos(592, 360), 0);
 
         render_box(XYPos(16 * scale, 0 * scale), XYPos(592, (128+16)*2+20), 1);
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 11; i++)
         {
             if (i == show_help_page)
                 render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 0) * scale), XYPos(32, 32+28), 1);
@@ -1854,8 +1854,8 @@ void GameState::render(bool saving)
                 {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe connections. Note how each pipe has a little resistance."},
                 {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the (+) side of the valve is at a higher pressure than the (-) side. The higher it is, the more the valve is open. Steam on the (+) and (-) sides is not consumed.\n\nHere, the (-) side is vented to atmosphere and thus at 0 pressure. With (+) at 100 PSI and (-) at 0 PSI, the valve is 100% open. If (+) is at 75 and (-) is at 25, the valve will be 50% open."},
                 {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower than the (-) side, the valve becomes closed and no steam will pass through."},
-                {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is lower than 100 PSI.\n\n As before, the openness of the valve is the pressure on the (+) side minus the pressture on the (-) side."},
-                {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close the valve as the pressure on the (-) size becomes equal to the (+) side."},
+                {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is lower than 100 PSI.\n\nAs before, the openness of the valve is the pressure on the (+) side minus the pressture on the (-) side."},
+                {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close the valve as the pressure on the (-) size becomes equal or higher than the (+) side."},
                 {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively.\n\n"
                                     "The current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the worst of all tests."},
                 {XYPos(2,12), 3, 1, "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
@@ -1866,6 +1866,13 @@ void GameState::render(bool saving)
                 
                 {XYPos(1,16), 2, 1, "Completed designs are available for use as components. Available components are shown in the build menu. Changing a design will update its implementation in all components.\n\nClicking on the component allows you to inspect it. Pressing the customize button, while inpecting, creates a local design which can be edited and is no longer updated when the original is changed. The design will turn red to signify this."},
                 {XYPos(3,16), 1, 1, "There are four slots to save designs. The best design is also saved so it can be recalled later. Designs can be exchanged using a clipboard string.\n\nClicking the score shows the global score graph, and your score compared to your friends. Their designs are available to be examined."},
+                {XYPos(4,16), 1, 1, "One method of creating a specific pressure is by simultaniously supplying and venting a pipe at a specific ratio. A valve is as open as the pressure on the (+) size minus the pressure on the (-) side.\n\n"
+                                    "Openness = P - N\n\nWhere P is the pressure on the Positive side of the valve and N is the pressure on the Negative side.\n\n"
+                                    "Here the lower valve openness is 40 (60 - 20)."
+                                    },
+                {XYPos(0,17), 5,10, "The pressure generated in this arrangement is, in percent, the openness of the source valve divided by the sum of the openness of both valves.\n\n"
+                                    "Pressure = S / (S + V)\n\nWhere S is Supply valve openness and V is Venting valve openness.\n\n"
+                                    "In this case, Supply is 40 (40 - 0). Venting is also 40 (60 - 20). The expected value between is 40 / (40 + 40) = 50%, thus 50 PSI."},
             };
             
 
@@ -2064,16 +2071,21 @@ void GameState::mouse_click_in_grid()
             }
             else if (i == 10 && current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
             {
+                Circuit* prev = current_level->circuit;
                 for (auto &sub : inspection_stack)
+                {
                     if (!sub->get_custom() && !sub->get_read_only())
                     {
                         if (sub == inspection_stack.back())
                         {
+                            prev->ammend();
                             sub->set_custom();
                             current_circuit_is_read_only = false;
                         }
                         break;
                     }
+                    prev = sub->get_subcircuit();
+                }
                 return;
             }
             else if (i == 10 && current_level_set_is_inspected)
@@ -2968,12 +2980,15 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_X:
-                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        if (!SDL_IsTextInputActive())
                         {
                             clipboard.copy(selected_elements, *current_circuit);
-                            current_circuit->delete_selected_elements(selected_elements);
-                            selected_elements.clear();
-                            level_set->touch(current_level_index);
+                            if(!current_circuit_is_read_only)
+                            {
+                                current_circuit->delete_selected_elements(selected_elements);
+                                selected_elements.clear();
+                                level_set->touch(current_level_index);
+                            }
                         }
                         break;
                     case SDL_SCANCODE_C:
@@ -3274,11 +3289,11 @@ bool GameState::events()
                         if (pos.y < 32 && pos.y >=0)
                         {
                             int x = pos.x / 32;
-                            if (x < 10)
+                            if (x < 11)
                                 show_help_page = x;
                             break;
                         }
-                        show_help_page = (show_help_page + 1) % 10;
+                        show_help_page = (show_help_page + 1) % 11;
                         break;
                     }
                     else if (show_confirm)

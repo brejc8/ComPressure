@@ -849,7 +849,40 @@ static Dialogue dialogue29[] = {
 
 static Dialogue dialogue30[] = {
     {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+        "What have you two been up to?\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "George and I have just delivered a most marvellous poetry reciting machine to Lady Easley. It has been programmed to recite George’s feelings towards her.\n"
+        "\n"
+        "With sufficient refinement one could reduce such a device to the size of a horse.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "That sounds lovely. Although I do hope you reversed the pressures as Annie’s codes are all negated.\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "WHAT!?! Nicola! What did I just send her?\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Hmm... It appears you complemented her on her magnificent beard ... requested her lewd etchings ... and instructed her to attack the enemy at dawn.\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "...\n"
+        "On that note, I am shall return to my residence to spend some time with a bottle of wiskey.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Charles! Go and sort this mess out!\n"
+        "\n"
+        "While they are gone, perhaps you two can help. Charles was supposed to install two pipes into this wall, but it only has one. I need North connected to South, and West to East. Is there any way we can do this without waiting for a new pipe to be installed?\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Good thing we live in a clockwork universe because I think I have an idea. Gertrude, do you remember how you diffused that bomb?\n"
     },
 
     {DIALOGUE_END, NULL}
