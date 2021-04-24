@@ -3,8 +3,21 @@
 #include <assert.h>
 #define assert_exp(x) do { if (f.get() != x) throw (std::runtime_error("Unexpected character"));} while (false)
 
+static void skip_whitespace(std::istream& f)
+{
+    while (true)
+    {
+        char c = f.peek();
+        if (c == ' ' || c == '\t' || c == '\n')
+            f.get();
+        else
+            break;
+    }
+}
+
 SaveObject* SaveObject::load(std::istream& f)
 {
+    skip_whitespace(f);    
     char c = f.peek();
     if (c == '{')
         return new SaveObjectMap(f);
@@ -62,15 +75,18 @@ SaveObjectMap::SaveObjectMap(std::istream& f)
     char c;
     while (true)
     {
+        skip_whitespace(f);    
         if (f.peek() == '}')
             break;
         assert_exp('\"');
         std::string key;
         while ((c = f.get()) != '\"')
             key.push_back(c);
+        skip_whitespace(f);    
         assert_exp(':');
         SaveObject* obj = SaveObject::load(f);
         add_item(key, obj);
+        skip_whitespace(f);
         if (f.peek() == '}')
             break;
         assert_exp(',');
@@ -170,10 +186,12 @@ SaveObjectList::SaveObjectList(std::istream& f)
     char c;
     while (true)
     {
+        skip_whitespace(f);    
         if (f.peek() == ']')
             break;
         SaveObject* obj = SaveObject::load(f);
         add_item(obj);
+        skip_whitespace(f);    
         if (f.peek() == ']')
             break;
         assert_exp(',');

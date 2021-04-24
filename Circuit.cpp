@@ -456,10 +456,13 @@ void CircuitElementValve::render_prep(PressureAdjacent adj_)
     pressure = (adj.W.value + adj.E.value) / 2;
 
     int move_by = (mov * 100) / PRESSURE_SCALAR;
-    if ((dir_flip.dir == DIRECTION_E || dir_flip.dir == DIRECTION_N))
+    if ((dir_flip.dir == DIRECTION_N) ||
+        (dir_flip.dir == DIRECTION_E  && !dir_flip.flp) ||
+        (dir_flip.dir == DIRECTION_W  &&  dir_flip.flp))
         move_by = -move_by;
     move_by = std::min(move_by, 100);
     move_by = std::max(move_by, -100);
+    
     moved_pos += move_by;
      
 }
@@ -1042,8 +1045,7 @@ void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)
                 if (seen.find(level_index) != seen.end())
                 {
                     set_element_empty(pos, true);
-                    const char* name = level_set->levels[level_index]->name;
-                    signs.push_front(Sign(pos*32+XYPos(16,16), DIRECTION_N, std::string("ERROR ") + name));
+                    signs.push_front(Sign(pos*32+XYPos(16,16), DIRECTION_N, std::string("ERROR ") + level_set->levels[level_index]->name));
                 }
                 else
                 {

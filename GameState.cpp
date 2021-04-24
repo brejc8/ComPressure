@@ -1211,7 +1211,7 @@ void GameState::render(bool saving)
 
     {
         int x = 0;
-        render_button(XYPos(x * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), 0, current_level->name);
+        render_button(XYPos(x * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), 0, current_level->name.c_str());
         x += 32;
 
         if (current_circuit_is_inspected_subcircuit)
@@ -1228,7 +1228,7 @@ void GameState::render(bool saving)
                 
                 unsigned color = editable ? 1 : 4;
                 
-                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, level_set->levels[l_index]->name);
+                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, level_set->levels[l_index]->name.c_str());
                 x += 32;
             }
         }
@@ -1328,7 +1328,7 @@ void GameState::render(bool saving)
                 continue;
             if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue)
                 continue;
-            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0, level_set->levels[level_index]->name);
+            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0, level_set->levels[level_index]->name.c_str());
             
             unsigned score = pressure_as_percent(level_set->levels[level_index]->best_score);
 
@@ -1380,7 +1380,7 @@ void GameState::render(bool saving)
                 break;
             
             if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
-                render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(dir_flip), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name);
+                render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(dir_flip), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name.c_str());
             level_index++;
         }
 
@@ -2062,7 +2062,8 @@ void GameState::mouse_click_in_grid()
                 inspection_stack.resize(i);
                 i--;
                 current_circuit = inspection_stack[i]->get_subcircuit();
-                current_circuit_is_read_only = false;
+                if (!current_level_set_is_inspected)
+                    current_circuit_is_read_only = false;
                 for (auto &sub : inspection_stack)
                     if (!sub->get_custom() || sub->get_read_only())
                         current_circuit_is_read_only = true;

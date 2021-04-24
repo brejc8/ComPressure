@@ -32,4 +32,7 @@ dialogue.string: dialogue.txt fold.py
 hint.string: hint.txt fold.py
 	./fold.py hint.txt > hint.string
 
+Level.string: Level.json stringify.py
+	./stringify.py Level.json > Level.string
+
 CXXFLAGS = -std=c++2a

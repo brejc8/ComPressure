@@ -13,21 +13,8 @@
 class SimPoint
 {
 public:
-    unsigned values[4] = {50};
+    unsigned values[4] = {0};
     unsigned force[4] = {50};
-    SimPoint(unsigned N, unsigned E, unsigned S, unsigned W)
-    {
-        values[0] = N;
-        values[1] = E;
-        values[2] = S;
-        values[3] = W;
-        force[0] = 50;
-        force[1] = 50;
-        force[2] = 50;
-        force[3] = 50;
-
-    }
-
     SimPoint(unsigned N, unsigned E, unsigned S, unsigned W, unsigned NF, unsigned EF, unsigned SF, unsigned WF)
     {
         values[0] = N;
@@ -75,7 +62,7 @@ public:
 class Level
 {
 public:
-    const char* name = "";
+    std::string name = "";
     CircuitPressure ports[4];
     SimPoint current_simpoint;
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
