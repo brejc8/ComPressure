@@ -2015,14 +2015,14 @@ void GameState::set_level(unsigned level_index)
     }
 }
 
-void GameState::mouse_click_in_grid()
+void GameState::mouse_click_in_grid(unsigned clicks)
 {
     XYPos pos = (mouse - grid_offset) / scale;
     XYPos grid = pos / 32;
     if (pos.x < 0) grid.x--;
     if (pos.y < 0) grid.y--;
 
-    if (mouse_state == MOUSE_STATE_NONE && !keyboard_ctrl && !keyboard_shift)
+    if (!keyboard_ctrl && !keyboard_shift && clicks == 2)
     {
         if (grid.inside(XYPos(9,9)))
         {
@@ -3341,7 +3341,7 @@ bool GameState::events()
                     }
                     else if (mouse.x < panel_offset.x)
                     {
-                        mouse_click_in_grid();
+                        mouse_click_in_grid(e.button.clicks);
                     }
                     else
                     {

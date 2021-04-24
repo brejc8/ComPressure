@@ -196,7 +196,7 @@ public:
     void render(bool saving = false);
     void advance();
     void set_level(unsigned level_index);
-    void mouse_click_in_grid();
+    void mouse_click_in_grid(unsigned clicks);
     void mouse_click_in_panel();
     void mouse_motion();
     bool events();
