@@ -13,13 +13,16 @@
 #include <sstream>
 #include <codecvt>
 
-static const char* level_string = 
-#include "Level.string"
-;
+static SaveObjectList* make_level_desc()
+{
+    std::string text;
+    #include "Level.string"
+    std::istringstream decomp_stream(text);
 
-std::string decomp = level_string;
-std::istringstream decomp_stream(decomp);
-SaveObjectList* level_desc = SaveObject::load(decomp_stream)->get_list();
+    return SaveObject::load(decomp_stream)->get_list();
+}
+
+SaveObjectList* level_desc = make_level_desc();
 
 Test::Test()
 {
