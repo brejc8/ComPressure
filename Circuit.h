@@ -333,9 +333,9 @@ public:
 class CircuitElement
 {
 public:
-    SaveObject* save(void);
+    virtual SaveObject* save(void);
     virtual void save(SaveObjectMap*) = 0;
-    static CircuitElement* load(SaveObjectMap*);
+    static CircuitElement* load(SaveObject*);
     virtual CircuitElement* copy() = 0;
     virtual ~CircuitElement(){};
 
@@ -457,6 +457,7 @@ public:
     CircuitElementEmpty(){}
     CircuitElementEmpty(SaveObjectMap*);
 
+//    SaveObject* save();
     void save(SaveObjectMap*);
     virtual uint16_t get_desc();
     virtual CircuitElement* copy() { return new CircuitElementEmpty();}

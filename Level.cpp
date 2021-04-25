@@ -174,19 +174,6 @@ XYPos Level::getimage_fg(DirFlip dir_flip)
 
 void Level::init_tests(SaveObjectMap* omap)
 {
-#define CONMASK_N          (1)
-#define CONMASK_E          (2)
-#define CONMASK_S          (4)
-#define CONMASK_W          (8)
-
-#define NEW_TEST do {tests.push_back({}); if (loaded_level_version == level_version && slist && slist->get_count() > tests.size()-1) tests.back().load(slist->get_item(tests.size()-1));} while (false)
-#define RESET_1 do {tests.back().reset_1 = true;} while (false)
-#define RESET_ALL do {tests.back().reset_all = true;} while (false)
-
-#define NEW_POINT(a, b, c, d) tests.back().sim_points.push_back(SimPoint(a, b, c, d, tests.back().tested_direction == DIRECTION_N ? 0 : 50, tests.back().tested_direction == DIRECTION_E ? 0 : 50, tests.back().tested_direction == DIRECTION_S ? 0 : 50, tests.back().tested_direction == DIRECTION_W ? 0 : 50))
-#define NEW_POINT_F(a, b, c, d, fa, fb, fc, fd) tests.back().sim_points.push_back(SimPoint(a, b, c, d, fa, fb, fc, fd))
-#define END_PRESET tests.back().first_simpoint = tests.back().sim_points.size()
-
     SaveObjectList* slist = NULL;
     if (omap && omap->has_key("tests"))
         slist = omap->get_item("tests")->get_list();
@@ -217,7 +204,7 @@ void Level::init_tests(SaveObjectMap* omap)
         {
             SaveObjectMap* forced_map = forced_list->get_item(i)->get_map();
             XYPos pos(forced_map->get_num("x"), forced_map->get_num("y"));
-            CircuitElement* elem = CircuitElement::load(forced_map->get_item("element")->get_map());
+            CircuitElement* elem = CircuitElement::load(forced_map->get_item("element"));
             circuit->force_element(pos, elem);
         }
     }

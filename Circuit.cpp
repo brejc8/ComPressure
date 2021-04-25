@@ -23,8 +23,13 @@ SaveObject* CircuitElement::save()
     return omap;
 }
 
-CircuitElement* CircuitElement::load(SaveObjectMap* omap)
+CircuitElement* CircuitElement::load(SaveObject* obj)
 {
+    if (obj->is_num())
+    {
+        return new CircuitElementEmpty();
+    }
+    SaveObjectMap* omap = obj->get_map();
     CircuitElementType type = CircuitElementType(omap->get_num("type"));
     switch (type)
     {
@@ -519,6 +524,11 @@ CircuitElementEmpty::CircuitElementEmpty(SaveObjectMap* omap)
 {
 }
 
+// SaveObject* CircuitElementEmpty::save()
+// {
+//     return new SaveObjectNumber(0);
+// }
+
 void CircuitElementEmpty::save(SaveObjectMap* omap)
 {
 }
@@ -775,8 +785,7 @@ Circuit::Circuit(SaveObjectMap* omap)
         SaveObjectList* slist_x = slist_y->get_item(pos.y)->get_list();
         for (pos.x = 0; pos.x < 9; pos.x++)
         {
-            SaveObjectMap* smap = slist_x->get_item(pos.x)->get_map();
-            elements[pos.y][pos.x] = CircuitElement::load(smap);
+            elements[pos.y][pos.x] = CircuitElement::load(slist_x->get_item(pos.x));
         }
     }
     if (omap->has_key("signs"))
