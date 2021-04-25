@@ -1323,6 +1323,13 @@ void GameState::render(bool saving)
         {
             unsigned index =  pos.y * 8 + pos.x;
             unsigned level_index =  index + level_screen * 30;
+
+            if (level_screen && pos == XYPos(0,0))
+            {
+                render_button(XYPos(0 * 32 * scale + panel_offset.x, 0 * 32 * scale + panel_offset.y), XYPos(280,328), 0, "Previous set");
+                continue;
+            }
+
             if (level_index >= LEVEL_COUNT)
                 break;
             if (!level_set->is_playable(level_index, highest_level))
@@ -1333,11 +1340,6 @@ void GameState::render(bool saving)
             if (pos == XYPos(7,3))
             {
                 render_button(XYPos(7 * 32 * scale + panel_offset.x, 3 * 32 * scale + panel_offset.y), XYPos(256,328), 0, "Next set");
-                continue;
-            }
-            if (level_screen && pos == XYPos(0,0))
-            {
-                render_button(XYPos(0 * 32 * scale + panel_offset.x, 0 * 32 * scale + panel_offset.y), XYPos(280,328), 0, "Previous set");
                 continue;
             }
 
