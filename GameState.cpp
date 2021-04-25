@@ -1238,12 +1238,16 @@ void GameState::render(bool saving)
         if (current_circuit_is_inspected_subcircuit)
         {
             for (auto &sub : inspection_stack)
-                if (!sub->get_custom() && !sub->get_read_only())
+            {
+                if (sub->get_read_only())
+                    break;
+                if (!sub->get_custom())
                 {
                     if (sub == inspection_stack.back())
                         render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Customize");
                     break;
                 }
+            }
         }
 
         if (current_level_set_is_inspected)
@@ -2090,7 +2094,9 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 Circuit* prev = current_level->circuit;
                 for (auto &sub : inspection_stack)
                 {
-                    if (!sub->get_custom() && !sub->get_read_only())
+                    if (sub->get_read_only())
+                        break;
+                    if (!sub->get_custom())
                     {
                         if (sub == inspection_stack.back())
                         {

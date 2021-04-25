@@ -559,6 +559,8 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap, bool rea
     level_index = Direction(omap->get_num("level_index"));
     level = NULL;
     circuit = NULL;
+    if (omap->has_key("read_only"))
+        read_only = true;
     if (omap->has_key("circuit"))
     {
         circuit = new Circuit(omap->get_item("circuit")->get_map());
