@@ -510,7 +510,13 @@ I have encoded it on a value selector I made by altering Lady Eastly’s Latch10
 !GEORGE
 At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants a sequence 5, 15, 25, 35...
 !END
-
+!CHARLES
+Excellent stuff! It is just a shame we have to rely on these horrid Cogsworth clocks to provide the timing pulses.
+!NICOLA
+Gertrude, do you remember how you diffused that bomb? I think we can make a clock just as precise.
+!CHARLES
+However you do it, I don’t want it changing time depending on what it is connected to.
+!END
 !ADA
 What have you two been up to?
 !CHARLES
@@ -525,13 +531,13 @@ WHAT!?! Nicola! What did I just send her?
 Hmm... It appears you complemented her on her magnificent beard ... requested her lewd etchings ... and instructed her to attack the enemy at dawn.
 !GEORGE
 ...
-On that note, I am shall return to my residence to spend some time with a bottle of wiskey.
+On that note, I am shall return to my residence to spend some time with a bottle of whiskey.
 !ADA
 Charles! Go and help him!
 
 While they are gone, perhaps you two can help. Charles was supposed to install two pipes into this wall, but it only has one. I need North connected to South, and West to East. Is there any way we can do this without waiting for a new pipe to be installed?
 !NICOLA
-Good thing we live in a clockwork universe because I think I have an idea. Gertrude, do you remember how you diffused that bomb?
+Good thing we live in a clockwork universe because I think I have an idea. 
 !END
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.

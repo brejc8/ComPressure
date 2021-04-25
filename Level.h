@@ -73,7 +73,7 @@ public:
     LevelSet *best_design = NULL;
     LevelSet *saved_designs[4] = {NULL};
 
-    unsigned pin_order[4];
+    int pin_order[4] = {-1};
 
     unsigned connection_mask = 0;
     

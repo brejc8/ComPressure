@@ -1564,7 +1564,7 @@ void GameState::render(bool saving)
         for (int i = 0; i < 4; i++)                 // Inputs
         {
             int pin_index = current_level->pin_order[i];
-            if (((current_level->connection_mask >> pin_index) & 1) && pin_index != current_level->tests[test_index].tested_direction)
+            if ((pin_index >= 0) && (pin_index != current_level->tests[test_index].tested_direction))
             {
             
                 SDL_Rect src_rect = {256 + pin_index * 16, 144, 16, 16};
@@ -1982,7 +1982,7 @@ void GameState::render(bool saving)
         }
         else
         {
-            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson\n\nBuild: " __DATE__ "  " __TIME__;
+            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson\n\nBuild: " __TIMESTAMP__;
             render_text_wrapped(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
         }
     }

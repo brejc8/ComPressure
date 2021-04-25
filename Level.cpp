@@ -87,7 +87,7 @@ Level::Level(unsigned level_index_, bool hidden_):
     level_index(level_index_),
     hidden(hidden_)
 {
-    pin_order[0] = 0; pin_order[1] = 1; pin_order[2] = 2; pin_order[3] = 3;
+    pin_order[0] = -1; pin_order[1] = -1; pin_order[2] = -1; pin_order[3] = -1;
     circuit = new Circuit;
     init_tests();
 }
@@ -95,7 +95,7 @@ Level::Level(unsigned level_index_, bool hidden_):
 Level::Level(unsigned level_index_, SaveObject* sobj):
     level_index(level_index_)
 {
-    pin_order[0] = 0; pin_order[1] = 1; pin_order[2] = 2; pin_order[3] = 3;
+    pin_order[0] = -1; pin_order[1] = -1; pin_order[2] = -1; pin_order[3] = -1;
     SaveObjectMap* omap = sobj->get_map();
     circuit = new Circuit(omap->get_item("circuit")->get_map());
     if (omap->has_key("best_design"))
