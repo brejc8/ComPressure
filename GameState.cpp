@@ -70,6 +70,7 @@ GameState::GameState(const char* filename)
             flash_editor_menu = omap->get_num("flash_editor_menu");
             flash_steam_inlet = omap->get_num("flash_steam_inlet");
             flash_valve = omap->get_num("flash_valve");
+            level_screen = omap->get_num("level_screen");
 //            requesting_help = omap->get_num("requesting_help");
 
             sound_volume = omap->get_num("sound_volume");
@@ -144,6 +145,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("flash_editor_menu", flash_editor_menu);
     omap->add_num("flash_steam_inlet", flash_steam_inlet);
     omap->add_num("flash_valve", flash_valve);
+    omap->add_num("level_screen", level_screen);
 //    omap->add_num("requesting_help", requesting_help);
     omap->add_num("scale", scale);
     omap->add_num("full_screen", full_screen);
@@ -1316,18 +1318,29 @@ void GameState::render(bool saving)
     
     if (panel_state == PANEL_STATE_LEVEL_SELECT)
     {
-        
-        
-        for (pos.y = 0; pos.y < 8; pos.y++)
+        for (pos.y = 0; pos.y < 4; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
-            unsigned level_index =  pos.y * 8 + pos.x;
+            unsigned index =  pos.y * 8 + pos.x;
+            unsigned level_index =  index + level_screen * 30;
             if (level_index >= LEVEL_COUNT)
                 break;
             if (!level_set->is_playable(level_index, highest_level))
                 continue;
             if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue)
                 continue;
+
+            if (pos == XYPos(7,3))
+            {
+                render_button(XYPos(7 * 32 * scale + panel_offset.x, 3 * 32 * scale + panel_offset.y), XYPos(256,328), 0, "Next set");
+                continue;
+            }
+            if (level_screen && pos == XYPos(0,0))
+            {
+                render_button(XYPos(0 * 32 * scale + panel_offset.x, 0 * 32 * scale + panel_offset.y), XYPos(280,328), 0, "Previous set");
+                continue;
+            }
+
             render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0, level_set->levels[level_index]->name.c_str());
             
             unsigned score = pressure_as_percent(level_set->levels[level_index]->best_score);
@@ -2450,7 +2463,19 @@ void GameState::mouse_click_in_panel()
     if (panel_state == PANEL_STATE_LEVEL_SELECT)
     {
         XYPos panel_grid_pos = panel_pos / 32;
-        unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
+        unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8 + level_screen * 30;
+
+        if (panel_grid_pos == XYPos(7,3))
+        {
+            if (highest_level >= level_index)
+                level_screen++;
+            return;
+        }
+        if (level_screen && panel_grid_pos == XYPos(0,0))
+        {
+            level_screen--;
+            return;
+        }
         if (level_index < LEVEL_COUNT && level_set->is_playable(level_index, highest_level))
         {
             set_level(level_index);

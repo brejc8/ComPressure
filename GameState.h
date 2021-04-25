@@ -126,7 +126,8 @@ public:
     bool flash_editor_menu = true;
     bool flash_steam_inlet = true;
     bool flash_valve = true;
-    
+    unsigned level_screen = 0;
+
     const char* tooltip_string = "test";
 
 //    bool requesting_help = false;

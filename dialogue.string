@@ -876,7 +876,7 @@ static Dialogue dialogue30[] = {
     },
 
     {DIALOGUE_ADA,
-        "Charles! Go and sort this mess out!\n"
+        "Charles! Go and help him!\n"
         "\n"
         "While they are gone, perhaps you two can help. Charles was supposed to install two pipes into this wall, but it only has one. I need North connected to South, and West to East. Is there any way we can do this without waiting for a new pipe to be installed?\n"
     },
@@ -889,31 +889,14 @@ static Dialogue dialogue30[] = {
 };
 
 static Dialogue dialogue31[] = {
-    {DIALOGUE_CHARLES,
-        "That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
-        "\n"
-        "What I need is a contraption which switches emitting High Pressure Steam between three outputs upon the reception of a timing High Pressure Steam pulse.\n"
-        "\n"
-        "Just like the marching orders I love to hear.\n"
-        "One! Two! Three! One! Two! Three!\n"
-    },
-
-    {DIALOGUE_NICOLA,
-        "Should it not be one, two, one, two?\n"
-    },
-
-    {DIALOGUE_CHARLES,
-        "Not in my regiment! We count to three!\n"
+    {DIALOGUE_ADA,
+        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue32[] = {
-    {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
-    },
-
     {DIALOGUE_END, NULL}
 };
 
@@ -970,6 +953,23 @@ static Dialogue dialogue45[] = {
 };
 
 static Dialogue dialogue46[] = {
+    {DIALOGUE_CHARLES,
+        "That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
+        "\n"
+        "What I need is a contraption which switches emitting High Pressure Steam between three outputs upon the reception of a timing High Pressure Steam pulse.\n"
+        "\n"
+        "Just like the marching orders I love to hear.\n"
+        "One! Two! Three! One! Two! Three!\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Should it not be one, two, one, two?\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Not in my regiment! We count to three!\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
