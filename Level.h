@@ -89,7 +89,7 @@ public:
     
     bool touched = false;
     bool score_set = false;
-    bool best_score_set = true;
+    bool best_score_set = false;
 
     unsigned test_index = 0;
     unsigned sim_point_index = 0;
@@ -146,8 +146,8 @@ public:
     LevelSet(SaveObject* sobj, bool inspect = false);
     LevelSet();
     ~LevelSet();
-    SaveObject* save(bool lite = false);
-    SaveObject* save(unsigned level_index);
+    SaveObject* save_all(unsigned level_index, bool lite = false);
+    SaveObject* save_one(unsigned level_index);
     bool is_playable(unsigned level, unsigned highest_level);
     int top_playable();
     Pressure test_level(unsigned level_index);

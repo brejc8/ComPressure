@@ -135,7 +135,7 @@ GameState::GameState(const char* filename)
 SaveObject* GameState::save(bool lite)
 {
     SaveObjectMap* omap = new SaveObjectMap;
-    omap->add_item("levels", edited_level_set->save(lite));
+    omap->add_item("levels", edited_level_set->save_all(highest_level, lite));
     omap->add_num("current_level_index", current_level_index);
     omap->add_num("game_speed", game_speed);
     omap->add_num("show_debug", show_debug);
@@ -301,7 +301,7 @@ void GameState::score_submit(unsigned level, bool sync)
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "score_submit");
     omap->add_num("level_index", level);
-    omap->add_item("levels", edited_level_set->levels[level]->best_design->save(true));
+    omap->add_item("levels", edited_level_set->levels[level]->best_design->save_all(highest_level, true));
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
     post_to_server(omap, sync);
@@ -2486,7 +2486,7 @@ void GameState::mouse_click_in_panel()
             level_screen--;
             return;
         }
-        if (level_index < LEVEL_COUNT && level_set->is_playable(level_index, highest_level))
+        if ((panel_grid_pos.y < 4) && level_set->is_playable(level_index, highest_level))
         {
             set_level(level_index);
         }
@@ -2614,7 +2614,7 @@ void GameState::mouse_click_in_panel()
             {
                 SaveObjectMap* omap = new SaveObjectMap;
                 omap->add_num("level_index", current_level_index);
-                omap->add_item("levels", edited_level_set->save(current_level_index));
+                omap->add_item("levels", edited_level_set->save_one(current_level_index));
                 std::ostringstream stream;
                 omap->save(stream);
                 delete omap;

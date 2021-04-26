@@ -142,12 +142,12 @@ SaveObject* Level::save(bool lite)
             slist->add_item(tests[i].save());
         omap->add_item("tests", slist);
         if (best_design)
-            omap->add_item("best_design", best_design->save(level_index));
+            omap->add_item("best_design", best_design->save_one(level_index));
 
         slist = new SaveObjectList;
         for (unsigned i = 0; i < 4; i++)
             if (saved_designs[i])
-                slist->add_item(saved_designs[i]->save(true));
+                slist->add_item(saved_designs[i]->save_one(level_index));
             else
                 slist->add_item(new SaveObjectNull);
         omap->add_item("saved_designs", slist);
@@ -477,11 +477,11 @@ LevelSet::~LevelSet()
         }
 }
 
-SaveObject* LevelSet::save(bool lite)
+SaveObject* LevelSet::save_all(unsigned level_index, bool lite)
 {
     SaveObjectList* slist = new SaveObjectList;
     
-    for (int i = 0; i < LEVEL_COUNT; i++)
+    for (int i = 0; i < (level_index + 1); i++)
     {
         if (!levels[i]->hidden)
             slist->add_item(levels[i]->save(lite));
@@ -491,7 +491,7 @@ SaveObject* LevelSet::save(bool lite)
     return slist;
 }
 
-SaveObject* LevelSet::save(unsigned level_index)
+SaveObject* LevelSet::save_one(unsigned level_index)
 {
     SaveObjectList* slist = new SaveObjectList;
     
@@ -543,7 +543,7 @@ Pressure LevelSet::test_level(unsigned level_index)
 
 void LevelSet::record_best_score(unsigned level_index)
 {
-    SaveObject* sobj = save(level_index);
+    SaveObject* sobj = save_one(level_index);
     delete levels[level_index]->best_design;
     levels[level_index]->best_design =  new LevelSet(sobj, true);
     delete sobj;
@@ -551,7 +551,7 @@ void LevelSet::record_best_score(unsigned level_index)
 
 void LevelSet::save_design(unsigned level_index, unsigned save_slot)
 {
-    SaveObject* sobj = save(level_index);
+    SaveObject* sobj = save_one(level_index);
     delete levels[level_index]->saved_designs[save_slot];
     levels[level_index]->saved_designs[save_slot] =  new LevelSet(sobj, true);
     delete sobj;

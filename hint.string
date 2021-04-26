@@ -48,7 +48,7 @@ static Dialogue hint5[] = {
 
 static Dialogue hint6[] = {
     {DIALOGUE_NICOLA,
-        "I guess we need to make a design nearly identical to our buffer. Instead of supplying steam when the input is high, that is when we want it to be connected to atmosphere. When the input is low is when we supply the steam.\n"
+        "This time, when the input is high pressure, we want it to be connected to atmosphere. When the input is low is when we supply the steam. Our switch design was able to select between two values. Those values could be steam and atmosphere.\n"
     },
 
     {DIALOGUE_END, NULL}
