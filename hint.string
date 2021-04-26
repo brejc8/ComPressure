@@ -150,7 +150,7 @@ static Dialogue hint17[] = {
 
 static Dialogue hint18[] = {
     {DIALOGUE_NICOLA,
-        "For a change a wobble is actually desirable. Amplifiers in a ring configuration with make the design unstable and will wobble up and down.\n"
+        "For a change a wobble is actually desirable. Amplifiers in a ring configuration will make the design unstable and will wobble up and down.\n"
     },
 
     {DIALOGUE_END, NULL}

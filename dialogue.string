@@ -888,7 +888,7 @@ static Dialogue dialogue31[] = {
 
     {DIALOGUE_GEORGE,
         "...\n"
-        "On that note, I am shall return to my residence to spend some time with a bottle of whiskey.\n"
+        "On that note, I shall return to my residence to spend some time with a bottle of whiskey.\n"
     },
 
     {DIALOGUE_ADA,
