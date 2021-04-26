@@ -248,4 +248,52 @@ static Dialogue hint33[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* hint[] = {hint0, hint1, hint2, hint3, hint4, hint5, hint6, hint7, hint8, hint9, hint10, hint11, hint12, hint13, hint14, hint15, hint16, hint17, hint18, hint19, hint20, hint21, hint22, hint23, hint24, hint25, hint26, hint27, hint28, hint29, hint30, hint31, hint32, hint33, NULL};
+static Dialogue hint34[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint35[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint36[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint37[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint38[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint39[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint40[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint41[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint42[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint43[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint44[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint45[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* hint[] = {hint0, hint1, hint2, hint3, hint4, hint5, hint6, hint7, hint8, hint9, hint10, hint11, hint12, hint13, hint14, hint15, hint16, hint17, hint18, hint19, hint20, hint21, hint22, hint23, hint24, hint25, hint26, hint27, hint28, hint29, hint30, hint31, hint32, hint33, hint34, hint35, hint36, hint37, hint38, hint39, hint40, hint41, hint42, hint43, hint44, hint45, NULL};

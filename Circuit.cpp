@@ -879,6 +879,9 @@ void Circuit::copy_elements(Circuit& other)
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
+        if (is_blocked(pos))
+            continue;
+
         if (elements[pos.y][pos.x]->get_custom()
          || elements[pos.y][pos.x]->get_type() != other.elements[pos.y][pos.x]->get_type()
          || elements[pos.y][pos.x]->get_desc() != other.elements[pos.y][pos.x]->get_desc())
