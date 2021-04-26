@@ -333,7 +333,7 @@ public:
 class CircuitElement
 {
 public:
-    virtual SaveObject* save(void);
+    SaveObject* save(void);
     virtual void save(SaveObjectMap*) = 0;
     static CircuitElement* load(SaveObject*);
     virtual CircuitElement* copy() = 0;

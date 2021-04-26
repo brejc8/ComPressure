@@ -848,7 +848,15 @@ SaveObject* Circuit::save()
         SaveObjectList* slist_x = new SaveObjectList;
         for (pos.x = 0; pos.x < 9; pos.x++)
         {
-            slist_x->add_item(elements[pos.y][pos.x]->save());
+            if (is_blocked(pos))
+            {
+                CircuitElementEmpty tmp;
+                slist_x->add_item(((CircuitElement*)(&tmp))->save());
+            }
+            else
+            {
+                slist_x->add_item(elements[pos.y][pos.x]->save());
+            }
         }
         slist_y->add_item(slist_x);
     }

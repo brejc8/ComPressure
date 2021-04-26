@@ -531,7 +531,7 @@ WHAT!?! Nicola! What did I just send her?
 Hmm... It appears you complemented her on her magnificent beard ... requested her lewd etchings ... and instructed her to attack the enemy at dawn.
 !GEORGE
 ...
-On that note, I am shall return to my residence to spend some time with a bottle of whiskey.
+On that note, I shall return to my residence to spend some time with a bottle of whiskey.
 !ADA
 Charles! Go and help him!
 

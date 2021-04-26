@@ -888,8 +888,8 @@
     "level_version" : 30,
     "forced_elements":
     [
-        {"x": 3, "y": 4, "element": {"type":3, "direction":0, "level_index":7}},
-        {"x": 4, "y": 5, "element": {"type":3, "direction":2, "level_index":11}},
+        {"x": 3, "y": 4, "element": {"type":3, "direction":0, "level_index":7, "read_only":1}},
+        {"x": 4, "y": 5, "element": {"type":3, "direction":2, "level_index":11, "read_only":1}},
     ],
     "tests" :
     [
