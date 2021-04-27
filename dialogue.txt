@@ -510,13 +510,15 @@ I have encoded it on a value selector I made by altering Lady Eastly’s Latch10
 !GEORGE
 At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants a sequence 5, 15, 25, 35...
 !END
+                            # Clock
 !CHARLES
 Excellent stuff! It is just a shame we have to rely on these horrid Cogsworth clocks to provide the timing pulses.
 !NICOLA
 Gertrude, do you remember how you diffused that bomb? I think we can make a clock just as precise.
 !CHARLES
-However you do it, I don’t want it changing time depending on what it is connected to.
+However you do it, I want it flip once every second and I don’t want it changing time depending on what it is connected to.
 !END
+                          # Cross v2
 !ADA
 What have you two been up to?
 !CHARLES
@@ -531,13 +533,48 @@ WHAT!?! Nicola! What did I just send her?
 Hmm... It appears you complemented her on her magnificent beard ... requested her lewd etchings ... and instructed her to attack the enemy at dawn.
 !GEORGE
 ...
-On that note, I shall return to my residence to spend some time with a bottle of whiskey.
+On that note, I shall return to my residence to spend some time with a bottle of brandy.
 !ADA
 Charles! Go and help him!
 
 While they are gone, perhaps you two can help. Charles was supposed to install two pipes into this wall, but it only has one. I need North connected to South, and West to East. Is there any way we can do this without waiting for a new pipe to be installed?
 !NICOLA
-Good thing we live in a clockwork universe because I think I have an idea. 
+Good thing we live in a clockwork universe because I think I have an idea.
+!END
+                          # CounterE
+!ANNIE
+Hello Ada. Is George here? I have come to speak with him about this machine that has been delivered my my residence.
+!ADA
+Oh Annie! I am so sorry. Him and Charles were completely ignorant of the codebook differences.
+!ANNIE
+Oh, I figured that out immediately. It would have made it such a silly farce otherwise.
+!ADA
+Nicola. Go and fetch George and Charles. Wherever they got to.
+!ANNIE
+This poetry device they made is quite a marvellous contraption. The components used are ingenious. Gertrude? This counter. I assume you had a hand in its construction. Could you adapt the design to include a way of setting the value? The new value would come on the West port, and the North port will select whether to use the new value.
+!END
+                           # Delay
+!ADA
+I have to say Annie, do you not find all this rather complicated?
+!ANNIE
+I do, but look how far we have come. Remember the week you spent trying to get the adder to work? Looking back, it all looks so simple now. Not only has our research progressed, but I think we have such a better understanding of steam.
+!ADA
+Then perhaps you could aid me in looking at one of your message latches. I can’t figure out what’s wrong. All the messages from Lady Bechdel come out as nonsense.
+!ANNIE
+Interesting. It appears that the timing pulse is arrives little too early, before the value has become stable. If I could delay the pulse by a little less than a second, then that would fix it. It would need to have a very quick shift between 0 and 100 PSI. Let us make something.
+!END
+                        # Self timed latch
+!ANNIE
+What does this gauge show?
+!ADA
+That would be the steam pressure going to the Cogsworth Clockworks. Why?
+!ANNIE
+Look. It is such a peculiar pattern. Also, are they not closed? It is a Sunday after all.
+
+It jumps up to 100 PSI for one second, then another value for another second, before returning to 0 PSI.
+!ADA
+That is intriguing. I wonder if we could decode it.
+
 !END
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.

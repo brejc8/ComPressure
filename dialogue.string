@@ -857,7 +857,7 @@ static Dialogue dialogue30[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "However you do it, I don’t want it changing time depending on what it is connected to.\n"
+        "However you do it, I want it flip once every second and I don’t want it changing time depending on what it is connected to.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -888,7 +888,7 @@ static Dialogue dialogue31[] = {
 
     {DIALOGUE_GEORGE,
         "...\n"
-        "On that note, I shall return to my residence to spend some time with a bottle of whiskey.\n"
+        "On that note, I shall return to my residence to spend some time with a bottle of brandy.\n"
     },
 
     {DIALOGUE_ADA,
@@ -905,22 +905,77 @@ static Dialogue dialogue31[] = {
 };
 
 static Dialogue dialogue32[] = {
+    {DIALOGUE_ANNIE,
+        "Hello Ada. Is George here? I have come to speak with him about this machine that has been delivered my my residence.\n"
+    },
+
     {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+        "Oh Annie! I am so sorry. Him and Charles were completely ignorant of the codebook differences.\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "Oh, I figured that out immediately. It would have made it such a silly farce otherwise.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Nicola. Go and fetch George and Charles. Wherever they got to.\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "This poetry device they made is quite a marvellous contraption. The components used are ingenious. Gertrude? This counter. I assume you had a hand in its construction. Could you adapt the design to include a way of setting the value? The new value would come on the West port, and the North port will select whether to use the new value.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue33[] = {
+    {DIALOGUE_ADA,
+        "I have to say Annie, do you not find all this rather complicated?\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "I do, but look how far we have come. Remember the week you spent trying to get the adder to work? Looking back, it all looks so simple now. Not only has our research progressed, but I think we have such a better understanding of steam.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Then perhaps you could aid me in looking at one of your message latches. I can’t figure out what’s wrong. All the messages from Lady Bechdel come out as nonsense.\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "Interesting. It appears that the timing pulse is arrives little too early, before the value has become stable. If I could delay the pulse by a little less than a second, then that would fix it. It would need to have a very quick shift between 0 and 100 PSI. Let us make something.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue34[] = {
+    {DIALOGUE_ANNIE,
+        "What does this gauge show?\n"
+    },
+
+    {DIALOGUE_ADA,
+        "That would be the steam pressure going to the Cogsworth Clockworks. Why?\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "Look. It is such a peculiar pattern. Also, are they not closed? It is a Sunday after all.\n"
+        "\n"
+        "It jumps up to 100 PSI for one second, then another value for another second, before returning to 0 PSI.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "That is intriguing. I wonder if we could decode it.\n"
+        "\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue35[] = {
+    {DIALOGUE_ADA,
+        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
@@ -969,6 +1024,18 @@ static Dialogue dialogue46[] = {
 };
 
 static Dialogue dialogue47[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue48[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue49[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue50[] = {
     {DIALOGUE_CHARLES,
         "That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
         "\n"
@@ -989,4 +1056,4 @@ static Dialogue dialogue47[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, dialogue47, NULL};
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, dialogue47, dialogue48, dialogue49, dialogue50, NULL};
