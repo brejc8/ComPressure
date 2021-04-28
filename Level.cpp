@@ -415,18 +415,17 @@ void Level::set_monitor_state(TestExecType monitor_state_)
     monitor_state = monitor_state_;
     if (monitor_state == MONITOR_STATE_PAUSE)
         return;
-    current_simpoint = tests[test_index].sim_points[sim_point_index];
-
     if (monitor_state == MONITOR_STATE_PLAY_ALL)
     {
         test_index = 0;
-        sim_point_index = tests[test_index].first_simpoint;
+        sim_point_index = 0;
         touched = false;
         substep_index = 0;
         circuit->reset();
         for (int i = 0; i < 4; i++)
             ports[i] = 0;
     }
+    current_simpoint = tests[test_index].sim_points[sim_point_index];
 }
 
 void Level::touch()

@@ -4037,16 +4037,75 @@
 
 
 {
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
+    "name":"Lock Picking",
+    "connections": [1],
     "substep_count" : 10000,
     "level_version" : 1,
+    "forced_elements":
+    [
+        {"x": 4, "y": 0, "element": {"type":4},              },
+        {"x": 5, "y": 0, "element": {"type":4},              },
+        {"x": 6, "y": 0, "element": {"type":4},              },
+        {"x": 7, "y": 0, "element": {"direction":2,"type":2},},
+        {"x": 8, "y": 0, "element": {"type":4}               },
+
+
+        {"x": 4, "y": 1, "element": {"type":4},                },
+        {"x": 5, "y": 1, "element": {"connections":8,"type":0} },
+        {"x": 6, "y": 1, "element": {"connections":10,"type":0}},
+        {"x": 7, "y": 1, "element": {"connections":9,"type":0} },
+        {"x": 8, "y": 1, "element": {"type":4}                 },
+        
+        {"x": 4, "y": 2, "element": {"direction":1,"type":2}  },
+        {"x": 5, "y": 2, "element": {"direction":4,"type":1}  },
+        {"x": 6, "y": 2, "element": {"direction":4,"type":1}  },
+        {"x": 7, "y": 2, "element": {"direction":4,"type":1}  },
+        {"x": 8, "y": 2, "element": {"connections":6,"type":0}},
+        
+        {"x": 4, "y": 3, "element": {"connections":4,"type":0} },
+        {"x": 5, "y": 3, "element": {"connections":11,"type":0}},
+        {"x": 6, "y": 3, "element": {"connections":11,"type":0}},
+        {"x": 7, "y": 3, "element": {"connections":9,"type":0} },
+        {"x": 8, "y": 3, "element": {"connections":3,"type":0} },
+        
+        {"x": 4, "y": 4, "element": {"connections":4,"type":0} },
+        {"x": 5, "y": 4, "element": {"connections":11,"type":0}},
+        {"x": 6, "y": 4, "element": {"connections":9,"type":0} },
+        {"x": 7, "y": 4, "element": {"direction":6,"type":1}   },
+        {"x": 8, "y": 4, "element": {"connections":14,"type":0}},
+        
+        {"x": 4, "y": 5, "element": {"connections":4,"type":0} },
+        {"x": 5, "y": 5, "element": {"connections":9,"type":0} },
+        {"x": 6, "y": 5, "element": {"direction":6,"type":1}   },
+        {"x": 7, "y": 5, "element": {"connections":11,"type":0}},
+        {"x": 8, "y": 5, "element": {"connections":9,"type":0} },
+        
+        {"x": 4, "y": 6, "element": {"type":4}                 },
+        {"x": 5, "y": 6, "element": {"direction":6,"type":1}   },
+        {"x": 6, "y": 6, "element": {"connections":11,"type":0}},
+        {"x": 7, "y": 6, "element": {"connections":11,"type":0}},
+        {"x": 8, "y": 6, "element": {"connections":1,"type":0} },
+        
+        {"x": 5, "y": 7, "element": {"connections":14,"type":0}},
+        {"x": 6, "y": 7, "element": {"connections":7,"type":0} },
+        {"x": 7, "y": 7, "element": {"connections":9,"type":0} },
+        {"x": 8, "y": 7, "element": {"type":4}                 },
+
+        
+        {"x": 4, "y": 8, "element": {"type":4}                },
+        {"x": 5, "y": 8, "element": {"connections":3,"type":0}},
+        {"x": 6, "y": 8, "element": {"type":4}                },
+        {"x": 7, "y": 8, "element": {"direction":0,"type":2}  },
+        {"x": 8, "y": 8, "element": {"type":4}                },
+        
+        
+    ],
     "tests" :
     [
         {
             "points":
             [
-                {"N":0, "E":77,"S":0,"W":0},
+                {"N":0, "E":100,"S":0,"W":0},
             ]
         },
     ]

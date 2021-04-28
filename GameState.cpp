@@ -2608,7 +2608,6 @@ void GameState::mouse_click_in_panel()
             else if (panel_grid_pos.x == 2)
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
-                level_set->touch(current_level_index);
             }
             else if ((next_dialogue_level > 8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
             {

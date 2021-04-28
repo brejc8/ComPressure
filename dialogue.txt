@@ -543,7 +543,7 @@ Good thing we live in a clockwork universe because I think I have an idea.
 !END
                           # CounterE
 !ANNIE
-Hello Ada. Is George here? I have come to speak with him about this machine that has been delivered my my residence.
+Hello Ada. Is George here? I have come to speak with him about this machine that has been delivered to my residence.
 !ADA
 Oh Annie! I am so sorry. Him and Charles were completely ignorant of the codebook differences.
 !ANNIE
@@ -576,6 +576,17 @@ It jumps up to 100 PSI for one second, then another value for another second, be
 That is intriguing. I wonder if we could decode it.
 
 !END
+!NICOLA
+Lady Chavvington! I have searched all across the city and I have failed to locate...
+!ADA
+We know where they are! George managed to get a message through to us by turning an inlet on and off. They have been locked in the Cogsworth Clockworks steam room. Let us go there at once!
+!CHARLES
+[BANG] [BANG] [BANG]
+Get us out! The room is filling with High Pressure Steam! Oh, the cruel irony of being killed by the thing I love.
+!NICOLA
+The key that should open this door doesn’t work! It appears someone has shot at the lock and ruptured a pipe! It’s leaking steam and won’t open. Even if we plug the hole, the pressure in the room is forcing the door shut.
+!END
+
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
 !END
