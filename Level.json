@@ -2408,79 +2408,79 @@
 
 {
     "name":"Min",
-    "connections": [0, 2, 1],
+    "connections": [3, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 31,
     "tests" :
     [
         {
             "points":
             [
-                {"N":0, "E":0,"S":0,"W":0},
-                {"N":100, "E":0,"S":0,"W":0},
+                {"W":0, "E":0,"S":0},
+                {"W":100, "E":0,"S":0},
             ]
         },
         {
             "points":
             [
-                {"N":100, "E":0,"S":0,"W":0, "PRESET":1},
-                {"N":100, "E":50,"S":50,"W":0},
+                {"W":100, "E":0,"S":0, "PRESET":1},
+                {"W":100, "E":50,"S":50},
             ]
         },
         {
             "points":
             [
-                {"N":100, "E":50,"S":50,"W":0, "PRESET":1},
-                {"N":100, "E":100,"S":100,"W":0},
+                {"W":100, "E":50,"S":50, "PRESET":1},
+                {"W":100, "E":100,"S":100},
             ]
         },
         {
             "points":
             [
-                {"N":100, "E":100,"S":100,"W":0, "PRESET":1},
-                {"N":50, "E":50,"S":100,"W":0},
+                {"W":100, "E":100,"S":100, "PRESET":1},
+                {"W":50, "E":50,"S":100},
             ]
         },
         {
             "points":
             [
-                {"N":50, "E":50,"S":100,"W":0, "PRESET":1},
-                {"N":0, "E":0,"S":100,"W":0},
+                {"W":50, "E":50,"S":100, "PRESET":1},
+                {"W":0, "E":0,"S":100},
             ]
         },
         {
             "points":
             [
-                {"N":0, "E":0,"S":100,"W":0, "PRESET":1},
-                {"N":60, "E":60,"S":80,"W":0},
+                {"W":0, "E":0,"S":100, "PRESET":1},
+                {"W":60, "E":60,"S":80},
             ]
         },
         {
             "points":
             [
-                {"N":60, "E":60,"S":80,"W":0, "PRESET":1},
-                {"N":60, "E":30,"S":30,"W":0},
+                {"W":60, "E":60,"S":80, "PRESET":1},
+                {"W":60, "E":30,"S":30},
             ]
         },
         {
             "points":
             [
-                {"N":60, "E":30,"S":30,"W":0, "PRESET":1},
-                {"N":20, "E":20,"S":30,"W":0},
+                {"W":60, "E":30,"S":30, "PRESET":1},
+                {"W":20, "E":20,"S":30},
             ]
         },
         {
             "points":
             [
-                {"N":20, "E":20,"S":30,"W":0, "PRESET":1},
-                {"N":60, "E":30,"S":30,"W":0},
+                {"W":20, "E":20,"S":30, "PRESET":1},
+                {"W":60, "E":30,"S":30},
             ]
         },
         {
             "points":
             [
-                {"N":60, "E":30,"S":30,"W":0, "PRESET":1},
-                {"N":60, "E":60,"S":80,"W":0},
+                {"W":60, "E":30,"S":30, "PRESET":1},
+                {"W":60, "E":60,"S":80},
             ]
         },
     ]
@@ -2488,79 +2488,79 @@
 
 {
     "name":"Max",
-    "connections": [0, 2, 1],
+    "connections": [3, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 31,
     "tests" :
     [
         {
             "points":
             [
-                {"N":0, "E":0,"S":0,"W":0, "PRESET":1},
-                {"N":0, "E":0,"S":0,"W":0},
+                {"W":0, "E":0,"S":0, "PRESET":1},
+                {"W":0, "E":0,"S":0},
             ]
         },
         {
             "points":
             [
-                {"N":0, "E":0,"S":0,"W":0, "PRESET":1},
-                {"N":0, "E":50,"S":50,"W":0},
+                {"W":0, "E":0,"S":0, "PRESET":1},
+                {"W":0, "E":50,"S":50},
             ]
         },
         {
             "points":
             [
-                {"N":0, "E":50,"S":50,"W":0, "PRESET":1},
-                {"N":100, "E":100,"S":50,"W":0},
+                {"W":0, "E":50,"S":50, "PRESET":1},
+                {"W":100, "E":100,"S":50},
             ]
         },
         {
             "points":
             [
-                {"N":100, "E":100,"S":50,"W":0, "PRESET":1},
-                {"N":50, "E":100,"S":100,"W":0},
+                {"W":100, "E":100,"S":50, "PRESET":1},
+                {"W":50, "E":100,"S":100},
             ]
         },
         {
             "points":
             [
-                {"N":50, "E":100,"S":100,"W":0, "PRESET":1},
-                {"N":50, "E":50,"S":0,"W":0},
+                {"W":50, "E":100,"S":100, "PRESET":1},
+                {"W":50, "E":50,"S":0},
             ]
         },
         {
             "points":
             [
-                {"N":50, "E":50,"S":0,"W":0, "PRESET":1},
-                {"N":50, "E":70,"S":70,"W":0},
+                {"W":50, "E":50,"S":0, "PRESET":1},
+                {"W":50, "E":70,"S":70},
             ]
         },
         {
             "points":
             [
-                {"N":50, "E":70,"S":70,"W":0, "PRESET":1},
-                {"N":90, "E":90,"S":70,"W":0},
+                {"W":50, "E":70,"S":70, "PRESET":1},
+                {"W":90, "E":90,"S":70},
             ]
         },
         {
             "points":
             [
-                {"N":90, "E":90,"S":70,"W":0, "PRESET":1},
-                {"N":30, "E":40,"S":40,"W":0},
+                {"W":90, "E":90,"S":70, "PRESET":1},
+                {"W":30, "E":40,"S":40},
             ]
         },
         {
             "points":
             [
-                {"N":30, "E":40,"S":40,"W":0, "PRESET":1},
-                {"N":60, "E":60,"S":40,"W":0},
+                {"W":30, "E":40,"S":40, "PRESET":1},
+                {"W":60, "E":60,"S":40},
             ]
         },
         {
             "points":
             [
-                {"N":60, "E":60,"S":40,"W":0, "PRESET":1},
-                {"N":0, "E":10,"S":10,"W":0},
+                {"W":60, "E":60,"S":40, "PRESET":1},
+                {"W":0, "E":10,"S":10},
             ]
         },
     ]
@@ -2871,60 +2871,32 @@
     ]
 },
 
+{
+    "name":"ROM",
+    "connections": [3, 1],
+    "substep_count" : 20000,
+    "level_version" : 31,
+    "tests" :
+    [
+        {"points": [{"W":50, "E": 0},  {"W": 5, "E":25}]},
+        {"points": [{"W": 5, "E": 0},  {"W":15, "E":38}]},
+        {"points": [{"W":15, "E": 0},  {"W":25, "E":38}]},
+        {"points": [{"W":25, "E": 0},  {"W":35, "E":33}]},
+        {"points": [{"W":35, "E": 0},  {"W":45, "E":29}]},
+        {"points": [{"W":45, "E": 0},  {"W":55, "E":76}]},
+        {"points": [{"W":55, "E": 0},  {"W":65, "E":82}]},
+        {"points": [{"W":65, "E": 0},  {"W":75, "E":52}]},
+        {"points": [{"W":75, "E": 0},  {"W":85, "E":85}]},
+        {"points": [{"W":85, "E": 0},  {"W":95, "E":57}]},
+    ]
+},
+
 
 {
     "name":"Poem",
     "connections": [2, 1],
     "substep_count" : 30000,
-    "level_version" : 30,
-    "forced_elements":
-    [
-        {"x": 8, "y": 4, "element":
-            {"type":3, "direction":0,"level_index":24, "read_only":1, "circuit":
-                {"elements":[[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":10,"type":0},{"connections":1,"type":0},{"type":4},{"type":4},{"type":4},{"type":4}],[{"direction":1,"level_index":19,"type":3},{"direction":2,"level_index":1,"type":3},{"direction":0,"level_index":1,"type":3},{"direction":1,"level_index":19,"type":3},
-                {"direction":3,"type":2},{"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":3,"type":0},{"type":4},{"connections":5,"type":0},{"connections":14,"type":0},{"connections":10,"type":0},{"connections":10,"type":0},{"connections":6,"type":0},{"type":4},{"type":4}],[{"connections":3,"type":0},{"connections":5,"type":0},{"direction":1,"level_index":20,"type":3},
-                {"direction":1,"level_index":20,"type":3},{"direction":1,"level_index":20,"type":3},{"direction":1,"level_index":20,"type":3},{"direction":1,"level_index":20,"type":3},{"direction":3,"type":2},{"type":4}],[{"connections":3,"type":0},{"connections":3,"type":0},{"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},
-                {"connections":4,"type":0},{"connections":4,"type":0},{"connections":6,"type":0}],[{"connections":1,"type":0},{"type":4},{"type":4},{"connections":10,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"direction":0,"type":2},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}]],"signs":[]},"direction":1,"level_index":13,"type":3},
-                {"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},
-                {"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":6,"type":0}],[{"connections":1,"type":0},{"connections":8,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},
-                {"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"connections":8,"type":0},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2},{"type":4}],[{"type":4},{"connections":8,"type":0},{"connections":7,"type":0},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"connections":2,"type":0},{"connections":1,"type":0},
-                {"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}]],"signs":[]},"direction":1,"level_index":13,"type":3},{"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},
-                {"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},
-                {"connections":6,"type":0}],[{"connections":1,"type":0},{"type":4},{"type":4},{"connections":10,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"type":4},{"type":4},{"connections":8,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":10,"type":0},
-                {"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"direction":0,"type":2},{"type":4}]],"signs":[]},"direction":1,"level_index":13,"type":3},{"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":6,"type":0}],[{"connections":1,"type":0},{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},
-                {"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"connections":2,"type":0},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},
-                {"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}]],"signs":[]},"direction":1,"level_index":13,"type":3},{"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},
-                {"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},
-                {"connections":6,"type":0}],[{"connections":1,"type":0},{"connections":5,"type":0},{"connections":10,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"connections":14,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},
-                {"connections":4,"type":0},{"connections":6,"type":0},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":1,"type":0},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},
-                {"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2},{"type":4}]],"signs":[]},"direction":1,"level_index":13,"type":3},{"connections":5,"type":0},{"connections":4,"type":0}],[{"connections":3,"type":0},{"connections":3,"type":0},{"connections":8,"type":0},{"connections":14,"type":0},{"connections":14,"type":0},{"connections":14,"type":0},{"connections":14,"type":0},
-                {"connections":1,"type":0},{"direction":2,"type":2}],[{"connections":3,"type":0},{"connections":3,"type":0},{"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":6,"type":0}],[{"connections":1,"type":0},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},
-                {"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2},{"type":4}]],"signs":[]},"direction":5,"level_index":13,"type":3},{"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":6,"type":0}],[{"connections":1,"type":0},{"type":4},
-                {"type":4},{"type":4},{"type":4},{"connections":10,"type":0},{"connections":4,"type":0},{"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},
-                {"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2},{"type":4}]],"signs":[]},"direction":5,"level_index":13,"type":3},{"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},
-                {"connections":4,"type":0},{"connections":4,"type":0},{"connections":6,"type":0}],[{"connections":1,"type":0},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":10,"type":0},{"connections":4,"type":0},{"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],
-                [{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2},{"type":4}]],"signs":[]},"direction":5,"level_index":13,"type":3},
-                {"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},
-                {"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":6,"type":0}],[{"connections":1,"type":0},{"type":4},{"type":4},{"connections":5,"type":0},{"connections":10,"type":0},{"connections":10,"type":0},{"connections":10,"type":0},{"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"type":4},{"type":4},
-                {"type":4},{"connections":3,"type":0},{"connections":3,"type":0},{"connections":3,"type":0},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"connections":14,"type":0},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},
-                {"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2},{"type":4}]],"signs":[]},"direction":5,"level_index":13,"type":3},{"circuit":{"elements":[[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"type":4},{"type":4},{"type":4},{"type":4}],[{"connections":5,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":6,"type":0}],[{"connections":1,"type":0},{"type":4},{"type":4},{"connections":4,"type":0},{"connections":10,"type":0},{"connections":10,"type":0},
-                {"connections":10,"type":0},{"connections":10,"type":0},{"direction":0,"type":1}],[{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},
-                {"connections":3,"type":0},{"type":4}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2},{"type":4}]],"signs":[]},"direction":5,"level_index":13,"type":3},{"connections":5,"type":0},{"connections":1,"type":0}],[{"connections":3,"type":0},{"connections":3,"type":0},{"direction":5,"level_index":20,"type":3},{"direction":5,"level_index":20,"type":3},
-                {"direction":5,"level_index":20,"type":3},{"direction":5,"level_index":20,"type":3},{"direction":5,"level_index":20,"type":3},{"connections":13,"type":0},{"connections":6,"type":0}],[{"connections":2,"type":0},{"connections":4,"type":0},{"connections":7,"type":0},{"connections":7,"type":0},{"connections":7,"type":0},{"connections":7,"type":0},{"connections":1,"type":0},{"connections":2,"type":0},{"connections":1,"type":0}]],"signs":[]}
-            }
-        },
-        {"x": 8, "y": 5, "element": {"type":4}},
-        {"x": 7, "y": 4, "element": {"type":4}}
-    ],
+    "level_version" : 31,
     "tests" :
     [
         {
@@ -3158,7 +3130,7 @@
     "name":"Clock",
     "connections": [0],
     "substep_count" : 10000,
-    "level_version" : 1,
+    "level_version" : 31,
     "tests" :
     [
         {
@@ -3343,7 +3315,7 @@
     "name":"Cross v2",
     "connections": [3, 0, 1, 2],
     "substep_count" : 20000,
-    "level_version" : 30,
+    "level_version" : 31,
     "forced_elements":
     [
         {"x": 5, "y": 0, "element": {"type":4}},
@@ -3506,7 +3478,7 @@
     "name":"CounterE",
     "connections": [0, 3, 2, 1],
     "substep_count" : 20000,
-    "level_version" : 3,
+    "level_version" : 31,
     "tests" :
     [
         {
@@ -3716,7 +3688,7 @@
     "name":"Delay",
     "connections": [3, 1],
     "substep_count" : 2000,
-    "level_version" : 2,
+    "level_version" : 31,
     "tests" :
     [
         {
@@ -3917,10 +3889,10 @@
 
 
 {
-    "name":"Self timed latch",
+    "name":"Self-timed latch",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 2,
+    "level_version" : 31,
     "tests" :
     [
         {
@@ -4039,8 +4011,8 @@
 {
     "name":"Lock Picking",
     "connections": [1],
-    "substep_count" : 10000,
-    "level_version" : 1,
+    "substep_count" : 20000,
+    "level_version" : 31,
     "forced_elements":
     [
         {"x": 4, "y": 0, "element": {"type":4},              },

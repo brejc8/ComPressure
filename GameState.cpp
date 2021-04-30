@@ -1709,7 +1709,7 @@ void GameState::render(bool saving)
                 render_texture(src_rect, dst_rect);
             }
         }
-        if (!edited_level_set->levels[current_level_index]->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), edited_level_set->levels[current_level_index]->global_score_graph_time + 1000 * 60))
+        if (!edited_level_set->levels[current_level_index]->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), edited_level_set->levels[current_level_index]->global_score_graph_time + 1000 * 10))
         {
             score_fetch(current_level_index);
         }
@@ -2179,6 +2179,9 @@ void GameState::mouse_click_in_grid(unsigned clicks)
     
     if (current_circuit_is_read_only)
         return;
+
+    if (panel_state == PANEL_STATE_LEVEL_SELECT)
+        panel_state = PANEL_STATE_EDITOR;
 
     if (mouse_state == MOUSE_STATE_NONE)
     {
@@ -2833,6 +2836,9 @@ void GameState::mouse_motion()
             return;
         if (current_circuit->elements[grid.y][grid.x]->is_empty())
             return;
+
+        if (panel_state == PANEL_STATE_LEVEL_SELECT)
+            panel_state = PANEL_STATE_EDITOR;
 
         current_circuit->set_element_empty(grid, !first_deletion);
         first_deletion = false;

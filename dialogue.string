@@ -422,7 +422,7 @@ static Dialogue dialogue14[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. God forbid one of those high pressure tankers explodes. The destruction would be immense. I would not rest until the world was rid of this high pressure horror...\n"
+        "That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. If one of those high pressure tankers were to explode, perish the thought, the destruction would be immense. I would not rest until the world was rid of this high pressure horror...\n"
         "\n"
         "Oh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure it's openness.\n"
     },
@@ -605,10 +605,12 @@ static Dialogue dialogue18[] = {
     {DIALOGUE_JOSEPH,
         "The only consequences would be the world finally rejecting steam once and for all! It should be reserved for executions and only seen in museums. To think! Steam invading the offices and displacing my machines! For it is only gears that can produce a...\n"
         "\n"
-        "WHAT!?! Let go of me! Unhand me, you wretched fools! You cannot do this to me! Wait until the academy hears about this!\n"
+        "WHAT!?! Let go of me! Unhand me, you wretched fools! You cannot do this to me! Wait until the Academy hears about this!\n"
     },
 
     {DIALOGUE_CHARLES,
+        "The Academy certainly will hear about this!\n"
+        "\n"
         "Well that's a satisfying conclusion to this matter. My High Pressure Steam is safe as is my dear Ada.\n"
     },
 
@@ -836,18 +838,29 @@ static Dialogue dialogue28[] = {
 static Dialogue dialogue29[] = {
     {DIALOGUE_GEORGE,
         "Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace the object of affection from your “High Pressure Steam” to my “Lady Easley”.\n"
-        "\n"
-        "I have encoded it on a value selector I made by altering Lady Eastly’s Latch10 design. It uses the same address ranges, but I disabled the writing functionality.\n"
     },
 
     {DIALOGUE_GEORGE,
-        "At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while the value selector wants a sequence 5, 15, 25, 35...\n"
+        "Take a look at Eastly’s Latch10 design. We require something simpler, yet more complex. For each input value range, I need a specific pressure to be output. There is no need to ever update the values held.\n"
+        "\n"
+        "Now might be a good time to examine how to make custom components. You can use any old design as a basis and change the implementation for that instance.\n"
+    },
+
+    {DIALOGUE_GEORGE,
     },
 
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue30[] = {
+    {DIALOGUE_GEORGE,
+        "We are nearly there. Lets connect these parts together so it will replay my poem. At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while our poem storage wants a sequence 5, 15, 25, 35...\n"
+    },
+
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue31[] = {
     {DIALOGUE_CHARLES,
         "Excellent stuff! It is just a shame we have to rely on these horrid Cogsworth clocks to provide the timing pulses.\n"
     },
@@ -857,13 +870,13 @@ static Dialogue dialogue30[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "However you do it, I want it flip once every second and I don’t want it changing time depending on what it is connected to.\n"
+        "However you do it, I want it flip once every tick and I don’t want it changing time depending on what it is connected to.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
-static Dialogue dialogue31[] = {
+static Dialogue dialogue32[] = {
     {DIALOGUE_ADA,
         "What have you two been up to?\n"
     },
@@ -904,7 +917,7 @@ static Dialogue dialogue31[] = {
     {DIALOGUE_END, NULL}
 };
 
-static Dialogue dialogue32[] = {
+static Dialogue dialogue33[] = {
     {DIALOGUE_ANNIE,
         "Hello Ada. Is George here? I have come to speak with him about this machine that has been delivered to my residence.\n"
     },
@@ -928,7 +941,7 @@ static Dialogue dialogue32[] = {
     {DIALOGUE_END, NULL}
 };
 
-static Dialogue dialogue33[] = {
+static Dialogue dialogue34[] = {
     {DIALOGUE_ADA,
         "I have to say Annie, do you not find all this rather complicated?\n"
     },
@@ -942,13 +955,13 @@ static Dialogue dialogue33[] = {
     },
 
     {DIALOGUE_ANNIE,
-        "Interesting. It appears that the timing pulse is arrives little too early, before the value has become stable. If I could delay the pulse by a little less than a second, then that would fix it. It would need to have a very quick shift between 0 and 100 PSI. Let us make something.\n"
+        "Interesting. It appears that the timing pulse arrives little too early, before the value has become stable. If I could delay the pulse by a little less than a tick, then that would fix it. It would need to have a very quick shift between 0 and 100 PSI. Let us make something.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
-static Dialogue dialogue34[] = {
+static Dialogue dialogue35[] = {
     {DIALOGUE_ANNIE,
         "What does this gauge show?\n"
     },
@@ -960,18 +973,17 @@ static Dialogue dialogue34[] = {
     {DIALOGUE_ANNIE,
         "Look. It is such a peculiar pattern. Also, are they not closed? It is a Sunday after all.\n"
         "\n"
-        "It jumps up to 100 PSI for one second, then another value for another second, before returning to 0 PSI.\n"
+        "It jumps up to 100 PSI for one tick, then another value for another tick, before returning to 0 PSI.\n"
     },
 
     {DIALOGUE_ADA,
         "That is intriguing. I wonder if we could decode it.\n"
-        "\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
-static Dialogue dialogue35[] = {
+static Dialogue dialogue36[] = {
     {DIALOGUE_NICOLA,
         "Lady Chavvington! I have searched all across the city and I have failed to locate...\n"
     },
@@ -986,25 +998,33 @@ static Dialogue dialogue35[] = {
     },
 
     {DIALOGUE_NICOLA,
-        "The key that should open this door doesn’t work! It appears someone has shot at the lock and ruptured a pipe! It’s leaking steam and won’t open. Even if we plug the hole, the pressure in the room is forcing the door shut.\n"
-    },
-
-    {DIALOGUE_END, NULL}
-};
-
-static Dialogue dialogue36[] = {
-    {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+        "The key that should open this door doesn’t work! It appears someone has shot at the lock and ruptured a pipe! On top of that, the pressure in the room is forcing the door shut. We need to get this door unlocked and up to pressure before they die.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue37[] = {
+    {DIALOGUE_CHARLES,
+        "Gertrude! I cannot thank you enough, not only for saving our lives, but also doing so using High Pressure Steam!\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Darling, how did you get into this dreadful situation?\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors begun asking questions. His only choice was to silence us to give him enough time to withdraw as much money as he can before beating a hasty retreat.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue38[] = {
+    {DIALOGUE_ADA,
+        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
@@ -1057,6 +1077,14 @@ static Dialogue dialogue50[] = {
 };
 
 static Dialogue dialogue51[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue52[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue53[] = {
     {DIALOGUE_CHARLES,
         "That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
         "\n"
@@ -1077,4 +1105,4 @@ static Dialogue dialogue51[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, dialogue47, dialogue48, dialogue49, dialogue50, dialogue51, NULL};
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, dialogue47, dialogue48, dialogue49, dialogue50, dialogue51, dialogue52, dialogue53, NULL};
