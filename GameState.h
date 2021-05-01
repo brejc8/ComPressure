@@ -128,7 +128,7 @@ public:
     bool flash_valve = true;
     unsigned level_screen = 0;
 
-    const char* tooltip_string = "test";
+    std::string tooltip_string;
 
 //    bool requesting_help = false;
 
@@ -190,6 +190,7 @@ public:
     void render_number_long(XYPos pos, unsigned value, unsigned scale_mul = 1);
     void render_box(XYPos pos, XYPos size, unsigned colour);
     void render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip = NULL);
+    void render_tooltip();
 
     void render_text_wrapped(XYPos tl, const char* string, int width);
     void render_text(XYPos tl, const char* string, SDL_Color color = {0xff,0xff,0xff});

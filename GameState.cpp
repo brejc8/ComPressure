@@ -421,9 +421,10 @@ void GameState::advance()
                 skip_to_next_subtest = false;
         }
     }
-    if (current_level->best_score_set && !current_level_set_is_inspected)
+    if ((current_level->best_score_set || !current_level->server_refreshed) && !current_level_set_is_inspected)
     {
         current_level->best_score_set = false;
+        current_level->server_refreshed = true;
         edited_level_set->record_best_score(current_level_index);
         score_submit(current_level_index, false);
     }
@@ -608,8 +609,28 @@ void GameState::render_button(XYPos pos, XYPos content, unsigned colour, const c
     SDL_Rect src_rect = {content.x , content.y , 24, 24};
     SDL_Rect dst_rect = {pos.x + 4 * scale, pos.y + 4 * scale, 24 * scale, 24 * scale};
     render_texture(src_rect, dst_rect);
-    if (((mouse - pos)/scale).inside(XYPos(32,32)))
+    if (((mouse - pos)/scale).inside(XYPos(32,32)) && tooltip)
         tooltip_string = tooltip;
+}
+
+void GameState::render_tooltip()
+{
+    if (tooltip_string != "")
+    {
+        std::string tip_str(tooltip_string);
+        XYPos tip_size = get_text_size(tip_str) + XYPos(2,0);
+        XYPos tip_pos = mouse / scale - XYPos(tip_size.x, 0);
+        if (tip_pos.x < 0)
+            tip_pos.x = 0;
+        {
+            SDL_Rect src_rect = {503, 83, 1, 1};
+            SDL_Rect dst_rect = {tip_pos.x * scale, tip_pos.y * scale, tip_size.x * scale, tip_size.y * scale};
+            render_texture(src_rect, dst_rect);
+        }
+
+        render_text(tip_pos + XYPos(1,0), tip_str.c_str(), SDL_Color{0x0,0x0,0x0});
+        tooltip_string = "";
+    }
 }
 
 void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
@@ -678,7 +699,6 @@ void GameState::update_scale(int newscale)
 
 void GameState::render(bool saving)
 {
-    tooltip_string = NULL;
     check_clipboard();
     deal_with_scores();
     current_circuit->render_prep();
@@ -1451,19 +1471,55 @@ void GameState::render(bool saving)
 
             
         }
-        render_box(XYPos(panel_offset.x, (128 + 32 + 8) * scale + panel_offset.y), XYPos(32*7, 128), 5);
+
+        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256-32-16, 120), 5);
+        render_box(XYPos(panel_offset.x + (256-32-16) * scale, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(48, 120), 0);
         {
-            XYPos graph_pos(8 * scale + panel_offset.x, (128 + 32 + 8 + 8) * scale + panel_offset.y);
+            XYPos graph_pos(8 * scale + panel_offset.x, (32 + 32 + 8 + 112 + 9) * scale + panel_offset.y);
             {
                 SDL_Rect src_rect = {524, 80, 13, 101};
                 SDL_Rect dst_rect = {0 + graph_pos.x, graph_pos.y, 13 * scale, 101 * scale};
                 render_texture(src_rect, dst_rect);
             }
+            {
+                SDL_Rect src_rect = {524, 80, 5, 101};
+                SDL_Rect dst_rect = {panel_offset.x + (256-32-16+32) * scale, graph_pos.y, 5 * scale, 101 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+            {
+                SDL_Rect src_rect = {464, 128, 16, 16};
+                SDL_Rect dst_rect = {panel_offset.x + (256-32-16+8) * scale, graph_pos.y, 16 * scale, 16 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+            {
+                SDL_Rect src_rect = {480, 128, 16, 16};
+                SDL_Rect dst_rect = {panel_offset.x + (256-32-16+8) * scale, graph_pos.y + (100 - 16) * scale, 16 * scale, 16 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+            {
+                SDL_Rect src_rect = {256 + 80 , 16, 16, 16};
+                SDL_Rect dst_rect = {panel_offset.x + (256-32-16+16) * scale, graph_pos.y + ((int)current_level->test_pressure_histroy_speed - 8) * scale, 16 * scale, 16 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+            
             for (int i = 0; i < 192-1; i++)
             {
                 Level::PressureRecord& rec1 = current_level->test_pressure_histroy[(current_level->test_pressure_histroy_index + i) % 192];
                 Level::PressureRecord& rec2 = current_level->test_pressure_histroy[(current_level->test_pressure_histroy_index + i + 1) % 192];
                 if ((rec1.values[0] >= 0)  && (rec2.values[0] >= 0))
+                {
+                    if (rec1.marker)
+                    {
+                        SDL_Rect src_rect = {448, 136, 8, 8};
+                        SDL_Rect dst_rect = {i * scale + graph_pos.x, 101 * scale + graph_pos.y, 8 * scale, 8 * scale};
+                        render_texture(src_rect, dst_rect);
+                    }
+                    if (rec1.marker)
+                    {
+                        SDL_Rect src_rect = {526, 80, 2, 101};
+                        SDL_Rect dst_rect = {i * scale + graph_pos.x, scale + graph_pos.y, 2 * scale, 101 * scale};
+                        render_texture(src_rect, dst_rect);
+                    }
                     for (int port = 0; port < 4; port++)
                     {
                         int myport = ((current_level->test_pressure_histroy_index + i) % 192 + port) % 4;
@@ -1476,6 +1532,7 @@ void GameState::render(bool saving)
                         SDL_Rect dst_rect = {i * scale + graph_pos.x, top * scale + graph_pos.y, 1 * scale, size * scale};
                         render_texture(src_rect, dst_rect);
                     }
+                }
             }
             
         }
@@ -1714,17 +1771,12 @@ void GameState::render(bool saving)
             score_fetch(current_level_index);
         }
 
-//         XYPos pos = ((mouse - panel_offset) / scale) - graph_pos;
-//         if (pos.y >= 0 && pos.x >= 0 && pos.x < 200)
-//         {
-//             {
-//                 SDL_Rect src_rect = {0, 0, 64, 64};
-//                 SDL_Rect dst_rect = {(pos.x - 64)* scale + panel_offset.x, pos.y * scale + panel_offset.y, 64 * scale, 64 * scale};
-//                 render_texture(src_rect, dst_rect);
-//             }
-// 
-//         }
-// 
+        XYPos pos = ((mouse - graph_pos) / scale);
+        if (pos.y >= 0 && pos.x >= 0 && pos.x < 200)
+        {
+            tooltip_string = std::to_string(pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]));
+        }
+
     }
 
 
@@ -1734,21 +1786,7 @@ void GameState::render(bool saving)
         render_button((confirm_box_pos + XYPos(32,0))*scale, XYPos(376, 184), 0, "Cancel");
     }
 
-    if (tooltip_string)
-    {
-        std::string tip_str(tooltip_string);
-        XYPos tip_size = get_text_size(tip_str) + XYPos(2,0);
-        XYPos tip_pos = mouse / scale - XYPos(tip_size.x, 0);
-        if (tip_pos.x < 0)
-            tip_pos.x = 0;
-        {
-            SDL_Rect src_rect = {503, 83, 1, 1};
-            SDL_Rect dst_rect = {tip_pos.x * scale, tip_pos.y * scale, tip_size.x * scale, tip_size.y * scale};
-            render_texture(src_rect, dst_rect);
-        }
-
-        render_text(tip_pos + XYPos(1,0), tip_str.c_str(), SDL_Color{0x0,0x0,0x0});
-    }
+    render_tooltip();
 
     if (show_debug)
     {
@@ -1919,35 +1957,11 @@ void GameState::render(bool saving)
         render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 180), 0);
         if (!display_about)
         {
-            render_box(XYPos((160 + 32) * scale, (90 + 32)  * scale), XYPos(32, 32), 0);
-            {
-                SDL_Rect src_rect = {448, 200, 24, 24};
-                SDL_Rect dst_rect = {(160 + 32 + 4) * scale, (90 + 32 + 4)  * scale, 24 * scale, 24 * scale};
-                render_texture(src_rect, dst_rect);
+            render_button(XYPos((160 + 32) * scale, (90 + 32)  * scale), XYPos(448, 200), 0, "Exit");
+            render_button(XYPos((160 + 32 + 64) * scale, (90 + 32)  * scale), XYPos(full_screen ? 280 : 256, 280), 0, full_screen ? "Windowed" : "Full Screen");
 
-            }
-            render_box(XYPos((160 + 32 + 64) * scale, (90 + 32)  * scale), XYPos(32, 32), 0);
-            {
-                SDL_Rect src_rect = {full_screen ? 280 : 256, 280, 24, 24};
-                SDL_Rect dst_rect = {(160 + 32 + 64 + 4) * scale, (90 + 32 + 4)  * scale, 24 * scale, 24 * scale};
-                render_texture(src_rect, dst_rect);
-            }
-
-            render_box(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(32, 32), 0);
-            {
-                SDL_Rect src_rect = {256, 256, 24, 24};
-                SDL_Rect dst_rect = {(160 + 32 + 4) * scale, (90 + 32 + 64 + 4)  * scale, 24 * scale, 24 * scale};
-                render_texture(src_rect, dst_rect);
-
-            }
-
-            render_box(XYPos((160 + 32+ 64) * scale, (90 + 32 + 64)  * scale), XYPos(32, 32), 0);
-            {
-                SDL_Rect src_rect = {256+24, 256, 24, 24};
-                SDL_Rect dst_rect = {(160 + 32+ 64 + 4) * scale, (90 + 32 + 64 + 4)  * scale, 24 * scale, 24 * scale};
-                render_texture(src_rect, dst_rect);
-
-            }
+            render_button(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(256, 256), 0, "Join Our Discord");
+            render_button(XYPos((160 + 32 + 64) * scale, (90 + 32 + 64)  * scale), XYPos(256+24, 256), 0, "Info");
 
             render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
             {
@@ -1993,6 +2007,7 @@ void GameState::render(bool saving)
             ;
             render_text_wrapped(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
         }
+        render_tooltip();
     }
     if (saving)
     {
@@ -2739,10 +2754,10 @@ void GameState::mouse_click_in_panel()
     } else if (panel_state == PANEL_STATE_TEST)
     {
         int port_index = panel_pos.x / 48;
-        if (port_index > 4)
-            return;
         if (panel_pos.y <= (101 + 16))
         {
+            if (port_index > 4)
+                return;
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
             level_set->touch(current_level_index);
 
@@ -2751,11 +2766,17 @@ void GameState::mouse_click_in_panel()
         }
         else if (panel_pos.y <= (101 + 16 + 7 + 16))
         {
+            if (port_index > 4)
+                return;
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
             level_set->touch(current_level_index);
 
             watch_slider(panel_offset.x + (port_index * 48 + 8) * scale, DIRECTION_E, 33, &current_level->current_simpoint.force[port_index], 100);
             return;
+        }
+        else if ((panel_pos - XYPos(256-32-16, 32 + 32 + 8 + 112)).inside(XYPos(48, 120)))
+        {
+            watch_slider(panel_offset.y + (32 + 32 + 16 + 112) * scale, DIRECTION_S, 100, &current_level->test_pressure_histroy_speed, 100);
         }
         return;
     } else if (panel_state == PANEL_STATE_SCORES)

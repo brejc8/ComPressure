@@ -281,6 +281,7 @@ void Level::reset()
 
 void Level::advance(unsigned ticks)
 {
+    unsigned test_pressure_histroy_sample_interval = pow(1.05, test_pressure_histroy_speed) * 10;
 
     circuit->prep(PressureAdjacent(ports[0], ports[1], ports[2], ports[3]));
 
@@ -352,16 +353,21 @@ void Level::advance(unsigned ticks)
             }
         }
 
-        if (test_pressure_histroy_sample_downcounter <= 0 )
+        if ((test_pressure_histroy_sample_counter % 10000) == 0)
         {
-            test_pressure_histroy_sample_downcounter = substep_count / 200;
-
+            test_pressure_histroy[test_pressure_histroy_index].marker = 1;
+        
+        }
+        
+        if ((test_pressure_histroy_sample_counter % test_pressure_histroy_sample_interval) == 0)
+        {
             for (int p = 0; p < 4; p++)
                 test_pressure_histroy[test_pressure_histroy_index].values[p] = ports[p].value;
             test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 192;
+            test_pressure_histroy[test_pressure_histroy_index].marker = 0;
 
         }
-        test_pressure_histroy_sample_downcounter--;
+        test_pressure_histroy_sample_counter++;
     }
 }
 
