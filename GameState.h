@@ -45,7 +45,8 @@ public:
         MOUSE_STATE_AREA_SELECT,
         MOUSE_STATE_DRAGGING_SIGN,
         MOUSE_STATE_ENTERING_TEXT_INTO_SIGN,
-        MOUSE_STATE_PASTING_CLIPBOARD
+        MOUSE_STATE_PASTING_CLIPBOARD,
+        MOUSE_STATE_ANIMATING
 
     } mouse_state = MOUSE_STATE_NONE;
 
@@ -122,6 +123,8 @@ public:
     bool show_help = false;
     int show_help_page = 0;
     int level_win_animation = 0;
+    int push_in_animation = 0;
+    XYPos push_in_animation_grid;
     bool show_hint = false;
     bool flash_editor_menu = true;
     bool flash_steam_inlet = true;

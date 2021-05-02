@@ -4072,7 +4072,7 @@
 
         
         {"x": 4, "y": 8, "element": {"type":4}                },
-        {"x": 5, "y": 8, "element": {"connections":3,"type":0}},
+        {"x": 5, "y": 8, "element": {"type":4}                },
         {"x": 6, "y": 8, "element": {"type":4}                },
         {"x": 7, "y": 8, "element": {"direction":0,"type":2}  },
         {"x": 8, "y": 8, "element": {"type":4}                },

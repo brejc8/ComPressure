@@ -1855,6 +1855,80 @@ void GameState::render(bool saving)
 
     }
     
+    if (push_in_animation)
+    {
+        Circuit* sub_circuit = current_circuit->elements[push_in_animation_grid.y][push_in_animation_grid.x]->get_subcircuit();
+
+        for (pos.y = 0; pos.y < 9; pos.y++)
+        for (pos.x = 0; pos.x < 9; pos.x++)
+        {
+            SDL_Rect src_rect = {256, 480, 32, 32};
+            if (pos.y > 0)
+                src_rect.y += 32;
+            if (pos.y == 8)
+                src_rect.y += 32;
+            if (pos.x > 0)
+                src_rect.x += 32;
+            if (pos.x == 8)
+                src_rect.x += 32;
+            if (!current_circuit->elements[push_in_animation_grid.y][push_in_animation_grid.x]->get_custom() || current_circuit->elements[push_in_animation_grid.y][push_in_animation_grid.x]->get_read_only())
+                src_rect.y += 96;
+            else
+                src_rect.y += 96 * 2;
+
+            SDL_Rect dst_rect = {((32 - push_in_animation) * push_in_animation_grid.x + pos.x * push_in_animation) * scale + grid_offset.x, ((32 - push_in_animation) * push_in_animation_grid.y + pos.y * push_in_animation) * scale + grid_offset.y, push_in_animation * scale, push_in_animation * scale};
+            render_texture(src_rect, dst_rect);
+
+            if (sub_circuit->is_blocked(pos))
+            {
+                src_rect = {384, 80, 32, 32};
+                render_texture(src_rect, dst_rect);
+            }
+
+            {
+                SDL_Rect src_rect = sub_circuit->elements[pos.y][pos.x]->getimage_bg();
+                if (src_rect.w)
+                {
+                    int xoffset = ((32 - src_rect.w + 1) * push_in_animation) / (2 * 32);
+                    int yoffset = ((32 - src_rect.h + 1) * push_in_animation) / (2 * 32);
+                    SDL_Rect dst_rect = {((32 - push_in_animation) * push_in_animation_grid.x + pos.x * push_in_animation  + xoffset) * scale + grid_offset.x, ((32 - push_in_animation) * push_in_animation_grid.y + pos.y * push_in_animation  + yoffset) * scale + grid_offset.y, ((src_rect.w + 1) * push_in_animation) / 32 * scale, ((src_rect.h + 1) * push_in_animation) / 32 * scale};
+                    render_texture(src_rect, dst_rect);
+                }
+            }
+
+            XYPos src_pos = sub_circuit->elements[pos.y][pos.x]->getimage();
+            if (src_pos != XYPos(0,0))
+            {
+                SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};
+                render_texture(src_rect, dst_rect);
+            }
+
+            src_pos = sub_circuit->elements[pos.y][pos.x]->getimage_fg();
+            if (src_pos != XYPos(0,0))
+            {
+                SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
+                SDL_Rect dst_rect = {((32 - push_in_animation) * push_in_animation_grid.x + pos.x * push_in_animation + push_in_animation / 8) * scale + grid_offset.x, ((32 - push_in_animation) * push_in_animation_grid.y + pos.y * push_in_animation + push_in_animation / 8) * scale + grid_offset.y, push_in_animation * scale * 3 / 4, push_in_animation * scale * 3 / 4};
+                render_texture(src_rect, dst_rect);
+            }
+        }
+
+
+        push_in_animation++;
+        if (push_in_animation >= 32)
+        {
+            if (!current_circuit->elements[push_in_animation_grid.y][push_in_animation_grid.x]->get_custom() || current_circuit->elements[push_in_animation_grid.y][push_in_animation_grid.x]->get_read_only())
+                current_circuit_is_read_only = true;
+            inspection_stack.push_back(current_circuit->elements[push_in_animation_grid.y][push_in_animation_grid.x]);
+            current_circuit = sub_circuit;
+            current_circuit_is_inspected_subcircuit = true;
+            selected_elements.clear();
+            push_in_animation = 0;
+            mouse_state = MOUSE_STATE_NONE;
+
+        }
+
+    }
+
     if (level_win_animation)
     {
         int size = 360 - level_win_animation * 3;
@@ -1863,6 +1937,7 @@ void GameState::render(bool saving)
         render_texture(src_rect, dst_rect);
         level_win_animation--;
     }
+
     if (show_help)
     {
         render_box(XYPos(16 * scale, 0 * scale), XYPos(592, 360), 0);
@@ -1913,7 +1988,7 @@ void GameState::render(bool saving)
                 {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower than the (-) side, the valve becomes closed and no steam will pass through."},
                 {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is lower than 100 PSI.\n\nAs before, the openness of the valve is the pressure on the (+) side minus the pressture on the (-) side."},
                 {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close the valve as the pressure on the (-) size becomes equal or higher than the (+) side."},
-                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively.\n\n"
+                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively. You can also use hotkeys 1, 2 and 3\n\n"
                                     "The current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the worst of all tests."},
                 {XYPos(2,12), 3, 1, "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
                 {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the ports and examine your design's operation. The vertical sliders set the desired value. The horizontal sliders below set force of the input. Setting the slider all the way left makes it an output. Initial values are set from the current test."},
@@ -2053,6 +2128,8 @@ void GameState::set_level(unsigned level_index)
 
 void GameState::mouse_click_in_grid(unsigned clicks)
 {
+    if (mouse_state == MOUSE_STATE_ANIMATING)
+        return;
     XYPos pos = (mouse - grid_offset) / scale;
     XYPos grid = pos / 32;
     if (pos.x < 0) grid.x--;
@@ -2065,13 +2142,9 @@ void GameState::mouse_click_in_grid(unsigned clicks)
             Circuit* sub_circuit = current_circuit->elements[grid.y][grid.x]->get_subcircuit();
             if (sub_circuit)
             {
-                if (!current_circuit->elements[grid.y][grid.x]->get_custom() || current_circuit->elements[grid.y][grid.x]->get_read_only())
-                    current_circuit_is_read_only = true;
-                inspection_stack.push_back(current_circuit->elements[grid.y][grid.x]);
-                current_circuit = sub_circuit;
-                current_circuit_is_inspected_subcircuit = true;
-                selected_elements.clear();
-                mouse_state = MOUSE_STATE_NONE;
+                mouse_state = MOUSE_STATE_ANIMATING;
+                push_in_animation = 1;
+                push_in_animation_grid = grid;
                 return;
             }
         }
@@ -2436,6 +2509,8 @@ void GameState::mouse_click_in_grid(unsigned clicks)
 
 void GameState::mouse_click_in_panel()
 {
+    if (mouse_state == MOUSE_STATE_ANIMATING)
+        return;
     {
         XYPos menu_icons_pos = (mouse / scale - XYPos((8 + 32 * 11), (8)));
         if (menu_icons_pos.y < 0)
@@ -2918,6 +2993,16 @@ bool GameState::events()
                         show_main_menu = !show_main_menu;
                         display_about = false;
                         mouse_state = MOUSE_STATE_NONE;
+                    case SDL_SCANCODE_1:
+                        current_level->set_monitor_state(MONITOR_STATE_PAUSE);
+                        level_set->touch(current_level_index);
+                        break;
+                    case SDL_SCANCODE_2:
+                        current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
+                        level_set->touch(current_level_index);
+                        break;
+                    case SDL_SCANCODE_3:
+                        current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
                         break;
                     case SDL_SCANCODE_TAB:
                     {
@@ -3411,6 +3496,8 @@ bool GameState::events()
                 }
                 else if (e.button.button == SDL_BUTTON_RIGHT)
                 {
+                    if (mouse_state == MOUSE_STATE_ANIMATING)
+                        break;
                     if (!current_circuit_is_read_only)
                     {
                         selected_elements.clear();
