@@ -80,13 +80,13 @@ void SteamGameManager::update_achievements(GameState* game_state)
     if (game_state->highest_level >= 25)
         set_achievements(3);
 
-    if (game_state->highest_level >= 30)
+    if (game_state->highest_level >= 31)
         set_achievements(4);
 
-    if (game_state->highest_level >= 36)
+    if (game_state->highest_level >= 37)
         set_achievements(5);
 
-    if (game_state->highest_level >= 37)
+    if (game_state->highest_level >= 39)
         set_achievements(6);
 
     if (needs_send)
