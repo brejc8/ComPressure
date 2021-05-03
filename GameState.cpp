@@ -404,15 +404,23 @@ void GameState::advance()
             current_level->advance(0);
         while (count)
         {
-            int subcount = count < 1000 ? count : 1000;
+            int subcount = count < 2000 ? count : 2000;
             current_level->advance(subcount);
             count -= subcount;
             debug_simticks += subcount;
-            if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 50))
+            if (SDL_TICKS_PASSED(SDL_GetTicks(), time + 20))
             {
                 if (!skip_to_next_subtest)
-                    game_speed--;
+                {
+                    late_frames++;
+                    if (late_frames > 4)
+                        game_speed--;
+                }
                 break;
+            }
+            else
+            {
+                late_frames = 0;
             }
         }
         if (!count)
