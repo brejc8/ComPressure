@@ -346,8 +346,8 @@ void Level::advance(unsigned ticks)
                         }
                         sim_point_index = tests[test_index].first_simpoint;
                     }
-                    if (monitor_state == MONITOR_STATE_PLAY_1 && tests[test_index].reset_1 ||
-                        monitor_state == MONITOR_STATE_PLAY_ALL && tests[test_index].reset_all || 
+                    if ((monitor_state == MONITOR_STATE_PLAY_1 && tests[test_index].reset_1) ||
+                        (monitor_state == MONITOR_STATE_PLAY_ALL && tests[test_index].reset_all) || 
                         test_index == 0)
                     {
                         circuit->reset();
