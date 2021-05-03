@@ -1080,14 +1080,23 @@ void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)
     }
 }
 
+void Circuit::remove_sign(std::list<Sign>::iterator it, bool no_history)
+{
+    if (!no_history)
+        ammend();
+    else
+        fast_prepped = false;
+    signs.erase(it);
+}
 
-void Circuit::set_element_empty(XYPos pos, bool no_histoyy)
+
+void Circuit::set_element_empty(XYPos pos, bool no_history)
 {
     if (is_blocked(pos))
         return;
     if (elements[pos.y][pos.x]->is_empty())
         return;
-    if (!no_histoyy)
+    if (!no_history)
         ammend();
     else
         fast_prepped = false;
@@ -1386,6 +1395,16 @@ void Circuit::force_element(XYPos pos, CircuitElement* element)
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = element;
     blocked[pos.y][pos.x] = true;
+}
+
+void Circuit::force_sign(Sign new_sign)
+{
+    for (Sign &sign : signs)
+    {
+        if (new_sign.text == sign.text)
+            return;
+    }
+    signs.push_back(new_sign);
 }
 
 bool Circuit::is_blocked(XYPos pos)

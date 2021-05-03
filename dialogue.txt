@@ -475,7 +475,7 @@ High press...
 !CHARLES
 High Pressure Steam!
 !ADA
-Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the control elements?
+Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the programme elements?
 !CHARLES
 Already done! George is finalising the poem... or should I say requirements.
 !ADA
@@ -586,16 +586,34 @@ We know where they are! George managed to get a message through to us by turning
 [BANG] [BANG] [BANG]
 Get us out! The room is filling with High Pressure Steam! Oh, the cruel irony of being killed by the thing I love.
 !NICOLA
-The key that should open this door doesn’t work! It appears someone has shot at the lock and ruptured a pipe! On top of that, the pressure in the room is forcing the door shut. We need to get this door unlocked and up to pressure before they die.
+The key that should open this door doesn’t work! It appears someone has shot at the lock and ruptured a pipe inside! I know nothing of picking locks, let alone broken ones.
 !END
 !CHARLES
 Gertrude! I cannot thank you enough, not only for saving our lives, but also doing so using High Pressure Steam!
 !ADA
 Darling, how did you get into this dreadful situation?
 !CHARLES
-George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors begun asking questions. His only choice was to silence us to give him enough time to withdraw as much money as he can before beating a hasty retreat.
-!END
+George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors begun asking questions. His only choice was to silence us to give him enough time to take taking his investors’ money and beating a hasty retreat.
 
+Quick! To the aerodrome! We must not let him get away.
+!GEORGE
+This pipe carries launch codes from West to East. Each one is three codes long and transmitted at two ticks per code. Once we see Cogsworth’s code of 27, 39, 31, we will know he is here and trying to get away.
+!ADA
+That would be too late. By then he will have permission to launch and would get away. We must tell the aerodrome manager to not allow him to leave.
+!GEORGE
+Alas, the manager has been replaced with a Cogsworth machine. Likely a compromised one.
+
+We must not allow Cogsworth’s launch code to get through, yet we must not disrupt the aerodrome lest he discovers we are onto him.
+
+What if we delayed the signal by a few ticks and if we see it, we could remove it? This will give us time to locate and apprehend him.
+!END
+!ADA
+At last. With Cogsworth behind bars, we can finally complete our Steamputer. 
+
+All the parts are now in place. I have written, what I shall name a “programme” to calculate Fibbonaci numbers, but the results are incorrect. 
+
+We will need to refine the components until we get a functioning machine. There may be considerable time spent diagnosing the issues and fine tuning.
+!END
 
 !ADA
 The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.

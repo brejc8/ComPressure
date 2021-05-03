@@ -1996,7 +1996,7 @@ void GameState::render(bool saving)
                 {XYPos(1,15), 4, 1, "Components can be selected by either clicking while holding Ctrl, or dragging while holding Shift. Selected components can be moved using WASD keys, or roated using Q and E, if the destination is empty. Keys to copy and paste are: C for copy, X for cut and V for paste. To delete selected components, press Delete.\n\nUndo is reached through Z key (Ctrl is optional) and Redo through either Y or Shift+Z. Undo can also be triggered by holding right mouse button and clicking the left one."},
                 {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow you to exit the game, switch between windowed and full screen, join our Discord group and show credits.\n\nThe sliders adjust the sound effects and music volumes."},
                 
-                {XYPos(1,16), 2, 1, "Completed designs are available for use as components. Available components are shown in the build menu. Changing a design will update its implementation in all components.\n\nDouble-clicking on the component allows you to inspect it. Pressing the customize button, while inpecting, creates a local design which can be edited and is no longer updated when the original is changed. The design will turn red to signify this."},
+                {XYPos(1,16), 2, 1, "Completed designs are available for use as components. Available components are shown in the build menu. Changing a design will update its implementation in all components.\n\nDouble-clicking on the component allows you to inspect it. Pressing the customize button, while inspecting, creates a local design which can be edited and is no longer updated when the original is changed. The design will turn red to signify this."},
                 {XYPos(3,16), 1, 1, "There are four slots to save designs. The best design is also saved so it can be recalled later. Designs can be exchanged using a clipboard string.\n\nClicking the score shows the global score graph, and your score compared to your friends. Their designs are available to be examined."},
                 {XYPos(4,16), 1, 1, "One method of creating a specific pressure is by simultaniously supplying and venting a pipe at a specific ratio. A valve is as open as the pressure on the (+) size minus the pressure on the (-) side.\n\n"
                                     "Openness = P - N\n\nWhere P is the pressure on the Positive side of the valve and N is the pressure on the Negative side.\n\n"
@@ -2918,7 +2918,10 @@ void GameState::mouse_motion()
             Sign& sign = *it;
             if ((pos - sign.get_pos()).inside(sign.get_size()))
             {
-                current_circuit->signs.erase(it);
+                current_circuit->remove_sign(it, !first_deletion);
+                if (panel_state == PANEL_STATE_LEVEL_SELECT)
+                    panel_state = PANEL_STATE_EDITOR;
+                first_deletion = false;
                 return;
             }
         }
@@ -3498,6 +3501,16 @@ bool GameState::events()
                 {
                     if (mouse_state == MOUSE_STATE_ANIMATING)
                         break;
+                    if (show_dialogue)
+                    {
+                        show_dialogue = false;
+                        break;
+                    }
+                    if (show_dialogue_hint)
+                    {
+                        show_dialogue_hint = false;
+                        break;
+                    }
                     if (!current_circuit_is_read_only)
                     {
                         selected_elements.clear();

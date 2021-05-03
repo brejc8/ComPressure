@@ -789,7 +789,7 @@ static Dialogue dialogue26[] = {
     },
 
     {DIALOGUE_ADA,
-        "Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the control elements?\n"
+        "Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the programme elements?\n"
     },
 
     {DIALOGUE_CHARLES,
@@ -998,7 +998,7 @@ static Dialogue dialogue36[] = {
     },
 
     {DIALOGUE_NICOLA,
-        "The key that should open this door doesn’t work! It appears someone has shot at the lock and ruptured a pipe! On top of that, the pressure in the room is forcing the door shut. We need to get this door unlocked and up to pressure before they die.\n"
+        "The key that should open this door doesn’t work! It appears someone has shot at the lock and ruptured a pipe inside! I know nothing of picking locks, let alone broken ones.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -1014,7 +1014,25 @@ static Dialogue dialogue37[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors begun asking questions. His only choice was to silence us to give him enough time to withdraw as much money as he can before beating a hasty retreat.\n"
+        "George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors begun asking questions. His only choice was to silence us to give him enough time to take taking his investors’ money and beating a hasty retreat.\n"
+        "\n"
+        "Quick! To the aerodrome! We must not let him get away.\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "This pipe carries launch codes from West to East. Each one is three codes long and transmitted at two ticks per code. Once we see Cogsworth’s code of 27, 39, 31, we will know he is here and trying to get away.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "That would be too late. By then he will have permission to launch and would get away. We must tell the aerodrome manager to not allow him to leave.\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "Alas, the manager has been replaced with a Cogsworth machine. Likely a compromised one.\n"
+        "\n"
+        "We must not allow Cogsworth’s launch code to get through, yet we must not disrupt the aerodrome lest he discovers we are onto him.\n"
+        "\n"
+        "What if we delayed the signal by a few ticks and if we see it, we could remove it? This will give us time to locate and apprehend him.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -1022,13 +1040,21 @@ static Dialogue dialogue37[] = {
 
 static Dialogue dialogue38[] = {
     {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+        "At last. With Cogsworth behind bars, we can finally complete our Steamputer.\n"
+        "\n"
+        "All the parts are now in place. I have written, what I shall name a “programme” to calculate Fibbonaci numbers, but the results are incorrect.\n"
+        "\n"
+        "We will need to refine the components until we get a functioning machine. There may be considerable time spent diagnosing the issues and fine tuning.\n"
     },
 
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue dialogue39[] = {
+    {DIALOGUE_ADA,
+        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
@@ -1085,6 +1111,10 @@ static Dialogue dialogue52[] = {
 };
 
 static Dialogue dialogue53[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue dialogue54[] = {
     {DIALOGUE_CHARLES,
         "That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
         "\n"
@@ -1105,4 +1135,4 @@ static Dialogue dialogue53[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, dialogue47, dialogue48, dialogue49, dialogue50, dialogue51, dialogue52, dialogue53, NULL};
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, dialogue47, dialogue48, dialogue49, dialogue50, dialogue51, dialogue52, dialogue53, dialogue54, NULL};

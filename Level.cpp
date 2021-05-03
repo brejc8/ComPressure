@@ -209,6 +209,16 @@ void Level::init_tests(SaveObjectMap* omap)
         }
     }
     
+    if (desc->has_key("forced_signs"))
+    {
+        SaveObjectList* forced_list = desc->get_item("forced_signs")->get_list();
+        for (unsigned i = 0; i < forced_list->get_count(); i++)
+        {
+            Sign new_sign(forced_list->get_item(i));
+            circuit->force_sign(new_sign);
+        }
+    }
+    
 
     SaveObjectList* testlist = desc->get_item("tests")->get_list();
     for (unsigned i = 0; i < testlist->get_count(); i++)

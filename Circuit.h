@@ -571,6 +571,7 @@ public:
     void copy_elements(Circuit& other);
 
 
+    void remove_sign(std::list<Sign>::iterator it, bool no_history = false);
     void set_element_empty(XYPos pos, bool no_history = false);
     void set_element_pipe(XYPos pos, Connections con);
     void set_element_valve(XYPos pos, DirFlip dir_flip);
@@ -597,6 +598,7 @@ public:
     void updated_ports() {fast_prepped = false;};
     void ammend();
     void force_element(XYPos pos, CircuitElement* element);
+    void force_sign(Sign sign);
     bool is_blocked(XYPos pos);
     void undo(LevelSet* level_set);
     void redo(LevelSet* level_set);
