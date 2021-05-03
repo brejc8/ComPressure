@@ -2286,7 +2286,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
     if (current_circuit_is_read_only)
         return;
 
-    if (panel_state == PANEL_STATE_LEVEL_SELECT)
+    if ((next_dialogue_level > 1) && (panel_state == PANEL_STATE_LEVEL_SELECT))
         panel_state = PANEL_STATE_EDITOR;
 
     if (mouse_state == MOUSE_STATE_NONE)
@@ -2937,7 +2937,7 @@ void GameState::mouse_motion()
             if ((pos - sign.get_pos()).inside(sign.get_size()))
             {
                 current_circuit->remove_sign(it, !first_deletion);
-                if (panel_state == PANEL_STATE_LEVEL_SELECT)
+                if ((next_dialogue_level > 1) && (panel_state == PANEL_STATE_LEVEL_SELECT))
                     panel_state = PANEL_STATE_EDITOR;
                 first_deletion = false;
                 return;
@@ -2954,7 +2954,7 @@ void GameState::mouse_motion()
         if (current_circuit->elements[grid.y][grid.x]->is_empty())
             return;
 
-        if (panel_state == PANEL_STATE_LEVEL_SELECT)
+        if ((next_dialogue_level > 1) && (panel_state == PANEL_STATE_LEVEL_SELECT))
             panel_state = PANEL_STATE_EDITOR;
 
         current_circuit->set_element_empty(grid, !first_deletion);
