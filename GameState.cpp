@@ -378,6 +378,13 @@ void GameState::advance()
     unsigned period = 200;
     unsigned time = SDL_GetTicks();
 
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 60 * 2)))
+    {
+        show_dialogue_discord_prompt = true;
+        time_last_progress = SDL_GetTicks();
+    }
+
+
     if (SDL_TICKS_PASSED(time, debug_last_time + period))
     {
         float mul = 1000 / float(time - debug_last_time);
@@ -435,6 +442,7 @@ void GameState::advance()
         current_level->server_refreshed = true;
         edited_level_set->record_best_score(current_level_index);
         score_submit(current_level_index, false);
+        time_last_progress = SDL_GetTicks();
     }
 }
 
@@ -1801,13 +1809,15 @@ void GameState::render(bool saving)
         render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
         render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
     }
-    if (show_dialogue || show_dialogue_hint)
+    if (show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt)
     {
+    static const Dialogue discord_prompt {DIALOGUE_CHARLES, "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord."};
+    
 #ifdef COMPRESSURE_DEMO
         if (current_level_index == (14 - 1) && dialogue_index)
             show_dialogue = false;
 #endif
-        Dialogue& dia = show_dialogue_hint ? hint[current_level_index][dialogue_index] : dialogue[current_level_index][dialogue_index];
+        const Dialogue& dia = show_dialogue_discord_prompt ? discord_prompt : show_dialogue_hint ? hint[current_level_index][dialogue_index] : dialogue[current_level_index][dialogue_index];
         const char* text = dia.text;
         DialogueCharacter character = dia.character;
         if (!text)
@@ -3496,6 +3506,11 @@ bool GameState::events()
                             show_dialogue_hint = false;
                         break;
                     }
+                    else if (show_dialogue_discord_prompt)
+                    {
+                        show_dialogue_discord_prompt = false;
+                        break;
+                    }
                     else if (mouse.x < panel_offset.x)
                     {
                         mouse_click_in_grid(e.button.clicks);
@@ -3517,6 +3532,11 @@ bool GameState::events()
                     if (show_dialogue_hint)
                     {
                         show_dialogue_hint = false;
+                        break;
+                    }
+                    if (show_dialogue_discord_prompt)
+                    {
+                        show_dialogue_discord_prompt = false;
                         break;
                     }
                     if (!current_circuit_is_read_only)

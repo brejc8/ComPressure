@@ -102,6 +102,7 @@ public:
     unsigned game_speed = 20;
 
     unsigned late_frames = 0;
+    unsigned time_last_progress = 0;
 
     unsigned slider_pos;
     Direction slider_direction;
@@ -145,6 +146,7 @@ public:
 
     bool show_dialogue = false;
     bool show_dialogue_hint = false;
+    bool show_dialogue_discord_prompt = false;
     int dialogue_index = 0;
     int next_dialogue_level = 0;
     int highest_level = 0;
