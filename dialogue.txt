@@ -499,20 +499,20 @@ Very well. This is somewhat of a sensitive matter. I require a device which incr
 
 Please, do be discreet about its construction.
 !END
-                              # ROM
+                             # ROM
 !GEORGE
 Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace the object of affection from your “High Pressure Steam” to my “Lady Easley”.
 !GEORGE
-Take a look at Eastly’s Latch10 design. We require something simpler, yet more complex. For each input value range, I need a specific pressure to be output. There is no need to ever update the values held.
+Take a look at Easley’s Latch10 design. We require something simpler, yet more complex. For each input value range, I need a specific pressure to be output. There is no need to ever update the values held.
 
 Now might be a good time to examine how to make custom components. You can use any old design as a basis and change the implementation for that instance.
 !GEORGE
 !END
-                              # Poem
+                              # Poem
 !GEORGE
-We are nearly there. Lets connect these parts together so it will replay my poem. At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while our poem storage wants a sequence 5, 15, 25, 35...
+We are nearly there. Let's connect these parts together so it will replay my poem. At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while our poem storage wants a sequence 5, 15, 25, 35...
 !END
-                            # Clock
+                            # Clock
 !CHARLES
 Excellent stuff! It is just a shame we have to rely on these horrid Cogsworth clocks to provide the timing pulses.
 !NICOLA
@@ -520,7 +520,7 @@ Gertrude, do you remember how you diffused that bomb? I think we can make a cloc
 !CHARLES
 However you do it, I want it flip once every tick and I don’t want it changing time depending on what it is connected to.
 !END
-                          # Cross v2
+                          # Cross v2
 !ADA
 What have you two been up to?
 !CHARLES
@@ -543,19 +543,19 @@ While they are gone, perhaps you two can help. Charles was supposed to install t
 !NICOLA
 Good thing we live in a clockwork universe because I think I have an idea.
 !END
-                          # CounterE
+                          # CounterE
 !ANNIE
 Hello Ada. Is George here? I have come to speak with him about this machine that has been delivered to my residence.
 !ADA
-Oh Annie! I am so sorry. Him and Charles were completely ignorant of the codebook differences.
+Oh Annie! I am so sorry. He and Charles were completely ignorant of the codebook differences.
 !ANNIE
 Oh, I figured that out immediately. It would have made it such a silly farce otherwise.
 !ADA
-Nicola. Go and fetch George and Charles. Wherever they got to.
+Nicola! Go and fetch George and Charles, wherever they got to.
 !ANNIE
 This poetry device they made is quite a marvellous contraption. The components used are ingenious. Gertrude? This counter. I assume you had a hand in its construction. Could you adapt the design to include a way of setting the value? The new value would come on the West port, and the North port will select whether to use the new value.
 !END
-                           # Delay
+                           # Delay
 !ADA
 I have to say Annie, do you not find all this rather complicated?
 !ANNIE
@@ -565,7 +565,7 @@ Then perhaps you could aid me in looking at one of your message latches. I can�
 !ANNIE
 Interesting. It appears that the timing pulse arrives little too early, before the value has become stable. If I could delay the pulse by a little less than a tick, then that would fix it. It would need to have a very quick shift between 0 and 100 PSI. Let us make something.
 !END
-                        # Self timed latch
+                        # Self timed latch
 !ANNIE
 What does this gauge show?
 !ADA
@@ -577,7 +577,7 @@ It jumps up to 100 PSI for one tick, then another value for another tick, before
 !ADA
 That is intriguing. I wonder if we could decode it.
 !END
-                        # Lock Picking
+                        # Lock Picking
 !NICOLA
 Lady Chavvington! I have searched all across the city and I have failed to locate...
 !ADA
@@ -593,13 +593,13 @@ Gertrude! I cannot thank you enough, not only for saving our lives, but also doi
 !ADA
 Darling, how did you get into this dreadful situation?
 !CHARLES
-George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors begun asking questions. His only choice was to silence us to give him enough time to take taking his investors’ money and beating a hasty retreat.
+George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors began asking questions. His only choice was to silence us, giving him enough time to take his investors’ money and beat a hasty retreat.
 
 Quick! To the aerodrome! We must not let him get away.
 !GEORGE
 This pipe carries launch codes from West to East. Each one is three codes long and transmitted at two ticks per code. Once we see Cogsworth’s code of 27, 39, 31, we will know he is here and trying to get away.
 !ADA
-That would be too late. By then he will have permission to launch and would get away. We must tell the aerodrome manager to not allow him to leave.
+Then it would be too late. By then he will have permission to launch and could get away. We must tell the aerodrome manager not to allow him to leave.
 !GEORGE
 Alas, the manager has been replaced with a Cogsworth machine. Likely a compromised one.
 
@@ -608,45 +608,49 @@ We must not allow Cogsworth’s launch code to get through, yet we must not disr
 What if we delayed the signal by a few ticks and if we see it, we could remove it? This will give us time to locate and apprehend him.
 !END
 !ADA
-At last. With Cogsworth behind bars, we can finally complete our Steamputer. 
+At last. With Cogsworth behind bars, we can finally complete our Steamputer. 
 
-All the parts are now in place. I have written, what I shall name a “programme” to calculate Fibbonaci numbers, but the results are incorrect. 
+All the parts are now in place. I have written what I shall name a “programme”, to calculate Fibonacci numbers, but the results are incorrect. 
 
 We will need to refine the components until we get a functioning machine. There may be considerable time spent diagnosing the issues and fine tuning.
 !END
-
-!ADA
-The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-!END
-
-
-
-
 !CHARLES
-That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.
+It is here! The response from the Academy.
 
-What I need is a contraption which switches emitting High Pressure Steam between three outputs upon the reception of a timing High Pressure Steam pulse.
-
-Just like the marching orders I love to hear.
-One! Two! Three! One! Two! Three! 
+“We thank you for your submission of the Steamputer for review by the Academy of Sciences. We find it has considerably extended our knowledge in steam computation. Therefore we are pleased to say your application for membership has been approved!”
 !NICOLA
-Should it not be one, two, one, two?
-!CHARLES
-Not in my regiment! We count to three!
-!END
+Congratulations Lady Chavvington.
+!ADA
+Actually, the application was not for me. It was on Gertrude’s behalf.
 
+Gertrude, you were the one who constructed all these components and have shown us how to manipulate steam to wondrous uses. It is you who should be teaching others of the steam computation.
+!CHARLES
+Huzzah!
+
+Let us celebrate this afternoon!
+!GEORGE
+Lady Easley? Will you join us for the occasion?
+!ANNIE
+I am afraid I cannot, for I have an appointment this afternoon with a dashing gentleman.
+!GEORGE
+Oh.
+!ANNIE
+That would be you George. Afternoon tea at Madingley Hall was offered and I graciously accept.
+!ADA
+Thank you for playing ComPressure.
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
+!END
 

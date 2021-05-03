@@ -3,7 +3,7 @@
     "name":"Cross",
     "connections": [3, 0, 1, 2],
     "substep_count" : 2000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -64,7 +64,7 @@
     "name":"50",
     "connections": [1],
     "substep_count" : 2000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -80,7 +80,7 @@
     "name":"Normally Open",
     "connections": [0, 3, 1],
     "substep_count" : 2000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -125,7 +125,7 @@
     "name":"Normally Closed",
     "connections": [2, 3, 1],
     "substep_count" : 2000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -179,7 +179,7 @@
     "name":"Switch",
     "connections": [0, 3, 2, 1],
     "substep_count" : 7000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -243,7 +243,7 @@
     "name":"Buffer",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 3, "y": 0, "element": {"type":4}},
@@ -349,7 +349,7 @@
     "name":"Inverter",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -444,7 +444,7 @@
     "name":"Comparator",
     "connections": [0, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -531,7 +531,7 @@
     "name":"Amp50",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -611,7 +611,7 @@
     "name":"Div2",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -713,7 +713,7 @@
     "name":"Mul2",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -781,7 +781,7 @@
     "name":"Encrypt",
     "connections": [3, 1],
     "substep_count" : 2000,
-    "level_version" : 30,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 0, "y": 1, "element": {"type":4}},
@@ -892,7 +892,7 @@
     "name":"Decrypt",
     "connections": [3, 1],
     "substep_count" : 20000,
-    "level_version" : 30,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 3, "y": 4, "element": {"type":3, "direction":0, "level_index":7, "read_only":1}},
@@ -971,7 +971,7 @@
     "name":"Sensor",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 0, "y": 3, "element": {"type":2, "direction":2}},
@@ -1074,7 +1074,7 @@
     "name":"Subtractor",
     "connections": [3, 2, 1],
     "substep_count" : 30000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -1161,7 +1161,7 @@
     "name":"Adder",
     "connections": [0, 2, 1],
     "substep_count" : 30000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -1263,7 +1263,7 @@
     "name":"Latch",
     "connections": [3, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -1385,7 +1385,7 @@
     "name":"Tabulator",
     "connections": [0, 3, 2, 1],
     "substep_count" : 30000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -1536,7 +1536,7 @@
     "name":"Broken Link",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 0, "y": 4, "element": {"type":0, "connections":6}},
@@ -1598,7 +1598,7 @@
     "name":"Zoom",
     "connections": [0, 3, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -1686,7 +1686,7 @@
     "name":"Flow Detector",
     "connections": [0, 3, 2, 1],
     "substep_count" : 15000,
-    "level_version" : 30,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 4, "y": 0, "element": {"type":0, "connections":9}},
@@ -1774,7 +1774,7 @@
     "name":"LatchE",
     "connections": [0, 3, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -1881,7 +1881,7 @@
     "name":"Latch2",
     "connections": [0, 3, 2, 1],
     "substep_count" : 30000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -1971,7 +1971,7 @@
     "name":"Latch5",
     "connections": [0, 3, 2, 1],
     "substep_count" : 40000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -2205,7 +2205,7 @@
     "name":"Latch10",
     "connections": [0, 3, 2, 1],
     "substep_count" : 40000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -2417,7 +2417,7 @@
     "name":"Min",
     "connections": [3, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -2497,7 +2497,7 @@
     "name":"Max",
     "connections": [3, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -2577,7 +2577,7 @@
     "name":"Fuse",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -2660,7 +2660,7 @@
     "name":"Counter",
     "connections": [2, 1],
     "substep_count" : 20000,
-    "level_version" : 30,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -2882,7 +2882,7 @@
     "name":"ROM",
     "connections": [3, 1],
     "substep_count" : 20000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {"points": [{"W":50, "E": 0},  {"W": 5, "E":25}]},
@@ -2903,7 +2903,7 @@
     "name":"Poem",
     "connections": [2, 1],
     "substep_count" : 30000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -3137,7 +3137,7 @@
     "name":"Clock",
     "connections": [0],
     "substep_count" : 10000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -3312,6 +3312,57 @@
                 {"N":0,   "E":0,"S":0,"W":0},
                 {"N":100, "E":0,"S":0,"W":0,"PRESET":1},
                 {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+            ]
+        
+        },
+        {
+            "reset": 1,
+            "tested_direction" : 0,
+            "points":
+            [
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0,"PRESET":1},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
+                {"N":0,   "E":0,"S":0,"W":0},
+                {"N":100, "E":0,"S":0,"W":0},
             ]
         
         },
@@ -3322,7 +3373,7 @@
     "name":"Cross v2",
     "connections": [3, 0, 1, 2],
     "substep_count" : 20000,
-    "level_version" : 31,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 5, "y": 0, "element": {"type":4}},
@@ -3485,7 +3536,7 @@
     "name":"CounterE",
     "connections": [0, 3, 2, 1],
     "substep_count" : 20000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -3695,7 +3746,7 @@
     "name":"Delay",
     "connections": [3, 1],
     "substep_count" : 2000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -3899,7 +3950,7 @@
     "name":"Self-timed latch",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 31,
+    "level_version" : 32,
     "tests" :
     [
         {
@@ -4019,7 +4070,7 @@
     "name":"Lock Picking",
     "connections": [1],
     "substep_count" : 20000,
-    "level_version" : 31,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 4, "y": 0, "element": {"type":4},              },
@@ -4094,7 +4145,7 @@
     "name":"Code filter",
     "connections": [3, 1],
     "substep_count" : 20000,
-    "level_version" : 2,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 0, "y": 4, "element": {"connections":6,"type":0}},
@@ -4272,7 +4323,7 @@
     "name":"Steamputer",
     "connections": [2, 1],
     "substep_count" : 60000,
-    "level_version" : 1,
+    "level_version" : 32,
     "forced_elements":
     [
         {"x": 0, "y": 0, "element": {"connections":5,"type":0} },
@@ -4559,208 +4610,31 @@
 },
 
 {
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
+    "name":"END",
+    "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 1,
+    "level_version" : 32,
     "tests" :
     [
         {
             "points":
             [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
-            ]
-        },
-    ]
-},
-
-{
-    "name":"Not yet done...",
-    "connections": [0, 1, 2, 3],
-    "substep_count" : 10000,
-    "level_version" : 1,
-    "tests" :
-    [
-        {
-            "points":
-            [
-                {"N":0, "E":77,"S":0,"W":0},
+                {"W": 34, "E":  0},
+                {"W": 39, "E":  0},
+                {"W": 33, "E":  0},
+                {"W": 38, "E":  0},
+                {"W": 24, "E":  0},
+                {"W": 39, "E":  0},
+                {"W": 45, "E":  0},
+                {"W": 42, "E":  0},
+                {"W": 24, "E":  0},
+                {"W": 28, "E":  0},
+                {"W": 33, "E":  0},
+                {"W": 43, "E":  0},
+                {"W": 27, "E":  0},
+                {"W": 39, "E":  0},
+                {"W": 42, "E":  0},
+                {"W": 28, "E": 81},
             ]
         },
     ]

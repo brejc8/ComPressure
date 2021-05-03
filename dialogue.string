@@ -841,7 +841,7 @@ static Dialogue dialogue29[] = {
     },
 
     {DIALOGUE_GEORGE,
-        "Take a look at Eastly’s Latch10 design. We require something simpler, yet more complex. For each input value range, I need a specific pressure to be output. There is no need to ever update the values held.\n"
+        "Take a look at Easley’s Latch10 design. We require something simpler, yet more complex. For each input value range, I need a specific pressure to be output. There is no need to ever update the values held.\n"
         "\n"
         "Now might be a good time to examine how to make custom components. You can use any old design as a basis and change the implementation for that instance.\n"
     },
@@ -854,7 +854,7 @@ static Dialogue dialogue29[] = {
 
 static Dialogue dialogue30[] = {
     {DIALOGUE_GEORGE,
-        "We are nearly there. Lets connect these parts together so it will replay my poem. At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while our poem storage wants a sequence 5, 15, 25, 35...\n"
+        "We are nearly there. Let's connect these parts together so it will replay my poem. At every steam pulse, the next value should be read out. This won’t be trivial as our counter goes through a sequence 0, 10, 20, 30... while our poem storage wants a sequence 5, 15, 25, 35...\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -923,7 +923,7 @@ static Dialogue dialogue33[] = {
     },
 
     {DIALOGUE_ADA,
-        "Oh Annie! I am so sorry. Him and Charles were completely ignorant of the codebook differences.\n"
+        "Oh Annie! I am so sorry. He and Charles were completely ignorant of the codebook differences.\n"
     },
 
     {DIALOGUE_ANNIE,
@@ -931,7 +931,7 @@ static Dialogue dialogue33[] = {
     },
 
     {DIALOGUE_ADA,
-        "Nicola. Go and fetch George and Charles. Wherever they got to.\n"
+        "Nicola! Go and fetch George and Charles, wherever they got to.\n"
     },
 
     {DIALOGUE_ANNIE,
@@ -1014,7 +1014,7 @@ static Dialogue dialogue37[] = {
     },
 
     {DIALOGUE_CHARLES,
-        "George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors begun asking questions. His only choice was to silence us to give him enough time to take taking his investors’ money and beating a hasty retreat.\n"
+        "George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors began asking questions. His only choice was to silence us, giving him enough time to take his investors’ money and beat a hasty retreat.\n"
         "\n"
         "Quick! To the aerodrome! We must not let him get away.\n"
     },
@@ -1024,7 +1024,7 @@ static Dialogue dialogue37[] = {
     },
 
     {DIALOGUE_ADA,
-        "That would be too late. By then he will have permission to launch and would get away. We must tell the aerodrome manager to not allow him to leave.\n"
+        "Then it would be too late. By then he will have permission to launch and could get away. We must tell the aerodrome manager not to allow him to leave.\n"
     },
 
     {DIALOGUE_GEORGE,
@@ -1042,7 +1042,7 @@ static Dialogue dialogue38[] = {
     {DIALOGUE_ADA,
         "At last. With Cogsworth behind bars, we can finally complete our Steamputer.\n"
         "\n"
-        "All the parts are now in place. I have written, what I shall name a “programme” to calculate Fibbonaci numbers, but the results are incorrect.\n"
+        "All the parts are now in place. I have written what I shall name a “programme”, to calculate Fibonacci numbers, but the results are incorrect.\n"
         "\n"
         "We will need to refine the components until we get a functioning machine. There may be considerable time spent diagnosing the issues and fine tuning.\n"
     },
@@ -1051,8 +1051,46 @@ static Dialogue dialogue38[] = {
 };
 
 static Dialogue dialogue39[] = {
+    {DIALOGUE_CHARLES,
+        "It is here! The response from the Academy.\n"
+        "\n"
+        "“We thank you for your submission of the Steamputer for review by the Academy of Sciences. We find it has considerably extended our knowledge in steam computation. Therefore we are pleased to say your application for membership has been approved!”\n"
+    },
+
+    {DIALOGUE_NICOLA,
+        "Congratulations Lady Chavvington.\n"
+    },
+
     {DIALOGUE_ADA,
-        "The journey will continue, although the story is yet to be written. If you have reached this far, join our discord to request the next chapter.\n"
+        "Actually, the application was not for me. It was on Gertrude’s behalf.\n"
+        "\n"
+        "Gertrude, you were the one who constructed all these components and have shown us how to manipulate steam to wondrous uses. It is you who should be teaching others of the steam computation.\n"
+    },
+
+    {DIALOGUE_CHARLES,
+        "Huzzah!\n"
+        "\n"
+        "Let us celebrate this afternoon!\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "Lady Easley? Will you join us for the occasion?\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "I am afraid I cannot, for I have an appointment this afternoon with a dashing gentleman.\n"
+    },
+
+    {DIALOGUE_GEORGE,
+        "Oh.\n"
+    },
+
+    {DIALOGUE_ANNIE,
+        "That would be you George. Afternoon tea at Madingley Hall was offered and I graciously accept.\n"
+    },
+
+    {DIALOGUE_ADA,
+        "Thank you for playing ComPressure.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -1114,25 +1152,4 @@ static Dialogue dialogue53[] = {
     {DIALOGUE_END, NULL}
 };
 
-static Dialogue dialogue54[] = {
-    {DIALOGUE_CHARLES,
-        "That’s enough of this analogue nonsense. Whilst you work for me, all I want to see is High Pressure Steam, or no steam at all.\n"
-        "\n"
-        "What I need is a contraption which switches emitting High Pressure Steam between three outputs upon the reception of a timing High Pressure Steam pulse.\n"
-        "\n"
-        "Just like the marching orders I love to hear.\n"
-        "One! Two! Three! One! Two! Three!\n"
-    },
-
-    {DIALOGUE_NICOLA,
-        "Should it not be one, two, one, two?\n"
-    },
-
-    {DIALOGUE_CHARLES,
-        "Not in my regiment! We count to three!\n"
-    },
-
-    {DIALOGUE_END, NULL}
-};
-
-Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, dialogue47, dialogue48, dialogue49, dialogue50, dialogue51, dialogue52, dialogue53, dialogue54, NULL};
+Dialogue* dialogue[] = {dialogue0, dialogue1, dialogue2, dialogue3, dialogue4, dialogue5, dialogue6, dialogue7, dialogue8, dialogue9, dialogue10, dialogue11, dialogue12, dialogue13, dialogue14, dialogue15, dialogue16, dialogue17, dialogue18, dialogue19, dialogue20, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25, dialogue26, dialogue27, dialogue28, dialogue29, dialogue30, dialogue31, dialogue32, dialogue33, dialogue34, dialogue35, dialogue36, dialogue37, dialogue38, dialogue39, dialogue40, dialogue41, dialogue42, dialogue43, dialogue44, dialogue45, dialogue46, dialogue47, dialogue48, dialogue49, dialogue50, dialogue51, dialogue52, dialogue53, NULL};

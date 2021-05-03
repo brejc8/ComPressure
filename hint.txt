@@ -112,7 +112,60 @@ It should be as easy as a comparator and a switch.
                               # MAX
 !ADA
 Is this not just the same as our Min component but selecting the other way round?
+!END
+                              # FUSE
+!CHARLES
+We can form a value of 90 PSI using a long pipe venting pipe. A Comparator between that and out input will tell us when to vent the vessel. As out comparator pressure rises from 0 PSI to 50 PSI, it should close off the input. Once it rises above 50 PSI it should open a valve to release the content of the vessel to the atmosphere.
+!END
+                              # Counter
+!GEORGE
+We can use an Adder with a static 10 PSI on one input. Then use a latch to capture the new value. Finally a Fuse in the loop will reset the counter to 0 PSI.
+!END
+                              # ROM
+!GEORGE
+We can use the same method we used in the Latch10 design to select between ten values. Each value will need to be custom made and connected to the output when selected. This involves several custom designs.
 !END 
+                              # Poem
+!GEORGE
+We can connect our counter to the ROM, but first we will need to add 5 using an adder.
+!END 
+                              # Clock
+!NICOLA
+If we form a ring of Amp50 components with an inversion somewhere, we can get a regular beat. Once we get it close , we can tune it by adding pipe elements to slow it down a little.
+!END 
+                              # Cross V2
+!NICOLA
+A clock can select between the two inputs and on the other side of the wall, a synchronised clock can select between the outputs. Although we should not connect both inputs. By the time we open one, the second should be sealed off. We can use a 50 PSI as a reference.
+!END 
+                              # CounterE
+!ANNIE
+We can amend the counter to insert a switch to select between a new value or the incremented one.
+!END 
+                              # Delay
+!ANNIE
+We only need to delay values of 0 PSI and 100 PSI. A chain of Amp50 elements will delay the pulse, with some minor tuning.
+!END 
+                              # Self-timed Latch
+!ANNIE
+A delay element will give us the timing pulse we need. Once we see the delayed pulse, we can capture the value, but also force the delay input to 0 PSI.
+!END 
+                              # Lock Picking
+!NICOLA
+Instead of just plugging the hole, we could attach it to 100 PSI. That would make it easier. To make a steam key, one can replicate the pressures that are formed inside the lock.
+!END 
+
+                              # Code Filter
+!GEORGE
+We need three latches to delay the input sufficiently. A clock generator with a custom additional delay can clock them. To detect if all values are correct, a pipe can be slowly filled and if any latch value is either greater or less than the searched value, it can vent the pipe.
+!END
+                              # Steamputer
+!ADA
+Take your time and understand how the machine works. Once you do, you can improve your designs so they improve the operation of the Steamputer.
+!END
+                              # End
+!ADA
+No more hints. Enjoy your win.
+!END
 !END 
 !END 
 !END 

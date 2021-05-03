@@ -221,54 +221,106 @@ static Dialogue hint26[] = {
 };
 
 static Dialogue hint27[] = {
+    {DIALOGUE_CHARLES,
+        "We can form a value of 90 PSI using a long pipe venting pipe. A Comparator between that and out input will tell us when to vent the vessel. As out comparator pressure rises from 0 PSI to 50 PSI, it should close off the input. Once it rises above 50 PSI it should open a valve to release the content of the vessel to the atmosphere.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint28[] = {
+    {DIALOGUE_GEORGE,
+        "We can use an Adder with a static 10 PSI on one input. Then use a latch to capture the new value. Finally a Fuse in the loop will reset the counter to 0 PSI.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint29[] = {
+    {DIALOGUE_GEORGE,
+        "We can use the same method we used in the Latch10 design to select between ten values. Each value will need to be custom made and connected to the output when selected. This involves several custom designs.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint30[] = {
+    {DIALOGUE_GEORGE,
+        "We can connect our counter to the ROM, but first we will need to add 5 using an adder.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint31[] = {
+    {DIALOGUE_NICOLA,
+        "If we form a ring of Amp50 components with an inversion somewhere, we can get a regular beat. Once we get it close , we can tune it by adding pipe elements to slow it down a little.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint32[] = {
+    {DIALOGUE_NICOLA,
+        "A clock can select between the two inputs and on the other side of the wall, a synchronised clock can select between the outputs. Although we should not connect both inputs. By the time we open one, the second should be sealed off. We can use a 50 PSI as a reference.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint33[] = {
+    {DIALOGUE_ANNIE,
+        "We can amend the counter to insert a switch to select between a new value or the incremented one.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint34[] = {
+    {DIALOGUE_ANNIE,
+        "We only need to delay values of 0 PSI and 100 PSI. A chain of Amp50 elements will delay the pulse, with some minor tuning.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint35[] = {
+    {DIALOGUE_ANNIE,
+        "A delay element will give us the timing pulse we need. Once we see the delayed pulse, we can capture the value, but also force the delay input to 0 PSI.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint36[] = {
+    {DIALOGUE_NICOLA,
+        "Instead of just plugging the hole, we could attach it to 100 PSI. That would make it easier. To make a steam key, one can replicate the pressures that are formed inside the lock.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint37[] = {
+    {DIALOGUE_GEORGE,
+        "We need three latches to delay the input sufficiently. A clock generator with a custom additional delay can clock them. To detect if all values are correct, a pipe can be slowly filled and if any latch value is either greater or less than the searched value, it can vent the pipe.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint38[] = {
+    {DIALOGUE_ADA,
+        "Take your time and understand how the machine works. Once you do, you can improve your designs so they improve the operation of the Steamputer.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
 static Dialogue hint39[] = {
+    {DIALOGUE_ADA,
+        "No more hints. Enjoy your win.\n"
+    },
+
     {DIALOGUE_END, NULL}
 };
 
@@ -296,4 +348,56 @@ static Dialogue hint45[] = {
     {DIALOGUE_END, NULL}
 };
 
-Dialogue* hint[] = {hint0, hint1, hint2, hint3, hint4, hint5, hint6, hint7, hint8, hint9, hint10, hint11, hint12, hint13, hint14, hint15, hint16, hint17, hint18, hint19, hint20, hint21, hint22, hint23, hint24, hint25, hint26, hint27, hint28, hint29, hint30, hint31, hint32, hint33, hint34, hint35, hint36, hint37, hint38, hint39, hint40, hint41, hint42, hint43, hint44, hint45, NULL};
+static Dialogue hint46[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint47[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint48[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint49[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint50[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint51[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint52[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint53[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint54[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint55[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint56[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint57[] = {
+    {DIALOGUE_END, NULL}
+};
+
+static Dialogue hint58[] = {
+    {DIALOGUE_END, NULL}
+};
+
+Dialogue* hint[] = {hint0, hint1, hint2, hint3, hint4, hint5, hint6, hint7, hint8, hint9, hint10, hint11, hint12, hint13, hint14, hint15, hint16, hint17, hint18, hint19, hint20, hint21, hint22, hint23, hint24, hint25, hint26, hint27, hint28, hint29, hint30, hint31, hint32, hint33, hint34, hint35, hint36, hint37, hint38, hint39, hint40, hint41, hint42, hint43, hint44, hint45, hint46, hint47, hint48, hint49, hint50, hint51, hint52, hint53, hint54, hint55, hint56, hint57, hint58, NULL};
