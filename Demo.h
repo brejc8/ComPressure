@@ -1,1 +1,1 @@
-//#define COMPRESSURE_DEMO
+#define COMPRESSURE_DEMO
