@@ -67,6 +67,10 @@ GameState::GameState(const char* filename)
             show_debug = omap->get_num("show_debug");
                 
             show_help_page = omap->get_num("show_help_page");
+            if (omap->has_key("next_help_highlight"))
+                next_help_highlight = omap->get_num("next_help_highlight");
+            else
+                next_help_highlight = 12;
             flash_editor_menu = omap->get_num("flash_editor_menu");
             flash_steam_inlet = omap->get_num("flash_steam_inlet");
             flash_valve = omap->get_num("flash_valve");
@@ -143,6 +147,8 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("highest_level", highest_level);
     omap->add_num("next_dialogue_level", next_dialogue_level);
     omap->add_num("show_help_page", show_help_page);
+    omap->add_num("next_help_highlight", next_help_highlight);
+ 
     omap->add_num("flash_editor_menu", flash_editor_menu);
     omap->add_num("flash_steam_inlet", flash_steam_inlet);
     omap->add_num("flash_valve", flash_valve);
@@ -380,7 +386,7 @@ void GameState::advance()
     unsigned period = 200;
     unsigned time = SDL_GetTicks();
 
-    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 60)) && !discord_joined)
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 30)) && !discord_joined)
     {
         show_dialogue_discord_prompt = true;
         time_last_progress = SDL_GetTicks();
@@ -714,6 +720,20 @@ void GameState::update_scale(int newscale)
     }
 }
 
+static int max_help_page(int next_dialogue_level)
+{
+    if (next_dialogue_level <= 1)
+        return 2;
+    if (next_dialogue_level <= 2)
+        return 4;
+    if (next_dialogue_level <= 3)
+        return 5;
+    if (next_dialogue_level <= 4)
+        return 6;
+    if (next_dialogue_level <= 6)
+        return 7;
+    return 11;
+}
 
 void GameState::render(bool saving)
 {
@@ -1294,7 +1314,7 @@ void GameState::render(bool saving)
                 render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
             if (!current_circuit_is_inspected_subcircuit)
                 render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0, "Copy to\ncurrent");
-            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Pop out");
+            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
         }
     }
 
@@ -1332,9 +1352,9 @@ void GameState::render(bool saving)
                 render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR, "Design");
             if (next_dialogue_level > 3)
                 render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR, "Test");
-            if (next_dialogue_level > 7)
+            if (next_dialogue_level > 6)
                 render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST, "Experiment");
-            render_box(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(32, 32), panel_state == PANEL_STATE_SCORES);
+            render_button(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(0, 0), panel_state == PANEL_STATE_SCORES, "Scores");
         }
         if (next_dialogue_level > 3)
         {                                                                                               // Speed arrows
@@ -1351,7 +1371,10 @@ void GameState::render(bool saving)
             render_number_2digit(XYPos((8 + 32 * 11 + 32 * 4 + 3) * scale, (8 + 8) * scale), pressure_as_percent(current_level->best_score), 3);
         }
         {                                                                                               // Help Button
-            render_button(XYPos((8 + 32 * 11 + 7 * 32) * scale, (8) * scale), XYPos(256+24*5, 112), show_help, "Help");
+            unsigned highlight = show_help;
+            if (max_help_page(next_dialogue_level) > next_help_highlight && (frame_index % 60 < 30))
+                highlight = 1;
+            render_button(XYPos((8 + 32 * 11 + 7 * 32) * scale, (8) * scale), XYPos(256+24*5, 112), highlight, "Help");
         }
 
     }
@@ -1963,12 +1986,17 @@ void GameState::render(bool saving)
         render_box(XYPos(16 * scale, 0 * scale), XYPos(592, 360), 0);
 
         render_box(XYPos(16 * scale, 0 * scale), XYPos(592, (128+16)*2+20), 1);
+        if (show_help_page >= next_help_highlight)
+            next_help_highlight = show_help_page + 1;
+
         for (int i = 0; i < 11; i++)
         {
+            if (i >= max_help_page(next_dialogue_level))
+                break;
             if (i == show_help_page)
                 render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 0) * scale), XYPos(32, 32+28), 1);
             else
-                render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale), XYPos(32, 32), 0);
+                render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale), XYPos(32, 32), (i >= next_help_highlight) && (frame_index % 60 < 30));
             SDL_Rect src_rect = {352 + (i % 5) * 24, 224 + (i / 5) * 24, 24, 24};
             SDL_Rect dst_rect = {(32 + 48 + 4 + i * 32) * scale, (2 * (128 + 16) + 4 + 28) * scale, 24 * scale, 24 * scale};
             render_texture(src_rect, dst_rect);
@@ -2016,7 +2044,7 @@ void GameState::render(bool saving)
                 {XYPos(1,15), 4, 1, "Components can be selected by either clicking while holding Ctrl, or dragging while holding Shift. Selected components can be moved using WASD keys, or roated using Q and E, if the destination is empty. Keys to copy and paste are: C for copy, X for cut and V for paste. To delete selected components, press Delete.\n\nUndo is reached through Z key (Ctrl is optional) and Redo through either Y or Shift+Z. Undo can also be triggered by holding right mouse button and clicking the left one."},
                 {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow you to exit the game, switch between windowed and full screen, join our Discord group and show credits.\n\nThe sliders adjust the sound effects and music volumes."},
                 
-                {XYPos(1,16), 2, 1, "Completed designs are available for use as components. Available components are shown in the build menu. Changing a design will update its implementation in all components.\n\nDouble-clicking on the component allows you to inspect it. Pressing the customize button, while inspecting, creates a local design which can be edited and is no longer updated when the original is changed. The design will turn red to signify this."},
+                {XYPos(1,16), 2, 1, "Completed designs are available for use as components. Available components are shown in the build menu. Changing a design will update its implementation in all components.\n\nDouble-clicking on the component allows you to inspect it. You can pop back up the stack by clicking the design icon in the top left. Pressing the customize button, while inspecting, creates a local design which can be edited and is no longer updated when the original is changed. The design will turn red to signify this."},
                 {XYPos(3,16), 1, 1, "There are four slots to save designs. The best design is also saved so it can be recalled later. Designs can be exchanged using a clipboard string.\n\nClicking the score shows the global score graph, and your score compared to your friends. Their designs are available to be examined."},
                 {XYPos(4,16), 1, 1, "One method of creating a specific pressure is by simultaniously supplying and venting a pipe at a specific ratio. A valve is as open as the pressure on the (+) size minus the pressure on the (-) side.\n\n"
                                     "Openness = P - N\n\nWhere P is the pressure on the Positive side of the valve and N is the pressure on the Negative side.\n\n"
@@ -2556,7 +2584,7 @@ void GameState::mouse_click_in_panel()
                     panel_state = PANEL_STATE_MONITOR;
                     break;
                 case 3:
-                    if (!(next_dialogue_level > 7))
+                    if (!(next_dialogue_level > 6))
                         break;
                     panel_state = PANEL_STATE_TEST;
                     break;
@@ -3471,11 +3499,11 @@ bool GameState::events()
                         if (pos.y < 32 && pos.y >=0)
                         {
                             int x = pos.x / 32;
-                            if (x < 11)
+                            if (x < max_help_page(next_dialogue_level))
                                 show_help_page = x;
                             break;
                         }
-                        show_help_page = (show_help_page + 1) % 11;
+                        show_help_page = (show_help_page + 1) % max_help_page(next_dialogue_level);
                         break;
                     }
                     else if (show_confirm)

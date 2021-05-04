@@ -268,7 +268,7 @@ Lady Chavvington is alive and well, staying with her sister.
 !GEORGE
 That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. If one of those high pressure tankers were to explode, perish the thought, the destruction would be immense. I would not rest until the world was rid of this high pressure horror...
 
-Oh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure it's openness.
+Oh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure its openness.
 !GEORGE
 But now, you must leave. With Ada safe, I have an important task I must prepare for.
 !END

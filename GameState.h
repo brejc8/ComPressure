@@ -125,6 +125,8 @@ public:
 
     bool show_help = false;
     int show_help_page = 0;
+    int next_help_highlight = 0;
+
     int level_win_animation = 0;
     int push_in_animation = 0;
     XYPos push_in_animation_grid;
