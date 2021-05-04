@@ -147,6 +147,8 @@ public:
     bool show_dialogue = false;
     bool show_dialogue_hint = false;
     bool show_dialogue_discord_prompt = false;
+    bool discord_joined = false;
+
     int dialogue_index = 0;
     int next_dialogue_level = 0;
     int highest_level = 0;

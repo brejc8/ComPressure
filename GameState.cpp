@@ -80,6 +80,7 @@ GameState::GameState(const char* filename)
                 scale = 3;
             full_screen = omap->get_num("full_screen");
             minutes_played = omap->get_num("minutes_played");
+            discord_joined = omap->get_num("discord_joined");
 
             delete omap;
             load_was_good = true;
@@ -152,6 +153,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("sound_volume", sound_volume);
     omap->add_num("music_volume", music_volume);
     omap->add_num("minutes_played", minutes_played + SDL_GetTicks()/ 1000 / 60);
+    omap->add_num("discord_joined", discord_joined);
 
     return omap;
 }
@@ -378,7 +380,7 @@ void GameState::advance()
     unsigned period = 200;
     unsigned time = SDL_GetTicks();
 
-    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 60)))
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 60)) && !discord_joined)
     {
         show_dialogue_discord_prompt = true;
         time_last_progress = SDL_GetTicks();
@@ -1811,7 +1813,7 @@ void GameState::render(bool saving)
     }
     if (show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt)
     {
-    static const Dialogue discord_prompt {DIALOGUE_CHARLES, "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord."};
+    static const Dialogue discord_prompt {DIALOGUE_CHARLES, "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button"};
     
 #ifdef COMPRESSURE_DEMO
         if (current_level_index == (14 - 1) && dialogue_index)
@@ -2053,7 +2055,7 @@ void GameState::render(bool saving)
             render_button(XYPos((160 + 32) * scale, (90 + 32)  * scale), XYPos(448, 200), 0, "Exit");
             render_button(XYPos((160 + 32 + 64) * scale, (90 + 32)  * scale), XYPos(full_screen ? 280 : 256, 280), 0, full_screen ? "Windowed" : "Full Screen");
 
-            render_button(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(256, 256), 0, "Join Our Discord");
+            render_button(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(256, 256), 0, "Join Our Discord group");
             render_button(XYPos((160 + 32 + 64) * scale, (90 + 32 + 64)  * scale), XYPos(256+24, 256), 0, "Info");
 
             render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
@@ -3430,6 +3432,7 @@ bool GameState::events()
                             return true;
                         if ((pos - XYPos(0, 64)).inside(XYPos(32, 32)))
                         {
+                            discord_joined = true;
                             DisplayWebsite("https://discord.gg/7ZVZgA7gkS");
                         }
                         pos.x -= 64;
@@ -3503,6 +3506,11 @@ bool GameState::events()
                         show_confirm = false;
                         
                     }
+                    else if (show_dialogue_discord_prompt)
+                    {
+                        show_dialogue_discord_prompt = false;
+                        break;
+                    }
                     else if (show_dialogue)
                     {
                         dialogue_index++;
@@ -3515,11 +3523,6 @@ bool GameState::events()
                         dialogue_index++;
                         if (!hint[current_level_index][dialogue_index].text)
                             show_dialogue_hint = false;
-                        break;
-                    }
-                    else if (show_dialogue_discord_prompt)
-                    {
-                        show_dialogue_discord_prompt = false;
                         break;
                     }
                     else if (mouse.x < panel_offset.x)
@@ -3535,6 +3538,11 @@ bool GameState::events()
                 {
                     if (mouse_state == MOUSE_STATE_ANIMATING)
                         break;
+                    if (show_dialogue_discord_prompt)
+                    {
+                        show_dialogue_discord_prompt = false;
+                        break;
+                    }
                     if (show_dialogue)
                     {
                         show_dialogue = false;
@@ -3543,11 +3551,6 @@ bool GameState::events()
                     if (show_dialogue_hint)
                     {
                         show_dialogue_hint = false;
-                        break;
-                    }
-                    if (show_dialogue_discord_prompt)
-                    {
-                        show_dialogue_discord_prompt = false;
                         break;
                     }
                     if (!current_circuit_is_read_only)

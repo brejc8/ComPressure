@@ -68,6 +68,8 @@ We open one valve to the value of the West input minus the South input, we can t
 This one is somewhat harder. Using a subtractor gives us too much wobble.
 
 Comparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.
+
+Click the requirements for a diagram of this setup.
 !END
                                     #  Latch
 !ANNIE
@@ -115,11 +117,11 @@ Is this not just the same as our Min component but selecting the other way round
 !END
                               # FUSE
 !CHARLES
-We can form a value of 90 PSI using a long pipe venting pipe. A Comparator between that and out input will tell us when to vent the vessel. As out comparator pressure rises from 0 PSI to 50 PSI, it should close off the input. Once it rises above 50 PSI it should open a valve to release the content of the vessel to the atmosphere.
+We can form a value of 90 PSI using a long pipe venting pipe. A comparator between that and out input will tell us when to vent the vessel. As our comparator pressure rises from 0 PSI to 50 PSI, it should close off the input. Once it rises above 50 PSI it should open a valve to release the content of the vessel to the atmosphere.
 !END
                               # Counter
 !GEORGE
-We can use an Adder with a static 10 PSI on one input. Then use a latch to capture the new value. Finally a Fuse in the loop will reset the counter to 0 PSI.
+We can use an adder with a static 10 PSI on one input. Then use a latch to capture the new value. Finally a Fuse in the loop will reset the counter to 0 PSI.
 !END
                               # ROM
 !GEORGE
@@ -131,7 +133,7 @@ We can connect our counter to the ROM, but first we will need to add 5 using an 
 !END 
                               # Clock
 !NICOLA
-If we form a ring of Amp50 components with an inversion somewhere, we can get a regular beat. Once we get it close , we can tune it by adding pipe elements to slow it down a little.
+If we form a ring of Amp50 components with an inversion somewhere, we can get a regular beat. Once we get it close, we can tune it by adding pipe elements to slow it down a little.
 !END 
                               # Cross V2
 !NICOLA

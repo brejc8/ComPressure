@@ -127,6 +127,8 @@ static Dialogue hint15[] = {
         "This one is somewhat harder. Using a subtractor gives us too much wobble.\n"
         "\n"
         "Comparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.\n"
+        "\n"
+        "Click the requirements for a diagram of this setup.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -222,7 +224,7 @@ static Dialogue hint26[] = {
 
 static Dialogue hint27[] = {
     {DIALOGUE_CHARLES,
-        "We can form a value of 90 PSI using a long pipe venting pipe. A Comparator between that and out input will tell us when to vent the vessel. As out comparator pressure rises from 0 PSI to 50 PSI, it should close off the input. Once it rises above 50 PSI it should open a valve to release the content of the vessel to the atmosphere.\n"
+        "We can form a value of 90 PSI using a long pipe venting pipe. A comparator between that and out input will tell us when to vent the vessel. As our comparator pressure rises from 0 PSI to 50 PSI, it should close off the input. Once it rises above 50 PSI it should open a valve to release the content of the vessel to the atmosphere.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -230,7 +232,7 @@ static Dialogue hint27[] = {
 
 static Dialogue hint28[] = {
     {DIALOGUE_GEORGE,
-        "We can use an Adder with a static 10 PSI on one input. Then use a latch to capture the new value. Finally a Fuse in the loop will reset the counter to 0 PSI.\n"
+        "We can use an adder with a static 10 PSI on one input. Then use a latch to capture the new value. Finally a Fuse in the loop will reset the counter to 0 PSI.\n"
     },
 
     {DIALOGUE_END, NULL}
@@ -254,7 +256,7 @@ static Dialogue hint30[] = {
 
 static Dialogue hint31[] = {
     {DIALOGUE_NICOLA,
-        "If we form a ring of Amp50 components with an inversion somewhere, we can get a regular beat. Once we get it close , we can tune it by adding pipe elements to slow it down a little.\n"
+        "If we form a ring of Amp50 components with an inversion somewhere, we can get a regular beat. Once we get it close, we can tune it by adding pipe elements to slow it down a little.\n"
     },
 
     {DIALOGUE_END, NULL}
