@@ -378,7 +378,7 @@ void GameState::advance()
     unsigned period = 200;
     unsigned time = SDL_GetTicks();
 
-    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 60 * 2)))
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 60)))
     {
         show_dialogue_discord_prompt = true;
         time_last_progress = SDL_GetTicks();
@@ -1333,16 +1333,16 @@ void GameState::render(bool saving)
             if (next_dialogue_level > 7)
                 render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST, "Experiment");
             render_box(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(32, 32), panel_state == PANEL_STATE_SCORES);
-            render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
         }
+        if (next_dialogue_level > 3)
         {                                                                                               // Speed arrows
+            render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
             SDL_Rect src_rect = {256, 136, 53, 5};
             SDL_Rect dst_rect = {(8 + 32 * 16 + 6) * scale, (8 + 6) * scale, 53 * scale, 5 * scale};
             render_texture(src_rect, dst_rect);
-        }
-        {                                                                                               // Speed slider
-            SDL_Rect src_rect = {624, 16, 16, 16};
-            SDL_Rect dst_rect = {(8 + 32 * 11 + 32 * 5 + int(game_speed)) * scale, (8 + 8) * scale, 16 * scale, 16 * scale};
+
+            src_rect = {624, 16, 16, 16};
+            dst_rect = {(8 + 32 * 11 + 32 * 5 + int(game_speed)) * scale, (8 + 8) * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
         }
         {                                                                                               // Current Score
@@ -2564,7 +2564,8 @@ void GameState::mouse_click_in_panel()
                 case 5:
                 case 6:
                 {
-                    watch_slider(panel_offset.x + (5 * 32 + 8) * scale, DIRECTION_E, 49,  &game_speed);
+                    if (next_dialogue_level > 3)
+                        watch_slider(panel_offset.x + (5 * 32 + 8) * scale, DIRECTION_E, 49,  &game_speed);
                     break;
                 }
                 case 7:
@@ -3015,15 +3016,22 @@ bool GameState::events()
                         display_about = false;
                         mouse_state = MOUSE_STATE_NONE;
                     case SDL_SCANCODE_1:
-                        current_level->set_monitor_state(MONITOR_STATE_PAUSE);
-                        level_set->touch(current_level_index);
+                        if (next_dialogue_level > 3)
+                        {
+                            current_level->set_monitor_state(MONITOR_STATE_PAUSE);
+                            level_set->touch(current_level_index);
+                        }
                         break;
                     case SDL_SCANCODE_2:
-                        current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
-                        level_set->touch(current_level_index);
+                        if (next_dialogue_level > 3)
+                        {
+                            current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
+                            level_set->touch(current_level_index);
+                        }
                         break;
                     case SDL_SCANCODE_3:
-                        current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
+                        if (next_dialogue_level > 3)
+                            current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
                         break;
                     case SDL_SCANCODE_TAB:
                     {
@@ -3287,10 +3295,13 @@ bool GameState::events()
                         keyboard_ctrl = true;
                         break;
                     case SDL_SCANCODE_SPACE:
-                        if (!SDL_IsTextInputActive() && current_level->monitor_state != MONITOR_STATE_PAUSE)
+                        if (next_dialogue_level > 3)
                         {
-                            skip_to_next_subtest = true;
-                            skip_to_subtest_index = -1;
+                            if (!SDL_IsTextInputActive() && current_level->monitor_state != MONITOR_STATE_PAUSE)
+                            {
+                                skip_to_next_subtest = true;
+                                skip_to_subtest_index = -1;
+                            }
                         }
                         break;
                     default:
