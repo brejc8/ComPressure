@@ -204,7 +204,7 @@ void Level::init_tests(SaveObjectMap* omap)
         {
             SaveObjectMap* forced_map = forced_list->get_item(i)->get_map();
             XYPos pos(forced_map->get_num("x"), forced_map->get_num("y"));
-            CircuitElement* elem = CircuitElement::load(forced_map->get_item("element"));
+            CircuitElement* elem = CircuitElement::load(forced_map->get_item("element"), true);
             circuit->force_element(pos, elem);
         }
     }

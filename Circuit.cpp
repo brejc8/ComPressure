@@ -23,7 +23,7 @@ SaveObject* CircuitElement::save()
     return omap;
 }
 
-CircuitElement* CircuitElement::load(SaveObject* obj)
+CircuitElement* CircuitElement::load(SaveObject* obj, bool read_only)
 {
     if (obj->is_num())
     {
@@ -43,7 +43,7 @@ CircuitElement* CircuitElement::load(SaveObject* obj)
         case CIRCUIT_ELEMENT_TYPE_SOURCE:
             return new CircuitElementSource(omap);
         case CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT:
-            return new CircuitElementSubCircuit(omap);
+            return new CircuitElementSubCircuit(omap, read_only);
         case CIRCUIT_ELEMENT_TYPE_EMPTY:
             return new CircuitElementEmpty(omap);
         default:

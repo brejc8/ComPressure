@@ -335,7 +335,7 @@ class CircuitElement
 public:
     SaveObject* save(void);
     virtual void save(SaveObjectMap*) = 0;
-    static CircuitElement* load(SaveObject*);
+    static CircuitElement* load(SaveObject*, bool read_only = false);
     virtual CircuitElement* copy() = 0;
     virtual ~CircuitElement(){};
 
