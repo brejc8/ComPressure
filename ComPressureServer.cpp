@@ -310,7 +310,7 @@ public:
                 Pressure score = level_set->levels[level_index]->last_score;
                 SaveObject* save_object = level_set->save_one(level_index);
                 db.update_score(steam_id, level_index, score, save_object);
-                printf("New score:%f\n", (float)score/65536);
+                printf("New score:%d - %f\n", level_index, (float)score/65536);
                 delete save_object;
             }
         }
@@ -401,7 +401,6 @@ public:
             if (length < 0 && inbuf.length() >= 4)
             {
                 length = *(uint32_t*)inbuf.c_str(),
-                printf("Payload length:%d\n", length);
                 inbuf.erase(0, 4);
                 if (length > 1024*1024)
                 {
@@ -549,7 +548,6 @@ public:
     {
         if (conn_fd < 0)
             return;
-        printf("closed %d\n", conn_fd);
         shutdown(conn_fd, SHUT_WR);
         ::close(conn_fd);
         conn_fd = -1;
@@ -655,7 +653,6 @@ int main(int argc, char *argv[])
             int conn_fd = accept(sockid,(struct sockaddr *)&clientaddr, &len);
             if (conn_fd == -1)
                 break;
-            printf("new: %d \n", conn_fd);
             if (conn_fd >= 1024)
                 ::close(conn_fd);
             conns.push_back(conn_fd);

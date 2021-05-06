@@ -40,7 +40,9 @@ static Dialogue hint4[] = {
 
 static Dialogue hint5[] = {
     {DIALOGUE_NICOLA,
-        "Well, let’s start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. We know how to do that from the previous designs. As Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio.\n"
+        "Well, let’s start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. To connect to atmosphere, we simply leave the pipe end open.\n"
+        "\n"
+        "As Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio.\n"
     },
 
     {DIALOGUE_END, NULL}
