@@ -611,7 +611,19 @@
     "name":"Div2",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 32,
+    "level_version" : 33,
+    "forced_elements":
+    [
+        {"x": 3, "y": 0, "element": {"type":4}},
+        {"x": 3, "y": 1, "element": {"type":4}},
+        {"x": 4, "y": 2, "element": {"type":4}},
+        {"x": 5, "y": 3, "element": {"type":1, "direction":1}},
+        {"x": 4, "y": 4, "element": {"type":4}},
+        {"x": 5, "y": 5, "element": {"type":1, "direction":3}},
+        {"x": 4, "y": 6, "element": {"type":4}},
+        {"x": 3, "y": 7, "element": {"type":4}},
+        {"x": 3, "y": 8, "element": {"type":4}},
+    ],
     "tests" :
     [
         {
@@ -713,7 +725,19 @@
     "name":"Mul2",
     "connections": [3, 1],
     "substep_count" : 10000,
-    "level_version" : 32,
+    "level_version" : 33,
+    "forced_elements":
+    [
+        {"x": 3, "y": 0, "element": {"type":4}},
+        {"x": 3, "y": 1, "element": {"type":4}},
+        {"x": 4, "y": 2, "element": {"type":4}},
+        {"x": 5, "y": 3, "element": {"type":1, "direction":1}},
+        {"x": 4, "y": 4, "element": {"type":4}},
+        {"x": 5, "y": 5, "element": {"type":1, "direction":3}},
+        {"x": 4, "y": 6, "element": {"type":4}},
+        {"x": 3, "y": 7, "element": {"type":4}},
+        {"x": 3, "y": 8, "element": {"type":4}},
+    ],
     "tests" :
     [
         {
