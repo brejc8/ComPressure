@@ -1836,7 +1836,7 @@ void GameState::render(bool saving)
     }
     if (show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt)
     {
-    static const Dialogue discord_prompt {DIALOGUE_CHARLES, "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button"};
+    static const Dialogue discord_prompt {DIALOGUE_CHARLES, "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button."};
     
 #ifdef COMPRESSURE_DEMO
         if (current_level_index == (14 - 1) && dialogue_index)
@@ -2083,7 +2083,7 @@ void GameState::render(bool saving)
             render_button(XYPos((160 + 32) * scale, (90 + 32)  * scale), XYPos(448, 200), 0, "Exit");
             render_button(XYPos((160 + 32 + 64) * scale, (90 + 32)  * scale), XYPos(full_screen ? 280 : 256, 280), 0, full_screen ? "Windowed" : "Full Screen");
 
-            render_button(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(256, 256), 0, "Join Our Discord group");
+            render_button(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(256, 256), 0, "Join our Discord group");
             render_button(XYPos((160 + 32 + 64) * scale, (90 + 32 + 64)  * scale), XYPos(256+24, 256), 0, "Info");
 
             render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
