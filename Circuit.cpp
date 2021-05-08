@@ -1275,6 +1275,8 @@ void Circuit::flip_selected_elements(std::set<XYPos> &selected_elements, bool ve
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = XYPos(vertically ? old.x : max.x - old.x + min.x, vertically ? max.y - old.y + min.y : old.y);
+        if (is_blocked(old))
+            return;
         if (is_blocked(pos))
             return;
         if (pos.x < 0 || pos.y < 0 || pos.x > 8 || pos.y > 8)
