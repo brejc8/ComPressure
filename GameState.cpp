@@ -81,7 +81,7 @@ GameState::GameState(const char* filename)
             music_volume = omap->get_num("music_volume");
             update_scale(omap->get_num("scale"));
             if (scale < 1)
-                scale = 3;
+                scale = 2;
             full_screen = omap->get_num("full_screen");
             minutes_played = omap->get_num("minutes_played");
             discord_joined = omap->get_num("discord_joined");
@@ -100,7 +100,7 @@ GameState::GameState(const char* filename)
         level_set = new LevelSet();
         edited_level_set = level_set;
         current_level_index = 0;
-        update_scale(3);
+        update_scale(2);
     }
 
     set_level(current_level_index);
@@ -444,10 +444,15 @@ void GameState::advance()
                 skip_to_next_subtest = false;
         }
     }
-    if ((current_level->best_score_set || !current_level->server_refreshed) && !current_level_set_is_inspected)
+    if (!current_level->server_refreshed && !current_level_set_is_inspected && current_level->best_design)
+    {
+        current_level->server_refreshed = true;
+        score_submit(current_level_index, false);
+    }
+
+    if (current_level->best_score_set && !current_level_set_is_inspected)
     {
         current_level->best_score_set = false;
-        current_level->server_refreshed = true;
         edited_level_set->record_best_score(current_level_index);
         score_submit(current_level_index, false);
         time_last_progress = SDL_GetTicks();
