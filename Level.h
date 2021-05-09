@@ -84,12 +84,21 @@ public:
     
     Pressure best_score = 0;
     Pressure last_score = 0;
+    
+    unsigned best_price = 0;
+    unsigned last_price = 0;
+
+    unsigned best_steam = 0;
+    unsigned last_steam = 0;
+
     unsigned level_version = 0;
     
     
     bool touched = false;
     bool score_set = false;
     bool best_score_set = false;
+    bool best_price_set = false;
+    bool best_steam_set = false;
     bool server_refreshed = false;
 
     unsigned test_index = 0;
@@ -137,6 +146,7 @@ public:
     void update_score(bool fin);
     void set_monitor_state(TestExecType monitor_state_);
     void touch();
+    void set_best_design(LevelSet* best);
 
 };
 

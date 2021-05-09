@@ -53,8 +53,19 @@ GameState::GameState(const char* filename)
         {
             SaveObjectMap* omap;
             omap = SaveObject::load(loadfile)->get_map();
-            level_set = new LevelSet(omap->get_item("levels"));
-            edited_level_set = level_set;
+            level_set_accuracy = new LevelSet(omap->get_item("levels"));
+            if (omap->has_key("levels_price"))
+                level_set_price = new LevelSet(omap->get_item("levels_price"));
+            else
+                level_set_price = new LevelSet();
+            
+            if (omap->has_key("levels_steam"))
+                level_set_steam = new LevelSet(omap->get_item("levels_steam"));
+            else
+                level_set_steam = new LevelSet();
+            
+            edited_level_set = level_set_accuracy;
+            level_set = edited_level_set;
 
             next_dialogue_level = omap->get_num("next_dialogue_level");
             highest_level = next_dialogue_level - 1;
@@ -97,8 +108,11 @@ GameState::GameState(const char* filename)
 
     if (!load_was_good)
     {
-        level_set = new LevelSet();
-        edited_level_set = level_set;
+        level_set_accuracy = new LevelSet();
+        level_set_price = new LevelSet();
+        level_set_steam = new LevelSet();
+        edited_level_set = level_set_accuracy;
+        level_set = edited_level_set;
         current_level_index = 0;
         update_scale(2);
     }
@@ -140,7 +154,10 @@ GameState::GameState(const char* filename)
 SaveObject* GameState::save(bool lite)
 {
     SaveObjectMap* omap = new SaveObjectMap;
-    omap->add_item("levels", edited_level_set->save_all(highest_level, lite));
+    omap->add_item("levels", level_set_accuracy->save_all(highest_level, lite));
+    omap->add_item("levels_price", level_set_price->save_all(highest_level, lite));
+    omap->add_item("levels_steam", level_set_steam->save_all(highest_level, lite));
+
     omap->add_num("current_level_index", current_level_index);
     omap->add_num("game_speed", game_speed);
     omap->add_num("show_debug", show_debug);
@@ -1590,6 +1607,22 @@ void GameState::render(bool saving)
         render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(448 + 0 * 24, 176), current_level->monitor_state == MONITOR_STATE_PAUSE, "Pause");
         render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(448 + 1 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_1, "Repeat 1 test");
         render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(448 + 2 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_ALL, "Run all tests");
+        
+        if ((next_dialogue_level >= 39))
+        {
+            switch (test_mode)
+            {
+                case TEST_MODE_ACCURACY:
+                    render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(256, 352), 0, "Accuratcy mode");
+                    break;
+                case TEST_MODE_PRICE:
+                    render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(280, 352), 0, "Price mode");
+                    break;
+                case TEST_MODE_STEAM:
+                    render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(256, 376), 0, "Steam mode");
+                    break;
+            }
+        }
 
         if ((next_dialogue_level > 8) && !current_level_set_is_inspected)
         {
@@ -1641,9 +1674,28 @@ void GameState::render(bool saving)
             render_number_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), pressure_as_percent(current_level->tests[i].last_score));
             render_number_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), pressure_as_percent(current_level->tests[i].best_score));
         }
+            switch (test_mode)
+            {
+                case TEST_MODE_ACCURACY:
+                    render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_score);
+                    render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_score);
+                    break;
+                case TEST_MODE_PRICE:
+                    {
+                        SDL_Rect src_rect = {144, 160, 5, 5};
+                        SDL_Rect dst_rect = {panel_offset.x + int(16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale, 5 * scale, 5 * scale};
+                        render_texture(src_rect, dst_rect);
 
-        render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_score);
-        render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_score);
+                        render_number_long(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_price);
+
+                        dst_rect = {panel_offset.x + int(16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale, 5 * scale, 5 * scale};
+                        render_texture(src_rect, dst_rect);
+                        render_number_long(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_price);
+                    }
+                    break;
+                case TEST_MODE_STEAM:
+                    break;
+            }
 
         int sim_point_count = current_level->tests[test_index].sim_points.size();
         int sim_point_index = current_level->sim_point_index;
@@ -2756,6 +2808,26 @@ void GameState::mouse_click_in_panel()
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
             }
+            else if ((panel_grid_pos.x == 3) && (next_dialogue_level >= 39))
+            {
+                test_mode = TestMode((test_mode + 1) % 3);
+                switch (test_mode)
+                {
+                    case TEST_MODE_ACCURACY:
+                        edited_level_set = level_set_accuracy;
+                        break;
+                    case TEST_MODE_PRICE:
+                        edited_level_set = level_set_price;
+                        break;
+                    case TEST_MODE_STEAM:
+                        edited_level_set = level_set_steam;
+                        break;
+                }
+                deletable_level_set = NULL;
+                level_set = edited_level_set;
+                set_level(current_level_index);
+            }
+
             else if ((next_dialogue_level > 8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
             {
                 SaveObjectMap* omap = new SaveObjectMap;

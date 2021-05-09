@@ -60,6 +60,15 @@ public:
 
     } panel_state = PANEL_STATE_LEVEL_SELECT;
 
+    enum TestMode
+    {
+        TEST_MODE_ACCURACY,
+        TEST_MODE_PRICE,
+        TEST_MODE_STEAM,
+
+    } test_mode = TEST_MODE_ACCURACY;
+
+
     DirFlip dir_flip;
 
     bool full_screen = false;
@@ -75,6 +84,11 @@ public:
     ServerResp scores_from_server;
     ServerResp design_from_server;
 
+    LevelSet* level_set_accuracy;
+    LevelSet* level_set_price;
+    LevelSet* level_set_steam;
+    
+    
     LevelSet* level_set;
     LevelSet* edited_level_set;
     bool free_level_set_on_return = false;

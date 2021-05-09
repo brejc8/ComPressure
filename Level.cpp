@@ -287,6 +287,7 @@ void Level::reset()
     circuit->reset();
     for (int i = 0; i < 4; i++)
         ports[i] = 0;
+    last_price = circuit->get_cost();
 }
 
 void Level::advance(unsigned ticks)
@@ -410,19 +411,22 @@ void Level::update_score(bool fin)
             score = tests[i].last_score;
     }
     last_score = score;
+    if (fin)
+        score_set = true;
+    if (!score)
+        return;
+
+    if ((last_price < best_price || !best_design) && fin)
+    {
+        best_price = last_price;
+        best_price_set = true;
+    }
+
     if ((score > best_score || !best_design) && fin)
     {
         best_score = score;
-        for (unsigned t = 0; t < test_count; t++)
-        {
-            tests[t].best_score = tests[t].last_score;
-            for (int i = 0; i < HISTORY_POINT_COUNT; i++)
-                tests[t].best_pressure_log[i] = tests[t].last_pressure_log[i];
-        }
         best_score_set = true;
     }
-    if (fin)
-        score_set = true;
     return;
 }
 
@@ -449,7 +453,21 @@ void Level::touch()
     touched = true;
     score_set = false;
     circuit->fast_prepped = false;
+    last_price = circuit->get_cost();
 //    remove_circles();
+}
+void Level::set_best_design(LevelSet* new_best)
+{
+    delete best_design;
+    best_design =  new_best;
+
+    unsigned test_count = tests.size();
+    for (unsigned t = 0; t < test_count; t++)
+    {
+        tests[t].best_score = tests[t].last_score;
+        for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+            tests[t].best_pressure_log[i] = tests[t].last_pressure_log[i];
+    }
 }
 
 LevelSet::LevelSet(SaveObject* sobj, bool inspect)
@@ -559,8 +577,7 @@ Pressure LevelSet::test_level(unsigned level_index)
 void LevelSet::record_best_score(unsigned level_index)
 {
     SaveObject* sobj = save_one(level_index);
-    delete levels[level_index]->best_design;
-    levels[level_index]->best_design =  new LevelSet(sobj, true);
+    levels[level_index]->set_best_design(new LevelSet(sobj, true));
     delete sobj;
 }
 
