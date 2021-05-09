@@ -339,6 +339,7 @@ void GameState::score_fetch(unsigned level_index)
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "score_fetch");
     omap->add_num("steam_id", steam_id);
+    omap->add_num("type", test_mode);
     omap->add_string("steam_username", steam_username);
     omap->add_num("level_index", level_index);
 
@@ -1824,15 +1825,31 @@ void GameState::render(bool saving)
 
     } else if (panel_state == PANEL_STATE_SCORES)
     {
-        XYPos table_pos = XYPos((8 + 32 * 11 + 16), (8 + 8 + 32 + 32));
+        XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
         
         for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
         {
-            render_text(table_pos, score.steam_username.c_str());
-            render_number_pressure((table_pos + XYPos(160,3)) * scale, score.score, 2);
+            render_text(table_pos+XYPos(16,0), score.steam_username.c_str());
+            switch (test_mode)
+            {
+                case TEST_MODE_ACCURACY:
+                    render_number_pressure((table_pos + XYPos(160,3)) * scale, score.score, 2);
+                    break;
+                case TEST_MODE_PRICE:
+                {
+                    SDL_Rect src_rect = {144, 160, 5, 5};
+                    SDL_Rect dst_rect = {(table_pos.x + 160) * scale, (table_pos.y + 3) * scale, 10 * scale, 10 * scale};
+                    render_texture(src_rect, dst_rect);
+                    render_number_long((table_pos + XYPos(170,3)) * scale, score.score, 2);
+                }
+                    break;
+                case TEST_MODE_STEAM:
+                    render_number_long((table_pos + XYPos(160,3)) * scale, score.score, 2);
+                    break;
+            }
 
             SDL_Rect src_rect = {336, 32, 16, 16};
-            SDL_Rect dst_rect = {(table_pos.x + 160 + 20*2) * scale, table_pos.y * scale, 16 * scale, 16 * scale};
+            SDL_Rect dst_rect = {(table_pos.x) * scale, table_pos.y * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
 
             table_pos.y += 16;
@@ -1848,16 +1865,33 @@ void GameState::render(bool saving)
         
         if (edited_level_set->levels[current_level_index]->global_score_graph_set)
         {
-            Pressure my_score = edited_level_set->levels[current_level_index]->global_fetched_score;
+            int64_t my_score = edited_level_set->levels[current_level_index]->global_fetched_score;
             for (int i = 0; i < 200-1; i++)
             {
+                int top;
+                int size;
                 unsigned colour = 6;
-                int v1 = pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[i]);
-                int v2 = pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[i + 1]);
-                if ((edited_level_set->levels[current_level_index]->global_score_graph[i] >= my_score) && (edited_level_set->levels[current_level_index]->global_score_graph[i + 1] <= my_score))
-                    colour = 3;
-                int top = 100 - std::max(v1, v2);
-                int size = abs(v1 - v2) + 1;
+                if (test_mode == TEST_MODE_ACCURACY)
+                {
+                    int v1 = pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[i]);
+                    int v2 = pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[i + 1]);
+                    if ((edited_level_set->levels[current_level_index]->global_score_graph[i] >= my_score) && (edited_level_set->levels[current_level_index]->global_score_graph[i + 1] <= my_score))
+                        colour = 3;
+                    top = 100 - std::max(v1, v2);
+                    size = abs(v1 - v2) + 1;
+                }
+                else
+                {
+                    int64_t v1 = edited_level_set->levels[current_level_index]->global_score_graph[i];
+                    int64_t v2 = edited_level_set->levels[current_level_index]->global_score_graph[i + 1];
+                    if ((edited_level_set->levels[current_level_index]->global_score_graph[i] >= my_score) && (edited_level_set->levels[current_level_index]->global_score_graph[i + 1] <= my_score))
+                        colour = 3;
+                    int64_t range = edited_level_set->levels[current_level_index]->global_score_graph[199];
+                    if (!range)
+                        range++;
+                    top = (std::max(v1, v2) * 100) / range;
+                    size = (abs(v1 - v2) * 100) / range + 1;
+                }
 
                 SDL_Rect src_rect = {503, 80 + (int)colour, 1, 1};
                 SDL_Rect dst_rect = {i * scale + graph_pos.x, top * scale + graph_pos.y, 1 * scale, size * scale};
@@ -1872,7 +1906,10 @@ void GameState::render(bool saving)
         XYPos pos = ((mouse - graph_pos) / scale);
         if (pos.y >= 0 && pos.x >= 0 && pos.x < 200)
         {
-            tooltip_string = std::to_string(pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]));
+            if (test_mode == TEST_MODE_ACCURACY)
+                tooltip_string = std::to_string(pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]));
+            else
+                tooltip_string = std::to_string(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]);
         }
 
     }
@@ -2825,6 +2862,7 @@ void GameState::mouse_click_in_panel()
                 }
                 deletable_level_set = NULL;
                 level_set = edited_level_set;
+                current_level_set_is_inspected = false;
                 set_level(current_level_index);
             }
 
@@ -2982,7 +3020,7 @@ void GameState::mouse_click_in_panel()
         return;
     } else if (panel_state == PANEL_STATE_SCORES)
     {
-        XYPos table_pos = XYPos((8 + 32 * 11 + 16 + 160 + 20*2), (8 + 8 + 32 + 32));
+        XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
         
         for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
         {
