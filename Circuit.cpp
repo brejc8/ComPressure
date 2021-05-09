@@ -384,6 +384,34 @@ void CircuitElementPipe::flip(bool vertically)
 
 }
 
+unsigned CircuitElementPipe::get_cost()
+{
+    switch(connections)
+    {
+        case CONNECTIONS_NONE:
+            return 0;
+        case CONNECTIONS_NW:
+        case CONNECTIONS_NE:
+        case CONNECTIONS_NS:
+        case CONNECTIONS_EW:
+        case CONNECTIONS_ES:
+        case CONNECTIONS_WS:
+            return 2;
+        case CONNECTIONS_NWE:
+        case CONNECTIONS_NES:
+        case CONNECTIONS_NWS:
+        case CONNECTIONS_EWS:
+            return 3;
+        case CONNECTIONS_NS_WE:
+        case CONNECTIONS_NW_ES:
+        case CONNECTIONS_NE_WS:
+        case CONNECTIONS_ALL:
+            return 4;
+    }
+    assert(0);
+}
+
+
 CircuitElementValve::CircuitElementValve(SaveObjectMap* omap)
 {
     dir_flip = DirFlip(omap->get_num("direction"));
@@ -686,6 +714,11 @@ void CircuitElementSubCircuit::sim_prep(PressureAdjacent adj_, FastSim& fast_sim
 
     assert(circuit);
     circuit->sim_prep(adj, fast_sim);
+}
+
+unsigned CircuitElementSubCircuit::get_cost()
+{
+    return 4 + circuit->get_cost();
 }
 
 Sign::Sign(XYPos pos_, Direction direction_, std::string text_):
@@ -1486,6 +1519,18 @@ bool Circuit::contains_subcircuit_level(unsigned level_index, LevelSet* level_se
             return true;
     }
     return false;
+}
+
+unsigned Circuit::get_cost()
+{
+    unsigned cost = 0;
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        cost += elements[pos.y][pos.x]->get_cost();
+    }
+    return cost;
 }
 
 void Clipboard::copy(std::set<XYPos> &selected_elements, Circuit &circuit)

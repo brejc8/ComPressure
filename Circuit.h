@@ -362,6 +362,7 @@ public:
     virtual bool get_read_only() {return true;}
     virtual void rotate(bool clockwise) = 0;
     virtual void flip(bool vertically) = 0;
+    virtual unsigned get_cost() = 0;
 };
 
 class CircuitElementPipe : public CircuitElement
@@ -389,6 +390,7 @@ public:
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_PIPE;}
     void rotate(bool clockwise);
     void flip(bool vertically);
+    unsigned get_cost();
 
     void extend_pipe(Connections con);
 };
@@ -425,6 +427,7 @@ public:
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_VALVE;}
     void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
     void flip(bool vertically) {dir_flip = dir_flip.flip(vertically);};
+    unsigned get_cost() {return 10;};
 };
 
 class CircuitElementSource : public CircuitElement
@@ -448,6 +451,7 @@ public:
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SOURCE;}
     void rotate(bool clockwise) {direction = direction_rotate(direction, clockwise);};
     void flip(bool vertically) {direction = direction_flip(direction, vertically);};
+    unsigned get_cost() {return 5;};
 
 };
 
@@ -468,6 +472,7 @@ public:
     virtual bool is_empty() {return true;};
     void rotate(bool clockwise) {};
     void flip(bool vertically) {};
+    unsigned get_cost() {return 0;};
 };
 
 class CircuitElementSubCircuit : public CircuitElement
@@ -505,6 +510,7 @@ public:
     virtual bool get_read_only() {return read_only;}
     void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
     void flip(bool vertically) {dir_flip = dir_flip.flip(vertically);};
+    unsigned get_cost();
 };
 
 class Sign
@@ -605,7 +611,7 @@ public:
     void paste(Clipboard& clipboard, XYPos pos, LevelSet* level_set);
 
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
-    
+    unsigned get_cost();
 };
 
 class Clipboard
