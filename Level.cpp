@@ -136,6 +136,10 @@ SaveObject* Level::save(bool lite)
     {
         omap->add_num("best_score", best_score);
         omap->add_num("last_score", last_score);
+        omap->add_num("best_price", best_price);
+        omap->add_num("last_price", last_price);
+        omap->add_num("best_steam", best_steam);
+        omap->add_num("last_steam", last_steam);
         SaveObjectList* slist = new SaveObjectList;
         unsigned test_count = tests.size();
         for (unsigned i = 0; i < test_count; i++)
@@ -273,6 +277,14 @@ void Level::init_tests(SaveObjectMap* omap)
             best_score = omap->get_num("best_score");
         if (omap->has_key("last_score"))
             last_score = omap->get_num("last_score");
+        if (omap->has_key("best_price"))
+            best_price = omap->get_num("best_price");
+        if (omap->has_key("last_price"))
+            last_price = omap->get_num("last_price");
+        if (omap->has_key("best_steam"))
+            best_steam = omap->get_num("best_steam");
+        if (omap->has_key("last_steam"))
+            last_steam = omap->get_num("last_steam");
     }
 }
 

@@ -584,7 +584,6 @@ void GameState::render_number_pressure(XYPos pos, Pressure value, unsigned scale
     
 }
 
-
 void GameState::render_number_long(XYPos pos, unsigned value, unsigned scale_mul)
 {
     int myscale = scale * scale_mul;
@@ -607,6 +606,22 @@ void GameState::render_number_long(XYPos pos, unsigned value, unsigned scale_mul
         dst_rect.x += 4 * myscale;
         i++;
 
+    }
+}
+
+void GameState::render_number_long_right_align(XYPos pos, unsigned value, unsigned scale_mul)
+{
+    int myscale = scale * scale_mul;
+    
+    SDL_Rect src_rect = {0, 160, 4, 5};
+    SDL_Rect dst_rect = {pos.x, pos.y, 4 * myscale, 5 * myscale};
+    while (value)
+    {
+        dst_rect.x -= 4 * myscale;
+        int i = value % 10;
+        src_rect.x = 0 + i * 4;
+        render_texture(src_rect, dst_rect);
+        value /= 10;
     }
 }
 
@@ -1433,9 +1448,18 @@ void GameState::render(bool saving)
 
             render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0, level_set->levels[level_index]->name.c_str());
             
-            unsigned score = pressure_as_percent(level_set->levels[level_index]->best_score);
 
-            render_number_2digit_err(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), score);
+            switch (test_mode)
+            {
+                case TEST_MODE_ACCURACY:
+                    render_number_2digit_err(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), pressure_as_percent(level_set->levels[level_index]->best_score));
+                    break;
+                case TEST_MODE_PRICE:
+                    render_number_long_right_align(XYPos((pos.x * 32 + 32 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_price);
+                    break;
+                case TEST_MODE_STEAM:
+                    break;
+            }
         }
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
@@ -1884,13 +1908,14 @@ void GameState::render(bool saving)
                 {
                     int64_t v1 = edited_level_set->levels[current_level_index]->global_score_graph[i];
                     int64_t v2 = edited_level_set->levels[current_level_index]->global_score_graph[i + 1];
-                    if ((edited_level_set->levels[current_level_index]->global_score_graph[i] >= my_score) && (edited_level_set->levels[current_level_index]->global_score_graph[i + 1] <= my_score))
+                    if ((v1 <= my_score) && (v2 >= my_score))
                         colour = 3;
                     int64_t range = edited_level_set->levels[current_level_index]->global_score_graph[199];
                     if (!range)
-                        range++;
-                    top = (std::max(v1, v2) * 100) / range;
-                    size = (abs(v1 - v2) * 100) / range + 1;
+                        range = 1;
+                    top = 100 - (std::max(v1, v2) * 100) / range;
+                    int bottom = 100 - (std::min(v1, v2) * 100) / range;
+                    size = bottom - top + 1;
                 }
 
                 SDL_Rect src_rect = {503, 80 + (int)colour, 1, 1};

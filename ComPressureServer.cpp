@@ -311,7 +311,7 @@ public:
             level_ptr->resize(level + 1);
         SaveObjectMap* omap = new SaveObjectMap;
         omap->add_num("level", level);
-        omap->add_num("score", (*level_ptr)[level].get_score(user_id));
+        omap->add_num("score", type ? (INT64_MAX - (*level_ptr)[level].get_score(user_id)) : (*level_ptr)[level].get_score(user_id));
         omap->add_num("type", type);
         (*level_ptr)[level].fetch_scores(omap, user_id, friends, *this, type);
         return omap;
