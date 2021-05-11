@@ -300,6 +300,7 @@ void Level::reset()
     for (int i = 0; i < 4; i++)
         ports[i] = 0;
     last_price = circuit->get_cost();
+    circuit->reset_steam_used();
 }
 
 void Level::advance(unsigned ticks)
@@ -423,8 +424,12 @@ void Level::update_score(bool fin)
             score = tests[i].last_score;
     }
     last_score = score;
+
     if (fin)
+    {
+        last_steam = circuit->get_steam_used();
         score_set = true;
+    }
     if (!score)
         return;
 
@@ -434,12 +439,19 @@ void Level::update_score(bool fin)
         best_price_set = true;
     }
 
-    if ((score > best_score || !best_design) && fin)
+    if ((last_steam < best_steam || !best_design) && fin)
     {
-        best_score = score;
+        best_steam = last_steam;
+        best_steam_set = true;
+    }
+
+    if ((last_score > best_score || !best_design) && fin)
+    {
+        best_score = last_score;
         best_score_set = true;
     }
-    return;
+
+   return;
 }
 
 void Level::set_monitor_state(TestExecType monitor_state_)

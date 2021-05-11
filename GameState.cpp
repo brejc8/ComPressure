@@ -468,9 +468,23 @@ void GameState::advance()
         score_submit(current_level_index, false);
     }
 
-    if (current_level->best_score_set && !current_level_set_is_inspected)
+    if (current_level->best_score_set && (test_mode == TEST_MODE_ACCURACY) && !current_level_set_is_inspected)
     {
         current_level->best_score_set = false;
+        edited_level_set->record_best_score(current_level_index);
+        score_submit(current_level_index, false);
+        time_last_progress = SDL_GetTicks();
+    }
+    if (current_level->best_price_set && (test_mode == TEST_MODE_PRICE) && !current_level_set_is_inspected)
+    {
+        current_level->best_price_set = false;
+        edited_level_set->record_best_score(current_level_index);
+        score_submit(current_level_index, false);
+        time_last_progress = SDL_GetTicks();
+    }
+    if (current_level->best_steam_set && (test_mode == TEST_MODE_STEAM) && !current_level_set_is_inspected)
+    {
+        current_level->best_steam_set = false;
         edited_level_set->record_best_score(current_level_index);
         score_submit(current_level_index, false);
         time_last_progress = SDL_GetTicks();
@@ -609,19 +623,84 @@ void GameState::render_number_long(XYPos pos, unsigned value, unsigned scale_mul
     }
 }
 
-void GameState::render_number_long_right_align(XYPos pos, unsigned value, unsigned scale_mul)
+int GameState::render_number_long_get_width(unsigned value, unsigned scale_mul)
 {
-    int myscale = scale * scale_mul;
-    
-    SDL_Rect src_rect = {0, 160, 4, 5};
-    SDL_Rect dst_rect = {pos.x, pos.y, 4 * myscale, 5 * myscale};
+    int i = 0;
     while (value)
     {
-        dst_rect.x -= 4 * myscale;
-        int i = value % 10;
-        src_rect.x = 0 + i * 4;
-        render_texture(src_rect, dst_rect);
+        i++;
         value /= 10;
+    }
+    return i * 4 * scale_mul;
+}
+
+int GameState::render_number_compact_get_width(int64_t value, unsigned scale_mul)
+{
+    return 6 * 4 * scale_mul;
+}
+
+void GameState::render_number_compact(XYPos pos, int64_t value, unsigned scale_mul)
+{
+    if (value == 0)
+        return;
+    int myscale = scale * scale_mul;
+    int64_t scalar = 0;
+    if (value < 1000)
+    {
+        scalar = 0;
+        value *= 1000;
+    }
+    else if (value < 1000000)
+    {
+        scalar = 1;
+    }
+    else if (value < 1000000000)
+    {
+        scalar = 2;
+        value /= 1000;
+    }
+    else
+    {
+        scalar = 3;
+        value /= 1000000;
+    }
+
+    SDL_Rect src_rect = {0, 160, 4, 5};
+    SDL_Rect dst_rect = {pos.x, pos.y, 4 * myscale, 5 * myscale};
+    
+    unsigned digits_till_dp = 3;
+    
+    while (value < 100000)
+    {
+        value *= 10;
+        digits_till_dp--;
+    }
+    
+    for (int i = 0; i < 3; i++)
+    {
+        int v = value / 100000;
+        value -= v * 100000;
+        value *= 10;
+        src_rect.x = 0 + v * 4;
+        render_texture(src_rect, dst_rect);
+        dst_rect.x += 4 * myscale;
+        digits_till_dp--;
+        if (!digits_till_dp)
+        {
+            if (scalar == 0)
+                return;
+            if (i == 2)
+                break;
+            SDL_Rect src_rect2 = {48, 160, 2, 5};
+            SDL_Rect dst_rect2 = {dst_rect.x, dst_rect.y, 2 * myscale, 5 * myscale};
+            render_texture(src_rect2, dst_rect2);
+            dst_rect.x += 2 * myscale;
+        }
+    }
+    {
+        SDL_Rect src_rect2 = {147 + int(scalar * 5), 160, 5, 5};
+        SDL_Rect dst_rect2 = {dst_rect.x + myscale, dst_rect.y, 5 * myscale, 5 * myscale};
+        render_texture(src_rect2, dst_rect2);
     }
 }
 
@@ -1455,9 +1534,15 @@ void GameState::render(bool saving)
                     render_number_2digit_err(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), pressure_as_percent(level_set->levels[level_index]->best_score));
                     break;
                 case TEST_MODE_PRICE:
-                    render_number_long_right_align(XYPos((pos.x * 32 + 32 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_price);
+                {
+                    SDL_Rect src_rect = {144, 160, 5, 5};
+                    SDL_Rect dst_rect = {(pos.x * 32 + 32 - 8 - render_number_long_get_width(level_set->levels[level_index]->best_price)) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y, 5 * scale, 5 * scale};
+                    render_texture(src_rect, dst_rect);
+                    render_number_long(XYPos((pos.x * 32 + 32 - 4 - render_number_long_get_width(level_set->levels[level_index]->best_price)) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_price);
                     break;
+                }
                 case TEST_MODE_STEAM:
+                    render_number_compact(XYPos((pos.x * 32 + 32 - 4 - render_number_compact_get_width(level_set->levels[level_index]->best_steam)) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_steam);
                     break;
             }
         }
@@ -1629,26 +1714,10 @@ void GameState::render(bool saving)
         unsigned test_index = current_level->test_index;
         unsigned test_count = current_level->tests.size();
         pos = XYPos(0,0);
-        render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(448 + 0 * 24, 176), current_level->monitor_state == MONITOR_STATE_PAUSE, "Pause");
+        render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(448 + 0 * 24, 176), current_level->monitor_state == MONITOR_STATE_PAUSE, "Stop tests");
         render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(448 + 1 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_1, "Repeat 1 test");
         render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(448 + 2 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_ALL, "Run all tests");
         
-        if ((next_dialogue_level >= 39))
-        {
-            switch (test_mode)
-            {
-                case TEST_MODE_ACCURACY:
-                    render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(256, 352), 0, "Accuratcy mode");
-                    break;
-                case TEST_MODE_PRICE:
-                    render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(280, 352), 0, "Price mode");
-                    break;
-                case TEST_MODE_STEAM:
-                    render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(256, 376), 0, "Steam mode");
-                    break;
-            }
-        }
-
         if ((next_dialogue_level > 8) && !current_level_set_is_inspected)
         {
             render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 136), 0, "Export to\nclipboard");
@@ -1719,6 +1788,10 @@ void GameState::render(bool saving)
                     }
                     break;
                 case TEST_MODE_STEAM:
+                    {
+                        render_number_compact(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_steam);
+                        render_number_compact(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_steam);
+                    }
                     break;
             }
 
@@ -1849,6 +1922,13 @@ void GameState::render(bool saving)
 
     } else if (panel_state == PANEL_STATE_SCORES)
     {
+        if ((next_dialogue_level >= 39))
+        {
+            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(256, 352), test_mode == TEST_MODE_ACCURACY, "Accuratcy mode");
+            render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(280, 352), test_mode == TEST_MODE_PRICE, "Price mode");
+            render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(256, 376), test_mode == TEST_MODE_STEAM, "Steam mode");
+        }
+
         XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
         
         for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
@@ -1857,18 +1937,18 @@ void GameState::render(bool saving)
             switch (test_mode)
             {
                 case TEST_MODE_ACCURACY:
-                    render_number_pressure((table_pos + XYPos(160,3)) * scale, score.score, 2);
+                    render_number_pressure((table_pos + XYPos(190,3)) * scale, score.score, 2);
                     break;
                 case TEST_MODE_PRICE:
                 {
                     SDL_Rect src_rect = {144, 160, 5, 5};
-                    SDL_Rect dst_rect = {(table_pos.x + 160) * scale, (table_pos.y + 3) * scale, 10 * scale, 10 * scale};
+                    SDL_Rect dst_rect = {(table_pos.x + 190) * scale, (table_pos.y + 3) * scale, 10 * scale, 10 * scale};
                     render_texture(src_rect, dst_rect);
-                    render_number_long((table_pos + XYPos(170,3)) * scale, score.score, 2);
+                    render_number_long((table_pos + XYPos(200,3)) * scale, score.score, 2);
                 }
                     break;
                 case TEST_MODE_STEAM:
-                    render_number_long((table_pos + XYPos(160,3)) * scale, score.score, 2);
+                    render_number_long((table_pos + XYPos(190,3)) * scale, score.score, 2);
                     break;
             }
 
@@ -2155,9 +2235,9 @@ void GameState::render(bool saving)
                 {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower than the (-) side, the valve becomes closed and no steam will pass through."},
                 {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is lower than 100 PSI.\n\nAs before, the openness of the valve is the pressure on the (+) side minus the pressture on the (-) side."},
                 {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close the valve as the pressure on the (-) size becomes equal or higher than the (+) side."},
-                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively. You can also use hotkeys 1, 2 and 3\n\n"
+                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively. You can also use hotkeys 1, 2 and 3.\n\n"
                                     "The current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the worst of all tests."},
-                {XYPos(2,12), 3, 1, "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
+                {XYPos(2,12), 3, 1, "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right. You can press Space to fast forward to the next phase.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
                 {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the ports and examine your design's operation. The vertical sliders set the desired value. The horizontal sliders below set force of the input. Setting the slider all the way left makes it an output. Initial values are set from the current test."},
                 {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the port values."},
                 {XYPos(1,15), 4, 1, "Components can be selected by either clicking while holding Ctrl, or dragging while holding Shift. Selected components can be moved using WASD keys, or roated using Q and E, if the destination is empty. Keys to copy and paste are: C for copy, X for cut and V for paste. To delete selected components, press Delete.\n\nUndo is reached through Z key (Ctrl is optional) and Redo through either Y or Shift+Z. Undo can also be triggered by holding right mouse button and clicking the left one."},
@@ -2870,26 +2950,6 @@ void GameState::mouse_click_in_panel()
             {
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
             }
-            else if ((panel_grid_pos.x == 3) && (next_dialogue_level >= 39))
-            {
-                test_mode = TestMode((test_mode + 1) % 3);
-                switch (test_mode)
-                {
-                    case TEST_MODE_ACCURACY:
-                        edited_level_set = level_set_accuracy;
-                        break;
-                    case TEST_MODE_PRICE:
-                        edited_level_set = level_set_price;
-                        break;
-                    case TEST_MODE_STEAM:
-                        edited_level_set = level_set_steam;
-                        break;
-                }
-                deletable_level_set = NULL;
-                level_set = edited_level_set;
-                current_level_set_is_inspected = false;
-                set_level(current_level_index);
-            }
 
             else if ((next_dialogue_level > 8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
             {
@@ -3045,6 +3105,34 @@ void GameState::mouse_click_in_panel()
         return;
     } else if (panel_state == PANEL_STATE_SCORES)
     {
+
+        XYPos panel_grid_pos = panel_pos / 32;
+        if (panel_grid_pos.y == 0)
+        {
+            if ((panel_grid_pos.x < 3) && (next_dialogue_level >= 39))
+            {
+                if (panel_grid_pos.x == test_mode)
+                    return;
+                test_mode = TestMode(panel_grid_pos.x);
+                switch (test_mode)
+                {
+                    case TEST_MODE_ACCURACY:
+                        edited_level_set = level_set_accuracy;
+                        break;
+                    case TEST_MODE_PRICE:
+                        edited_level_set = level_set_price;
+                        break;
+                    case TEST_MODE_STEAM:
+                        edited_level_set = level_set_steam;
+                        break;
+                }
+                deletable_level_set = NULL;
+                level_set = edited_level_set;
+                current_level_set_is_inspected = false;
+                set_level(current_level_index);
+            }
+        }
+
         XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
         
         for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
@@ -3185,6 +3273,7 @@ bool GameState::events()
                         show_main_menu = !show_main_menu;
                         display_about = false;
                         mouse_state = MOUSE_STATE_NONE;
+                        break;
                     case SDL_SCANCODE_1:
                         if (next_dialogue_level > 3)
                         {
@@ -3456,6 +3545,7 @@ bool GameState::events()
                         full_screen = !full_screen;
                         SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
                         SDL_SetWindowBordered(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
+                        SDL_SetWindowResizable(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
                         SDL_SetWindowInputFocus(sdl_window);
                         break;
                     case SDL_SCANCODE_LSHIFT:

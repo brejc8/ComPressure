@@ -243,19 +243,6 @@ class FastSim
         void sim();
     };
     
-    class FastSimSource
-    {
-        CircuitPressure& a;
-    public:
-        FastSimSource(CircuitPressure& a_):
-            a(a_)
-        {}
-        void sim()
-        {
-            a.move((100 * PRESSURE_SCALAR - a.value) / 2);
-        }
-    };
-
     std::vector<FastSimPipe2> pipe2;
     std::vector<FastSimPipe3> pipe3;
     std::vector<FastSimPipe4> pipe4;
@@ -263,6 +250,7 @@ class FastSim
     std::vector<CircuitPressure*> sources;
     std::vector<CircuitPressure*> fast_pressures;
     std::vector<CircuitPressure*> fast_pressures_vent;
+    int64_t steam_used;
 
 public:
     void clear()
@@ -320,13 +308,19 @@ public:
         for (FastSimValve& p : valves)
             p.sim();
         for (CircuitPressure* con : sources)
-            con->move((100 * PRESSURE_SCALAR - con->value) / 2);
+        {
+            int64_t val = (100 * PRESSURE_SCALAR - con->value) / 2;
+            steam_used += val;
+            con->move(val);
+        }
 
         for (CircuitPressure* con : fast_pressures)
             con->post();
         for (CircuitPressure* con : fast_pressures_vent)
             con->post();
     }
+    void reset_steam_used() {steam_used = 0;}
+    int64_t get_steam_used() {return (steam_used + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR;}
 };
 
 
@@ -612,6 +606,8 @@ public:
 
     bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
     unsigned get_cost();
+    void reset_steam_used() {fast_sim.reset_steam_used();}
+    int64_t get_steam_used() {return fast_sim.get_steam_used();}
 };
 
 class Clipboard
