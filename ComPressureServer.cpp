@@ -584,8 +584,9 @@ public:
                         db.update_name(omap->get_num("steam_id"), steam_username);
                         uint64_t level_steam_id = omap->get_num("level_steam_id");
                         unsigned level_index = omap->get_num("level_index");
+                        unsigned type = omap->get_num("type");
                         printf("design_fetch: %s %lld  req %lld %u\n", steam_username.c_str(), omap->get_num("steam_id"), level_steam_id, level_index);
-                        SaveObject* design = db.get_design(level_steam_id, level_index);
+                        SaveObject* design = db.get_design(level_steam_id, level_index, type);
                         std::ostringstream stream;
                         design->save(stream);
                         std::string comp = compress_string(stream.str());

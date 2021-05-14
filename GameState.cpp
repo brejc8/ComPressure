@@ -855,7 +855,9 @@ static int max_help_page(int next_dialogue_level)
         return 6;
     if (next_dialogue_level <= 6)
         return 7;
-    return 11;
+    if (next_dialogue_level <= 38)
+        return 11;
+    return 12;
 }
 
 void GameState::render(bool saving)
@@ -2195,7 +2197,7 @@ void GameState::render(bool saving)
         if (show_help_page >= next_help_highlight)
             next_help_highlight = show_help_page + 1;
 
-        for (int i = 0; i < 11; i++)
+        for (int i = 0; i < 12; i++)
         {
             if (i >= max_help_page(next_dialogue_level))
                 break;
@@ -2259,6 +2261,8 @@ void GameState::render(bool saving)
                 {XYPos(0,17), 5,10, "The pressure generated in this arrangement is, in percent, the openness of the source valve divided by the sum of the openness of both valves.\n\n"
                                     "Pressure = S / (S + V)\n\nWhere S is Supply valve openness and V is Venting valve openness.\n\n"
                                     "In this case, Supply is 40 (40 - 0). Venting is also 40 (60 - 20). The expected value between is 40 / (40 + 40) = 50%, thus 50 PSI."},
+                {XYPos(0,18), 1, 1, (const char*) u8"Three scoring modes are available. The Accuracy mode scores the proximity to the target value (for the worst test).\n\nPrice mode ranks designs by cost. Pipes cost \u00A31 per port, valves cost \u00A310 and steam inlets cost \u00A35. There is an extra \u00A34 charge for each subdesign.\n\nSteam mode measures the amount of steam supplied by the steam inlets."},
+                {XYPos(0,18), 0, 0, ""},
             };
             
 
