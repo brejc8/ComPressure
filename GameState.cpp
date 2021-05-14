@@ -259,11 +259,16 @@ static int fetch_from_server_thread(void *ptr)
             if (got != 4)
                 throw(std::runtime_error("Connection closed early"));
             char* data = (char*)malloc(length);
-            got = SDLNet_TCP_Recv(tcpsock, data, length);
-            if (got != length)
+            got = 0;
+            while (got != length)
             {
-                free (data);
-                throw(std::runtime_error("Connection closed early"));
+                int n = SDLNet_TCP_Recv(tcpsock, &data[got], length - got);
+                got += n;
+                if (!n)
+                {
+                    free (data);
+                    throw(std::runtime_error("Connection closed early"));
+                }
             }
             std::string in_str(data, length);
             free (data);
@@ -358,6 +363,7 @@ void GameState::design_fetch(uint64_t level_steam_id, unsigned level_index)
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "design_fetch");
     omap->add_num("steam_id", steam_id);
+    omap->add_num("type", test_mode);
     omap->add_string("steam_username", steam_username);
     omap->add_num("level_steam_id", level_steam_id);
     omap->add_num("level_index", level_index);
@@ -2005,6 +2011,7 @@ void GameState::render(bool saving)
         }
         if (!edited_level_set->levels[current_level_index]->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), edited_level_set->levels[current_level_index]->global_score_graph_time + 1000 * 10))
         {
+            edited_level_set->levels[current_level_index]->global_score_graph_time = SDL_GetTicks();
             score_fetch(current_level_index);
         }
 
@@ -3126,10 +3133,11 @@ void GameState::mouse_click_in_panel()
                         edited_level_set = level_set_steam;
                         break;
                 }
-                deletable_level_set = NULL;
-                level_set = edited_level_set;
-                current_level_set_is_inspected = false;
-                set_level(current_level_index);
+                if (!current_level_set_is_inspected)
+                {
+                    level_set = edited_level_set;
+                    set_level(current_level_index);
+                }
             }
         }
 
@@ -3957,7 +3965,6 @@ void GameState::deal_with_scores()
                 edited_level_set->levels[level]->global_score_graph[i] = glist->get_num(i);
             }
             edited_level_set->levels[level]->global_score_graph_set = true;
-            edited_level_set->levels[level]->global_score_graph_time = SDL_GetTicks();
             edited_level_set->levels[level]->friend_scores.clear();
             
             glist = omap->get_item("friend_scores")->get_list();

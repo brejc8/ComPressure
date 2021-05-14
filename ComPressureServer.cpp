@@ -48,7 +48,7 @@ public:
 class ScoreTable
 {
 public:
-    std::multimap<int64_t, uint64_t, std::greater<Pressure>> sorted_scores;
+    std::multimap<int64_t, uint64_t, std::greater<int64_t>> sorted_scores;
     std::map<uint64_t, Score> user_score;
     
     ~ScoreTable()
