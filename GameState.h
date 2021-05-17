@@ -103,6 +103,10 @@ public:
     bool current_level_set_is_inspected = false;
     bool current_circuit_is_read_only = false;
 
+    bool editing_level = false;
+
+
+
     char* last_clip = NULL;
     LevelSet* clipboard_level_set = NULL;
     unsigned clipboard_level_index;

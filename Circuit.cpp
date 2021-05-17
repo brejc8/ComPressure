@@ -1102,6 +1102,11 @@ void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)
                     set_element_empty(pos, true);
                     signs.push_front(Sign(pos*32+XYPos(16,16), DIRECTION_N, std::string("ERROR ") + level_set->levels[level_index]->name));
                 }
+                else if (!level_set->is_playable(level_index, 1000000))
+                {
+                    set_element_empty(pos, true);
+                    signs.push_front(Sign(pos*32+XYPos(16,16), DIRECTION_N, std::string("ERROR")));
+                }
                 else
                 {
                     std::set<unsigned> sub_seen(seen);
@@ -1531,6 +1536,26 @@ unsigned Circuit::get_cost()
         cost += elements[pos.y][pos.x]->get_cost();
     }
     return cost;
+}
+
+SaveObjectList* Circuit::save_forced()
+{
+    SaveObjectList* slist = new SaveObjectList;
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        if (is_blocked(pos))
+        {
+            SaveObjectMap* omap = new SaveObjectMap;
+            omap->add_num("x", pos.x);
+            omap->add_num("y", pos.y);
+            omap->add_item("element", elements[pos.y][pos.x]->save());
+            slist->add_item(omap);
+
+        }
+    }
+    return slist;
 }
 
 void Clipboard::copy(std::set<XYPos> &selected_elements, Circuit &circuit)

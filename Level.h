@@ -55,8 +55,8 @@ public:
     unsigned last_pressure_index;
 
     Test();
-    void load(SaveObject* sobj);
-    SaveObject* save();
+    void load(SaveObjectMap* player_map, SaveObjectMap* test_map);
+    SaveObject* save(bool custom, bool lite);
 };
 
 class Level
@@ -154,7 +154,7 @@ public:
 class LevelSet
 {
 public:
-    Level* levels[LEVEL_COUNT+1];
+    std::vector<Level*> levels;
     bool read_only = false;
     LevelSet(SaveObject* sobj, bool inspect = false);
     LevelSet();
@@ -169,5 +169,6 @@ public:
     void reset(unsigned level_index);
     void remove_circles(unsigned level_index);
     void touch(unsigned level_index);
+    unsigned new_user_level();
 
 };

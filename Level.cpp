@@ -35,51 +35,113 @@ Test::Test()
 
 }
 
-void Test::load(SaveObject* sobj)
+void Test::load(SaveObjectMap* player_map, SaveObjectMap* test_map)
 {
-    if (!sobj)
-        return;
-    SaveObjectMap* omap = sobj->get_map();
-    last_score = omap->get_num("last_score");
-    best_score = omap->get_num("best_score");
-
+    if (player_map && player_map->has_key("last_score"))
     {
-        SaveObjectList* slist = omap->get_item("best_pressure_log")->get_list();
-        for (int i = 0; i < HISTORY_POINT_COUNT; i++)
-            best_pressure_log[i] = slist->get_num(i);
+        last_score = player_map->get_num("last_score");
+        best_score = player_map->get_num("best_score");
+
+        {
+            SaveObjectList* slist = player_map->get_item("best_pressure_log")->get_list();
+            for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+                best_pressure_log[i] = slist->get_num(i);
+        }
+
+        {
+            SaveObjectList* slist = player_map->get_item("last_pressure_log")->get_list();
+            for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+                last_pressure_log[i] = slist->get_num(i);
+        }
+        last_pressure_index = player_map->get_num("last_pressure_index");
+    }
+    
+    if (test_map->has_key("tested_direction"))
+        tested_direction = Direction(test_map->get_num("tested_direction"));
+    if (test_map->has_key("reset"))
+    {
+        if (test_map->get_num("reset") == 1)
+            reset_1 = true;
+        else
+            reset_all = true;
+    }
+    
+    SaveObjectList* pointlist = test_map->get_item("points")->get_list();
+    for (unsigned j = 0; j < pointlist->get_count(); j++)
+    {
+        SimPoint point;
+        SaveObjectMap* point_map = pointlist->get_item(j)->get_map();
+        if (point_map->has_key("N")) point.values[0] = point_map->get_num("N");
+        if (point_map->has_key("E")) point.values[1] = point_map->get_num("E");
+        if (point_map->has_key("S")) point.values[2] = point_map->get_num("S");
+        if (point_map->has_key("W")) point.values[3] = point_map->get_num("W");
+
+        if (point_map->has_key("NF")) point.force[0] = point_map->get_num("NF");
+        else point.force[0] = tested_direction == DIRECTION_N ? 0 : 50;
+        if (point_map->has_key("EF")) point.force[1] = point_map->get_num("EF");
+        else point.force[1] = tested_direction == DIRECTION_E ? 0 : 50;
+        if (point_map->has_key("SF")) point.force[2] = point_map->get_num("SF");
+        else point.force[2] = tested_direction == DIRECTION_S ? 0 : 50;
+        if (point_map->has_key("WF")) point.force[3] = point_map->get_num("WF");
+        else point.force[3] = tested_direction == DIRECTION_W ? 0 : 50;
+
+        if (point_map->has_key("PRESET"))
+            first_simpoint = j + 1;
+
+        sim_points.push_back(point);
     }
 
-    {
-        SaveObjectList* slist = omap->get_item("last_pressure_log")->get_list();
-        for (int i = 0; i < HISTORY_POINT_COUNT; i++)
-            last_pressure_log[i] = slist->get_num(i);
-    }
-    last_pressure_index = omap->get_num("last_pressure_index");
 }
 
-SaveObject* Test::save()
+SaveObject* Test::save(bool custom, bool lite)
 {
     SaveObjectMap* omap = new SaveObjectMap;
-    omap->add_num("last_score", last_score);
-    omap->add_num("best_score", best_score);
-
+    if (!lite)
     {
-        SaveObjectList* slist = new SaveObjectList;
-            for (int i = 0; i < HISTORY_POINT_COUNT; i++)
-                slist->add_num(best_pressure_log[i]);
-        omap->add_item("best_pressure_log", slist);
-    }
+        omap->add_num("last_score", last_score);
+        omap->add_num("best_score", best_score);
 
-    {
-        SaveObjectList* slist = new SaveObjectList;
+        {
+            SaveObjectList* slist = new SaveObjectList;
+                for (int i = 0; i < HISTORY_POINT_COUNT; i++)
+                    slist->add_num(best_pressure_log[i]);
+            omap->add_item("best_pressure_log", slist);
+        }
+
+        {
+            SaveObjectList* slist = new SaveObjectList;
             for (int i = 0; i < HISTORY_POINT_COUNT; i++)
                 slist->add_num(last_pressure_log[i]);
-        omap->add_item("last_pressure_log", slist);
-    }
-        
-    omap->add_num("last_pressure_index", last_pressure_index);
+            omap->add_item("last_pressure_log", slist);
+        }
 
-    
+        omap->add_num("last_pressure_index", last_pressure_index);
+    }
+    if (custom)
+    {
+        omap->add_num("tested_direction", tested_direction);
+        SaveObjectList* slist = new SaveObjectList;
+        for (SimPoint& sp: sim_points)
+        {
+            SaveObjectMap* sp_map = new SaveObjectMap;
+            sp_map->add_num("N", sp.values[0]);
+            sp_map->add_num("E", sp.values[1]);
+            sp_map->add_num("S", sp.values[2]);
+            sp_map->add_num("W", sp.values[3]);
+            sp_map->add_num("NF", sp.force[0]);
+            sp_map->add_num("EF", sp.force[1]);
+            sp_map->add_num("SF", sp.force[2]);
+            sp_map->add_num("WF", sp.force[3]);
+            slist->add_item(sp_map);
+        }
+        omap->add_item("points", slist);
+        if (reset_1)
+            omap->add_num("reset", 1);
+        else if (reset_all)
+            omap->add_num("reset", 2);
+        
+    }
+
     return omap;
 }
 
@@ -140,15 +202,10 @@ SaveObject* Level::save(bool lite)
         omap->add_num("last_price", last_price);
         omap->add_num("best_steam", best_steam);
         omap->add_num("last_steam", last_steam);
-        SaveObjectList* slist = new SaveObjectList;
-        unsigned test_count = tests.size();
-        for (unsigned i = 0; i < test_count; i++)
-            slist->add_item(tests[i].save());
-        omap->add_item("tests", slist);
         if (best_design)
-            omap->add_item("best_design", best_design->save_one(level_index));
+            omap->add_item("best_design", best_design->save_all(true));
 
-        slist = new SaveObjectList;
+        SaveObjectList* slist = new SaveObjectList;
         for (unsigned i = 0; i < 4; i++)
             if (saved_designs[i])
                 slist->add_item(saved_designs[i]->save_one(level_index));
@@ -160,6 +217,33 @@ SaveObject* Level::save(bool lite)
     {
         omap->add_num("best_score", score_set ? last_score : 0);
     }
+    if (!lite || level_index >= LEVEL_COUNT)
+    {
+        SaveObjectList* slist = new SaveObjectList;
+        unsigned test_count = tests.size();
+        for (unsigned i = 0; i < test_count; i++)
+            slist->add_item(tests[i].save(level_index >= LEVEL_COUNT, lite));
+        omap->add_item("tests", slist);
+    }
+
+    if (level_index >= LEVEL_COUNT)
+    {
+        omap->add_string("name", name);
+        {
+            SaveObjectList* slist = new SaveObjectList;
+            for (int i = 0; i < 4; i++)
+            {
+                if (pin_order[i] < 0)
+                    break;
+                slist->add_num(pin_order[i]);
+            }
+            omap->add_item("connections", slist);
+        }
+        omap->add_num("substep_count", substep_count);
+        omap->add_num("level_version", level_version);
+        omap->add_item("forced_elements", circuit->save_forced());
+    }
+    
 
     return omap;
 }
@@ -186,89 +270,76 @@ void Level::init_tests(SaveObjectMap* omap)
     if (omap && omap->has_key("level_version"))
         loaded_level_version = omap->get_num("level_version");
     
-    SaveObjectMap* desc = level_desc->get_item(level_index)->get_map();
+    SaveObjectMap* desc = level_index < LEVEL_COUNT ? level_desc->get_item(level_index)->get_map() : omap;
     
-    
-    name = desc->get_string("name");
-    
-    SaveObjectList* conlist = desc->get_item("connections")->get_list();
-    for (unsigned i = 0; i < conlist->get_count(); i++)
+    if (desc)
     {
-        unsigned port_num = conlist->get_num(i);
-        pin_order[i] = port_num;
-        connection_mask |= 1 << port_num;
-    }
-    substep_count = desc->get_num("substep_count");
-    level_version = desc->get_num("level_version");
-
-    if (desc->has_key("forced_elements"))
-    {
-        SaveObjectList* forced_list = desc->get_item("forced_elements")->get_list();
-        for (unsigned i = 0; i < forced_list->get_count(); i++)
+        name = desc->get_string("name");
+        SaveObjectList* conlist = desc->get_item("connections")->get_list();
+        for (unsigned i = 0; i < conlist->get_count(); i++)
         {
-            SaveObjectMap* forced_map = forced_list->get_item(i)->get_map();
-            XYPos pos(forced_map->get_num("x"), forced_map->get_num("y"));
-            CircuitElement* elem = CircuitElement::load(forced_map->get_item("element"), true);
-            circuit->force_element(pos, elem);
+            unsigned port_num = conlist->get_num(i);
+            pin_order[i] = port_num;
+            connection_mask |= 1 << port_num;
+        }
+        substep_count = desc->get_num("substep_count");
+        level_version = desc->get_num("level_version");
+
+        if (desc->has_key("forced_elements"))
+        {
+            SaveObjectList* forced_list = desc->get_item("forced_elements")->get_list();
+            for (unsigned i = 0; i < forced_list->get_count(); i++)
+            {
+                SaveObjectMap* forced_map = forced_list->get_item(i)->get_map();
+                XYPos pos(forced_map->get_num("x"), forced_map->get_num("y"));
+                CircuitElement* elem = CircuitElement::load(forced_map->get_item("element"), true);
+                circuit->force_element(pos, elem);
+            }
+        }
+
+        if (desc->has_key("forced_signs"))
+        {
+            SaveObjectList* forced_list = desc->get_item("forced_signs")->get_list();
+            for (unsigned i = 0; i < forced_list->get_count(); i++)
+            {
+                Sign new_sign(forced_list->get_item(i));
+                circuit->force_sign(new_sign);
+            }
+        }
+
+        SaveObjectList* testlist = desc->get_item("tests")->get_list();
+        for (unsigned i = 0; i < testlist->get_count(); i++)
+        {
+            tests.push_back({});
+            Test& t = tests.back();
+            SaveObjectMap* test_map = testlist->get_item(i)->get_map();
+            SaveObjectMap* player_map;
+
+            if (loaded_level_version == level_version && slist && slist->get_count() > i)
+                player_map = slist->get_item(i)->get_map();
+            else
+                player_map = NULL;
+            
+            t.load(player_map, test_map);
         }
     }
-    
-    if (desc->has_key("forced_signs"))
+    else
     {
-        SaveObjectList* forced_list = desc->get_item("forced_signs")->get_list();
-        for (unsigned i = 0; i < forced_list->get_count(); i++)
-        {
-            Sign new_sign(forced_list->get_item(i));
-            circuit->force_sign(new_sign);
-        }
-    }
-    
+        name = "New level";
+        connection_mask = 0;
+        pin_order[0] = -1;
+        pin_order[1] = -1;
+        pin_order[2] = -1;
+        pin_order[3] = -1;
+        substep_count = 10000;
+        level_version = 0;
 
-    SaveObjectList* testlist = desc->get_item("tests")->get_list();
-    for (unsigned i = 0; i < testlist->get_count(); i++)
-    {
         tests.push_back({});
         Test& t = tests.back();
-        
-        if (loaded_level_version == level_version && slist && slist->get_count() > tests.size() - 1)
-            t.load(slist->get_item(tests.size() - 1));
-        
-        SaveObjectMap* test_map = testlist->get_item(i)->get_map();
+        SimPoint point;
+        t.sim_points.push_back(point);
 
-        if (test_map->has_key("tested_direction"))
-            t.tested_direction = Direction(test_map->get_num("tested_direction"));
-        if (test_map->has_key("reset"))
-        {
-            if (test_map->get_num("reset") == 1)
-                t.reset_1 = true;
-            else
-                t.reset_all = true;
-        }
 
-        SaveObjectList* pointlist = test_map->get_item("points")->get_list();
-        for (unsigned j = 0; j < pointlist->get_count(); j++)
-        {
-            SimPoint point;
-            SaveObjectMap* point_map = pointlist->get_item(j)->get_map();
-            if (point_map->has_key("N")) point.values[0] = point_map->get_num("N");
-            if (point_map->has_key("E")) point.values[1] = point_map->get_num("E");
-            if (point_map->has_key("S")) point.values[2] = point_map->get_num("S");
-            if (point_map->has_key("W")) point.values[3] = point_map->get_num("W");
-
-            if (point_map->has_key("NF")) point.force[0] = point_map->get_num("NF");
-            else point.force[0] = t.tested_direction == DIRECTION_N ? 0 : 50;
-            if (point_map->has_key("EF")) point.force[1] = point_map->get_num("EF");
-            else point.force[1] = t.tested_direction == DIRECTION_E ? 0 : 50;
-            if (point_map->has_key("SF")) point.force[2] = point_map->get_num("SF");
-            else point.force[2] = t.tested_direction == DIRECTION_S ? 0 : 50;
-            if (point_map->has_key("WF")) point.force[3] = point_map->get_num("WF");
-            else point.force[3] = t.tested_direction == DIRECTION_W ? 0 : 50;
-            
-            if (point_map->has_key("PRESET"))
-                t.first_simpoint = j + 1;
-
-            t.sim_points.push_back(point);
-        }
     }
 
     if (loaded_level_version == level_version && omap)
@@ -508,27 +579,36 @@ LevelSet::LevelSet(SaveObject* sobj, bool inspect)
                 sobj = NULL;
         }
         if (sobj)
-            levels[i] = new Level(i, sobj);
+            levels.push_back(new Level(i, sobj));
         else
         {
-            levels[i] = new Level(i, inspect);
+            levels.push_back(new Level(i, inspect));
         }
     }
-    for (int i = 0; i < LEVEL_COUNT; i++)
+    for (int i = LEVEL_COUNT; i < slist->get_count(); i++)
+    {
+        SaveObject *sobj = slist->get_item(i);
+        if (sobj->is_null())
+            break;                  // unexpected null
+        levels.push_back(new Level(i, sobj));
+    }
+
+    for (int i = 0; i < levels.size(); i++)
         remove_circles(i);
+
 }
 
 LevelSet::LevelSet()
 {
         for (int i = 0; i < LEVEL_COUNT; i++)
         {
-            levels[i] = new Level(i);
+            levels.push_back(new Level(i));
         }
 }
 
 LevelSet::~LevelSet()
 {
-        for (int i = 0; i < LEVEL_COUNT; i++)
+        for (int i = 0; i < levels.size(); i++)
         {
             delete levels[i];
         }
@@ -538,9 +618,9 @@ SaveObject* LevelSet::save_all(unsigned level_index, bool lite)
 {
     SaveObjectList* slist = new SaveObjectList;
     
-    for (int i = 0; i < (level_index + 1); i++)
+    for (int i = 0; i < levels.size(); i++)
     {
-        if (!levels[i]->hidden)
+        if (is_playable(i, level_index))
             slist->add_item(levels[i]->save(lite));
         else
             slist->add_item(new SaveObjectNull);
@@ -552,7 +632,7 @@ SaveObject* LevelSet::save_one(unsigned level_index)
 {
     SaveObjectList* slist = new SaveObjectList;
     
-    for (int i = 0; i < LEVEL_COUNT; i++)
+    for (int i = 0; i < levels.size(); i++)
     {
         if (levels[level_index]->circuit->contains_subcircuit_level(i, this) || i == level_index)
             slist->add_item(levels[i]->save(true));
@@ -569,7 +649,7 @@ bool LevelSet::is_playable(unsigned level, unsigned highest_level)
         return false;
 #endif
     if (level >= LEVEL_COUNT)
-        return false;
+        return level < levels.size();
     if (read_only)
         return (!levels[level]->hidden);
     if (level > highest_level)
@@ -630,5 +710,13 @@ void LevelSet::touch(unsigned level_index)
 {
     levels[level_index]->touch();
     levels[level_index]->circuit->remove_circles(this);
+}
+
+
+unsigned LevelSet::new_user_level()
+{
+    unsigned count = levels.size();
+    levels.push_back(new Level(count));
+    return count;
 }
 

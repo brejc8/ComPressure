@@ -1432,8 +1432,7 @@ void GameState::render(bool saving)
                 }
             }
         }
-
-        if (current_level_set_is_inspected)
+        else if (current_level_set_is_inspected)
         {
             if (deletable_level_set)
                 render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
@@ -1441,6 +1440,15 @@ void GameState::render(bool saving)
                 render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0, "Copy to\ncurrent");
             render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
         }
+        else if (editing_level)
+        {
+            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
+        }
+        else if (current_level_index >= LEVEL_COUNT)
+        {
+            render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Level Editor");
+        }
+
     }
 
 
@@ -1520,8 +1528,6 @@ void GameState::render(bool saving)
                 continue;
             }
 
-            if (level_index >= LEVEL_COUNT)
-                break;
             if (!level_set->is_playable(level_index, highest_level))
                 continue;
             if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue)
@@ -1556,7 +1562,7 @@ void GameState::render(bool saving)
         }
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
-//        render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0);                      // Letter
+        render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
 
 
         {
@@ -1594,8 +1600,6 @@ void GameState::render(bool saving)
         for (pos.y = 0; pos.y < 8; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
-            if (level_index >= LEVEL_COUNT)
-                break;
             if (!edited_level_set->is_playable(level_index, highest_level))
                 break;
             
@@ -2354,11 +2358,19 @@ void GameState::render(bool saving)
 
 void GameState::set_level(unsigned level_index)
 {
+    editing_level = false;
     while (!level_set->is_playable(level_index, highest_level))
     {
         if (level_index == 0)
-            level_index = LEVEL_COUNT;
+            break;
         level_index--;
+    }
+    if (!level_set->is_playable(level_index, highest_level))
+    {
+        while (!level_set->is_playable(level_index, highest_level))
+        {
+            level_index++;
+        }
     }
     current_circuit_is_inspected_subcircuit = false;
     current_circuit_is_read_only = current_level_set_is_inspected;
@@ -2469,6 +2481,16 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 deletable_level_set = NULL;
                 level_set = edited_level_set;
                 set_level(current_level_index);
+                return;
+            }
+            else if (i == 10 && (editing_level))
+            {
+                editing_level = false;
+                return;
+            }
+            else if (i == 10 && (current_level_index >= LEVEL_COUNT))
+            {
+                editing_level = true;
                 return;
             }
             else if (i == 9 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit)
@@ -2858,13 +2880,10 @@ void GameState::mouse_click_in_panel()
             dialogue_index = 0;
             
         }
-//         else if ((panel_pos - XYPos(6*32,144)).inside(XYPos(32,32)))  // Help
-//         {
-//             requesting_help = !requesting_help;
-//         }
-//         else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)))  // Letters
-//         {
-//         }
+        else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)))  // New
+        {
+            set_level(edited_level_set->new_user_level());
+        }
         return;
     } else if (panel_state == PANEL_STATE_EDITOR && !current_circuit_is_read_only)
     {
