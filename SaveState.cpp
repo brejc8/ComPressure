@@ -101,6 +101,7 @@ SaveObjectMap::~SaveObjectMap()
 
 void SaveObjectMap::add_item(std::string key, SaveObject* value)
 {
+    assert(!omap[key]);
     omap[key]=value;
 }
 

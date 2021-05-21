@@ -46,7 +46,9 @@ public:
         MOUSE_STATE_DRAGGING_SIGN,
         MOUSE_STATE_ENTERING_TEXT_INTO_SIGN,
         MOUSE_STATE_PASTING_CLIPBOARD,
-        MOUSE_STATE_ANIMATING
+        MOUSE_STATE_ANIMATING,
+        MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME,
+
 
     } mouse_state = MOUSE_STATE_NONE;
 
@@ -221,11 +223,11 @@ public:
     void render_number_compact(XYPos pos, int64_t value, unsigned scale_mul = 1);
     int render_number_compact_get_width(int64_t value, unsigned scale_mul = 1);
     void render_box(XYPos pos, XYPos size, unsigned colour);
-    void render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip = NULL);
+    void render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip = NULL, SDL_Texture* texture = NULL);
     void render_tooltip();
 
     void render_text_wrapped(XYPos tl, const char* string, int width);
-    void render_text(XYPos tl, const char* string, SDL_Color color = {0xff,0xff,0xff});
+    void render_text(XYPos tl, const char* string, SDL_Color color = {0xff,0xff,0xff}, unsigned scale = 1);
     void update_scale(int ewscale);
     void render(bool saving = false);
     void advance();
@@ -249,4 +251,20 @@ public:
     {
         friends.insert(id);
     }
+    
+    void set_level_set(LevelSet* new_level_set);
+
+};
+
+class GameStateWrappedTexture
+    : public WrappedTexture
+{
+public:
+    SDL_Texture* sdl_texture;
+    
+    GameStateWrappedTexture(SDL_Texture* sdl_texture_):
+        sdl_texture(sdl_texture_)
+    {}
+    ~GameStateWrappedTexture();
+    SDL_Texture* get_texture ();
 };

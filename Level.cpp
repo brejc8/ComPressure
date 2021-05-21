@@ -59,13 +59,10 @@ void Test::load(SaveObjectMap* player_map, SaveObjectMap* test_map)
     if (test_map->has_key("tested_direction"))
         tested_direction = Direction(test_map->get_num("tested_direction"));
     if (test_map->has_key("reset"))
-    {
-        if (test_map->get_num("reset") == 1)
-            reset_1 = true;
-        else
-            reset_all = true;
-    }
-    
+        reset = TestResetType(test_map->get_num("reset"));
+    if (test_map->has_key("first_simpoint"))
+        first_simpoint = test_map->get_num("first_simpoint");
+
     SaveObjectList* pointlist = test_map->get_item("points")->get_list();
     for (unsigned j = 0; j < pointlist->get_count(); j++)
     {
@@ -135,11 +132,8 @@ SaveObject* Test::save(bool custom, bool lite)
             slist->add_item(sp_map);
         }
         omap->add_item("points", slist);
-        if (reset_1)
-            omap->add_num("reset", 1);
-        else if (reset_all)
-            omap->add_num("reset", 2);
-        
+        omap->add_num("reset", reset);
+        omap->add_num("first_simpoint", first_simpoint);
     }
 
     return omap;
@@ -186,6 +180,7 @@ Level::~Level()
     delete best_design;
     for (unsigned i = 0; i < 4; i++)
         delete saved_designs[i];
+    delete texture;
 }
 
 SaveObject* Level::save(bool lite)
@@ -240,10 +235,8 @@ SaveObject* Level::save(bool lite)
             omap->add_item("connections", slist);
         }
         omap->add_num("substep_count", substep_count);
-        omap->add_num("level_version", level_version);
         omap->add_item("forced_elements", circuit->save_forced());
     }
-    
 
     return omap;
 }
@@ -256,9 +249,21 @@ XYPos Level::getimage(DirFlip dir_flip)
 
 XYPos Level::getimage_fg(DirFlip dir_flip)
 {
-    return XYPos(dir_flip.as_int() * 24, 184 + (int(level_index) * 24));
+    if (level_index < LEVEL_COUNT)
+        return XYPos(dir_flip.as_int() * 24, 184 + (int(level_index) * 24));
+    return XYPos(dir_flip.as_int() * 24, 0);
 }
 
+WrappedTexture* Level::getimage_fg_texture()
+{
+    return texture;
+}
+
+void Level::setimage_fg_texture(WrappedTexture* texture_)
+{
+    delete texture;
+    texture = texture_;
+}
 
 void Level::init_tests(SaveObjectMap* omap)
 {
@@ -326,8 +331,8 @@ void Level::init_tests(SaveObjectMap* omap)
     else
     {
         name = "New level";
-        connection_mask = 0;
-        pin_order[0] = -1;
+        connection_mask = 2;
+        pin_order[0] = DIRECTION_E;
         pin_order[1] = -1;
         pin_order[2] = -1;
         pin_order[3] = -1;
@@ -431,8 +436,8 @@ void Level::advance(unsigned ticks)
                         }
                         sim_point_index = tests[test_index].first_simpoint;
                     }
-                    if ((monitor_state == MONITOR_STATE_PLAY_1 && tests[test_index].reset_1) ||
-                        (monitor_state == MONITOR_STATE_PLAY_ALL && tests[test_index].reset_all) || 
+                    if ((monitor_state == MONITOR_STATE_PLAY_1 && tests[test_index].reset) ||
+                        (monitor_state == MONITOR_STATE_PLAY_ALL && tests[test_index].reset == RESET_ALL) || 
                         test_index == 0)
                     {
                         circuit->reset();
@@ -476,7 +481,7 @@ void Level::select_test(unsigned t)
     touched = true;
     substep_index = 0;
     set_monitor_state(MONITOR_STATE_PLAY_1);
-    if (tests[test_index].reset_1 || test_index == 0)
+    if (tests[test_index].reset == RESET_1 || test_index == 0)
     {
         circuit->reset();
         for (int i = 0; i < 4; i++)

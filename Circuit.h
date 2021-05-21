@@ -15,6 +15,8 @@ class Level;
 
 class Circuit;
 class Clipboard;
+class LevelTexture;
+class WrappedTexture;
 
 typedef int Pressure;
 
@@ -343,7 +345,8 @@ public:
     virtual void render_prep(PressureAdjacent adj) {};
     virtual void sim_prep(PressureAdjacent adj, FastSim& fast_sim) = 0;
     virtual XYPos getimage(void) = 0;
-    virtual XYPos getimage_fg(void)  {return XYPos(0,0);}
+    virtual XYPos getimage_fg(void)  {return XYPos(-1,-1);}
+    virtual WrappedTexture* getimage_fg_texture() {return NULL;}
     virtual SDL_Rect getimage_bg(void)  {return SDL_Rect{0, 0, 0, 0};}
     virtual bool is_empty() {return false;};
     virtual Pressure get_moved(PressureAdjacent adj) {return 0;};
@@ -496,6 +499,7 @@ public:
     XYPos getimage(void);
     SDL_Rect getimage_bg(void);
     XYPos getimage_fg(void);
+    WrappedTexture* getimage_fg_texture();
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
     Circuit* get_subcircuit(unsigned *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}

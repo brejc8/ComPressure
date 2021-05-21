@@ -3197,7 +3197,6 @@ text += "        },";
 text += "        {";
 text += "            \"reset\": 1,";
 text += "            \"tested_direction\" : 0,";
-text += "            \"tested_direction\" : 0,";
 text += "            \"points\":";
 text += "            [";
 text += "                {\"N\":100, \"E\":0,\"S\":0,\"W\":0},";

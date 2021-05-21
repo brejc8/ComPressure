@@ -9,6 +9,15 @@
 #define LEVEL_COUNT 40
 #define HISTORY_POINT_COUNT 200
 
+extern SaveObjectList* level_desc;
+
+class WrappedTexture
+{
+public:
+    virtual ~WrappedTexture(){};
+    virtual SDL_Texture* get_texture () = 0;
+};
+
 
 class SimPoint
 {
@@ -39,6 +48,13 @@ enum TestExecType
     MONITOR_STATE_PLAY_ALL
 };
 
+enum TestResetType
+{
+    RESET_NONE,
+    RESET_1,
+    RESET_ALL
+};
+
 class Test
 {
 public:
@@ -47,8 +63,7 @@ public:
     Direction tested_direction = DIRECTION_E;
 
     unsigned first_simpoint = 0;
-    bool reset_1 = false;
-    bool reset_all = false;
+    TestResetType reset = RESET_NONE;
     std::vector<SimPoint> sim_points;
     Pressure best_pressure_log[HISTORY_POINT_COUNT];
     Pressure last_pressure_log[HISTORY_POINT_COUNT];
@@ -66,6 +81,7 @@ public:
     CircuitPressure ports[4];
     SimPoint current_simpoint;
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
+    WrappedTexture* texture = NULL;
 
     unsigned level_index;
     bool hidden = false;
@@ -137,6 +153,8 @@ public:
 
     XYPos getimage(DirFlip dir_flip);
     XYPos getimage_fg(DirFlip dir_flip);
+    WrappedTexture* getimage_fg_texture();
+    void setimage_fg_texture(WrappedTexture* texture_);
 
     void init_tests(SaveObjectMap* omap = NULL);
     void reset();

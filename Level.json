@@ -3197,7 +3197,6 @@
         {
             "reset": 1,
             "tested_direction" : 0,
-            "tested_direction" : 0,
             "points":
             [
                 {"N":100, "E":0,"S":0,"W":0},

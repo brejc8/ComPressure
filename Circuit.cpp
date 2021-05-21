@@ -568,7 +568,7 @@ uint16_t CircuitElementEmpty::get_desc()
 
 XYPos CircuitElementEmpty::getimage(void)
 {
-    return XYPos(0, 0);
+    return XYPos(-1, -1);
 }
 
 CircuitElementSubCircuit::~CircuitElementSubCircuit()
@@ -696,7 +696,7 @@ SDL_Rect CircuitElementSubCircuit::getimage_bg(void)
 XYPos CircuitElementSubCircuit::getimage(void)
 {
     if (!level)
-        return XYPos(0,0);
+        return XYPos(-1,-1);
     assert(level);
     return level->getimage(dir_flip);
 }
@@ -705,6 +705,12 @@ XYPos CircuitElementSubCircuit::getimage_fg(void)
 {
     assert(level);
     return level->getimage_fg(dir_flip);
+}
+
+WrappedTexture* CircuitElementSubCircuit::getimage_fg_texture(void)
+{
+    assert(level);
+    return level->getimage_fg_texture();
 }
 
 void CircuitElementSubCircuit::sim_prep(PressureAdjacent adj_, FastSim& fast_sim)

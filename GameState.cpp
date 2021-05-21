@@ -149,6 +149,7 @@ GameState::GameState(const char* filename)
     music = Mix_LoadMUS("music.ogg");
     Mix_PlayMusic(music, -1);
     
+    set_level_set(edited_level_set);
 }
     
 SaveObject* GameState::save(bool lite)
@@ -383,7 +384,9 @@ GameState::~GameState()
 	SDL_DestroyTexture(sdl_levels_texture);
 	SDL_DestroyRenderer(sdl_renderer);
 	SDL_DestroyWindow(sdl_window);
-    delete edited_level_set;
+    delete level_set_accuracy;
+    delete level_set_price;
+    delete level_set_steam;
     delete clipboard_level_set;
 
     if (last_clip)
@@ -750,12 +753,14 @@ void GameState::render_box(XYPos pos, XYPos size, unsigned colour)
     render_texture(src_rect, dst_rect);     //  Bottom Right
 }
 
-void GameState::render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip)
+void GameState::render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip, SDL_Texture* texture)
 {
     render_box(pos, XYPos(32,32), colour);
     SDL_Rect src_rect = {content.x , content.y , 24, 24};
     SDL_Rect dst_rect = {pos.x + 4 * scale, pos.y + 4 * scale, 24 * scale, 24 * scale};
-    render_texture(src_rect, dst_rect);
+    if (!texture)
+        texture = sdl_texture;
+    render_texture_custom(texture, src_rect, dst_rect);
     if (((mouse - pos)/scale).inside(XYPos(32,32)) && tooltip)
         tooltip_string = tooltip;
 }
@@ -799,7 +804,7 @@ void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
 	SDL_FreeSurface(text_surface);
 }
 
-void GameState::render_text(XYPos tl, const char* string, SDL_Color color)
+void GameState::render_text(XYPos tl, const char* string, SDL_Color color, unsigned scale_mul)
 {
     std::string text = string;
 
@@ -820,8 +825,8 @@ void GameState::render_text(XYPos tl, const char* string, SDL_Color color)
         SDL_Rect dst_rect = src_rect;
         dst_rect.x = tl.x * scale;
         dst_rect.y = tl.y * scale;
-        dst_rect.w = src_rect.w * scale;
-        dst_rect.h = src_rect.h * scale;
+        dst_rect.w = src_rect.w * scale * scale_mul;
+        dst_rect.h = src_rect.h * scale * scale_mul;
 
         render_texture_custom(new_texture, src_rect, dst_rect);
 	    SDL_DestroyTexture(new_texture);
@@ -996,19 +1001,24 @@ void GameState::render(bool saving)
 
 
         XYPos src_pos = current_circuit->elements[pos.y][pos.x]->getimage();
-        if (src_pos != XYPos(0,0))
+        if (src_pos != XYPos(-1,-1))
         {
             SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};
             SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
             render_texture(src_rect, dst_rect);
         }
-
+        
+        
         src_pos = current_circuit->elements[pos.y][pos.x]->getimage_fg();
-        if (src_pos != XYPos(0,0))
+        WrappedTexture* w_tex = current_circuit->elements[pos.y][pos.x]->getimage_fg_texture();
+        if (src_pos != XYPos(-1,-1))
         {
+            SDL_Texture* tex = sdl_texture;
+            if (w_tex)
+                tex = w_tex->get_texture();
             SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
             SDL_Rect dst_rect = {(pos.x * 32 + 4) * scale + grid_offset.x, (pos.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
-            render_texture(src_rect, dst_rect);
+            render_texture_custom(tex, src_rect, dst_rect);
         }
         bool selected = false;
         selected = selected_elements.find(pos) != selected_elements.end();
@@ -1214,11 +1224,13 @@ void GameState::render(bool saving)
             }
 
             pos = edited_level_set->levels[placing_subcircuit_level]->getimage_fg(dir_flip);
-            if (pos != XYPos(0,0))
+            if (pos != XYPos(-1,-1))
             {
+                WrappedTexture* w_tex = edited_level_set->levels[placing_subcircuit_level]->getimage_fg_texture();
+                SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
                 SDL_Rect src_rect = {pos.x, pos.y, 24, 24};
                 SDL_Rect dst_rect = {(mouse_grid.x * 32 + 4) * scale + grid_offset.x, (mouse_grid.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
-                render_texture(src_rect, dst_rect);
+                render_texture_custom(tex, src_rect, dst_rect);
             }
 
         }
@@ -1257,11 +1269,13 @@ void GameState::render(bool saving)
             }
 
             src_pos = element->getimage_fg();
-            if (src_pos != XYPos(0,0))
+            WrappedTexture* w_tex = element->getimage_fg_texture();
+            if (src_pos != XYPos(-1,-1))
             {
+                SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
                 SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
                 SDL_Rect dst_rect = {(pos.x * 32 + 4) * scale + grid_offset.x, (pos.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
-                render_texture(src_rect, dst_rect);
+                render_texture_custom(tex, src_rect, dst_rect);
             }
             {
                 SDL_Rect src_rect =  {256, 176, 32, 32};
@@ -1356,14 +1370,13 @@ void GameState::render(bool saving)
             SDL_Rect dst_rect = {(sign.pos.x - 8) * scale + grid_offset.x, (sign.pos.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
         }
-        render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), sign.text.c_str());
-    }
-    if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN && (frame_index % 60 < 30))
-    {
-        Sign& sign = current_circuit->signs.front();
-        std::string text = sign.text;
-        text.append(std::string((const char*)u8"\u258F"));
-        render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), text.c_str());
+
+        {
+            std::string text = sign.text;
+            if (frame_index % 60 < 30 && (&sign == &current_circuit->signs.front()) && (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN))
+                text.append(std::string((const char*)u8"\u258F"));
+            render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), text.c_str());
+        }
     }
 
     
@@ -1396,7 +1409,11 @@ void GameState::render(bool saving)
 
     {
         int x = 0;
-        render_button(XYPos(x * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), 0, current_level->name.c_str());
+        {
+            WrappedTexture* w_tex = current_level->getimage_fg_texture();
+            SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
+            render_button(XYPos(x * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), 0, current_level->name.c_str(), tex);
+        }
         x += 32;
 
         if (current_circuit_is_inspected_subcircuit)
@@ -1413,7 +1430,9 @@ void GameState::render(bool saving)
                 
                 unsigned color = editable ? 1 : 4;
                 
-                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, level_set->levels[l_index]->name.c_str());
+                WrappedTexture* w_tex = sub->getimage_fg_texture();
+                SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
+                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, level_set->levels[l_index]->name.c_str(), tex);
                 x += 32;
             }
         }
@@ -1514,7 +1533,7 @@ void GameState::render(bool saving)
 
     
     
-    if (panel_state == PANEL_STATE_LEVEL_SELECT)
+    if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
         for (pos.y = 0; pos.y < 4; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
@@ -1539,7 +1558,9 @@ void GameState::render(bool saving)
                 continue;
             }
 
-            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0, level_set->levels[level_index]->name.c_str());
+            WrappedTexture* w_tex = level_set->levels[level_index]->getimage_fg_texture();
+            SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
+            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0, level_set->levels[level_index]->name.c_str(), tex);
             
 
             switch (test_mode)
@@ -1570,6 +1591,16 @@ void GameState::render(bool saving)
             SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
             render_texture_custom(sdl_levels_texture, src_rect, dst_rect);
         }
+    }
+    else if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level)
+    {
+        render_box(panel_offset, XYPos(256, 32), 4);
+
+        std::string text = current_level->name;
+        if ((frame_index % 60 < 30) && (mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME))
+            text.append(std::string((const char*)u8"\u258F"));
+        render_text(panel_offset / scale + XYPos(4,4), text.c_str(), SDL_Color{0xff,0xff,0xff}, 2);
+        
 
     } else if (panel_state == PANEL_STATE_EDITOR)
     {
@@ -1604,7 +1635,11 @@ void GameState::render(bool saving)
                 break;
             
             if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
-                render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(dir_flip), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name.c_str());
+            {
+                WrappedTexture* w_tex = edited_level_set->levels[level_index]->getimage_fg_texture();
+                SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
+                render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(dir_flip), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name.c_str(), tex);
+            }
             level_index++;
         }
 
@@ -1780,6 +1815,15 @@ void GameState::render(bool saving)
             render_number_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), pressure_as_percent(current_level->tests[i].last_score));
             render_number_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), pressure_as_percent(current_level->tests[i].best_score));
         }
+
+        if (editing_level)
+        {
+            SDL_Rect src_rect = {464, 160, 8, 16};
+            SDL_Rect dst_rect = {panel_offset.x + (16 + int(test_count) * 16) * scale, panel_offset.y + (32 + 8) * scale, 16 * scale, 32 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        else
+        {
             switch (test_mode)
             {
                 case TEST_MODE_ACCURACY:
@@ -1806,6 +1850,7 @@ void GameState::render(bool saving)
                     }
                     break;
             }
+        }
 
         int sim_point_count = current_level->tests[test_index].sim_points.size();
         int sim_point_index = current_level->sim_point_index;
@@ -1837,7 +1882,6 @@ void GameState::render(bool saving)
             int pin_index = current_level->pin_order[i];
             if ((pin_index >= 0) && (pin_index != current_level->tests[test_index].tested_direction))
             {
-            
                 SDL_Rect src_rect = {256 + pin_index * 16, 144, 16, 16};
                 SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
                 render_texture(src_rect, dst_rect);
@@ -1847,6 +1891,18 @@ void GameState::render(bool saving)
                     render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (i2 - sim_point_offset) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == i2 ? 4 : 0);
                 }
                 y_pos += 16 * scale;
+            }
+        }
+        if (editing_level)
+        {
+            for (int i2 = sim_point_offset; (i2 < sim_point_count) && (i2 < (sim_point_offset + 12)); i2++)
+            {
+                if (current_level->tests[test_index].first_simpoint == i2)
+                {
+                    SDL_Rect src_rect = {352, 208, 16, 16};
+                    SDL_Rect dst_rect = {panel_offset.x + (8 + 16 + (i2 - sim_point_offset) * 16) * scale, y_pos, 16 * scale, 16 * scale};
+                    render_texture(src_rect, dst_rect);
+                }
             }
         }
 
@@ -1866,14 +1922,51 @@ void GameState::render(bool saving)
             {
                 unsigned value = current_level->tests[test_index].sim_points[sim_point_count-1].values[pin_index];
                 render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == sim_point_count - 1 ? 4 : 0);
-                render_number_pressure(XYPos(panel_offset.x + (8 + 16 + 3 + 16 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), current_level->tests[test_index].last_pressure_log[HISTORY_POINT_COUNT - 1] , 1, 9, 1);
+                if (editing_level)
+                {
+                    SDL_Rect src_rect = {464, 160, 8, 16};
+                    SDL_Rect dst_rect = {panel_offset.x + (8 + 16 + 16 + (sim_point_count - sim_point_offset - 1) * 16) * scale, panel_offset.y + (32 + 32 + 32) * scale, 16 * scale, 32 * scale};
+                    render_texture(src_rect, dst_rect);
+                }
+                else
+                {
+                    render_number_pressure(XYPos(panel_offset.x + (8 + 16 + 3 + 16 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), current_level->tests[test_index].last_pressure_log[HISTORY_POINT_COUNT - 1] , 1, 9, 1);
+                }
             }
             y_pos += 16 * scale;
         }
 
+        if (editing_level)
         {
-            SDL_Rect src_rect = {320, 144, 16, 8};
-            SDL_Rect dst_rect = {panel_offset.x + int(8 + 16 + (sim_point_index  - sim_point_offset) * 16) * scale, panel_offset.y + (32 + 32 + 16) * scale, 16 * scale, 8 * scale};
+            SDL_Rect src_rect = {368 + current_level->tests[test_index].reset * 16, 208, 16, 16};
+            SDL_Rect dst_rect = {panel_offset.x + 156 * scale, panel_offset.y + (32 + 32 + 16) * scale, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+
+
+            src_rect.x = 352;
+            dst_rect.x = panel_offset.x + 132 * scale;
+            render_texture(src_rect, dst_rect);
+
+        }
+        if (editing_level)
+        {
+            for (int i = 0; i < 4; i++)                 // Editing selecting inputs 
+            {
+                SDL_Rect src_rect = {256 + i * 16, 144, 16, 16};
+                SDL_Rect dst_rect = {panel_offset.x + (i * 16 + 180) * scale, panel_offset.y + (32 + 32 + 16) * scale, 16 * scale, 16 * scale};
+                render_texture(src_rect, dst_rect);
+                if ((current_level->connection_mask >> i) & 1)
+                {
+                    src_rect = {472, 160, 16, 16};
+                    render_texture(src_rect, dst_rect);
+                }
+            }
+        }
+
+
+        {
+            SDL_Rect src_rect = {320, 144, 16, 8};      // Highlight box
+            SDL_Rect dst_rect = {panel_offset.x + int(8 + 16 + (sim_point_index  - sim_point_offset) * 16) * scale, panel_offset.y + (32 + 32 + 32) * scale, 16 * scale, 8 * scale};
             render_texture(src_rect, dst_rect);
             src_rect.y += 8;
             src_rect.h = 1;
@@ -2159,11 +2252,13 @@ void GameState::render(bool saving)
             }
 
             src_pos = sub_circuit->elements[pos.y][pos.x]->getimage_fg();
-            if (src_pos != XYPos(0,0))
+            if (src_pos != XYPos(-1,-1))
             {
+                WrappedTexture* w_tex = sub_circuit->elements[pos.y][pos.x]->getimage_fg_texture();
+                SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
                 SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
                 SDL_Rect dst_rect = {((32 - push_in_animation) * push_in_animation_grid.x + pos.x * push_in_animation + push_in_animation / 8) * scale + grid_offset.x, ((32 - push_in_animation) * push_in_animation_grid.y + pos.y * push_in_animation + push_in_animation / 8) * scale + grid_offset.y, push_in_animation * scale * 3 / 4, push_in_animation * scale * 3 / 4};
-                render_texture(src_rect, dst_rect);
+                render_texture_custom(tex, src_rect, dst_rect);
             }
         }
 
@@ -2479,7 +2574,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                     free_level_set_on_return = false;
                 }
                 deletable_level_set = NULL;
-                level_set = edited_level_set;
+                set_level_set(edited_level_set);
                 set_level(current_level_index);
                 return;
             }
@@ -2491,6 +2586,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
             else if (i == 10 && (current_level_index >= LEVEL_COUNT))
             {
                 editing_level = true;
+                current_level->current_simpoint = current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index];
                 return;
             }
             else if (i == 9 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit)
@@ -2504,7 +2600,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                     free_level_set_on_return = false;
                 }
                 deletable_level_set = NULL;
-                level_set = edited_level_set;
+                set_level_set(edited_level_set);
                 set_level(current_level_index);
                 return;
             }
@@ -2844,7 +2940,7 @@ void GameState::mouse_click_in_panel()
     if (panel_pos.y < 0 || panel_pos.x < 0)
         return;
 
-    if (panel_state == PANEL_STATE_LEVEL_SELECT)
+    if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
         XYPos panel_grid_pos = panel_pos / 32;
         unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8 + level_screen * 30;
@@ -2885,6 +2981,13 @@ void GameState::mouse_click_in_panel()
             set_level(edited_level_set->new_user_level());
         }
         return;
+    } else if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level)
+    {
+        if (panel_pos.y < 32)
+        {
+            mouse_state = MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME;
+            SDL_StartTextInput();
+        }
     } else if (panel_state == PANEL_STATE_EDITOR && !current_circuit_is_read_only)
     {
         XYPos panel_grid_pos = panel_pos / 32;
@@ -3022,7 +3125,7 @@ void GameState::mouse_click_in_panel()
             }
             else if ((next_dialogue_level > 8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
             {
-                level_set = clipboard_level_set;
+                set_level_set(clipboard_level_set);
                 deletable_level_set = NULL;
                 free_level_set_on_return = true;
                 clipboard_level_set = NULL;
@@ -3047,7 +3150,7 @@ void GameState::mouse_click_in_panel()
                         if (current_level->saved_designs[index])
                         {
                             deletable_level_set = &current_level->saved_designs[index];
-                            level_set = current_level->saved_designs[index];
+                            set_level_set(current_level->saved_designs[index]);
                             set_current_circuit_read_only();
                             current_level_set_is_inspected = true;
                             set_level(current_level_index);
@@ -3086,23 +3189,133 @@ void GameState::mouse_click_in_panel()
                 level_set->touch(current_level_index);
             }
         }
+        if (editing_level && (panel_grid_pos == XYPos(current_level->tests.size() + 1, 2)))
+        {
+            current_level->tests.push_back(current_level->tests.back());
+        }
+        if (editing_level && (panel_grid_pos == XYPos(current_level->tests.size() + 1, 3)))
+        {
+            if (current_level->tests.size() > 1)
+            {
+                current_level->tests.pop_back();
+                if (current_level->test_index >= current_level->tests.size())
+                    current_level->test_index = 0;
+            }
+        }
         if (panel_grid_pos == XYPos(0, 3) && current_level->best_design)
         {
             deletable_level_set = &current_level->best_design;
-            level_set = current_level->best_design;
+            set_level_set(current_level->best_design);
             set_current_circuit_read_only();
             current_level_set_is_inspected = true;
             set_level(current_level_index);
         }
         XYPos subtest_pos = panel_pos - XYPos(8 + 16, 32 + 32 + 16);
-        if (subtest_pos.inside(XYPos(current_level->tests[current_level->test_index].sim_points.size() * 16, popcount(current_level->connection_mask) * 16 + 32)))
+        if (editing_level && (subtest_pos.y >= 0) && (subtest_pos.y < 16))
+        {
+            if (panel_pos.x >= 132 && panel_pos.x < 148)
+            {
+                current_level->tests[current_level->test_index].first_simpoint = current_level->sim_point_index;
+            }
+            if (panel_pos.x >= 156 && panel_pos.x < 172)
+            {
+                current_level->tests[current_level->test_index].reset = TestResetType((current_level->tests[current_level->test_index].reset + 1) % 3);
+            }
+            for (int i = 0 ; i < 4; i++)
+            {
+                int x = panel_pos.x - (i * 16 + 180);
+                if (x >= 0 && x < 16)
+                {
+                    bool s = (current_level->connection_mask >> i) & 1;
+                    if (s)
+                    {
+                        if (popcount(current_level->connection_mask) <= 1)
+                            break;
+                        
+                        int p = 0;
+                        while (current_level->pin_order[p] != i)
+                            p++;
+                        while (p < 3)
+                        {
+                            current_level->pin_order[p] = current_level->pin_order[p+1];
+                            p++;
+                        }
+                        current_level->pin_order[3] = -1;
+                        current_level->connection_mask &= ~(1 << i);
+                        for (Test& test: current_level->tests)
+                        {
+                            if (test.tested_direction == i)
+                                test.tested_direction = Direction(current_level->pin_order[0]);
+                        }
+
+                    }
+                    else
+                    {
+                        int p = 0;
+                        while (current_level->pin_order[p] >= 0)
+                            p++;
+                        current_level->pin_order[p] = i;
+                        current_level->connection_mask |= 1 << i;
+                    }
+                    set_level_set(level_set);
+                }
+            }
+        }
+
+        if (editing_level && subtest_pos.x < 0)
+        {
+            int offset = 0;
+            for (int i = 0 ; i < 4; i++)
+            {
+                int pin_index = current_level->pin_order[i];
+                if (pin_index < 0)
+                    break;
+
+                if (pin_index == current_level->tests[current_level->test_index].tested_direction)
+                    continue;
+                offset += 16;
+                
+                if ((subtest_pos.y >= offset) && (subtest_pos.y < (offset + 16)))
+                {
+                    current_level->tests[current_level->test_index].tested_direction = Direction(pin_index);
+                    break;
+                }
+            }
+        }
+        else if (subtest_pos.y >= 16 && subtest_pos.y < (popcount(current_level->connection_mask) * 16 + 32))
         {
             int sim_point_count = current_level->tests[current_level->test_index].sim_points.size();
             int sim_point_index = current_level->sim_point_index;
             int sim_point_offset = std::max(std::min(sim_point_count - 12, sim_point_index - 6), 0);
+            
             skip_to_subtest_index = subtest_pos.x / 16 + sim_point_offset;
-            skip_to_next_subtest = true;
-            current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
+            if (skip_to_subtest_index < current_level->tests[current_level->test_index].sim_points.size())
+            {
+                skip_to_next_subtest = true;
+                current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
+            }
+            else if (editing_level && (skip_to_subtest_index == current_level->tests[current_level->test_index].sim_points.size()))
+            {
+                if (subtest_pos.y >= 16 && subtest_pos.y < 32)
+                {
+                    current_level->tests[current_level->test_index].sim_points.push_back(current_level->tests[current_level->test_index].sim_points.back());
+                }
+                else if (subtest_pos.y >= 32 && subtest_pos.y < 48)
+                {
+                    if (current_level->tests[current_level->test_index].sim_points.size() > 1)
+                    {
+                        current_level->tests[current_level->test_index].sim_points.pop_back();
+                        if (current_level->sim_point_index >= current_level->tests[current_level->test_index].sim_points.size())
+                            current_level->sim_point_index = current_level->tests[current_level->test_index].sim_points.size() - 1;
+                        if (current_level->tests[current_level->test_index].first_simpoint >= current_level->tests[current_level->test_index].sim_points.size())
+                            current_level->tests[current_level->test_index].first_simpoint = current_level->tests[current_level->test_index].sim_points.size() - 1;
+                    }
+                
+                }
+
+            
+            }
+            
         }
         
     } else if (panel_state == PANEL_STATE_TEST)
@@ -3158,7 +3371,7 @@ void GameState::mouse_click_in_panel()
                 }
                 if (!current_level_set_is_inspected)
                 {
-                    level_set = edited_level_set;
+                    set_level_set(edited_level_set);
                     set_level(current_level_index);
                 }
             }
@@ -3252,6 +3465,7 @@ void GameState::mouse_motion()
         level_set->touch(current_level_index);
 
     }
+
     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
     {
         XYPos menu_icons_pos = (mouse / scale - XYPos((16 + 32 * 11), (16)));
@@ -3283,6 +3497,11 @@ void GameState::mouse_motion()
         if (slider_value_max)
             vol = (vol * slider_value_max) / slider_max;
         *slider_value_tgt = vol;
+    }
+
+    if (editing_level)
+    {
+        current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index] = current_level->current_simpoint;
     }
 }
 
@@ -3501,6 +3720,16 @@ bool GameState::events()
                                     sign.text.pop_back();
                                 break;
                             }
+                            if (mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                            {
+                                while (!current_level->name.empty() && is_leading_utf8_byte(current_level->name.back()))
+                                {
+                                    current_level->name.pop_back();
+                                }
+                                if (!current_level->name.empty())
+                                    current_level->name.pop_back();
+                                break;
+                            }
                         }
                         break;
                     case SDL_SCANCODE_RETURN:
@@ -3615,6 +3844,12 @@ bool GameState::events()
                     sign.text.append(e.text.text);
                     break;
                 }
+                if (mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                {
+                    current_level->name.append(e.text.text);
+                    std::cout << current_level->name << "\n";
+                    break;
+                }
             }
             case SDL_MOUSEMOTION:
             {
@@ -3698,7 +3933,7 @@ bool GameState::events()
             }
             case SDL_MOUSEBUTTONDOWN:
             {
-                if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+                if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
                 {
                     mouse_state = MOUSE_STATE_NONE;
                     break;
@@ -3784,7 +4019,7 @@ bool GameState::events()
                                     delete level_set;
                                     free_level_set_on_return = false;
                                 }
-                                level_set = edited_level_set;
+                                set_level_set(edited_level_set);
                                 set_level(current_level_index);
                             }
                             else
@@ -3899,7 +4134,7 @@ bool GameState::events()
             }
         }
     }
-    if (SDL_IsTextInputActive() && mouse_state != MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+    if (SDL_IsTextInputActive() && mouse_state != MOUSE_STATE_ENTERING_TEXT_INTO_SIGN && mouse_state != MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
         SDL_StopTextInput();
 
     return false;
@@ -4020,7 +4255,7 @@ void GameState::deal_with_design_fetch()
             if (free_level_set_on_return)
                 delete level_set;
             deletable_level_set = NULL;
-            level_set = new LevelSet(omap->get_item("levels"), true);
+            set_level_set(new LevelSet(omap->get_item("levels"), true));
             free_level_set_on_return = true;
 
             set_current_circuit_read_only();
@@ -4036,3 +4271,57 @@ void GameState::deal_with_design_fetch()
         design_from_server.done = false;
     }
 }
+
+void GameState::set_level_set(LevelSet* new_level_set)
+{
+    level_set = new_level_set;
+    for (int i = LEVEL_COUNT; i < level_set->levels.size(); i++)
+    {
+        SDL_Texture* my_canvas = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 192, 24);
+        SDL_SetRenderTarget(sdl_renderer, my_canvas);
+
+        SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_NONE);
+        SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0x00, 0x00);
+        SDL_RenderClear(sdl_renderer);
+        SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_BLEND);
+        
+        {
+            SDL_Rect src_rect = {192, 800 + 4 * 24, 192, 24};
+            SDL_Rect dst_rect = {0, 0, 192, 24};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+        for (int a = 0; a < 4; a++)
+        {
+            if ((level_set->levels[i]->connection_mask >> a) & 1)
+            {
+                SDL_Rect src_rect = {192, 800 + a * 24, 192, 24};
+                SDL_Rect dst_rect = {0, 0, 192, 24};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+        }
+        {
+            SDL_Rect src_rect = {192, 800 + 5 * 24, 192, 24};
+            SDL_Rect dst_rect = {0, 0, 192, 24};
+            SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+        }
+
+
+        SDL_SetRenderTarget(sdl_renderer, NULL);
+        level_set->levels[i]->setimage_fg_texture(new GameStateWrappedTexture(my_canvas));
+    }
+}
+
+GameStateWrappedTexture::~GameStateWrappedTexture()
+{
+    SDL_DestroyTexture(sdl_texture);
+}
+
+SDL_Texture* GameStateWrappedTexture::get_texture ()
+{
+    return sdl_texture;
+}
+
+
+
+
+

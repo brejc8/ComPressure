@@ -127,7 +127,8 @@ void mainloop()
 
 #endif
     int frame = 0;
-    
+    int save_index = 0;
+
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
@@ -142,9 +143,17 @@ void mainloop()
         frame++;
         if (frame > 100 * 60)
         {
+            std::string my_save_filename = save_filename + std::to_string(save_index);
+            save_index = (save_index + 1) % 10;
             game_state->render(true);
-            game_state->save(save_filename.c_str());
+            SaveObject* omap = game_state->save();
+
+            std::ofstream outfile1 (save_filename.c_str());
+            omap->save(outfile1);
+            std::ofstream outfile2 (my_save_filename.c_str());
+            omap->save(outfile2);
             game_state->save_to_server();
+            delete omap;
             frame = 0;
         }
         else
@@ -185,6 +194,7 @@ int main( int argc, char* argv[] )
     SDLNet_Quit();
 	IMG_Quit();
 	SDL_Quit();
+    delete level_desc;
 
 
 #ifdef STEAM
