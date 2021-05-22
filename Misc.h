@@ -320,6 +320,11 @@ public:
         return (x == other.x) && (y == other.y);
     }
 
+    bool operator!=(const XYPos& other) const
+    {
+        return (x != other.x) || (y != other.y);
+    }
+
     XYPosFloat operator-(const XYPosFloat& other) const
     {
         return XYPosFloat(x - other.x, y - other.y);

@@ -1003,7 +1003,6 @@ void GameState::render(bool saving)
         XYPos src_pos = current_circuit->elements[pos.y][pos.x]->getimage();
         if (src_pos != XYPos(-1,-1))
         {
-            printf ("%d %d\n", src_pos.x, src_pos.y);
             SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};
             SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
             render_texture(src_rect, dst_rect);
