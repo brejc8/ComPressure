@@ -978,8 +978,17 @@ void GameState::render(bool saving)
 
         SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
         render_texture(src_rect, dst_rect);
-
-        if (current_circuit->is_blocked(pos))
+        
+        bool blocked = current_circuit->is_blocked(pos);
+        
+        if (mouse_state == MOUSE_STATE_LOCKING_BLOCKS)
+        {
+            XYPos mouse_grid = ((mouse - grid_offset)/ scale) / 32;
+            if (mouse_grid == pos)
+                blocked = !blocked;
+        }
+        
+        if (blocked)
         {
             src_rect = {384, 80, 32, 32};
             render_texture(src_rect, dst_rect);
@@ -1642,7 +1651,9 @@ void GameState::render(bool saving)
         render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 184), 0, "Reflect\nvertically");
         render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(400+24, 184), 0, "Reflect\nhorizontally");
 
-        
+        if (editing_level)
+            render_button(XYPos(panel_offset.x + 6 * 32 * scale, panel_offset.y), XYPos(400+24, 160), mouse_state == MOUSE_STATE_LOCKING_BLOCKS, "Lock blocks");
+
         if (next_dialogue_level > 8)
             render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
 
@@ -2900,6 +2911,15 @@ void GameState::mouse_click_in_grid(unsigned clicks)
         selected_elements.clear();
         first_deletion = true;
     }
+    else if (mouse_state == MOUSE_STATE_LOCKING_BLOCKS)
+    {
+        XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
+        if (mouse_grid.inside(XYPos(9,9)))
+        {
+            current_circuit->blocked[mouse_grid.y][mouse_grid.x] = !current_circuit->blocked[mouse_grid.y][mouse_grid.x];
+            level_set->touch(current_level_index);
+        }
+    }
     else
     {
         assert(0);
@@ -3091,6 +3111,8 @@ void GameState::mouse_click_in_panel()
                     level_set->touch(current_level_index);
                 }
             }
+            else if (panel_grid_pos.x == 6 && editing_level)
+                mouse_state = MOUSE_STATE_LOCKING_BLOCKS;
             else if (panel_grid_pos.x == 7)
                 mouse_state = MOUSE_STATE_PLACING_SIGN;
             return;
@@ -3889,7 +3911,6 @@ bool GameState::events()
                 if (mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
                 {
                     current_level->name.append(e.text.text);
-                    std::cout << current_level->name << "\n";
                     break;
                 }
             }
