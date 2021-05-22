@@ -140,26 +140,20 @@ void mainloop()
         steam_manager.update_achievements(game_state);
         SteamAPI_RunCallbacks();
 #endif
-        frame++;
-        if (frame > 100 * 60)
+        if (frame > 100 * 2)
         {
             std::string my_save_filename = save_filename + std::to_string(save_index);
             save_index = (save_index + 1) % 10;
             game_state->render(true);
-            SaveObject* omap = game_state->save();
-
-            std::ofstream outfile1 (save_filename.c_str());
-            omap->save(outfile1);
-            std::ofstream outfile2 (my_save_filename.c_str());
-            omap->save(outfile2);
+            game_state->save(save_filename.c_str());
             game_state->save_to_server();
-            delete omap;
             frame = 0;
         }
         else
         {
             game_state->render();
         }
+            frame++;
         
         unsigned newtime = SDL_GetTicks();
         if ((newtime - oldtime) < 10)
