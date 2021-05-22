@@ -1001,8 +1001,9 @@ void GameState::render(bool saving)
 
 
         XYPos src_pos = current_circuit->elements[pos.y][pos.x]->getimage();
-        if (src_pos != XYPos(-1,-1))
+//        if (src_pos != XYPos(-1,-1))
         {
+            printf ("%d %d\n", src_pos.x, src_pos.y);
             SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};
             SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
             render_texture(src_rect, dst_rect);
@@ -1010,12 +1011,10 @@ void GameState::render(bool saving)
         
         
         src_pos = current_circuit->elements[pos.y][pos.x]->getimage_fg();
-        WrappedTexture* w_tex = current_circuit->elements[pos.y][pos.x]->getimage_fg_texture();
         if (src_pos != XYPos(-1,-1))
         {
-            SDL_Texture* tex = sdl_texture;
-            if (w_tex)
-                tex = w_tex->get_texture();
+            WrappedTexture* w_tex = current_circuit->elements[pos.y][pos.x]->getimage_fg_texture();
+            SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
             SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
             SDL_Rect dst_rect = {(pos.x * 32 + 4) * scale + grid_offset.x, (pos.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
             render_texture_custom(tex, src_rect, dst_rect);
@@ -1216,7 +1215,7 @@ void GameState::render(bool saving)
                 SDL_Rect dst_rect = {(mouse_grid.x * 32 + 4) * scale + grid_offset.x, (mouse_grid.y * 32 + 4) * scale + grid_offset.y, 24 * scale, 24 * scale};
                 render_texture(src_rect, dst_rect);
             }
-            if (pos != XYPos(0,0))
+            if (pos != XYPos(-1,-1))
             {
                 SDL_Rect src_rect = {pos.x, pos.y, 32, 32};
                 SDL_Rect dst_rect = {mouse_grid.x * 32 * scale + grid_offset.x, mouse_grid.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
@@ -1261,7 +1260,7 @@ void GameState::render(bool saving)
 
 
             XYPos src_pos = element->getimage();
-            if (src_pos != XYPos(0,0))
+            if (src_pos != XYPos(-1,-1))
             {
                 SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};
                 SDL_Rect dst_rect = {pos.x * 32 * scale + grid_offset.x, pos.y * 32 * scale + grid_offset.y, 32 * scale, 32 * scale};
@@ -1602,7 +1601,8 @@ void GameState::render(bool saving)
         render_text(panel_offset / scale + XYPos(4,4), text.c_str(), SDL_Color{0xff,0xff,0xff}, 2);
         
 
-    } else if (panel_state == PANEL_STATE_EDITOR)
+    }
+    else if (panel_state == PANEL_STATE_EDITOR)
     {
         pos = XYPos(0,0);
         bool flasher = (frame_index % 50) < 25;
@@ -1656,7 +1656,8 @@ void GameState::render(bool saving)
             }
         }
 
-    } else if (panel_state == PANEL_STATE_TEST)
+    }
+    else if (panel_state == PANEL_STATE_TEST)
     {
         for (int port_index = 0; port_index < 4; port_index++)
         {
@@ -1756,7 +1757,8 @@ void GameState::render(bool saving)
             }
             
         }
-    } else if (panel_state == PANEL_STATE_MONITOR)
+    }
+    else if (panel_state == PANEL_STATE_MONITOR)
     {
         unsigned test_index = current_level->test_index;
         unsigned test_count = current_level->tests.size();
@@ -2245,7 +2247,7 @@ void GameState::render(bool saving)
             }
 
             XYPos src_pos = sub_circuit->elements[pos.y][pos.x]->getimage();
-            if (src_pos != XYPos(0,0))
+            if (src_pos != XYPos(-1,-1))
             {
                 SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};
                 render_texture(src_rect, dst_rect);
@@ -4320,8 +4322,3 @@ SDL_Texture* GameStateWrappedTexture::get_texture ()
 {
     return sdl_texture;
 }
-
-
-
-
-

@@ -167,7 +167,6 @@ Level::Level(unsigned level_index_, SaveObject* sobj):
                 if (!sobj->is_null())
                     saved_designs[i] = new LevelSet(sobj, true);
             }
-                
         }
     }
 
@@ -456,7 +455,6 @@ void Level::advance(unsigned ticks)
         if ((test_pressure_histroy_sample_counter % 10000) == 0)
         {
             test_pressure_histroy[test_pressure_histroy_index].marker = 1;
-        
         }
         
         if ((test_pressure_histroy_sample_counter % test_pressure_histroy_sample_interval) == 0)

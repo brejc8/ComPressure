@@ -55,15 +55,15 @@ static unsigned con_to_bitmap(Connections con)
 {
     switch (con)
     {
-        case CONNECTIONS_NONE:  return 0;
-        case CONNECTIONS_NW:    return 9;
-        case CONNECTIONS_NE:    return 3;
-        case CONNECTIONS_NS:    return 5;
+        case CONNECTIONS_NONE:  return  0;
+        case CONNECTIONS_NW:    return  9;
+        case CONNECTIONS_NE:    return  3;
+        case CONNECTIONS_NS:    return  5;
         case CONNECTIONS_EW:    return 10;
-        case CONNECTIONS_ES:    return 6;
+        case CONNECTIONS_ES:    return  6;
         case CONNECTIONS_WS:    return 12;
         case CONNECTIONS_NWE:   return 11;
-        case CONNECTIONS_NES:   return 7;
+        case CONNECTIONS_NES:   return  7;
         case CONNECTIONS_NWS:   return 13;
         case CONNECTIONS_EWS:   return 14;
         case CONNECTIONS_NS_WE: return 15;
@@ -511,7 +511,7 @@ void CircuitElementValve::sim(PressureAdjacent adj)
     if (mul < 0)
         mul = 0;
 
-                                                            // base resistence is 10 pipes
+                                                            // base resistence is 8 pipes
     Pressure mov = (int64_t(adj.W.value - adj.E.value) * mul) / (int64_t(100) * 2 * resistence * PRESSURE_SCALAR);
     adj.W.move(-mov);
     adj.E.move(mov);
@@ -1351,6 +1351,7 @@ void Circuit::flip_selected_elements(std::set<XYPos> &selected_elements, bool ve
         XYPos pos = XYPos(vertically ? old.x : max.x - old.x + min.x, vertically ? max.y - old.y + min.y : old.y);
         new_sel.insert(pos);
     }
+    
     selected_elements.clear();
     selected_elements = new_sel;
 }

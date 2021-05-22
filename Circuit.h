@@ -333,23 +333,23 @@ public:
     virtual void save(SaveObjectMap*) = 0;
     static CircuitElement* load(SaveObject*, bool read_only = false);
     virtual CircuitElement* copy() = 0;
-    virtual ~CircuitElement(){};
+    virtual ~CircuitElement(){}
 
 
     virtual uint16_t get_desc() = 0;
-    virtual void elaborate(LevelSet* level_set) {};
-    virtual void reset() {};
-    virtual void retire() {};
+    virtual void elaborate(LevelSet* level_set) {}
+    virtual void reset() {}
+    virtual void retire() {}
     virtual bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set) {return false;}
     virtual unsigned getconnections(void) = 0;
-    virtual void render_prep(PressureAdjacent adj) {};
+    virtual void render_prep(PressureAdjacent adj) {}
     virtual void sim_prep(PressureAdjacent adj, FastSim& fast_sim) = 0;
     virtual XYPos getimage(void) = 0;
-    virtual XYPos getimage_fg(void)  {return XYPos(-1,-1);}
+    virtual XYPos getimage_fg(void) {return XYPos(-1,-1);}
     virtual WrappedTexture* getimage_fg_texture() {return NULL;}
-    virtual SDL_Rect getimage_bg(void)  {return SDL_Rect{0, 0, 0, 0};}
-    virtual bool is_empty() {return false;};
-    virtual Pressure get_moved(PressureAdjacent adj) {return 0;};
+    virtual SDL_Rect getimage_bg(void) {return SDL_Rect{0, 0, 0, 0};}
+    virtual bool is_empty() {return false;}
+    virtual Pressure get_moved(PressureAdjacent adj) {return 0;}
 
     virtual CircuitElementType get_type() = 0;
     virtual void extend_pipe(Connections con){assert(0);}
