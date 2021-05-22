@@ -98,10 +98,28 @@ void SteamGameManager::update_achievements(GameState* game_state)
 
 #endif
 
+static std::string save_filename;
+
+static int save_thread_func(void *ptr)
+{
+    static int save_index = 0;
+    SaveObject* omap = (SaveObject*)ptr;
+
+    std::string my_save_filename = save_filename + std::to_string(save_index);
+
+    std::ofstream outfile1 (save_filename.c_str());
+    omap->save(outfile1);
+    std::ofstream outfile2 (my_save_filename.c_str());
+    omap->save(outfile2);
+    delete omap;
+    save_index = (save_index + 1) % 10;
+    return 0;
+}
+
 void mainloop()
 {
     char* save_path = SDL_GetPrefPath("CharlieBrej", "ComPressure");
-    std::string save_filename = std::string(save_path) + "compressure.save";
+    save_filename = std::string(save_path) + "compressure.save";
     SDL_free(save_path);
     const char* load_filename = save_filename.c_str();
 
@@ -128,7 +146,8 @@ void mainloop()
 #endif
     int frame = 0;
     int save_index = 0;
-
+    SDL_Thread *save_thread = NULL;
+    
 	while(true)
 	{
         unsigned oldtime = SDL_GetTicks();
@@ -140,25 +159,28 @@ void mainloop()
         steam_manager.update_achievements(game_state);
         SteamAPI_RunCallbacks();
 #endif
-        if (frame > 100 * 2)
+        frame++;
+        if (frame > 100 * 60)
         {
             std::string my_save_filename = save_filename + std::to_string(save_index);
             save_index = (save_index + 1) % 10;
             game_state->render(true);
-            game_state->save(save_filename.c_str());
+            SaveObject* omap = game_state->save();
+            SDL_WaitThread(save_thread, NULL);
             game_state->save_to_server();
+            SDL_Thread *thread = SDL_CreateThread(save_thread_func, "save_thread", (void *)omap);
             frame = 0;
         }
         else
         {
             game_state->render();
         }
-            frame++;
         
         unsigned newtime = SDL_GetTicks();
         if ((newtime - oldtime) < 10)
             SDL_Delay(10 - (newtime - oldtime));
 	}
+    SDL_WaitThread(save_thread, NULL);
     game_state->save(save_filename.c_str());
     game_state->save_to_server(true);
     delete game_state;
