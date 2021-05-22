@@ -1001,7 +1001,7 @@ void GameState::render(bool saving)
 
 
         XYPos src_pos = current_circuit->elements[pos.y][pos.x]->getimage();
-//        if (src_pos != XYPos(-1,-1))
+        if (src_pos != XYPos(-1,-1))
         {
             printf ("%d %d\n", src_pos.x, src_pos.y);
             SDL_Rect src_rect = {src_pos.x, src_pos.y, 32, 32};

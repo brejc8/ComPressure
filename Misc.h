@@ -156,6 +156,11 @@ public:
         return (x == other.x) && (y == other.y);
     }
 
+    bool operator!=(const XYPos& other) const
+    {
+        return (x != other.x) || (y != other.y);
+    }
+
     XYPos operator-(const XYPos& other) const
     {
         return XYPos(x - other.x, y - other.y);
