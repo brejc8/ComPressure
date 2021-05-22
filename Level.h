@@ -77,6 +77,9 @@ public:
 class Level
 {
 public:
+
+    uint8_t icon_pixels[8][8] = {0};
+
     std::string name = "";
     CircuitPressure ports[4];
     SimPoint current_simpoint;

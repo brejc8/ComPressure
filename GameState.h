@@ -106,6 +106,7 @@ public:
     bool current_circuit_is_read_only = false;
 
     bool editing_level = false;
+    int pixel_colour = 0;
 
 
 

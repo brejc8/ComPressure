@@ -379,11 +379,6 @@ GameState::~GameState()
 
     TTF_CloseFont(font);
 
-	SDL_DestroyTexture(sdl_texture);
-	SDL_DestroyTexture(sdl_tutorial_texture);
-	SDL_DestroyTexture(sdl_levels_texture);
-	SDL_DestroyRenderer(sdl_renderer);
-	SDL_DestroyWindow(sdl_window);
     delete level_set_accuracy;
     delete level_set_price;
     delete level_set_steam;
@@ -391,6 +386,13 @@ GameState::~GameState()
 
     if (last_clip)
         SDL_free(last_clip);
+
+	SDL_DestroyTexture(sdl_texture);
+	SDL_DestroyTexture(sdl_tutorial_texture);
+	SDL_DestroyTexture(sdl_levels_texture);
+	SDL_DestroyRenderer(sdl_renderer);
+	SDL_DestroyWindow(sdl_window);
+
 }
 
 extern const char embedded_data_binary_texture_png_start;
@@ -1599,6 +1601,26 @@ void GameState::render(bool saving)
             text.append(std::string((const char*)u8"\u258F"));
         render_text(panel_offset / scale + XYPos(4,4), text.c_str(), SDL_Color{0xff,0xff,0xff}, 2);
         
+        render_box(XYPos((0) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(8*16+16, 8*16+16), 0);
+        render_box(XYPos((8*16+16) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(32, 8*16+16), 0);
+        {
+            SDL_Rect src_rect = {503, 80, 1, 8};
+            SDL_Rect dst_rect = {(8*16+16+8) * scale + panel_offset.x, (32 + 8)* scale + panel_offset.y, 16 * scale, 16 * 8 * scale};
+            render_texture(src_rect, dst_rect);
+            src_rect = {320, 144, 16, 16};
+            dst_rect = {(8*16+16+8) * scale + panel_offset.x, (32 + 8 + pixel_colour * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        
+        for (pos.y = 0; pos.y < 8; pos.y++)
+        for (pos.x = 0; pos.x < 8; pos.x++)
+        {
+            int colour = level_set->levels[current_level_index]->icon_pixels[pos.y][pos.x];
+            SDL_Rect src_rect = {503, 80 + colour, 1, 1};
+            SDL_Rect dst_rect = {(pos.x * 16 + 8) * scale + panel_offset.x, (32 + 8 + pos.y * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+
 
     }
     else if (panel_state == PANEL_STATE_EDITOR)
@@ -2988,7 +3010,26 @@ void GameState::mouse_click_in_panel()
         {
             mouse_state = MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME;
             SDL_StartTextInput();
+            return;
         }
+        
+        XYPos palette_pos = panel_pos - XYPos(8 * 16 + 16 + 8, 32 + 8);
+        if (palette_pos.inside(XYPos(16, 8*16)))
+        {
+            pixel_colour = palette_pos.y / 16;
+            return;
+        }
+
+        XYPos pixel_pos = panel_pos - XYPos(8, 32 + 8);
+        if (pixel_pos.inside(XYPos(8*16, 8*16)))
+        {
+            pixel_pos /= 16;
+            level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x] = pixel_colour;
+            set_level_set(level_set);
+            return;
+        }
+
+
     } else if (panel_state == PANEL_STATE_EDITOR && !current_circuit_is_read_only)
     {
         XYPos panel_grid_pos = panel_pos / 32;
@@ -4305,6 +4346,20 @@ void GameState::set_level_set(LevelSet* new_level_set)
             SDL_Rect dst_rect = {0, 0, 192, 24};
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
+
+        for (int y = 0; y < 8; y++)
+        for (int x = 0; x < 8; x++)
+        {
+            int colour = level_set->levels[i]->icon_pixels[y][x];
+            SDL_Rect src_rect = {503, 80 + colour, 1, 1};
+            for (int r = 0; r < 8; r++)
+            {
+                SDL_Rect dst_rect = {8 + x + r * 24, 8 + y, 1, 1};
+                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+            }
+        }
+
+
 
 
         SDL_SetRenderTarget(sdl_renderer, NULL);

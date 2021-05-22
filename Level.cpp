@@ -235,6 +235,18 @@ SaveObject* Level::save(bool lite)
         }
         omap->add_num("substep_count", substep_count);
         omap->add_item("forced_elements", circuit->save_forced());
+
+        SaveObjectList* y_list = new SaveObjectList;
+        for (unsigned y = 0; y < 8; y++)
+        {
+            SaveObjectList* x_list = new SaveObjectList;
+            for (unsigned x = 0; x < 8; x++)
+            {
+                x_list->add_num(icon_pixels[y][x]);
+            }
+            y_list->add_item(x_list);
+        }
+        omap->add_item("icon", y_list);
     }
 
     return omap;
@@ -325,6 +337,18 @@ void Level::init_tests(SaveObjectMap* omap)
                 player_map = NULL;
             
             t.load(player_map, test_map);
+        }
+        if (desc->has_key("icon"))
+        {
+            SaveObjectList* icon_list_y = desc->get_item("icon")->get_list();
+            for (unsigned y = 0; y < 8; y++)
+            {
+                SaveObjectList* icon_list_x = icon_list_y->get_item(y)->get_list();
+                for (unsigned x = 0; x < 8; x++)
+                {
+                    icon_pixels[y][x] = icon_list_x->get_num(x);
+                }
+            }
         }
     }
     else
