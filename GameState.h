@@ -164,7 +164,15 @@ public:
 
     bool show_confirm = false;
     XYPos confirm_box_pos;
-    bool confirm_delete = false;
+    
+    enum ConfirmWhat
+    {
+        CONFIRM_SAVE_OVERWRITE,
+        CONFIRM_DELETE,
+        CONFIRM_DELETE_LEVEL,
+
+    } confirm_what = CONFIRM_SAVE_OVERWRITE;
+
     int confirm_save_index = 0;
 
 

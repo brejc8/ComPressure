@@ -727,6 +727,22 @@ unsigned CircuitElementSubCircuit::get_cost()
 {
     return 4 + circuit->get_cost();
 }
+void CircuitElementSubCircuit::reindex_deleted_level(LevelSet* level_set, unsigned deleted_level_index)
+{
+    if (level_index > deleted_level_index)
+        level_index--;
+    else if (level_index == deleted_level_index)
+    {
+        if (!custom)
+        {
+            custom = true;
+            level = level_set->levels[level_index];
+            if (circuit)
+                delete circuit;
+            circuit = new Circuit(*level->circuit);
+        }
+    }
+}
 
 Sign::Sign(XYPos pos_, Direction direction_, std::string text_):
     pos(pos_),
@@ -1577,6 +1593,16 @@ void Circuit::copy_in(Circuit* other)
         blocked[pos.y][pos.x] = other->blocked[pos.y][pos.x];
     }
     signs = other->signs;
+}
+
+void Circuit::reindex_deleted_level(LevelSet* level_set, unsigned level_index)
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        elements[pos.y][pos.x]->reindex_deleted_level(level_set, level_index);
+    }
 }
 
 void Clipboard::copy(std::set<XYPos> &selected_elements, Circuit &circuit)

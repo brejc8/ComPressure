@@ -773,6 +773,33 @@ unsigned LevelSet::import_level(LevelSet* other_set, unsigned level_index)
     new_level->tests = old_level->tests;
     new_level->circuit->copy_in(old_level->circuit);
 
+    for (unsigned i = 0; i < 4; i++)
+        new_level->pin_order[i] = old_level->pin_order[i];
+        
+    new_level->connection_mask = old_level->connection_mask;
+
     return new_index;
 }
 
+int LevelSet::find_custom_by_name(std::string name)
+{
+    unsigned new_index = LEVEL_COUNT;
+    while (true)
+    {
+        if (new_index >= levels.size())
+            return -1;
+        if (name == levels[new_index]->name)
+            return new_index;
+        new_index++;
+    }
+}
+
+void LevelSet::delete_level(unsigned level_index)
+
+{
+    delete levels[level_index];
+    levels.erase(levels.begin() + level_index);
+
+    for (int i = 0; i < levels.size(); i++)
+        levels[i]->circuit->reindex_deleted_level(this, level_index);
+}

@@ -1463,15 +1463,16 @@ void GameState::render(bool saving)
         else if (current_level_set_is_inspected)
         {
             if (current_level_index >= LEVEL_COUNT && !current_circuit_is_inspected_subcircuit)
-                render_button(XYPos(7 * 32 * scale, 0), XYPos(376, 136), 0, "Import Level");
+                render_button(XYPos(7 * 32 * scale, 0), XYPos(376, 136), 0, "Import level");
             if (deletable_level_set)
                 render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
-            if (!current_circuit_is_inspected_subcircuit)
-                render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0, "Copy to\ncurrent");
+            if (!current_circuit_is_inspected_subcircuit && ((current_level_index <  LEVEL_COUNT) || ((edited_level_set->find_custom_by_name(current_level->name)) > 0) ))
+                render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0, "Copy design\nto current");
             render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
         }
         else if (editing_level)
         {
+            render_button(XYPos(9 * 32 * scale, 0), XYPos(400, 160), 0, "Delete level");
             render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
         }
         else if (current_level_index >= LEVEL_COUNT)
@@ -2618,6 +2619,13 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 editing_level = false;
                 return;
             }
+            else if (i == 9 && (editing_level))
+            {
+                show_confirm = true;
+                confirm_what = CONFIRM_DELETE_LEVEL;
+                confirm_box_pos = XYPos(32*9 - 16, 32);
+                return;
+            }
             else if (i == 10 && (current_level_index >= LEVEL_COUNT))
             {
                 editing_level = true;
@@ -2626,6 +2634,13 @@ void GameState::mouse_click_in_grid(unsigned clicks)
             }
             else if (i == 9 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit)
             {
+                if (current_level_index >= LEVEL_COUNT)
+                {
+                    int found = edited_level_set->find_custom_by_name(current_level->name);
+                    if (found < 0)
+                        return;
+                    current_level_index = found;
+                }
                 edited_level_set->levels[current_level_index]->circuit->ammend();
                 edited_level_set->levels[current_level_index]->circuit->copy_elements(*current_circuit);
                 current_level_set_is_inspected = false;
@@ -2642,7 +2657,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
             else if (i == 8 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit && deletable_level_set)
             {
                 show_confirm = true;
-                confirm_delete = true;
+                confirm_what = CONFIRM_DELETE;
                 confirm_box_pos = XYPos(32*8 - 16, 32);
                 return;
             }
@@ -3246,7 +3261,7 @@ void GameState::mouse_click_in_panel()
                         if (edited_level_set->levels[current_level_index]->saved_designs[index])
                         {
                             show_confirm = true;
-                            confirm_delete = false;
+                            confirm_what = CONFIRM_SAVE_OVERWRITE;
                             confirm_box_pos = XYPos(552, 80);
                             confirm_save_index = index;
                         }
@@ -4086,7 +4101,7 @@ bool GameState::events()
                     {
                         if (((mouse / scale) - confirm_box_pos).inside(XYPos(32,32)))
                         {
-                            if (confirm_delete)
+                            if (confirm_what == CONFIRM_DELETE)
                             {
                                 current_level_set_is_inspected = false;
                                 if (deletable_level_set)
@@ -4102,9 +4117,15 @@ bool GameState::events()
                                 set_level_set(edited_level_set);
                                 set_level(current_level_index);
                             }
-                            else
+                            else if (confirm_what == CONFIRM_SAVE_OVERWRITE)
                             {
                                 edited_level_set->save_design(current_level_index, confirm_save_index);
+                            }
+                            else if (confirm_what == CONFIRM_DELETE_LEVEL)
+                            {
+                                edited_level_set->delete_level(current_level_index);
+                                editing_level = false;
+                                set_level(current_level_index - 1);
                             }
                         }
                         show_confirm = false;

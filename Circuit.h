@@ -361,6 +361,7 @@ public:
     virtual void rotate(bool clockwise) = 0;
     virtual void flip(bool vertically) = 0;
     virtual unsigned get_cost() = 0;
+    virtual void reindex_deleted_level(LevelSet* level_set, unsigned level_index) {};
 };
 
 class CircuitElementPipe : public CircuitElement
@@ -511,6 +512,7 @@ public:
     void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
     void flip(bool vertically) {dir_flip = dir_flip.flip(vertically);};
     unsigned get_cost();
+    virtual void reindex_deleted_level(LevelSet* level_set, unsigned level_index);
 };
 
 class Sign
@@ -616,6 +618,8 @@ public:
     int64_t get_steam_used() {return fast_sim.get_steam_used();}
     SaveObjectList* save_forced();
     void copy_in(Circuit* other);
+    void reindex_deleted_level(LevelSet* level_set, unsigned level_index);
+
 };
 
 class Clipboard

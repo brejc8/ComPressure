@@ -168,7 +168,6 @@ public:
     void set_monitor_state(TestExecType monitor_state_);
     void touch();
     void set_best_design(LevelSet* best);
-
 };
 
 
@@ -192,5 +191,7 @@ public:
     void touch(unsigned level_index);
     unsigned new_user_level();
     unsigned import_level(LevelSet* other_set, unsigned level_index);
+    int find_custom_by_name(std::string name);
+    void delete_level(unsigned level_index);
 
 };
