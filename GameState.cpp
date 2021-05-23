@@ -1663,16 +1663,15 @@ void GameState::render(bool saving)
         for (pos.y = 0; pos.y < 8; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
-            if (!edited_level_set->is_playable(level_index, highest_level))
+            unsigned level_index =  pos.y * 8 + pos.x;
+            if (level_index >= edited_level_set->levels.size())
                 break;
-            
-            if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
+            if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set) && edited_level_set->is_playable(level_index, highest_level))
             {
                 WrappedTexture* w_tex = edited_level_set->levels[level_index]->getimage_fg_texture();
                 SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
                 render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(dir_flip), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name.c_str(), tex);
             }
-            level_index++;
         }
 
 
@@ -2916,7 +2915,9 @@ void GameState::mouse_click_in_grid(unsigned clicks)
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         if (mouse_grid.inside(XYPos(9,9)))
         {
-            current_circuit->blocked[mouse_grid.y][mouse_grid.x] = !current_circuit->blocked[mouse_grid.y][mouse_grid.x];
+            bool blocked = !current_circuit->blocked[mouse_grid.y][mouse_grid.x];
+            current_circuit->blocked[mouse_grid.y][mouse_grid.x] = blocked;
+            current_circuit->elements[mouse_grid.y][mouse_grid.x]->set_read_only(blocked);
             level_set->touch(current_level_index);
         }
     }

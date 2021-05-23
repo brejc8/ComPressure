@@ -357,6 +357,7 @@ public:
     virtual bool get_custom() {return false;}
     virtual void set_custom() {}
     virtual bool get_read_only() {return true;}
+    virtual void set_read_only(bool read_only_) {}
     virtual void rotate(bool clockwise) = 0;
     virtual void flip(bool vertically) = 0;
     virtual unsigned get_cost() = 0;
@@ -506,6 +507,7 @@ public:
     virtual bool get_custom() {return custom;}
     virtual void set_custom() {custom = true;}
     virtual bool get_read_only() {return read_only;}
+    virtual void set_read_only(bool read_only_) {read_only = read_only_;}
     void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
     void flip(bool vertically) {dir_flip = dir_flip.flip(vertically);};
     unsigned get_cost();
