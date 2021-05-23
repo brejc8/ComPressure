@@ -1462,6 +1462,8 @@ void GameState::render(bool saving)
         }
         else if (current_level_set_is_inspected)
         {
+            if (current_level_index >= LEVEL_COUNT && !current_circuit_is_inspected_subcircuit)
+                render_button(XYPos(7 * 32 * scale, 0), XYPos(376, 136), 0, "Import Level");
             if (deletable_level_set)
                 render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
             if (!current_circuit_is_inspected_subcircuit)
@@ -2642,6 +2644,20 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 show_confirm = true;
                 confirm_delete = true;
                 confirm_box_pos = XYPos(32*8 - 16, 32);
+                return;
+            }
+            else if (i == 7 && current_level_set_is_inspected && !current_circuit_is_inspected_subcircuit && current_level_index >= LEVEL_COUNT)
+            {
+                unsigned new_index = edited_level_set->import_level(level_set, current_level_index);
+                current_level_set_is_inspected = false;
+                if (free_level_set_on_return)
+                {
+                    delete level_set;
+                    free_level_set_on_return = false;
+                }
+                deletable_level_set = NULL;
+                set_level_set(edited_level_set);
+                set_level(new_index);
                 return;
             }
         }

@@ -615,6 +615,7 @@ public:
     void reset_steam_used() {fast_sim.reset_steam_used();}
     int64_t get_steam_used() {return fast_sim.get_steam_used();}
     SaveObjectList* save_forced();
+    void copy_in(Circuit* other);
 };
 
 class Clipboard

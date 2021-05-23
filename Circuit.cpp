@@ -612,6 +612,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& oth
     level_index = other.level_index;
     level = other.level;
     custom  = other.custom;
+    read_only  = other.read_only;
     if (custom)
     {
         circuit = new Circuit(*other.circuit);
@@ -1563,6 +1564,19 @@ SaveObjectList* Circuit::save_forced()
         }
     }
     return slist;
+}
+
+void Circuit::copy_in(Circuit* other)
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        delete elements[pos.y][pos.x];
+        elements[pos.y][pos.x] = other->elements[pos.y][pos.x]->copy();
+        blocked[pos.y][pos.x] = other->blocked[pos.y][pos.x];
+    }
+    signs = other->signs;
 }
 
 void Clipboard::copy(std::set<XYPos> &selected_elements, Circuit &circuit)

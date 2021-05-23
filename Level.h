@@ -191,5 +191,6 @@ public:
     void remove_circles(unsigned level_index);
     void touch(unsigned level_index);
     unsigned new_user_level();
+    unsigned import_level(LevelSet* other_set, unsigned level_index);
 
 };

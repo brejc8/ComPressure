@@ -608,16 +608,15 @@ LevelSet::LevelSet(SaveObject* sobj, bool inspect)
         if (sobj)
             levels.push_back(new Level(i, sobj));
         else
-        {
             levels.push_back(new Level(i, inspect));
-        }
     }
     for (int i = LEVEL_COUNT; i < slist->get_count(); i++)
     {
         SaveObject *sobj = slist->get_item(i);
-        if (sobj->is_null())
-            break;                  // unexpected null
-        levels.push_back(new Level(i, sobj));
+        if (!sobj->is_null())
+            levels.push_back(new Level(i, sobj));
+        else
+            levels.push_back(new Level(i, inspect));
     }
 
     for (int i = 0; i < levels.size(); i++)
@@ -675,11 +674,11 @@ bool LevelSet::is_playable(unsigned level, unsigned highest_level)
     if (level >= 14)
         return false;
 #endif
-    if (level >= LEVEL_COUNT)
-        return level < levels.size();
+    if (level >= levels.size())
+        return false;
     if (read_only)
         return (!levels[level]->hidden);
-    if (level > highest_level)
+    if (level < LEVEL_COUNT && level > highest_level)
         return false;
     return true;
 }
@@ -745,5 +744,35 @@ unsigned LevelSet::new_user_level()
     unsigned count = levels.size();
     levels.push_back(new Level(count));
     return count;
+}
+
+unsigned LevelSet::import_level(LevelSet* other_set, unsigned level_index)
+{
+    unsigned new_index = LEVEL_COUNT;
+    Level* old_level = other_set->levels[level_index];
+
+    while (true)
+    {
+        if (new_index >= levels.size())
+        {
+            levels.push_back(new Level(new_index));
+            break;
+        }
+        if (old_level->name == levels[new_index]->name)
+            break;
+        new_index++;
+    }
+
+    Level* new_level = levels[new_index];
+    new_level->name = old_level->name;
+    
+    for (unsigned y = 0; y < 8; y++)
+        for (unsigned x = 0; x < 8; x++)
+            new_level->icon_pixels[y][x] = old_level->icon_pixels[y][x];
+    
+    new_level->tests = old_level->tests;
+    new_level->circuit->copy_in(old_level->circuit);
+
+    return new_index;
 }
 
