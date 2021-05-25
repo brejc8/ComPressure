@@ -49,8 +49,6 @@ public:
         MOUSE_STATE_ANIMATING,
         MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME,
         MOUSE_STATE_LOCKING_BLOCKS,
-
-
     } mouse_state = MOUSE_STATE_NONE;
 
     enum PanelState

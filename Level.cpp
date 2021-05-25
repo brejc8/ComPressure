@@ -237,16 +237,18 @@ SaveObject* Level::save(bool lite)
         omap->add_item("forced_elements", circuit->save_forced());
 
         SaveObjectList* y_list = new SaveObjectList;
-        for (unsigned y = 0; y < 8; y++)
+        for (unsigned y = 0; y < 12; y++)
         {
             SaveObjectList* x_list = new SaveObjectList;
-            for (unsigned x = 0; x < 8; x++)
+            for (unsigned x = 0; x < 12; x++)
             {
                 x_list->add_num(icon_pixels[y][x]);
             }
             y_list->add_item(x_list);
         }
         omap->add_item("icon", y_list);
+        omap->add_num("icon_rotate", icon_rotate);
+        
     }
 
     return omap;
@@ -341,15 +343,17 @@ void Level::init_tests(SaveObjectMap* omap)
         if (desc->has_key("icon"))
         {
             SaveObjectList* icon_list_y = desc->get_item("icon")->get_list();
-            for (unsigned y = 0; y < 8; y++)
+            for (unsigned y = 0; y < icon_list_y->get_count() && y < 12; y++)
             {
                 SaveObjectList* icon_list_x = icon_list_y->get_item(y)->get_list();
-                for (unsigned x = 0; x < 8; x++)
+                for (unsigned x = 0; x < icon_list_x->get_count() && x < 12; x++)
                 {
                     icon_pixels[y][x] = icon_list_x->get_num(x);
                 }
             }
         }
+        if (desc->has_key("icon_rotate"))
+            icon_rotate = desc->get_num("icon_rotate");
     }
     else
     {
@@ -766,8 +770,8 @@ unsigned LevelSet::import_level(LevelSet* other_set, unsigned level_index)
     Level* new_level = levels[new_index];
     new_level->name = old_level->name;
     
-    for (unsigned y = 0; y < 8; y++)
-        for (unsigned x = 0; x < 8; x++)
+    for (unsigned y = 0; y < 12; y++)
+        for (unsigned x = 0; x < 12; x++)
             new_level->icon_pixels[y][x] = old_level->icon_pixels[y][x];
     
     new_level->tests = old_level->tests;

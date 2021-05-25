@@ -78,7 +78,8 @@ class Level
 {
 public:
 
-    uint8_t icon_pixels[8][8] = {0};
+    uint8_t icon_pixels[12][12] = {0};
+    bool icon_rotate = false;
 
     std::string name = "";
     CircuitPressure ports[4];

@@ -1613,19 +1613,23 @@ void GameState::render(bool saving)
             text.append(std::string((const char*)u8"\u258F"));
         render_text(panel_offset / scale + XYPos(4,4), text.c_str(), SDL_Color{0xff,0xff,0xff}, 2);
         
-        render_box(XYPos((0) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(8*16+16, 8*16+16), 0);
-        render_box(XYPos((8*16+16) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(32, 8*16+16), 0);
+        render_box(XYPos((0) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(12*16+16, 12*16+16), 0);
+        render_box(XYPos((12*16+16) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(32, 12*16+16), 0);
         {
             SDL_Rect src_rect = {503, 80, 1, 8};
-            SDL_Rect dst_rect = {(8*16+16+8) * scale + panel_offset.x, (32 + 8)* scale + panel_offset.y, 16 * scale, 16 * 8 * scale};
+            SDL_Rect dst_rect = {(12*16+16+8) * scale + panel_offset.x, (32 + 8)* scale + panel_offset.y, 16 * scale, 16 * 8 * scale};
             render_texture(src_rect, dst_rect);
             src_rect = {320, 144, 16, 16};
-            dst_rect = {(8*16+16+8) * scale + panel_offset.x, (32 + 8 + pixel_colour * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
+            dst_rect = {(12*16+16+8) * scale + panel_offset.x, (32 + 8 + pixel_colour * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+            
+            src_rect = {level_set->levels[current_level_index]->icon_rotate ? 416 : 368, 208, 16, 16};
+            dst_rect = {(12*16+16+8) * scale + panel_offset.x, (32 + 8 + 10 * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
         }
         
-        for (pos.y = 0; pos.y < 8; pos.y++)
-        for (pos.x = 0; pos.x < 8; pos.x++)
+        for (pos.y = 0; pos.y < 12; pos.y++)
+        for (pos.x = 0; pos.x < 12; pos.x++)
         {
             int colour = level_set->levels[current_level_index]->icon_pixels[pos.y][pos.x];
             SDL_Rect src_rect = {503, 80 + colour, 1, 1};
@@ -3054,6 +3058,7 @@ void GameState::mouse_click_in_panel()
         else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)))  // New
         {
             set_level(edited_level_set->new_user_level());
+            set_level_set(edited_level_set);
         }
         return;
     } else if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level)
@@ -3065,15 +3070,24 @@ void GameState::mouse_click_in_panel()
             return;
         }
         
-        XYPos palette_pos = panel_pos - XYPos(8 * 16 + 16 + 8, 32 + 8);
-        if (palette_pos.inside(XYPos(16, 8*16)))
+        XYPos palette_pos = panel_pos - XYPos(12 * 16 + 16 + 8, 32 + 8);
+        if (palette_pos.inside(XYPos(16, 12*16)))
         {
-            pixel_colour = palette_pos.y / 16;
+            int index = palette_pos.y / 16;
+            if (index < 8)
+            {
+                pixel_colour = index;
+            }
+            else if (index == 10)
+            {
+                level_set->levels[current_level_index]->icon_rotate = !level_set->levels[current_level_index]->icon_rotate;
+                set_level_set(level_set);
+            }
             return;
         }
 
         XYPos pixel_pos = panel_pos - XYPos(8, 32 + 8);
-        if (pixel_pos.inside(XYPos(8*16, 8*16)))
+        if (pixel_pos.inside(XYPos(12*16, 12*16)))
         {
             pixel_pos /= 16;
             level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x] = pixel_colour;
@@ -3525,6 +3539,7 @@ void GameState::mouse_motion()
             return;
         pipe_dragged = true;
         pipe_drag_list.push_back(next_pos);
+        return;
     }
 
     if (mouse_state == MOUSE_STATE_DELETING)
@@ -3559,7 +3574,7 @@ void GameState::mouse_motion()
         current_circuit->set_element_empty(grid, !first_deletion);
         first_deletion = false;
         level_set->touch(current_level_index);
-
+        return;
     }
 
     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
@@ -3583,7 +3598,6 @@ void GameState::mouse_motion()
             break;
         default:
             assert(0);
-        
         }
 
         if (vol < 0)
@@ -3593,11 +3607,25 @@ void GameState::mouse_motion()
         if (slider_value_max)
             vol = (vol * slider_value_max) / slider_max;
         *slider_value_tgt = vol;
-    }
 
-    if (editing_level)
+        if (editing_level)
+        {
+            current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index] = current_level->current_simpoint;
+        }
+        return;
+    }
+    
+    
+    if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level && (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)))
     {
-        current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index] = current_level->current_simpoint;
+        XYPos pixel_pos = ((mouse - panel_offset) / scale) - XYPos(8, 32 + 8);
+        if (pixel_pos.inside(XYPos(12*16, 12*16)))
+        {
+            pixel_pos /= 16;
+            level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x] = pixel_colour;
+            set_level_set(level_set);
+            return;
+        }
     }
 }
 
@@ -4406,14 +4434,30 @@ void GameState::set_level_set(LevelSet* new_level_set)
             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
         }
 
-        for (int y = 0; y < 8; y++)
-        for (int x = 0; x < 8; x++)
+        for (int y = 0; y < 12; y++)
+        for (int x = 0; x < 12; x++)
         {
             int colour = level_set->levels[i]->icon_pixels[y][x];
             SDL_Rect src_rect = {503, 80 + colour, 1, 1};
             for (int r = 0; r < 8; r++)
             {
-                SDL_Rect dst_rect = {8 + x + r * 24, 8 + y, 1, 1};
+                int ix = x;
+                int iy = y;
+                if (level_set->levels[i]->icon_rotate)
+                {
+                    for (int s = 0; s < (r & 3); s++)
+                    {
+                        int ox = ix;
+                        ix = 12 - iy;
+                        iy = ox;
+                    }
+                    if (r & 4)
+                    {
+                        iy = 12 - iy;
+                    }
+                
+                }
+                SDL_Rect dst_rect = {6 + ix + r * 24, 6 + iy, 1, 1};
                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
             }
         }

@@ -742,6 +742,8 @@ void CircuitElementSubCircuit::reindex_deleted_level(LevelSet* level_set, unsign
             circuit = new Circuit(*level->circuit);
         }
     }
+    if (custom)
+        circuit->reindex_deleted_level(level_set, deleted_level_index);
 }
 
 Sign::Sign(XYPos pos_, Direction direction_, std::string text_):
