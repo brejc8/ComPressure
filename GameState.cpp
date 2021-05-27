@@ -2623,7 +2623,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 editing_level = false;
                 return;
             }
-            else if (i == 9 && (editing_level))
+            else if (i == 9 && (editing_level) && !current_circuit_is_inspected_subcircuit)
             {
                 show_confirm = true;
                 confirm_what = CONFIRM_DELETE_LEVEL;
@@ -4253,6 +4253,11 @@ bool GameState::events()
                         dragged_sign.rotate(true);
                 }
 
+                break;
+            }
+            case SDL_RENDER_TARGETS_RESET:
+            {
+                set_level_set(level_set);
                 break;
             }
             default:
