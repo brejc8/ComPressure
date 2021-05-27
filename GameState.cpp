@@ -1246,6 +1246,7 @@ void GameState::render(bool saving)
     }
     else if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
     {
+        clipboard.elaborate(level_set);
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         
         mouse_grid.x = std::max(std::min(mouse_grid.x, 9 - clipboard.size().x), 0);

@@ -643,5 +643,6 @@ public:
     XYPos size();
     void rotate(bool clockwise);
     void flip(bool vertically);
+    void elaborate(LevelSet* level_set);
 
 };

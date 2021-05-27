@@ -1676,3 +1676,11 @@ void Clipboard::flip(bool vertically)
     }
     repos();
 }
+
+void Clipboard::elaborate(LevelSet* level_set)
+{
+    for (ClipboardElement& elem: elements)
+    {
+        elem.element->elaborate(level_set);
+    }
+}
