@@ -327,7 +327,7 @@ void GameState::save_to_server(bool sync)
     post_to_server(omap, sync);
 }
 
-void GameState::score_submit(unsigned level, bool sync)
+void GameState::score_submit(int level, bool sync)
 {
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "score_submit");
@@ -338,7 +338,7 @@ void GameState::score_submit(unsigned level, bool sync)
     post_to_server(omap, sync);
 }
 
-void GameState::score_fetch(unsigned level_index)
+void GameState::score_fetch(int level_index)
 {
     if (scores_from_server.working)
         return;
@@ -357,7 +357,7 @@ void GameState::score_fetch(unsigned level_index)
     fetch_from_server(omap, &scores_from_server);
 }
 
-void GameState::design_fetch(uint64_t level_steam_id, unsigned level_index)
+void GameState::design_fetch(uint64_t level_steam_id, int level_index)
 {
     if (design_from_server.working)
         return;
@@ -1433,7 +1433,7 @@ void GameState::render(bool saving)
             {
                 if (x == 32*5)
                     x += 32;
-                unsigned l_index;
+                int l_index;
                 sub->get_subcircuit(&l_index);
                 if (!sub->get_custom() || sub->get_read_only())
                     editable = false;
@@ -1442,7 +1442,8 @@ void GameState::render(bool saving)
                 
                 WrappedTexture* w_tex = sub->getimage_fg_texture();
                 SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
-                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, level_set->levels[l_index]->name.c_str(), tex);
+                const char* l_name = l_index < 0 ? "Lost level" : level_set->levels[l_index]->name.c_str();
+                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, l_name, tex);
                 x += 32;
             }
         }
@@ -1511,7 +1512,7 @@ void GameState::render(bool saving)
             render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 16, 11*32 + 8), panel_colour);
         }
         {                                                                                               // Top Menu
-            bool flash_next_level = (next_dialogue_level == highest_level) && (frame_index % 60 < 30);
+            bool flash_next_level = (next_dialogue_level == highest_level) && (frame_index % 60 < 30) && (highest_level < LEVEL_COUNT);
             render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT, "Level select");
             if (!current_circuit_is_read_only && (next_dialogue_level > 1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
                 render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR, "Design");
@@ -1552,7 +1553,7 @@ void GameState::render(bool saving)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
             unsigned index =  pos.y * 8 + pos.x;
-            unsigned level_index =  index + level_screen * 30;
+            int level_index =  index + level_screen * 30;
 
             if (level_screen && pos == XYPos(0,0))
             {
@@ -1562,7 +1563,7 @@ void GameState::render(bool saving)
 
             if (!level_set->is_playable(level_index, highest_level))
                 continue;
-            if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue)
+            if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue && (next_dialogue_level < LEVEL_COUNT))
                 continue;
 
             if (pos == XYPos(7,3))
@@ -1666,12 +1667,12 @@ void GameState::render(bool saving)
             render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
 
 
-        unsigned level_index = 0;
+        int level_index = 0;
 
         for (pos.y = 0; pos.y < 8; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
-            unsigned level_index =  pos.y * 8 + pos.x;
+            int level_index =  pos.y * 8 + pos.x;
             if (level_index >= edited_level_set->levels.size())
                 break;
             if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set) && edited_level_set->is_playable(level_index, highest_level))
@@ -2180,7 +2181,7 @@ void GameState::render(bool saving)
         render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
         render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
     }
-    if (show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt)
+    if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
     {
     static const Dialogue discord_prompt {DIALOGUE_CHARLES, "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button."};
     
@@ -2492,7 +2493,7 @@ void GameState::render(bool saving)
     SDL_RenderPresent(sdl_renderer);
 }
 
-void GameState::set_level(unsigned level_index)
+void GameState::set_level(int level_index)
 {
     editing_level = false;
     while (!level_set->is_playable(level_index, highest_level))
@@ -2524,7 +2525,7 @@ void GameState::set_level(unsigned level_index)
     selected_elements.clear();
     show_dialogue = false;
     show_dialogue_hint = false;
-    if (level_index == next_dialogue_level && !current_level_set_is_inspected)
+    if (level_index == next_dialogue_level && !current_level_set_is_inspected &&  (current_level_index < LEVEL_COUNT))
     {
         show_dialogue = true;
         dialogue_index = 0;
@@ -3023,7 +3024,7 @@ void GameState::mouse_click_in_panel()
     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
         XYPos panel_grid_pos = panel_pos / 32;
-        unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8 + level_screen * 30;
+        int level_index = panel_grid_pos.x + panel_grid_pos.y * 8 + level_screen * 30;
 
         if (panel_grid_pos == XYPos(7,3))
         {
@@ -3044,13 +3045,13 @@ void GameState::mouse_click_in_panel()
         {
             show_hint = true;
         }
-        else if ((panel_pos - XYPos(0,144)).inside(XYPos(32,32)))   // Blah
+        else if ((panel_pos - XYPos(0,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Blah
         {
             show_dialogue = true;
             dialogue_index = 0;
             
         }
-        else if ((panel_pos - XYPos(32,144)).inside(XYPos(32,32)))   // Hint
+        else if ((panel_pos - XYPos(32,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Hint
         {
             show_dialogue_hint = true;
             dialogue_index = 0;
@@ -3165,7 +3166,7 @@ void GameState::mouse_click_in_panel()
             return;
         }
         panel_grid_pos = (panel_pos - XYPos(0, 32 + 8)) / 32;
-        unsigned level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
+        int level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
 
         if ((level_index != current_level_index) && edited_level_set->is_playable(level_index, highest_level) && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
         {
@@ -4350,7 +4351,7 @@ void GameState::deal_with_scores()
         try 
         {
             SaveObjectMap* omap = scores_from_server.resp->get_map();
-            unsigned level = omap->get_num("level");
+            int level = omap->get_num("level");
             edited_level_set->levels[level]->global_fetched_score = omap->get_num("score");
             SaveObjectList* glist = omap->get_item("graph")->get_list();
             for (unsigned i = 0; i < 200; i++)

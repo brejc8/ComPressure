@@ -119,7 +119,11 @@ static int save_thread_func(void *ptr)
 void mainloop()
 {
     char* save_path = SDL_GetPrefPath("CharlieBrej", "ComPressure");
+#ifdef STEAM
     save_filename = std::string(save_path) + "compressure.save";
+#else
+    save_filename = "compressure.save";
+#endif
     SDL_free(save_path);
     const char* load_filename = save_filename.c_str();
 

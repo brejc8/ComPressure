@@ -87,7 +87,7 @@ public:
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
     WrappedTexture* texture = NULL;
 
-    unsigned level_index;
+    int level_index;
     bool hidden = false;
     Circuit* circuit;
     LevelSet *best_design = NULL;
@@ -150,8 +150,8 @@ public:
     bool global_score_graph_set = false;
     unsigned global_score_graph_time = 0;
 
-    Level(unsigned level_index_, SaveObject* sobj);
-    Level(unsigned level_index_, bool hidden_ = false);
+    Level(int level_index_, SaveObject* sobj);
+    Level(int level_index_, bool hidden_ = false);
     ~Level();
     SaveObject* save(bool lite = false);
 
@@ -180,19 +180,19 @@ public:
     LevelSet(SaveObject* sobj, bool inspect = false);
     LevelSet();
     ~LevelSet();
-    SaveObject* save_all(unsigned level_index, bool lite = false);
-    SaveObject* save_one(unsigned level_index);
+    SaveObject* save_all(int level_index, bool lite = false);
+    SaveObject* save_one(int level_index);
     bool is_playable(unsigned level, unsigned highest_level);
     int top_playable();
-    Pressure test_level(unsigned level_index);
-    void record_best_score(unsigned level_index);
-    void save_design(unsigned level_index, unsigned save_slot);
-    void reset(unsigned level_index);
-    void remove_circles(unsigned level_index);
-    void touch(unsigned level_index);
+    Pressure test_level(int level_index);
+    void record_best_score(int level_index);
+    void save_design(int level_index, unsigned save_slot);
+    void reset(int level_index);
+    void remove_circles(int level_index);
+    void touch(int level_index);
     unsigned new_user_level();
-    unsigned import_level(LevelSet* other_set, unsigned level_index);
+    unsigned import_level(LevelSet* other_set, int level_index);
     int find_custom_by_name(std::string name);
-    void delete_level(unsigned level_index);
-
+    void delete_level(int level_index);
+    int find_level(int level_index, std::string name);
 };

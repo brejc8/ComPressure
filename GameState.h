@@ -96,8 +96,8 @@ public:
     Level* current_level;
 
     Circuit* current_circuit = NULL;
-    unsigned current_level_index = 0;
-    unsigned placing_subcircuit_level;
+    int current_level_index = 0;
+    int placing_subcircuit_level;
     
     std::vector<CircuitElement*> inspection_stack;
     bool current_circuit_is_inspected_subcircuit = false;
@@ -111,7 +111,7 @@ public:
 
     char* last_clip = NULL;
     LevelSet* clipboard_level_set = NULL;
-    unsigned clipboard_level_index;
+    int clipboard_level_index;
 
     LevelSet** deletable_level_set = NULL;
 
@@ -212,9 +212,9 @@ public:
     void post_to_server(SaveObject* send, bool sync);
     void fetch_from_server(SaveObject* send, ServerResp* resp);
     void save_to_server(bool sync = false);
-    void score_submit(unsigned level_index, bool sync = false);
-    void score_fetch(unsigned level);
-    void design_fetch(uint64_t design_steam_id, unsigned level_index);
+    void score_submit(int level_index, bool sync = false);
+    void score_fetch(int level);
+    void design_fetch(uint64_t design_steam_id, int level_index);
 
     ~GameState();
     SDL_Texture* loadTexture(const char* filename);
@@ -239,7 +239,7 @@ public:
     void update_scale(int ewscale);
     void render(bool saving = false);
     void advance();
-    void set_level(unsigned level_index);
+    void set_level(int level_index);
     void mouse_click_in_grid(unsigned clicks);
     void mouse_click_in_panel();
     void mouse_motion();

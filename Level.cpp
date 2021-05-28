@@ -139,7 +139,7 @@ SaveObject* Test::save(bool custom, bool lite)
     return omap;
 }
 
-Level::Level(unsigned level_index_, bool hidden_):
+Level::Level(int level_index_, bool hidden_):
     level_index(level_index_),
     hidden(hidden_)
 {
@@ -148,7 +148,7 @@ Level::Level(unsigned level_index_, bool hidden_):
     init_tests();
 }
 
-Level::Level(unsigned level_index_, SaveObject* sobj):
+Level::Level(int level_index_, SaveObject* sobj):
     level_index(level_index_)
 {
     pin_order[0] = -1; pin_order[1] = -1; pin_order[2] = -1; pin_order[3] = -1;
@@ -644,7 +644,7 @@ LevelSet::~LevelSet()
         }
 }
 
-SaveObject* LevelSet::save_all(unsigned level_index, bool lite)
+SaveObject* LevelSet::save_all(int level_index, bool lite)
 {
     SaveObjectList* slist = new SaveObjectList;
     
@@ -658,7 +658,7 @@ SaveObject* LevelSet::save_all(unsigned level_index, bool lite)
     return slist;
 }
 
-SaveObject* LevelSet::save_one(unsigned level_index)
+SaveObject* LevelSet::save_one(int level_index)
 {
     SaveObjectList* slist = new SaveObjectList;
     
@@ -699,7 +699,7 @@ int LevelSet::top_playable()
     return LEVEL_COUNT - 1;
 }
 
-Pressure LevelSet::test_level(unsigned level_index)
+Pressure LevelSet::test_level(int level_index)
 {
     reset(level_index);
     levels[level_index]->set_monitor_state(MONITOR_STATE_PLAY_ALL);
@@ -708,14 +708,14 @@ Pressure LevelSet::test_level(unsigned level_index)
     return levels[level_index]->last_score;
 }
 
-void LevelSet::record_best_score(unsigned level_index)
+void LevelSet::record_best_score(int level_index)
 {
     SaveObject* sobj = save_one(level_index);
     levels[level_index]->set_best_design(new LevelSet(sobj, true));
     delete sobj;
 }
 
-void LevelSet::save_design(unsigned level_index, unsigned save_slot)
+void LevelSet::save_design(int level_index, unsigned save_slot)
 {
     SaveObject* sobj = save_one(level_index);
     delete levels[level_index]->saved_designs[save_slot];
@@ -723,20 +723,20 @@ void LevelSet::save_design(unsigned level_index, unsigned save_slot)
     delete sobj;
 }
 
-void LevelSet::reset(unsigned level_index)
+void LevelSet::reset(int level_index)
 {
     levels[level_index]->circuit->remove_circles(this);
     levels[level_index]->reset();
 }
 
 
-void LevelSet::remove_circles(unsigned level_index)
+void LevelSet::remove_circles(int level_index)
 {
     if (levels[level_index])
         levels[level_index]->circuit->remove_circles(this);
 }
 
-void LevelSet::touch(unsigned level_index)
+void LevelSet::touch(int level_index)
 {
     levels[level_index]->touch();
     levels[level_index]->circuit->remove_circles(this);
@@ -750,7 +750,7 @@ unsigned LevelSet::new_user_level()
     return count;
 }
 
-unsigned LevelSet::import_level(LevelSet* other_set, unsigned level_index)
+unsigned LevelSet::import_level(LevelSet* other_set, int level_index)
 {
     unsigned new_index = LEVEL_COUNT;
     Level* old_level = other_set->levels[level_index];
@@ -798,12 +798,24 @@ int LevelSet::find_custom_by_name(std::string name)
     }
 }
 
-void LevelSet::delete_level(unsigned level_index)
+void LevelSet::delete_level(int level_index)
 
 {
-    delete levels[level_index];
-    levels.erase(levels.begin() + level_index);
-
     for (int i = 0; i < levels.size(); i++)
         levels[i]->circuit->reindex_deleted_level(this, level_index);
+
+    delete levels[level_index];
+    levels.erase(levels.begin() + level_index);
+}
+
+int LevelSet::find_level(int level_index, std::string name)
+{
+    if (level_index < LEVEL_COUNT)
+        return level_index;
+    if (level_index < levels.size() && (name == "" || levels[level_index]->name == name))
+        return level_index;
+    for (int i = 0; i < levels.size(); i++)
+        if (levels[i]->name == name)
+            return i;
+    return -1;
 }

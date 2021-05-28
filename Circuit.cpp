@@ -577,17 +577,15 @@ CircuitElementSubCircuit::~CircuitElementSubCircuit()
         delete circuit;
 }
 
-CircuitElementSubCircuit::CircuitElementSubCircuit(DirFlip dir_flip_, unsigned level_index_, LevelSet* level_set, bool read_only_):
+CircuitElementSubCircuit::CircuitElementSubCircuit(DirFlip dir_flip_, int level_index_, LevelSet* level_set, bool read_only_):
     dir_flip(dir_flip_),
     level_index(level_index_),
     read_only(read_only_)
 {
-    level = NULL;
+    level = level_set->levels[level_index];
+    name = level->name;
     circuit = NULL;
-    if (level_set)
-    {
-        elaborate(level_set);
-    }
+    elaborate(level_set);
 }
 
 CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap, bool read_only_):
@@ -613,6 +611,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& oth
     level = other.level;
     custom  = other.custom;
     read_only  = other.read_only;
+    name = other.name;
     if (custom)
     {
         circuit = new Circuit(*other.circuit);
@@ -647,7 +646,12 @@ void CircuitElementSubCircuit::reset()
 
 void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
 {
-    level = level_set->levels[level_index];
+    level_index = level_set->find_level(level_index, name);
+    if (level_index >= 0)
+        level = level_set->levels[level_index];
+
+    if (level_index >= LEVEL_COUNT)
+        name = level->name;
     if (!custom)
     {
         if (circuit)
@@ -668,7 +672,7 @@ void CircuitElementSubCircuit::retire()
     }
 }
 
-bool CircuitElementSubCircuit::contains_subcircuit_level(unsigned level_index_q, LevelSet* level_set)
+bool CircuitElementSubCircuit::contains_subcircuit_level(int level_index_q, LevelSet* level_set)
 {
     if (!custom && level_index_q == level_index)
         return true;
@@ -696,20 +700,24 @@ SDL_Rect CircuitElementSubCircuit::getimage_bg(void)
 
 XYPos CircuitElementSubCircuit::getimage(void)
 {
-    if (!level)
-        return XYPos(-1,-1);
+    if (level_index < 0)
+        return XYPos(128 + 3 * 32, 32 + 3 * 32);
     assert(level);
     return level->getimage(dir_flip);
 }
 
 XYPos CircuitElementSubCircuit::getimage_fg(void)
 {
+    if (level_index < 0)
+        return XYPos(dir_flip.as_int() * 24 + 192, 944);
     assert(level);
     return level->getimage_fg(dir_flip);
 }
 
 WrappedTexture* CircuitElementSubCircuit::getimage_fg_texture(void)
 {
+    if (level_index < 0)
+        return NULL;
     assert(level);
     return level->getimage_fg_texture();
 }
@@ -727,7 +735,7 @@ unsigned CircuitElementSubCircuit::get_cost()
 {
     return 4 + circuit->get_cost();
 }
-void CircuitElementSubCircuit::reindex_deleted_level(LevelSet* level_set, unsigned deleted_level_index)
+void CircuitElementSubCircuit::reindex_deleted_level(LevelSet* level_set, int deleted_level_index)
 {
     if (level_index > deleted_level_index)
         level_index--;
@@ -736,10 +744,11 @@ void CircuitElementSubCircuit::reindex_deleted_level(LevelSet* level_set, unsign
         if (!custom)
         {
             custom = true;
-            level = level_set->levels[level_index];
             if (circuit)
                 delete circuit;
             circuit = new Circuit(*level->circuit);
+            level = NULL;
+            level_index = -1;
         }
     }
     if (custom)
@@ -1112,7 +1121,7 @@ void Circuit::remove_circles(LevelSet* level_set, std::set<unsigned> seen)
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        unsigned level_index = 0xFFFFFFFF;
+        int level_index = 0xFFFFFFFF;
         Circuit* subcircuit = elements[pos.y][pos.x]->get_subcircuit(&level_index);
         if (level_index != 0xFFFFFFFF)
         {
@@ -1201,7 +1210,7 @@ void Circuit::set_element_source(XYPos pos, Direction direction)
     elements[pos.y][pos.x] = new CircuitElementSource(direction);
 }
 
-void Circuit::set_element_subcircuit(XYPos pos, DirFlip dir_flip, unsigned level_index, LevelSet* level_set)
+void Circuit::set_element_subcircuit(XYPos pos, DirFlip dir_flip, int level_index, LevelSet* level_set)
 {
     if (is_blocked(pos))
         return;
@@ -1540,7 +1549,7 @@ void Circuit::paste(Clipboard& clipboard, XYPos offset, LevelSet* level_set)
     elaborate(level_set);
 }
 
-bool Circuit::contains_subcircuit_level(unsigned level_index, LevelSet* level_set)
+bool Circuit::contains_subcircuit_level(int level_index, LevelSet* level_set)
 {
     XYPos pos;
     for (pos.y = 0; pos.y < 9; pos.y++)
@@ -1597,7 +1606,7 @@ void Circuit::copy_in(Circuit* other)
     signs = other->signs;
 }
 
-void Circuit::reindex_deleted_level(LevelSet* level_set, unsigned level_index)
+void Circuit::reindex_deleted_level(LevelSet* level_set, int level_index)
 {
     XYPos pos;
     for (pos.y = 0; pos.y < 9; pos.y++)

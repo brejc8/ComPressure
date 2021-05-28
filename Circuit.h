@@ -340,7 +340,7 @@ public:
     virtual void elaborate(LevelSet* level_set) {}
     virtual void reset() {}
     virtual void retire() {}
-    virtual bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set) {return false;}
+    virtual bool contains_subcircuit_level(int level_index, LevelSet* level_set) {return false;}
     virtual unsigned getconnections(void) = 0;
     virtual void render_prep(PressureAdjacent adj) {}
     virtual void sim_prep(PressureAdjacent adj, FastSim& fast_sim) = 0;
@@ -353,7 +353,7 @@ public:
 
     virtual CircuitElementType get_type() = 0;
     virtual void extend_pipe(Connections con){assert(0);}
-    virtual Circuit* get_subcircuit(unsigned *level_index_ = NULL) {return NULL;}
+    virtual Circuit* get_subcircuit(int *level_index_ = NULL) {return NULL;}
     virtual bool get_custom() {return false;}
     virtual void set_custom() {}
     virtual bool get_read_only() {return true;}
@@ -361,7 +361,7 @@ public:
     virtual void rotate(bool clockwise) = 0;
     virtual void flip(bool vertically) = 0;
     virtual unsigned get_cost() = 0;
-    virtual void reindex_deleted_level(LevelSet* level_set, unsigned level_index) {};
+    virtual void reindex_deleted_level(LevelSet* level_set, int level_index) {};
 };
 
 class CircuitElementPipe : public CircuitElement
@@ -479,13 +479,14 @@ class CircuitElementSubCircuit : public CircuitElement
 private:
 public:
     DirFlip dir_flip;
-    unsigned level_index;
+    int level_index;
+    std::string name = "";
     Level* level = NULL;;
     Circuit* circuit = NULL;
     bool custom = false;
     bool read_only = false;
 
-    CircuitElementSubCircuit(DirFlip dir_flip_, unsigned level_index_, LevelSet* level_set = NULL, bool read_only_ = false);
+    CircuitElementSubCircuit(DirFlip dir_flip_, int level_index_, LevelSet* level_set, bool read_only_ = false);
     CircuitElementSubCircuit(SaveObjectMap*, bool read_only_ = false);
     CircuitElementSubCircuit(CircuitElementSubCircuit& other);
     ~CircuitElementSubCircuit();
@@ -496,7 +497,7 @@ public:
     void reset();
     void elaborate(LevelSet* level_set);
     void retire();
-    bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
+    bool contains_subcircuit_level(int level_index, LevelSet* level_set);
     unsigned getconnections(void);
     XYPos getimage(void);
     SDL_Rect getimage_bg(void);
@@ -504,7 +505,7 @@ public:
     WrappedTexture* getimage_fg_texture();
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
-    Circuit* get_subcircuit(unsigned *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}
+    Circuit* get_subcircuit(int *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}
     virtual bool get_custom() {return custom;}
     virtual void set_custom() {custom = true;}
     virtual bool get_read_only() {return read_only;}
@@ -512,7 +513,7 @@ public:
     void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
     void flip(bool vertically) {dir_flip = dir_flip.flip(vertically);};
     unsigned get_cost();
-    virtual void reindex_deleted_level(LevelSet* level_set, unsigned level_index);
+    virtual void reindex_deleted_level(LevelSet* level_set, int level_index);
 };
 
 class Sign
@@ -584,7 +585,7 @@ public:
     void set_element_pipe(XYPos pos, Connections con);
     void set_element_valve(XYPos pos, DirFlip dir_flip);
     void set_element_source(XYPos pos, Direction direction);
-    void set_element_subcircuit(XYPos pos, DirFlip dir_flip, unsigned level_index, LevelSet* level_set);
+    void set_element_subcircuit(XYPos pos, DirFlip dir_flip, int level_index, LevelSet* level_set);
     void add_sign(Sign sign, bool no_undo = false);
 
     void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
@@ -612,13 +613,13 @@ public:
     void redo(LevelSet* level_set);
     void paste(Clipboard& clipboard, XYPos pos, LevelSet* level_set);
 
-    bool contains_subcircuit_level(unsigned level_index, LevelSet* level_set);
+    bool contains_subcircuit_level(int level_index, LevelSet* level_set);
     unsigned get_cost();
     void reset_steam_used() {fast_sim.reset_steam_used();}
     int64_t get_steam_used() {return fast_sim.get_steam_used();}
     SaveObjectList* save_forced();
     void copy_in(Circuit* other);
-    void reindex_deleted_level(LevelSet* level_set, unsigned level_index);
+    void reindex_deleted_level(LevelSet* level_set, int level_index);
 
 };
 
