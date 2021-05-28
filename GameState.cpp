@@ -340,6 +340,8 @@ void GameState::score_submit(int level, bool sync)
 
 void GameState::score_fetch(int level_index)
 {
+    if (level_index >= LEVEL_COUNT)
+        return;
     if (scores_from_server.working)
         return;
     SaveObjectMap* omap = new SaveObjectMap;
@@ -4455,12 +4457,12 @@ void GameState::set_level_set(LevelSet* new_level_set)
                     for (int s = 0; s < (r & 3); s++)
                     {
                         int ox = ix;
-                        ix = 12 - iy;
+                        ix = 11 - iy;
                         iy = ox;
                     }
                     if (r & 4)
                     {
-                        iy = 12 - iy;
+                        iy = 11 - iy;
                     }
                 
                 }

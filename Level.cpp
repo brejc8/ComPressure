@@ -814,7 +814,7 @@ int LevelSet::find_level(int level_index, std::string name)
         return level_index;
     if (level_index < levels.size() && (name == "" || levels[level_index]->name == name))
         return level_index;
-    for (int i = 0; i < levels.size(); i++)
+    for (int i = LEVEL_COUNT; i < levels.size(); i++)
         if (levels[i]->name == name)
             return i;
     return -1;

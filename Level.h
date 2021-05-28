@@ -145,7 +145,7 @@ public:
     std::vector<FriendScore> friend_scores;
 
 
-    int64_t global_score_graph[200];
+    int64_t global_score_graph[200] = {0};
     int64_t global_fetched_score;
     bool global_score_graph_set = false;
     unsigned global_score_graph_time = 0;
