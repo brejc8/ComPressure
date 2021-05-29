@@ -85,7 +85,6 @@ GameState::GameState(const char* filename)
             flash_editor_menu = omap->get_num("flash_editor_menu");
             flash_steam_inlet = omap->get_num("flash_steam_inlet");
             flash_valve = omap->get_num("flash_valve");
-            level_screen = omap->get_num("level_screen");
 //            requesting_help = omap->get_num("requesting_help");
 
             sound_volume = omap->get_num("sound_volume");
@@ -170,7 +169,6 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("flash_editor_menu", flash_editor_menu);
     omap->add_num("flash_steam_inlet", flash_steam_inlet);
     omap->add_num("flash_valve", flash_valve);
-    omap->add_num("level_screen", level_screen);
 //    omap->add_num("requesting_help", requesting_help);
     omap->add_num("scale", scale);
     omap->add_num("full_screen", full_screen);
@@ -787,6 +785,41 @@ void GameState::render_tooltip()
         render_text(tip_pos + XYPos(1,0), tip_str.c_str(), SDL_Color{0x0,0x0,0x0});
         tooltip_string = "";
     }
+}
+
+void GameState::render_scroll_bar(ScrollBar& sbar)
+{
+    {
+        SDL_Rect src_rect = {304, 280, 16, 16};
+        SDL_Rect dst_rect = {sbar.pos.x * scale, sbar.pos.y * scale, 16 * scale, 16 * scale};
+        render_texture(src_rect, dst_rect);
+    }
+    {
+        int total_size = sbar.height - 32;
+        int bar_size = total_size;
+        if (sbar.total_rows > sbar.visible_rows)
+            bar_size = (total_size * sbar.visible_rows) / sbar.total_rows;
+        int bar_offset = (total_size * sbar.offset_rows)/ sbar.total_rows + 16;
+        
+        SDL_Rect src_rect = {304, 296, 16, 16};
+        SDL_Rect dst_rect = {sbar.pos.x * scale, (sbar.pos.y + bar_offset) * scale, 16 * scale, 16 * scale};
+        render_texture(src_rect, dst_rect);
+
+        src_rect = {304, 308, 16, 1};
+        dst_rect = {sbar.pos.x * scale, (sbar.pos.y + bar_offset + 16) * scale, 16 * scale, (bar_size - 24) * scale};
+        render_texture(src_rect, dst_rect);
+
+        src_rect = {304, 312, 16, 8};
+        dst_rect = {sbar.pos.x * scale, (sbar.pos.y + bar_offset + bar_size - 8) * scale, 16 * scale, 8 * scale};
+        render_texture(src_rect, dst_rect);
+
+    }
+    {
+        SDL_Rect src_rect = {304, 320, 16, 16};
+        SDL_Rect dst_rect = {sbar.pos.x * scale, (sbar.pos.y + sbar.height - 16) * scale, 16 * scale, 16 * scale};
+        render_texture(src_rect, dst_rect);
+    }
+
 }
 
 void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
@@ -1511,7 +1544,7 @@ void GameState::render(bool saving)
                     assert(0);
             }
             
-            render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 16, 11*32 + 8), panel_colour);
+            render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 32, 11*32 + 8), panel_colour);
         }
         {                                                                                               // Top Menu
             bool flash_next_level = (next_dialogue_level == highest_level) && (frame_index % 60 < 30) && (highest_level < LEVEL_COUNT);
@@ -1551,28 +1584,19 @@ void GameState::render(bool saving)
     
     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
+        level_select_scroll.total_rows = (level_set->top_playable() + 8) / 8;
+        normalize_scroll_bar(level_select_scroll);
+
         for (pos.y = 0; pos.y < 4; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
             unsigned index =  pos.y * 8 + pos.x;
-            int level_index =  index + level_screen * 30;
-
-            if (level_screen && pos == XYPos(0,0))
-            {
-                render_button(XYPos(0 * 32 * scale + panel_offset.x, 0 * 32 * scale + panel_offset.y), XYPos(280,328), 0, "Previous set");
-                continue;
-            }
+            int level_index =  index + level_select_scroll.offset_rows * 8;
 
             if (!level_set->is_playable(level_index, highest_level))
                 continue;
             if (next_dialogue_level == level_index && (frame_index % 60 < 30) && !show_dialogue && (next_dialogue_level < LEVEL_COUNT))
                 continue;
-
-            if (pos == XYPos(7,3))
-            {
-                render_button(XYPos(7 * 32 * scale + panel_offset.x, 3 * 32 * scale + panel_offset.y), XYPos(256,328), 0, "Next set");
-                continue;
-            }
 
             WrappedTexture* w_tex = level_set->levels[level_index]->getimage_fg_texture();
             SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
@@ -1597,6 +1621,9 @@ void GameState::render(bool saving)
                     break;
             }
         }
+        render_scroll_bar(level_select_scroll);
+
+        
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
         render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
@@ -2535,6 +2562,49 @@ void GameState::set_level(int level_index)
     }
 }
 
+void GameState::click_scroll_bar(ScrollBar& sbar, XYPos mouse_click)
+{
+    int total_size = sbar.height - 32;
+    int bar_size = total_size;
+    if (sbar.total_rows > sbar.visible_rows)
+        bar_size = (total_size * sbar.visible_rows) / sbar.total_rows;
+    int bar_offset = (total_size * sbar.offset_rows)/ sbar.total_rows + 16;
+
+    if (!mouse_click.inside(XYPos(16, sbar.height)))
+        return;
+    if (mouse_click.y < 16)
+    {
+        sbar.offset_rows--;
+    }
+    else if (mouse_click.y > (sbar.height - 16))
+    {
+        sbar.offset_rows++;
+    }
+    else if (mouse_click.y < bar_offset)
+    {
+        sbar.offset_rows -= sbar.visible_rows;
+    }
+    else if (mouse_click.y < bar_offset + bar_size)
+    {
+        mouse_state = MOUSE_STATE_SCROLL_BAR_DRAG;
+        scroll_drag_y = mouse_click.y - bar_offset;
+        dragged_scroll_bar = &sbar;
+    }
+    else
+    {
+        sbar.offset_rows += sbar.visible_rows;
+    }
+    normalize_scroll_bar(sbar);
+}
+
+void GameState::normalize_scroll_bar(ScrollBar& sbar)
+{
+    if ((sbar.offset_rows + sbar.visible_rows) > sbar.total_rows)
+        sbar.offset_rows = sbar.total_rows - sbar.visible_rows;
+    if (sbar.offset_rows < 0)
+        sbar.offset_rows = 0; 
+}
+
 void GameState::mouse_click_in_grid(unsigned clicks)
 {
     if (mouse_state == MOUSE_STATE_ANIMATING)
@@ -3026,20 +3096,13 @@ void GameState::mouse_click_in_panel()
     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
         XYPos panel_grid_pos = panel_pos / 32;
-        int level_index = panel_grid_pos.x + panel_grid_pos.y * 8 + level_screen * 30;
+        int level_index = panel_grid_pos.x + panel_grid_pos.y * 8 + level_select_scroll.offset_rows * 8;
 
-        if (panel_grid_pos == XYPos(7,3))
+        if (panel_grid_pos.x >= 8)
         {
-            if (highest_level >= level_index)
-                level_screen++;
-            return;
+            click_scroll_bar(level_select_scroll, panel_pos - XYPos(8*32, 0));
         }
-        if (level_screen && panel_grid_pos == XYPos(0,0))
-        {
-            level_screen--;
-            return;
-        }
-        if ((panel_grid_pos.y < 4) && level_set->is_playable(level_index, highest_level))
+        else if ((panel_grid_pos.y < 4) && level_set->is_playable(level_index, highest_level))
         {
             set_level(level_index);
         }
@@ -3581,6 +3644,12 @@ void GameState::mouse_motion()
         return;
     }
 
+    if (mouse_state == MOUSE_STATE_SCROLL_BAR_DRAG)
+    {
+        int pos = mouse.y / scale - dragged_scroll_bar->pos.y - scroll_drag_y - 16;
+        pos = (pos * dragged_scroll_bar->total_rows + (dragged_scroll_bar->height - 32) / 2) / (dragged_scroll_bar->height - 32);
+        dragged_scroll_bar->offset_rows = pos;
+    }
     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
     {
         XYPos menu_icons_pos = (mouse / scale - XYPos((16 + 32 * 11), (16)));
@@ -3994,6 +4063,8 @@ bool GameState::events()
                 mouse -= screen_offset;
                 if (e.button.button == SDL_BUTTON_LEFT)
                 {
+                    if (mouse_state == MOUSE_STATE_SCROLL_BAR_DRAG)
+                        mouse_state = MOUSE_STATE_NONE;
                     if (mouse_state == MOUSE_STATE_SPEED_SLIDER)
                         mouse_state = MOUSE_STATE_NONE;
                     if (mouse_state == MOUSE_STATE_PIPE_DRAGGING)

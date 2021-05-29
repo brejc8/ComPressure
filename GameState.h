@@ -42,6 +42,7 @@ public:
         MOUSE_STATE_PLACING_SUBCIRCUIT,
         MOUSE_STATE_PLACING_SIGN,
         MOUSE_STATE_SPEED_SLIDER,
+        MOUSE_STATE_SCROLL_BAR_DRAG,
         MOUSE_STATE_AREA_SELECT,
         MOUSE_STATE_DRAGGING_SIGN,
         MOUSE_STATE_ENTERING_TEXT_INTO_SIGN,
@@ -69,6 +70,27 @@ public:
 
     } test_mode = TEST_MODE_ACCURACY;
 
+
+
+    class ScrollBar
+    {
+    public:
+        int total_rows = 0;
+        int visible_rows;
+        int offset_rows = 0;
+        XYPos pos;
+        int height;
+        
+        ScrollBar(int visible_rows_, XYPos pos_, int height_) :
+            visible_rows(visible_rows_), pos(pos_), height(height_)
+        {}
+    };
+    
+    
+    ScrollBar level_select_scroll = ScrollBar(4, XYPos(640 - 22, 48), 4 * 32);
+    int scroll_drag_y;
+    ScrollBar *dragged_scroll_bar;
+    
 
     DirFlip dir_flip;
 
@@ -154,7 +176,6 @@ public:
     bool flash_editor_menu = true;
     bool flash_steam_inlet = true;
     bool flash_valve = true;
-    unsigned level_screen = 0;
 
     std::string tooltip_string;
 
@@ -233,6 +254,7 @@ public:
     void render_box(XYPos pos, XYPos size, unsigned colour);
     void render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip = NULL, SDL_Texture* texture = NULL);
     void render_tooltip();
+    void render_scroll_bar(ScrollBar& sbar);
 
     void render_text_wrapped(XYPos tl, const char* string, int width);
     void render_text(XYPos tl, const char* string, SDL_Color color = {0xff,0xff,0xff}, unsigned scale = 1);
@@ -240,6 +262,8 @@ public:
     void render(bool saving = false);
     void advance();
     void set_level(int level_index);
+    void click_scroll_bar(ScrollBar& sbar, XYPos mouse_click);
+    void normalize_scroll_bar(ScrollBar& sbar);
     void mouse_click_in_grid(unsigned clicks);
     void mouse_click_in_panel();
     void mouse_motion();

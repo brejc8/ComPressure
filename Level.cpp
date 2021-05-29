@@ -689,8 +689,9 @@ bool LevelSet::is_playable(unsigned level, unsigned highest_level)
 
 int LevelSet::top_playable()
 {
-    if (read_only)
-        return -1;
+    if (levels.size() > LEVEL_COUNT)
+        return levels.size() - 1;
+
     for (int i = 0; i < LEVEL_COUNT; i++)
     {
         if (levels[i]->best_score <= percent_as_pressure(0))
