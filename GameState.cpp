@@ -4310,22 +4310,41 @@ bool GameState::events()
             }
             case SDL_MOUSEWHEEL:
             {
-                if(e.wheel.y > 0)
+                if (mouse.x < panel_offset.x)
                 {
-                    dir_flip = dir_flip.rotate(true);
-                    if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
-                        clipboard.rotate(false);
-                    if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
-                        dragged_sign.rotate(false);
-                }
+                    if(e.wheel.y > 0)
+                    {
+                        dir_flip = dir_flip.rotate(true);
+                        if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                            clipboard.rotate(false);
+                        if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                            dragged_sign.rotate(false);
+                    }
 
-                if(e.wheel.y < 0)
+                    if(e.wheel.y < 0)
+                    {
+                        dir_flip = dir_flip.rotate(false);
+                        if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                            clipboard.rotate(true);
+                        if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
+                            dragged_sign.rotate(true);
+                    }
+                }
+                else
                 {
-                    dir_flip = dir_flip.rotate(false);
-                    if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
-                        clipboard.rotate(true);
-                    if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
-                        dragged_sign.rotate(true);
+                    ScrollBar* selected_scroll = NULL;
+                    if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
+                        selected_scroll = &level_select_scroll;
+
+                    if (selected_scroll)
+                    {
+                        if(e.wheel.y > 0)
+                            selected_scroll->offset_rows--;
+
+                        if(e.wheel.y < 0)
+                            selected_scroll->offset_rows++;
+                        normalize_scroll_bar(*selected_scroll);
+                    }
                 }
 
                 break;
