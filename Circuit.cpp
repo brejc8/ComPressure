@@ -612,7 +612,10 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& oth
     custom  = other.custom;
     read_only  = other.read_only;
     name = other.name;
-    circuit = new Circuit(*other.circuit);
+    if (other.circuit)
+    {
+        circuit = new Circuit(*other.circuit);
+    }
 }
 
 void CircuitElementSubCircuit::save(SaveObjectMap* omap)
