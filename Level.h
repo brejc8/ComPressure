@@ -183,7 +183,7 @@ public:
     SaveObject* save_all(int level_index, bool lite = false);
     SaveObject* save_one(int level_index);
     bool is_playable(unsigned level, unsigned highest_level);
-    int top_playable();
+    int top_playable(int highest_level);
     Pressure test_level(int level_index);
     void record_best_score(int level_index);
     void save_design(int level_index, unsigned save_slot);

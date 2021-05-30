@@ -612,10 +612,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& oth
     custom  = other.custom;
     read_only  = other.read_only;
     name = other.name;
-    if (custom)
-    {
-        circuit = new Circuit(*other.circuit);
-    }
+    circuit = new Circuit(*other.circuit);
 }
 
 void CircuitElementSubCircuit::save(SaveObjectMap* omap)
@@ -649,11 +646,17 @@ void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
     level_index = level_set->find_level(level_index, name);
     if (level_index >= 0)
         level = level_set->levels[level_index];
+    else
+    {
+        custom = true;
+        level = NULL;
+    }
 
     if (level_index >= LEVEL_COUNT)
         name = level->name;
     if (!custom)
     {
+        assert (level_index >= 0);
         if (circuit)
             delete circuit;
 //        level->circuit->remove_circles(level_set);

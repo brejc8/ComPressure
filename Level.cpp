@@ -687,17 +687,12 @@ bool LevelSet::is_playable(unsigned level, unsigned highest_level)
     return true;
 }
 
-int LevelSet::top_playable()
+int LevelSet::top_playable(int highest_level)
 {
     if (levels.size() > LEVEL_COUNT)
         return levels.size() - 1;
 
-    for (int i = 0; i < LEVEL_COUNT; i++)
-    {
-        if (levels[i]->best_score <= percent_as_pressure(0))
-            return i;
-    }
-    return LEVEL_COUNT - 1;
+    return highest_level;
 }
 
 Pressure LevelSet::test_level(int level_index)

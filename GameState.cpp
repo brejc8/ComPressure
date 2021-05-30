@@ -1584,7 +1584,7 @@ void GameState::render(bool saving)
     
     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
-        level_select_scroll.total_rows = (level_set->top_playable() + 8) / 8;
+        level_select_scroll.total_rows = (level_set->top_playable(highest_level) + 8) / 8;
         normalize_scroll_bar(level_select_scroll);
 
         for (pos.y = 0; pos.y < 4; pos.y++)
