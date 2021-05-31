@@ -2017,6 +2017,22 @@ void GameState::render(bool saving)
             src_rect.x = 352;
             dst_rect.x = panel_offset.x + 132 * scale;
             render_texture(src_rect, dst_rect);
+        }
+
+        if (editing_level)
+        {
+            SDL_Rect src_rect = {464, 160, 8, 16};
+            SDL_Rect dst_rect = {panel_offset.x + 116 * scale, panel_offset.y + (32 + 32 + 16) * scale, 8 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+            
+            src_rect = {448, 136, 8, 8};
+            dst_rect = {panel_offset.x + 108 * scale, panel_offset.y + (32 + 32 + 16 + 5) * scale, 8 * scale, 8 * scale};
+            render_texture(src_rect, dst_rect);
+            
+            int c = int64_t(int64_t(current_level->substep_count) * PRESSURE_SCALAR) / 10000;
+            
+            render_number_pressure(XYPos(panel_offset.x + 71 * scale, panel_offset.y + (32 + 32 + 16 + 3) * scale), c, 2, 9, 1);
+
 
         }
         if (editing_level)
@@ -3390,6 +3406,31 @@ void GameState::mouse_click_in_panel()
         XYPos subtest_pos = panel_pos - XYPos(8 + 16, 32 + 32 + 16);
         if (editing_level && (subtest_pos.y >= 0) && (subtest_pos.y < 16))
         {
+            if (panel_pos.x >= 116 && panel_pos.x < 124)
+            {
+                const int s_steps[] = {100, 200, 500, 1000, 2000, 5000, 7500, 10000, 15000, 20000, 30000, 40000, 50000, 60000, 80000, 100000, 200000, 500000, 1000000};
+                int c = current_level->substep_count;
+                int s_index = 0;
+                if (c > 1000000)
+                    c = 1000000;
+                while (c > s_steps[s_index])
+                    s_index++;
+                if (subtest_pos.y < 8)
+                {
+                    if (c < 1000000)
+                        s_index++;
+                }
+                else
+                {
+                    if (s_index)
+                        s_index--;
+                }
+                
+                
+                    
+
+                current_level->substep_count = s_steps[s_index];
+            }
             if (panel_pos.x >= 132 && panel_pos.x < 148)
             {
                 current_level->tests[current_level->test_index].first_simpoint = current_level->sim_point_index;
