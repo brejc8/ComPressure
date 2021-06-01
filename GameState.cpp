@@ -3384,15 +3384,17 @@ void GameState::mouse_click_in_panel()
         }
         if (editing_level && (panel_grid_pos == XYPos(current_level->tests.size() + 1, 2)))
         {
-            current_level->tests.push_back(current_level->tests.back());
+            current_level->tests.insert(current_level->tests.begin() + current_level->test_index, current_level->tests[current_level->test_index]);
+            current_level->test_index++;
         }
         if (editing_level && (panel_grid_pos == XYPos(current_level->tests.size() + 1, 3)))
         {
             if (current_level->tests.size() > 1)
             {
-                current_level->tests.pop_back();
+                current_level->tests.erase(current_level->tests.begin() + current_level->test_index);
+
                 if (current_level->test_index >= current_level->tests.size())
-                    current_level->test_index = 0;
+                    current_level->test_index = current_level->tests.size() - 1;
             }
         }
         if (panel_grid_pos == XYPos(0, 3) && current_level->best_design)
@@ -3408,7 +3410,7 @@ void GameState::mouse_click_in_panel()
         {
             if (panel_pos.x >= 116 && panel_pos.x < 124)
             {
-                const int s_steps[] = {100, 200, 500, 1000, 2000, 5000, 7500, 10000, 15000, 20000, 30000, 40000, 50000, 60000, 80000, 100000, 200000, 500000, 1000000};
+                const int s_steps[] = {200, 500, 1000, 2000, 5000, 7500, 10000, 15000, 20000, 30000, 40000, 50000, 60000, 80000, 100000, 200000, 500000, 1000000};
                 int c = current_level->substep_count;
                 int s_index = 0;
                 if (c > 1000000)
@@ -3516,13 +3518,17 @@ void GameState::mouse_click_in_panel()
             {
                 if (subtest_pos.y >= 16 && subtest_pos.y < 32)
                 {
-                    current_level->tests[current_level->test_index].sim_points.push_back(current_level->tests[current_level->test_index].sim_points.back());
+                    std::vector<SimPoint> &sim_points = current_level->tests[current_level->test_index].sim_points;
+                    sim_points.insert(sim_points.begin() + current_level->sim_point_index, sim_points[current_level->sim_point_index]);
+                    current_level->sim_point_index++;
                 }
                 else if (subtest_pos.y >= 32 && subtest_pos.y < 48)
                 {
                     if (current_level->tests[current_level->test_index].sim_points.size() > 1)
                     {
-                        current_level->tests[current_level->test_index].sim_points.pop_back();
+                        std::vector<SimPoint> &sim_points = current_level->tests[current_level->test_index].sim_points;
+                        sim_points.erase(sim_points.begin() + current_level->sim_point_index);
+                        
                         if (current_level->sim_point_index >= current_level->tests[current_level->test_index].sim_points.size())
                             current_level->sim_point_index = current_level->tests[current_level->test_index].sim_points.size() - 1;
                         if (current_level->tests[current_level->test_index].first_simpoint >= current_level->tests[current_level->test_index].sim_points.size())
