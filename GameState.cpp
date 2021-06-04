@@ -897,7 +897,7 @@ static int max_help_page(int next_dialogue_level)
         return 6;
     if (next_dialogue_level <= 6)
         return 7;
-    if (next_dialogue_level <= 38)
+    if (next_dialogue_level <= 24)
         return 11;
     return 12;
 }
