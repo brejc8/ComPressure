@@ -2401,6 +2401,8 @@ void GameState::render(bool saving)
             SDL_Rect dst_rect = {(32 + 512 + 32 + 8) * scale, (8) * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
         }
+        if (show_help_page > 11)
+            show_help_page = 11;
 
         for (int i = 0; i < 2; i++)
         {
@@ -2447,8 +2449,8 @@ void GameState::render(bool saving)
                 {XYPos(0,17), 5,10, "The pressure generated in this arrangement is, in percent, the openness of the source valve divided by the sum of the openness of both valves.\n\n"
                                     "Pressure = S / (S + V)\n\nWhere S is Supply valve openness and V is Venting valve openness.\n\n"
                                     "In this case, Supply is 40 (40 - 0). Venting is also 40 (60 - 20). The expected value between is 40 / (40 + 40) = 50%, thus 50 PSI."},
-                {XYPos(0,18), 1, 1, (const char*) u8"Three scoring modes are available. The Accuracy mode scores the proximity to the target value (for the worst test).\n\nPrice mode ranks designs by cost. Pipes cost \u00A31 per port, valves cost \u00A310 and steam inlets cost \u00A35. There is an extra \u00A34 charge for each subdesign.\n\nSteam mode measures the amount of steam supplied by the steam inlets."},
-                {XYPos(0,18), 0, 0, ""},
+                {XYPos(0,18), 1, 1, (const char*) u8"Three scoring modes are available. The default (Accuracy) mode scores the proximity to the target value (for the worst test).\n\nPrice mode ranks designs by cost. Pipes cost \u00A31 per port, valves cost \u00A310 and steam inlets cost \u00A35. There is an extra \u00A34 charge for each subdesign.\n\nSteam mode measures the amount of steam supplied by the steam inlets."},
+                {XYPos(1,18), 1, 1, "It is possible to create user defined levels. These have a user defined icon and set of tests and can be exchanged through the clipboard.\n\nTests and test steps can be added/removed using the +/- buttons. The time period per step is configurable. If, when playing all tests, some steps can be skipped, the skip all button selects the subtest start on. The design can be optionally reset on all, only on play one test, or not at all. The port icons select which ports are used. Clicking the ports on the left of the value selects the ports used as the output. The values are changed in the experiment menu."},
             };
             
 
