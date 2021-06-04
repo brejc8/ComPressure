@@ -1512,7 +1512,7 @@ void GameState::render(bool saving)
             render_button(XYPos(9 * 32 * scale, 0), XYPos(400, 160), 0, "Delete level");
             render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
         }
-        else if (current_level_index >= LEVEL_COUNT)
+        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > 24)
         {
             render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Level Editor");
         }
@@ -1626,7 +1626,8 @@ void GameState::render(bool saving)
         
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
-        render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
+        if (next_dialogue_level > 24)
+            render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
 
 
         {
@@ -2437,7 +2438,7 @@ void GameState::render(bool saving)
                 {XYPos(2,12), 3, 1, "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right. You can press Space to fast forward to the next phase.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
                 {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the ports and examine your design's operation. The vertical sliders set the desired value. The horizontal sliders below set force of the input. Setting the slider all the way left makes it an output. Initial values are set from the current test."},
                 {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the port values."},
-                {XYPos(1,15), 4, 1, "Components can be selected by either clicking while holding Ctrl, or dragging while holding Shift. Selected components can be moved using WASD keys, or roated using Q and E, if the destination is empty. Keys to copy and paste are: C for copy, X for cut and V for paste. To delete selected components, press Delete.\n\nUndo is reached through Z key (Ctrl is optional) and Redo through either Y or Shift+Z. Undo can also be triggered by holding right mouse button and clicking the left one."},
+                {XYPos(1,15), 4, 1, "Components can be selected by either clicking while holding Ctrl, or dragging while holding Shift. Selected components can be moved using WASD keys, or rotated using Q and E, if the destination is empty. Keys to copy and paste are: C for copy, X for cut and V for paste. To delete selected components, press Delete.\n\nUndo is reached through Z key (Ctrl is optional) and Redo through either Y or Shift+Z. Undo can also be triggered by holding right mouse button and clicking the left one."},
                 {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow you to exit the game, switch between windowed and full screen, join our Discord group and show credits.\n\nThe sliders adjust the sound effects and music volumes."},
                 
                 {XYPos(1,16), 2, 1, "Completed designs are available for use as components. Available components are shown in the build menu. Changing a design will update its implementation in all components.\n\nDouble-clicking on the component allows you to inspect it. You can pop back up the stack by clicking the design icon in the top left. Pressing the customize button, while inspecting, creates a local design which can be edited and is no longer updated when the original is changed. The design will turn red to signify this."},
@@ -2722,7 +2723,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 confirm_box_pos = XYPos(32*9 - 16, 32);
                 return;
             }
-            else if (i == 10 && (current_level_index >= LEVEL_COUNT))
+            else if (i == 10 && (next_dialogue_level > 24) &&(current_level_index >= LEVEL_COUNT))
             {
                 editing_level = true;
                 current_level->current_simpoint = current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index];
@@ -3140,7 +3141,7 @@ void GameState::mouse_click_in_panel()
             dialogue_index = 0;
             
         }
-        else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)))  // New
+        else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)) && next_dialogue_level > 24)  // New
         {
             set_level(edited_level_set->new_user_level());
             set_level_set(edited_level_set);
