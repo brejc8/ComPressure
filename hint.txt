@@ -107,7 +107,11 @@ We need so many select signals! What if we chain a row of flow detectors with st
 !END
                               # Latch10
 !NICOLA
-We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100). I guess that Zoom element is useful after all.
+We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 – 50, or 50 – 100) to the range the Latch5 design takes (0 – 100).
+
+I guess that Zoom element is useful after all, but in this instance it may need to be quite powerful. Each zoom would be connected to five flow detectors, and it will take it a while to pressurize all those pipes. To make a design stronger, we could simply duplicate it.
+
+
 !END
                               # MIN
 !ADA

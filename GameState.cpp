@@ -1551,13 +1551,13 @@ void GameState::render(bool saving)
             render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT, "Level select");
             if (!current_circuit_is_read_only && (next_dialogue_level > 1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
                 render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR, "Design");
-            if (next_dialogue_level > 3)
+            if (next_dialogue_level > 4)
                 render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR, "Test");
             if (next_dialogue_level > 6)
                 render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST, "Experiment");
             render_button(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(0, 0), panel_state == PANEL_STATE_SCORES, "Scores");
         }
-        if (next_dialogue_level > 3)
+        if (next_dialogue_level > 4)
         {                                                                                               // Speed arrows
             render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
             SDL_Rect src_rect = {256, 136, 53, 5};
@@ -3079,7 +3079,7 @@ void GameState::mouse_click_in_panel()
                     flash_editor_menu = false;
                     break;
                 case 2:
-                    if (!(next_dialogue_level > 3))
+                    if (!(next_dialogue_level > 4))
                         break;
                     panel_state = PANEL_STATE_MONITOR;
                     break;
@@ -3094,7 +3094,7 @@ void GameState::mouse_click_in_panel()
                 case 5:
                 case 6:
                 {
-                    if (next_dialogue_level > 3)
+                    if (next_dialogue_level > 4)
                         watch_slider(panel_offset.x + (5 * 32 + 8) * scale, DIRECTION_E, 49,  &game_speed);
                     break;
                 }
@@ -3772,21 +3772,21 @@ bool GameState::events()
                         mouse_state = MOUSE_STATE_NONE;
                         break;
                     case SDL_SCANCODE_1:
-                        if (next_dialogue_level > 3)
+                        if (next_dialogue_level > 4)
                         {
                             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
                             level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_2:
-                        if (next_dialogue_level > 3)
+                        if (next_dialogue_level > 4)
                         {
                             current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
                             level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_3:
-                        if (next_dialogue_level > 3)
+                        if (next_dialogue_level > 4)
                             current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
                         break;
                     case SDL_SCANCODE_TAB:
@@ -4062,7 +4062,7 @@ bool GameState::events()
                         keyboard_ctrl = true;
                         break;
                     case SDL_SCANCODE_SPACE:
-                        if (next_dialogue_level > 3)
+                        if (next_dialogue_level > 4)
                         {
                             if (!SDL_IsTextInputActive() && current_level->monitor_state != MONITOR_STATE_PAUSE)
                             {

@@ -149,7 +149,6 @@ void mainloop()
 
 #endif
     int frame = 0;
-    int save_index = 0;
     SDL_Thread *save_thread = NULL;
     
 	while(true)
@@ -166,8 +165,6 @@ void mainloop()
         frame++;
         if (frame > 100 * 60)
         {
-            std::string my_save_filename = save_filename + std::to_string(save_index);
-            save_index = (save_index + 1) % 10;
             game_state->render(true);
             SaveObject* omap = game_state->save();
             SDL_WaitThread(save_thread, NULL);
