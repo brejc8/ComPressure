@@ -2124,8 +2124,17 @@ void GameState::render(bool saving)
 
         XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
         
-        for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
+        friend_score_scroll.total_rows = edited_level_set->levels[current_level_index]->friend_scores.size();
+        normalize_scroll_bar(friend_score_scroll);
+
+        render_scroll_bar(friend_score_scroll);
+
+
+        for (int i = 0; i < 9; i++)
         {
+            if (i >= edited_level_set->levels[current_level_index]->friend_scores.size())
+                break;
+            Level::FriendScore& score = edited_level_set->levels[current_level_index]->friend_scores[friend_score_scroll.offset_rows + i];
             render_text(table_pos+XYPos(16,0), score.steam_username.c_str());
             switch (test_mode)
             {
@@ -2618,6 +2627,8 @@ void GameState::click_scroll_bar(ScrollBar& sbar, XYPos mouse_click)
 
 void GameState::normalize_scroll_bar(ScrollBar& sbar)
 {
+    if (sbar.total_rows == 0)
+        sbar.total_rows = 1;
     if ((sbar.offset_rows + sbar.visible_rows) > sbar.total_rows)
         sbar.offset_rows = sbar.total_rows - sbar.visible_rows;
     if (sbar.offset_rows < 0)
@@ -3604,6 +3615,12 @@ void GameState::mouse_click_in_panel()
             }
         }
 
+        if ((panel_pos - XYPos(8 * 32, 32)).inside(XYPos(16, 9 * 16)))
+        {
+            click_scroll_bar(friend_score_scroll, panel_pos - XYPos(8*32, 32));
+        }
+
+
         XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
         
         for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
@@ -4385,6 +4402,8 @@ bool GameState::events()
                     ScrollBar* selected_scroll = NULL;
                     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
                         selected_scroll = &level_select_scroll;
+                    if (panel_state == PANEL_STATE_SCORES)
+                        selected_scroll = &friend_score_scroll;
 
                     if (selected_scroll)
                     {

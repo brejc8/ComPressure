@@ -88,6 +88,7 @@ public:
     
     
     ScrollBar level_select_scroll = ScrollBar(4, XYPos(640 - 22, 48), 4 * 32);
+    ScrollBar friend_score_scroll = ScrollBar(9, XYPos(640 - 22, 48 + 32), 9 * 16);
     int scroll_drag_y;
     ScrollBar *dragged_scroll_bar;
     
@@ -206,7 +207,7 @@ public:
 
     bool show_main_menu = false;
     bool display_about = false;
-    unsigned sound_volume = 50;
+    unsigned sound_volume = 15;
     unsigned music_volume = 50;
     Mix_Chunk *vent_steam_wav;
     Mix_Chunk *move_steam_wav;

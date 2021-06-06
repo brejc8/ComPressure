@@ -122,7 +122,7 @@ void mainloop()
 #ifdef STEAM
     save_filename = std::string(save_path) + "compressure.save";
 #else
-    save_filename = "compressure.save";
+    save_filename = std::string(save_path) + "test_compressure.save";
 #endif
     SDL_free(save_path);
     const char* load_filename = save_filename.c_str();
