@@ -789,6 +789,7 @@ void GameState::render_tooltip()
 
 void GameState::render_scroll_bar(ScrollBar& sbar)
 {
+    normalize_scroll_bar(sbar);
     {
         SDL_Rect src_rect = {304, 280, 16, 16};
         SDL_Rect dst_rect = {sbar.pos.x * scale, sbar.pos.y * scale, 16 * scale, 16 * scale};
@@ -801,12 +802,12 @@ void GameState::render_scroll_bar(ScrollBar& sbar)
             bar_size = (total_size * sbar.visible_rows) / sbar.total_rows;
         int bar_offset = (total_size * sbar.offset_rows)/ sbar.total_rows + 16;
         
-        SDL_Rect src_rect = {304, 296, 16, 16};
-        SDL_Rect dst_rect = {sbar.pos.x * scale, (sbar.pos.y + bar_offset) * scale, 16 * scale, 16 * scale};
+        SDL_Rect src_rect = {304, 296, 16, 9};
+        SDL_Rect dst_rect = {sbar.pos.x * scale, (sbar.pos.y + bar_offset) * scale, 16 * scale, 9 * scale};
         render_texture(src_rect, dst_rect);
 
         src_rect = {304, 308, 16, 1};
-        dst_rect = {sbar.pos.x * scale, (sbar.pos.y + bar_offset + 16) * scale, 16 * scale, (bar_size - 24) * scale};
+        dst_rect = {sbar.pos.x * scale, (sbar.pos.y + bar_offset + 9) * scale, 16 * scale, (bar_size - 17) * scale};
         render_texture(src_rect, dst_rect);
 
         src_rect = {304, 312, 16, 8};
@@ -897,6 +898,8 @@ static int max_help_page(int next_dialogue_level)
         return 6;
     if (next_dialogue_level <= 6)
         return 7;
+    if (next_dialogue_level <= 8)
+        return 9;
     if (next_dialogue_level <= 24)
         return 11;
     return 12;
@@ -1580,8 +1583,6 @@ void GameState::render(bool saving)
 
     }
 
-    
-    
     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
         level_select_scroll.total_rows = (level_set->top_playable(highest_level) + 8) / 8;
@@ -1682,13 +1683,19 @@ void GameState::render(bool saving)
             flash_valve = false;
 
         if (next_dialogue_level > 2)
-            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)));
-        render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet));
+            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)), "Valve");
+        render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet), "Steam Inlet");
 
-        render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(400, 112), 0);
-        render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(400+24, 112), 0);
-        render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 184), 0, "Reflect\nvertically");
-        render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(400+24, 184), 0, "Reflect\nhorizontally");
+        if (next_dialogue_level > 3)
+        {
+            render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(400, 112), 0, "Rotate left");
+            render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(400+24, 112), 0, "Rotate right");
+        }
+        if (next_dialogue_level > 6)
+        {
+            render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 184), 0, "Reflect\nvertically");
+            render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(400+24, 184), 0, "Reflect\nhorizontally");
+        }
 
         if (editing_level)
             render_button(XYPos(panel_offset.x + 6 * 32 * scale, panel_offset.y), XYPos(400+24, 160), mouse_state == MOUSE_STATE_LOCKING_BLOCKS, "Lock blocks");
@@ -1699,6 +1706,7 @@ void GameState::render(bool saving)
 
         int level_index = 0;
 
+        if (next_dialogue_level > 8)
         for (pos.y = 0; pos.y < 8; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
@@ -1714,17 +1722,17 @@ void GameState::render(bool saving)
         }
 
 
-        XYPos panel_pos = ((mouse - panel_offset) / scale);                 // Tooltip
-        XYPos panel_grid_pos = panel_pos / 32;
-        if (panel_pos.y >= 0 && panel_pos.x >= 0 && panel_grid_pos.x < 8)
-        {
-            if (panel_grid_pos.y == 0 &&  panel_grid_pos.x < 4)
-            {
-                SDL_Rect src_rect = {496, 124 + panel_grid_pos.x * 12, 28, 12};
-                SDL_Rect dst_rect = {(panel_pos.x - 28)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 28 * scale, 12 * scale};
-                render_texture(src_rect, dst_rect);
-            }
-        }
+//         XYPos panel_pos = ((mouse - panel_offset) / scale);                 // Tooltip
+//         XYPos panel_grid_pos = panel_pos / 32;
+//         if (panel_pos.y >= 0 && panel_pos.x >= 0 && panel_grid_pos.x < 8)
+//         {
+//             if (panel_grid_pos.y == 0 &&  panel_grid_pos.x < 4)
+//             {
+//                 SDL_Rect src_rect = {496, 124 + panel_grid_pos.x * 12, 28, 12};
+//                 SDL_Rect dst_rect = {(panel_pos.x - 28)* scale + panel_offset.x, panel_pos.y * scale + panel_offset.y, 28 * scale, 12 * scale};
+//                 render_texture(src_rect, dst_rect);
+//             }
+//         }
 
     }
     else if (panel_state == PANEL_STATE_TEST)
@@ -2125,7 +2133,6 @@ void GameState::render(bool saving)
         XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
         
         friend_score_scroll.total_rows = edited_level_set->levels[current_level_index]->friend_scores.size();
-        normalize_scroll_bar(friend_score_scroll);
 
         render_scroll_bar(friend_score_scroll);
 
@@ -3202,7 +3209,7 @@ void GameState::mouse_click_in_panel()
                 mouse_state = MOUSE_STATE_PLACING_VALVE;
             else if (panel_grid_pos.x == 1)
                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
-            else if (panel_grid_pos.x == 2)
+            else if (panel_grid_pos.x == 2 && next_dialogue_level > 3)
             {
                 dir_flip = dir_flip.rotate(false);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -3215,7 +3222,7 @@ void GameState::mouse_click_in_panel()
                     level_set->touch(current_level_index);
                 }
             }
-            else if (panel_grid_pos.x == 3)
+            else if (panel_grid_pos.x == 3 && next_dialogue_level > 3)
             {
                 dir_flip = dir_flip.rotate(true);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -3228,7 +3235,7 @@ void GameState::mouse_click_in_panel()
                     level_set->touch(current_level_index);
                 }
             }
-            else if (panel_grid_pos.x == 4)
+            else if (panel_grid_pos.x == 4 && next_dialogue_level > 6)
             {
                 dir_flip = dir_flip.flip(true);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -3241,7 +3248,7 @@ void GameState::mouse_click_in_panel()
                     level_set->touch(current_level_index);
                 }
             }
-            else if (panel_grid_pos.x == 5)
+            else if (panel_grid_pos.x == 5 && next_dialogue_level > 6)
             {
                 dir_flip = dir_flip.flip(false);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -3256,7 +3263,7 @@ void GameState::mouse_click_in_panel()
             }
             else if (panel_grid_pos.x == 6 && editing_level)
                 mouse_state = MOUSE_STATE_LOCKING_BLOCKS;
-            else if (panel_grid_pos.x == 7)
+            else if (panel_grid_pos.x == 7 && next_dialogue_level > 8)
                 mouse_state = MOUSE_STATE_PLACING_SIGN;
             return;
         }
@@ -3621,15 +3628,15 @@ void GameState::mouse_click_in_panel()
         }
 
 
-        XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
-        
-        for (Level::FriendScore& score : edited_level_set->levels[current_level_index]->friend_scores)
+        XYPos table_pos = mouse / scale - XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
+        if (table_pos.inside(XYPos(16,9*16)))
         {
-            if ((mouse / scale - table_pos).inside(XYPos(16,16)))
+            int i = table_pos.y / 16;
+            if (i < edited_level_set->levels[current_level_index]->friend_scores.size())
             {
+                Level::FriendScore& score = edited_level_set->levels[current_level_index]->friend_scores[friend_score_scroll.offset_rows + i];
                 design_fetch(score.steam_id, current_level_index);
             }
-            table_pos.y += 16;
         }
         return;
     }
@@ -3818,6 +3825,8 @@ bool GameState::events()
                         break;
                     }
                     case SDL_SCANCODE_Q:
+                        if (next_dialogue_level <= 3)
+                            break;
                         if (!SDL_IsTextInputActive())
                             dir_flip = dir_flip.rotate(false);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -3831,6 +3840,8 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_E:
+                        if (next_dialogue_level <= 3)
+                            break;
                         if (!SDL_IsTextInputActive())
                             dir_flip = dir_flip.rotate(true);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -3844,6 +3855,8 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_W:
+                        if (next_dialogue_level <= 3)
+                            break;
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
@@ -3866,6 +3879,8 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_A:
+                        if (next_dialogue_level <= 3)
+                            break;
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
@@ -3887,6 +3902,8 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_S:
+                        if (next_dialogue_level <= 3)
+                            break;
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
@@ -3908,6 +3925,8 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_D:
+                        if (next_dialogue_level <= 3)
+                            break;
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
@@ -4381,6 +4400,8 @@ bool GameState::events()
                 {
                     if(e.wheel.y > 0)
                     {
+                        if (next_dialogue_level <= 3)
+                            break;
                         dir_flip = dir_flip.rotate(true);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             clipboard.rotate(false);
@@ -4390,6 +4411,8 @@ bool GameState::events()
 
                     if(e.wheel.y < 0)
                     {
+                        if (next_dialogue_level <= 3)
+                            break;
                         dir_flip = dir_flip.rotate(false);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             clipboard.rotate(true);
