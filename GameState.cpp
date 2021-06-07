@@ -1686,7 +1686,7 @@ void GameState::render(bool saving)
             render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)), "Valve");
         render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet), "Steam Inlet");
 
-        if (next_dialogue_level > 3)
+        if (next_dialogue_level > 1)
         {
             render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(400, 112), 0, "Rotate left");
             render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(400+24, 112), 0, "Rotate right");
@@ -3209,7 +3209,7 @@ void GameState::mouse_click_in_panel()
                 mouse_state = MOUSE_STATE_PLACING_VALVE;
             else if (panel_grid_pos.x == 1)
                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
-            else if (panel_grid_pos.x == 2 && next_dialogue_level > 3)
+            else if (panel_grid_pos.x == 2 && next_dialogue_level > 1)
             {
                 dir_flip = dir_flip.rotate(false);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -3222,7 +3222,7 @@ void GameState::mouse_click_in_panel()
                     level_set->touch(current_level_index);
                 }
             }
-            else if (panel_grid_pos.x == 3 && next_dialogue_level > 3)
+            else if (panel_grid_pos.x == 3 && next_dialogue_level > 1)
             {
                 dir_flip = dir_flip.rotate(true);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -3825,7 +3825,7 @@ bool GameState::events()
                         break;
                     }
                     case SDL_SCANCODE_Q:
-                        if (next_dialogue_level <= 3)
+                        if (next_dialogue_level <= 1)
                             break;
                         if (!SDL_IsTextInputActive())
                             dir_flip = dir_flip.rotate(false);
@@ -3840,7 +3840,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_E:
-                        if (next_dialogue_level <= 3)
+                        if (next_dialogue_level <= 1)
                             break;
                         if (!SDL_IsTextInputActive())
                             dir_flip = dir_flip.rotate(true);

@@ -51,7 +51,7 @@ You can use the steam inlet as a source of good High Pressure Steam.
 
 #                    Switch
 !CHARLES
-Excellent! Now, combining these two designs, we can construct a component that switches between two sources. We can use the designs we just made, but remember, each design adds additional pipes which slow things down.
+Excellent! Now, combining these two designs, we can construct a component that switches between two sources.
 
 When the West control house supplies 100 PSI High Pressure Steam, the North generator should be connected to the East facilities. But when the West control house is at 0 PSI atmospheric pressure, the South generator should be connected to the East facilities.
 !NICOLA

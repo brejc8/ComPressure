@@ -70,7 +70,7 @@ static Dialogue dialogue3[] = {
 
 static Dialogue dialogue4[] = {
     {DIALOGUE_CHARLES,
-        "Excellent! Now, combining these two designs, we can construct a component that switches between two sources. We can use the designs we just made, but remember, each design adds additional pipes which slow things down.\n"
+        "Excellent! Now, combining these two designs, we can construct a component that switches between two sources.\n"
         "\n"
         "When the West control house supplies 100 PSI High Pressure Steam, the North generator should be connected to the East facilities. But when the West control house is at 0 PSI atmospheric pressure, the South generator should be connected to the East facilities.\n"
     },
