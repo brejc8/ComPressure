@@ -42,29 +42,33 @@ static void DisplayWebsite(const char* url)
 
 }
 
-GameState::GameState(const char* filename)
+
+void GameState::load_lang()
 {
+    delete languages;
     {
-        {
-            std::string save_filename =  "lang.json";
-            std::ifstream loadfile(save_filename);
-            languages = SaveObject::load(loadfile)->get_map();
-        }
-
-        {
-            char* save_path = SDL_GetPrefPath("CharlieBrej", "ComPressure");
-            std::string save_filename = std::string(save_path) + "lang.json";
-            SDL_free(save_path);
-
-            std::ifstream loadfile(save_filename);
-            if (!loadfile.fail() && !loadfile.eof())
-            {
-                delete languages;
-                languages = SaveObject::load(loadfile)->get_map();
-            }
-        }
+        std::string save_filename =  "lang.json";
+        std::ifstream loadfile(save_filename);
+        languages = SaveObject::load(loadfile)->get_map();
     }
 
+    {
+        char* save_path = SDL_GetPrefPath("CharlieBrej", "ComPressure");
+        std::string save_filename = std::string(save_path) + "lang.json";
+        SDL_free(save_path);
+
+        std::ifstream loadfile(save_filename);
+        if (!loadfile.fail() && !loadfile.eof())
+        {
+            delete languages;
+            languages = SaveObject::load(loadfile)->get_map();
+        }
+    }
+}
+
+GameState::GameState(const char* filename)
+{
+    load_lang();
     bool load_was_good = false;
     try 
     {
@@ -4308,6 +4312,7 @@ bool GameState::events()
                             if ((mouse / scale - XYPos((160 + 32), (90 + 16 + i * 24))).inside(XYPos(320 - 64, 24)))
                             {
                                 language_name = it->first;
+                                load_lang();
                                 current_language = languages->get_item(language_name)->get_map();
                             }
                             i++;

@@ -88,7 +88,7 @@ public:
     };
 
     std::string language_name = "English";
-    SaveObjectMap* languages;
+    SaveObjectMap* languages = NULL;
     SaveObjectMap* current_language;
 
     ScrollBar level_select_scroll = ScrollBar(4, XYPos(640 - 22, 48), 4 * 32);
@@ -232,6 +232,7 @@ public:
     Sign dragged_sign;
     bool dragged_sign_motion;
 
+    void load_lang();
     GameState(const char* filename);
     SaveObject* save(bool lite = false);
     void save(std::ostream& outfile, bool lite = false);
