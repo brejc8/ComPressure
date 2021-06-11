@@ -2285,7 +2285,6 @@ void GameState::render(bool saving)
 
         enum 
         {
-            DIALOGUE_END,
             DIALOGUE_CHARLES,
             DIALOGUE_NICOLA,
             DIALOGUE_ADA,
