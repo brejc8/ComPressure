@@ -7,9 +7,13 @@ static void skip_whitespace(std::istream& f)
 {
     while (true)
     {
-        char c = f.peek();
-        if (c == ' ' || c == '\t' || c == '\n')
+        int c = f.peek();
+        if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
             f.get();
+        else if (c == 0xEF)
+        {
+            f.get();f.get();f.get();
+        }
         else
             break;
     }
@@ -29,12 +33,14 @@ SaveObject* SaveObject::load(std::istream& f)
         return new SaveObjectString(f);
     if ((c >= '0' && c <= '9') || c == '-')
         return new SaveObjectNumber(f);
+    printf("%d\n", (int)(unsigned char)c);
     throw(std::runtime_error("Parse Error"));
 }
 
-SaveObjectString::SaveObjectString(std::istream& f)
+static std::string parse_string(std::istream& f)
 {
     char c;
+    std::string str;
     assert_exp('\"');
     while ((c = f.get()) != '\"')
     {
@@ -47,7 +53,14 @@ SaveObjectString::SaveObjectString(std::istream& f)
         
         str.push_back(c);
     }
+    return str;
+    
 }
+SaveObjectString::SaveObjectString(std::istream& f)
+{
+    str = parse_string(f);
+}
+
 std::string SaveObjectString::get_string()
 {
     return str;
@@ -78,10 +91,7 @@ SaveObjectMap::SaveObjectMap(std::istream& f)
         skip_whitespace(f);    
         if (f.peek() == '}')
             break;
-        assert_exp('\"');
-        std::string key;
-        while ((c = f.get()) != '\"')
-            key.push_back(c);
+        std::string key = parse_string(f);
         skip_whitespace(f);    
         assert_exp(':');
         SaveObject* obj = SaveObject::load(f);
@@ -108,7 +118,10 @@ void SaveObjectMap::add_item(std::string key, SaveObject* value)
 SaveObject* SaveObjectMap::get_item(std::string key)
 {
     if (omap.find(key) == omap.end())
+    {
+        std::cout << key << "\n";
         throw(std::runtime_error("Bad map key"));
+    }
     return omap[key];
 }
 
@@ -246,6 +259,17 @@ void SaveObjectList::save(std::ostream& f)
     }
     f.put(']');
 }
+
+void SaveObjectList::add_string(std::string value)
+{
+    add_item(new SaveObjectString(value));
+}
+
+std::string SaveObjectList::get_string(int index)
+{
+    return get_item(index)->get_string();
+}
+
 
 SaveObject* SaveObjectList::dup()
 {

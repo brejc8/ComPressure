@@ -5,8 +5,8 @@ ComPressure_SOURCES =  GameState.cpp GameState.h \
                     SaveState.cpp SaveState.h \
                     Circuit.cpp Circuit.h \
                     Level.cpp Level.h \
-                    Dialogue.cpp Dialogue.h \
-                    Compress.cpp Compress.h
+                    Compress.cpp Compress.h \
+                    english.string japanese.string
                     
 ComPressure_CXXFLAGS = @CXXFLAGS@ @SDL2_CFLAGS@ @SDL2_image_CFLAGS@ @SDL2_mixer_CFLAGS@ @SDL2_net_CFLAGS@ @SDL2_ttf_CFLAGS@ @ZLIB_CFLAGS@ -I.  
 ComPressure_LDADD=@SDL2_LIBS@ @SDL2_image_LIBS@ @SDL2_mixer_LIBS@ @SDL2_net_LIBS@ @SDL2_ttf_LIBS@ @ZLIB_LIBS@ -lsteam_api
@@ -21,16 +21,6 @@ ComPressureServer_SOURCES =  ComPressureServer.cpp \
 ComPressureServer_CXXFLAGS = @CXXFLAGS@ @SDL2_CFLAGS@
 ComPressureServer_LDADD= -lz 
 ComPressureServer_LDFLAGS= -static
-
-EXTRA_DIST = dialogue.txt
-
-CLEANFILES = dialogue.string
-
-dialogue.string: dialogue.txt fold.py
-	./fold.py dialogue.txt > dialogue.string
-
-hint.string: hint.txt fold.py
-	./fold.py hint.txt > hint.string
 
 Level.string: Level.json stringify.py
 	./stringify.py Level.json > Level.string

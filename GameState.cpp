@@ -4,7 +4,6 @@
 #include "GameState.h"
 #include "SaveState.h"
 #include "Misc.h"
-#include "Dialogue.h"
 #include "Demo.h"
 
 #include <cassert>
@@ -45,6 +44,27 @@ static void DisplayWebsite(const char* url)
 
 GameState::GameState(const char* filename)
 {
+    {
+        {
+            std::string save_filename =  "lang.json";
+            std::ifstream loadfile(save_filename);
+            languages = SaveObject::load(loadfile)->get_map();
+        }
+
+        {
+            char* save_path = SDL_GetPrefPath("CharlieBrej", "ComPressure");
+            std::string save_filename = std::string(save_path) + "lang.json";
+            SDL_free(save_path);
+
+            std::ifstream loadfile(save_filename);
+            if (!loadfile.fail() && !loadfile.eof())
+            {
+                delete languages;
+                languages = SaveObject::load(loadfile)->get_map();
+            }
+        }
+    }
+
     bool load_was_good = false;
     try 
     {
@@ -95,6 +115,8 @@ GameState::GameState(const char* filename)
             full_screen = omap->get_num("full_screen");
             minutes_played = omap->get_num("minutes_played");
             discord_joined = omap->get_num("discord_joined");
+            if (omap->has_key("language"))
+            	language_name = omap->get_string("language");
 
             delete omap;
             load_was_good = true;
@@ -114,7 +136,12 @@ GameState::GameState(const char* filename)
         level_set = edited_level_set;
         current_level_index = 0;
         update_scale(2);
+        display_language_dialogue = true;
     }
+
+    current_language = languages->get_item(language_name)->get_map();
+
+
 
     set_level(current_level_index);
 
@@ -131,7 +158,7 @@ GameState::GameState(const char* filename)
 	    SDL_FreeSurface(icon_surface);
     }
 
-    font = TTF_OpenFont("fixed.ttf", 10);
+    font = TTF_OpenFont("fixed.ttf", 19);
 
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_AllocateChannels(16);
@@ -176,7 +203,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("music_volume", music_volume);
     omap->add_num("minutes_played", minutes_played + SDL_GetTicks()/ 1000 / 60);
     omap->add_num("discord_joined", discord_joined);
-
+    omap->add_string("language", language_name);
     return omap;
 }
 
@@ -771,8 +798,9 @@ void GameState::render_tooltip()
 {
     if (tooltip_string != "")
     {
-        std::string tip_str(tooltip_string);
-        XYPos tip_size = get_text_size(tip_str) + XYPos(2,0);
+        if (current_language->get_item("tooltips")->get_map()->has_key(tooltip_string.c_str()))
+            tooltip_string = current_language->get_item("tooltips")->get_map()->get_string(tooltip_string.c_str());
+        XYPos tip_size = get_text_size(tooltip_string) + XYPos(2,0);
         XYPos tip_pos = mouse / scale - XYPos(tip_size.x, 0);
         if (tip_pos.x < 0)
             tip_pos.x = 0;
@@ -782,7 +810,7 @@ void GameState::render_tooltip()
             render_texture(src_rect, dst_rect);
         }
 
-        render_text(tip_pos + XYPos(1,0), tip_str.c_str(), SDL_Color{0x0,0x0,0x0});
+        render_text(tip_pos + XYPos(1,0), tooltip_string.c_str(), SDL_Color{0x0,0x0,0x0});
         tooltip_string = "";
     }
 }
@@ -2125,7 +2153,7 @@ void GameState::render(bool saving)
     {
         if ((next_dialogue_level >= 39))
         {
-            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(256, 352), test_mode == TEST_MODE_ACCURACY, "Accuratcy mode");
+            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(256, 352), test_mode == TEST_MODE_ACCURACY, "Accuracy mode");
             render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(280, 352), test_mode == TEST_MODE_PRICE, "Price mode");
             render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(256, 376), test_mode == TEST_MODE_STEAM, "Steam mode");
         }
@@ -2245,65 +2273,105 @@ void GameState::render(bool saving)
     }
     if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
     {
-    static const Dialogue discord_prompt {DIALOGUE_CHARLES, "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button."};
     
 #ifdef COMPRESSURE_DEMO
         if (current_level_index == (14 - 1) && dialogue_index)
             show_dialogue = false;
 #endif
-        const Dialogue& dia = show_dialogue_discord_prompt ? discord_prompt : show_dialogue_hint ? hint[current_level_index][dialogue_index] : dialogue[current_level_index][dialogue_index];
-        const char* text = dia.text;
-        DialogueCharacter character = dia.character;
-        if (!text)
-        {
-            show_dialogue = false;
-            show_dialogue_hint = false;
-        }
 
-#ifdef COMPRESSURE_DEMO
-        if (current_level_index == (14 - 1))
+        enum 
         {
-            text = "Alas our journey must stop somewhere. The adventure continues\nin the full game. Be sure to join our Discord group to drive\nits direction.\n\nTo be continued...";
+            DIALOGUE_END,
+            DIALOGUE_CHARLES,
+            DIALOGUE_NICOLA,
+            DIALOGUE_ADA,
+            DIALOGUE_ANNIE,
+            DIALOGUE_GEORGE,
+            DIALOGUE_JOSEPH
+        } character;
+        std::string text;
+        if (show_dialogue_discord_prompt)
+        {
+            character = DIALOGUE_CHARLES;
+            text = "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button.";
+        }
+#ifdef COMPRESSURE_DEMO
+        else if (current_level_index == (14 - 1))
+        {
+            text = "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued...";
             character = DIALOGUE_ADA;
         }
 #endif
-
-        bool pic_on_left = true;
-        XYPos pic_src;
-        switch (character)
+        else
         {
-            case DIALOGUE_CHARLES:
-                pic_on_left = true;
-                pic_src = XYPos(0,0);
-                break;
-            case DIALOGUE_NICOLA:
-                pic_on_left = false;
-                pic_src = XYPos(1,0);
-                break;
-            case DIALOGUE_ADA:
-                pic_on_left = true;
-                pic_src = XYPos(1,1);
-                break;
-            case DIALOGUE_ANNIE:
-                pic_on_left = true;
-                pic_src = XYPos(0,1);
-                break;
-             case DIALOGUE_GEORGE:
-                pic_on_left = true;
-                pic_src = XYPos(1,2);
-                break;
-             case DIALOGUE_JOSEPH:
-                pic_on_left = true;
-                pic_src = XYPos(0,2);
-                break;
-       }
-        render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
-        
-        render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
-        SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
-        SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
-        render_texture(src_rect, dst_rect);
-        render_text_wrapped(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text, 640 - 80 - 128);
+            SaveObjectList* lis = current_language->get_item(show_dialogue_hint ? "hints" : "dialogue")->get_list()->get_item(current_level_index)->get_list();
+            if (dialogue_index >= lis->get_count())
+            {
+                show_dialogue_hint = false;
+                show_dialogue = false;
+            }
+            else
+            {
+                SaveObjectMap* dia = lis->get_item(dialogue_index)->get_map();
+                text = dia->get_string("text");
+                std::string who = dia->get_string("who");
+
+                character = DIALOGUE_CHARLES;
+                if (who == "charles")
+                    character = DIALOGUE_CHARLES;
+                else if (who == "nicola")
+                    character = DIALOGUE_NICOLA;
+                else if (who == "ada")
+                    character = DIALOGUE_ADA;
+                else if (who == "annie")
+                    character = DIALOGUE_ANNIE;
+                else if (who == "george")
+                    character = DIALOGUE_GEORGE;
+                else if (who == "joseph")
+                    character = DIALOGUE_JOSEPH;
+                else assert(0);
+            }
+        }
+
+        if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
+        {
+            bool pic_on_left = true;
+            XYPos pic_src;
+            switch (character)
+            {
+                case DIALOGUE_CHARLES:
+                    pic_on_left = true;
+                    pic_src = XYPos(0,0);
+                    break;
+                case DIALOGUE_NICOLA:
+                    pic_on_left = false;
+                    pic_src = XYPos(1,0);
+                    break;
+                case DIALOGUE_ADA:
+                    pic_on_left = true;
+                    pic_src = XYPos(1,1);
+                    break;
+                case DIALOGUE_ANNIE:
+                    pic_on_left = true;
+                    pic_src = XYPos(0,1);
+                    break;
+                 case DIALOGUE_GEORGE:
+                    pic_on_left = true;
+                    pic_src = XYPos(1,2);
+                    break;
+                 case DIALOGUE_JOSEPH:
+                    pic_on_left = true;
+                    pic_src = XYPos(0,2);
+                    break;
+           }
+            render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
+
+            render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
+            SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
+            SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
+            render_texture(src_rect, dst_rect);
+            render_text_wrapped(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text.c_str(), 640 - 80 - 128);
+        }
 
     }
     
@@ -2426,52 +2494,44 @@ void GameState::render(bool saving)
             render_box(XYPos((16 + 8 + i * 48) * scale, (i * (128 +16) + 8) * scale), XYPos(128+16, 128+16), 4);
             render_box(XYPos((128 + 16 + 16 + 8 + i * 48) * scale, (i * (128 +16) + 8) * scale), XYPos(384, 128+16), 4);
             unsigned anim_frames = 5;
-            const char* text="";
             
             struct HelpPage
             {
                 XYPos src_pos;
                 int frame_count;
                 float fps;
-                const char* text;
             }
             pages[] =
             {
-                {XYPos(0,14), 4, 1, "In the level select menu, the bottom panel describes the design requirements. Each design has four ports and the requirements state the expected output in terms of other ports. Each port has a colour identifier. Click on the requirements to recieve a hint."},
-                {XYPos(0,13),5,0.5, "Once you pass all the tests, the next design becomes available. You can always come back to refine your solution.\n\nPress the pipe button below to continue the tutorial. You can return to the help by pressing F1."},
-                {XYPos(0,0), 10, 1, "Pipes can be laid down by either left mouse button dragging the pipe from the source to the destination, or by clicking left mouse button to extend the pipe in the direction of the mouse. Right click to cancel pipe laying mode."},
-                {XYPos(0,2),  5, 1, "Hold the right mouse button to delete pipes and other elements."},
-                {XYPos(0,4), 15, 1, "The build menu allows you to add components into your design. Select the steam inlet component and hover over your design. The arrow buttons change the orientation. This can also be done using keys Q and E or the mouse scroll wheel. Clicking the left mouse button will place the component. Right click to exit steam inlet placing mode."},
-                {XYPos(0,8),  5, 1, "Valves can be placed in the same way. Pressing Tab, or middle mouse button, is a shortcut to enter valve placement mode. Pressing Tab, or middle mouse button, again switches to steam inlet placement."},
-                {XYPos(0,7),  5,10, "A steam inlet will supply steam at pressure 100. Any pipes with open ends will vent the steam to the atmosphere at pressure 0."},
-                {XYPos(1,10), 4,10, "Pressure at different points is visible on pipe connections. Note how each pipe has a little resistance."},
-                {XYPos(0,9),  5,10, "Valves allow steam to pass through them if the (+) side of the valve is at a higher pressure than the (-) side. The higher it is, the more the valve is open. Steam on the (+) and (-) sides is not consumed.\n\nHere, the (-) side is vented to atmosphere and thus at 0 pressure. With (+) at 100 PSI and (-) at 0 PSI, the valve is 100% open. If (+) is at 75 and (-) is at 25, the valve will be 50% open."},
-                {XYPos(0,10), 1, 1, "If the pressure on the (+) side is equal or lower than the (-) side, the valve becomes closed and no steam will pass through."},
-                {XYPos(0,11), 5,10, "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is lower than 100 PSI.\n\nAs before, the openness of the valve is the pressure on the (+) side minus the pressture on the (-) side."},
-                {XYPos(0,12), 1, 1, "Applying high pressure to the (-) side will close the valve as the pressure on the (-) side becomes equal or higher than the (+) side."},
-                {XYPos(1,12), 1, 1, "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively. You can also use hotkeys 1, 2 and 3.\n\n"
-                                    "The current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the worst of all tests."},
-                {XYPos(2,12), 3, 1, "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right. You can press Space to fast forward to the next phase.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far."},
-                {XYPos(4,14), 1, 1, "The experiment menu allows you to manually set the ports and examine your design's operation. The vertical sliders set the desired value. The horizontal sliders below set force of the input. Setting the slider all the way left makes it an output. Initial values are set from the current test."},
-                {XYPos(0,15), 1, 1, "The graph at the bottom shows the history of the port values."},
-                {XYPos(1,15), 4, 1, "Components can be selected by either clicking while holding Ctrl, or dragging while holding Shift. Selected components can be moved using WASD keys, or rotated using Q and E, if the destination is empty. Keys to copy and paste are: C for copy, X for cut and V for paste. To delete selected components, press Delete.\n\nUndo is reached through Z key (Ctrl is optional) and Redo through either Y or Shift+Z. Undo can also be triggered by holding right mouse button and clicking the left one."},
-                {XYPos(0,16), 1, 1, "Pressing Esc shows the game menu. The buttons allow you to exit the game, switch between windowed and full screen, join our Discord group and show credits.\n\nThe sliders adjust the sound effects and music volumes."},
-                
-                {XYPos(1,16), 2, 1, "Completed designs are available for use as components. Available components are shown in the build menu. Changing a design will update its implementation in all components.\n\nDouble-clicking on the component allows you to inspect it. You can pop back up the stack by clicking the design icon in the top left. Pressing the customize button, while inspecting, creates a local design which can be edited and is no longer updated when the original is changed. The design will turn red to signify this."},
-                {XYPos(3,16), 1, 1, "There are four slots to save designs. The best design is also saved so it can be recalled later. Designs can be exchanged using a clipboard string.\n\nClicking the score shows the global score graph, and your score compared to your friends. Their designs are available to be examined."},
-                {XYPos(4,16), 1, 1, "One method of creating a specific pressure is by simultaniously supplying and venting a pipe at a specific ratio. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side.\n\n"
-                                    "Openness = P - N\n\nWhere P is the pressure on the Positive side of the valve and N is the pressure on the Negative side.\n\n"
-                                    "Here the lower valve openness is 40 (60 - 20)."
-                                    },
-                {XYPos(0,17), 5,10, "The pressure generated in this arrangement is, in percent, the openness of the source valve divided by the sum of the openness of both valves.\n\n"
-                                    "Pressure = S / (S + V)\n\nWhere S is Supply valve openness and V is Venting valve openness.\n\n"
-                                    "In this case, Supply is 40 (40 - 0). Venting is also 40 (60 - 20). The expected value between is 40 / (40 + 40) = 50%, thus 50 PSI."},
-                {XYPos(0,18), 1, 1, (const char*) u8"Three scoring modes are available. The default (Accuracy) mode scores the proximity to the target value (for the worst test).\n\nPrice mode ranks designs by cost. Pipes cost \u00A31 per port, valves cost \u00A310 and steam inlets cost \u00A35. There is an extra \u00A34 charge for each subdesign.\n\nSteam mode measures the amount of steam supplied by the steam inlets."},
-                {XYPos(1,18), 1, 1, "It is possible to create user defined levels. These have a user defined icon and set of tests and can be exchanged through the clipboard.\n\nTests and test steps can be added/removed using the +/- buttons. The time period per step is configurable. If, when playing all tests, some steps can be skipped, the skip all button selects the subtest start on. The design can be optionally reset on all, only on play one test, or not at all. The port icons select which ports are used. Clicking the ports on the left of the value selects the ports used as the output. The values are changed in the experiment menu."},
+                {XYPos(0,14), 4, 1},
+                {XYPos(0,13),5,0.5},
+                {XYPos(0,0), 10, 1},
+                {XYPos(0,2),  5, 1},
+                {XYPos(0,4), 15, 1},
+                {XYPos(0,8),  5, 1},
+                {XYPos(0,7),  5,10},
+                {XYPos(1,10), 4,10},
+                {XYPos(0,9),  5,10},
+                {XYPos(0,10), 1, 1},
+                {XYPos(0,11), 5,10},
+                {XYPos(0,12), 1, 1},
+                {XYPos(1,12), 1, 1},
+                {XYPos(2,12), 3, 1},
+                {XYPos(4,14), 1, 1},
+                {XYPos(0,15), 1, 1},
+                {XYPos(1,15), 4, 1},
+                {XYPos(0,16), 1, 1},
+                {XYPos(1,16), 2, 1},
+                {XYPos(3,16), 1, 1},
+                {XYPos(4,16), 1, 1},
+                {XYPos(0,17), 5,10},
+                {XYPos(0,18), 1, 1},
+                {XYPos(1,18), 1, 1},
             };
             
 
             HelpPage* page = &pages[show_help_page * 2 + i];
+            std::string text = current_language->get_item("help")->get_list()->get_string(show_help_page * 2 + i).c_str();
 
             if (page->frame_count == 0)
                 continue;
@@ -2486,20 +2546,22 @@ void GameState::render(bool saving)
             SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 16) * scale, 128 * scale, 128 * scale};
             render_texture_custom(sdl_tutorial_texture, src_rect, dst_rect);
             
-            render_text_wrapped(XYPos(32 + 128 + 16 + i * 48, i * (128 +16) + 16), page->text, 384 - 16);
+            render_text_wrapped(XYPos(32 + 128 + 14 + i * 48, i * (128 +16) + 11), text.c_str(), 384 - 8);
         }
     }
 
     if (show_main_menu)
     {
-        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 180), 0);
+        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0);
         if (!display_about)
         {
             render_button(XYPos((160 + 32) * scale, (90 + 32)  * scale), XYPos(448, 200), 0, "Exit");
             render_button(XYPos((160 + 32 + 64) * scale, (90 + 32)  * scale), XYPos(full_screen ? 280 : 256, 280), 0, full_screen ? "Windowed" : "Full Screen");
 
-            render_button(XYPos((160 + 32) * scale, (90 + 32 + 64)  * scale), XYPos(256, 256), 0, "Join our Discord group");
-            render_button(XYPos((160 + 32 + 64) * scale, (90 + 32 + 64)  * scale), XYPos(256+24, 256), 0, "Info");
+            render_button(XYPos((160 + 32) * scale, (90 + 32 + 48)  * scale), XYPos(256, 256), 0, "Join our Discord group");
+            render_button(XYPos((160 + 32 + 64) * scale, (90 + 32 + 48)  * scale), XYPos(256+24, 256), 0, "Info");
+
+            render_button(XYPos((160 + 32) * scale, (90 + 96 + 32)  * scale), XYPos(280, 304), 0, "Select language");
 
             render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
             {
@@ -2540,12 +2602,23 @@ void GameState::render(bool saving)
         }
         else
         {
-            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson\n\nBuild: " 
+            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson\n\nSilver font by Poppy Works\n\nBuild: " 
 #include "date.string"
             ;
-            render_text_wrapped(XYPos(160 + 32 + 4, 90 + 32 + 4), about_text, 320-64);
+            render_text_wrapped(XYPos(160 + 32 + 4, 90 + 16 + 4), about_text, 320 - 64);
         }
         render_tooltip();
+    }
+    if (display_language_dialogue)
+    {
+        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0);
+        int i = 0;
+        for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); ++it)
+        {
+            render_box(XYPos((160 + 32) * scale, (90 + 16 + i * 24) * scale), XYPos(320 - 64, 24), 0);
+            render_text(XYPos((160 + 32 + 4 ), (90 + 16 + i * 24 + 4)), it->first.c_str());
+            i++;
+        }
     }
     if (saving)
     {
@@ -4227,7 +4300,21 @@ bool GameState::events()
                 mouse -= screen_offset;
                 if (e.button.button == SDL_BUTTON_LEFT)
                 {
-                    if (show_main_menu)
+                    if (display_language_dialogue)
+                    {
+                        int i = 0;
+                        for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); ++it)
+                        {
+                            if ((mouse / scale - XYPos((160 + 32), (90 + 16 + i * 24))).inside(XYPos(320 - 64, 24)))
+                            {
+                                language_name = it->first;
+                                current_language = languages->get_item(language_name)->get_map();
+                            }
+                            i++;
+                        }
+                        display_language_dialogue = false;
+                    }
+                    else if (show_main_menu)
                     {
                         if (display_about)
                         {
@@ -4238,10 +4325,14 @@ bool GameState::events()
                         XYPos pos = (mouse / scale) - XYPos((160 + 32), (90 + 32));
                         if (pos.inside(XYPos(32, 32)))
                             return true;
-                        if ((pos - XYPos(0, 64)).inside(XYPos(32, 32)))
+                        if ((pos - XYPos(0, 48)).inside(XYPos(32, 32)))
                         {
                             discord_joined = true;
                             DisplayWebsite("https://discord.gg/7ZVZgA7gkS");
+                        }
+                        if ((pos - XYPos(0, 96)).inside(XYPos(32, 32)))
+                        {
+                            display_language_dialogue = true;
                         }
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 32)))
@@ -4251,7 +4342,7 @@ bool GameState::events()
                             SDL_SetWindowBordered(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
                             SDL_SetWindowInputFocus(sdl_window);
                         }
-                        if ((pos - XYPos(0, 64)).inside(XYPos(32, 32)))
+                        if ((pos - XYPos(0, 48)).inside(XYPos(32, 32)))
                         {
                             display_about = true;
                         }
@@ -4328,15 +4419,11 @@ bool GameState::events()
                     else if (show_dialogue)
                     {
                         dialogue_index++;
-                        if (!dialogue[current_level_index][dialogue_index].text)
-                            show_dialogue = false;
                         break;
                     }
                     else if (show_dialogue_hint)
                     {
                         dialogue_index++;
-                        if (!hint[current_level_index][dialogue_index].text)
-                            show_dialogue_hint = false;
                         break;
                     }
                     else if (mouse.x < panel_offset.x)

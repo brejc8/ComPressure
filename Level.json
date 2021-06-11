@@ -1185,7 +1185,7 @@
     "name":"Adder",
     "connections": [0, 2, 1],
     "substep_count" : 30000,
-    "level_version" : 32,
+    "level_version" : 33,
     "tests" :
     [
         {
@@ -1273,10 +1273,13 @@
             ]
         },
         {
+            "tested_direction" : 2,
+            "reset": 2,
             "points":
             [
-                {"N":20, "E":80,"S":60,"W":0, "PRESET":1},
-                {"N":0, "E":0,"S":0,"W":0},
+                {"N":0,  "E":0,"S":0,"W":0, "NF":50, "EF":0,"SF":50,"WF":0, },
+                {"N":100,"E":0,"S":0,"W":0, "NF":50, "EF":0,"SF":0,"WF":0, },
+
             ]
         },
     ]

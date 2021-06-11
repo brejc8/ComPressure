@@ -3,6 +3,7 @@
 #include "Circuit.h"
 #include "Level.h"
 #include "Compress.h"
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
@@ -85,8 +86,11 @@ public:
             visible_rows(visible_rows_), pos(pos_), height(height_)
         {}
     };
-    
-    
+
+    std::string language_name = "English";
+    SaveObjectMap* languages;
+    SaveObjectMap* current_language;
+
     ScrollBar level_select_scroll = ScrollBar(4, XYPos(640 - 22, 48), 4 * 32);
     ScrollBar friend_score_scroll = ScrollBar(9, XYPos(640 - 22, 48 + 32), 9 * 16);
     int scroll_drag_y;
@@ -207,6 +211,7 @@ public:
 
     bool show_main_menu = false;
     bool display_about = false;
+    bool display_language_dialogue = false;
     unsigned sound_volume = 15;
     unsigned music_volume = 50;
     Mix_Chunk *vent_steam_wav;
