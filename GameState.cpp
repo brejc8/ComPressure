@@ -4307,13 +4307,14 @@ bool GameState::events()
                     if (display_language_dialogue)
                     {
                         int i = 0;
-                        for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); ++it)
+                        for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); it++)
                         {
                             if ((mouse / scale - XYPos((160 + 32), (90 + 16 + i * 24))).inside(XYPos(320 - 64, 24)))
                             {
                                 language_name = it->first;
                                 load_lang();
                                 current_language = languages->get_item(language_name)->get_map();
+                                break;
                             }
                             i++;
                         }
