@@ -143,6 +143,8 @@ GameState::GameState(const char* filename)
         display_language_dialogue = true;
     }
 
+    if (!languages->has_key(language_name))
+        language_name = "English";
     current_language = languages->get_item(language_name)->get_map();
 
 
@@ -2553,7 +2555,18 @@ void GameState::render(bool saving)
         }
     }
 
-    if (show_main_menu)
+    if (display_language_dialogue)
+    {
+        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0);
+        int i = 0;
+        for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); ++it)
+        {
+            render_box(XYPos((160 + 32) * scale, (90 + 16 + i * 24) * scale), XYPos(320 - 64, 24), 0);
+            render_text(XYPos((160 + 32 + 4 ), (90 + 16 + i * 24 + 4)), it->first.c_str());
+            i++;
+        }
+    }
+    else if (show_main_menu)
     {
         render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0);
         if (!display_about)
@@ -2612,17 +2625,7 @@ void GameState::render(bool saving)
         }
         render_tooltip();
     }
-    if (display_language_dialogue)
-    {
-        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0);
-        int i = 0;
-        for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); ++it)
-        {
-            render_box(XYPos((160 + 32) * scale, (90 + 16 + i * 24) * scale), XYPos(320 - 64, 24), 0);
-            render_text(XYPos((160 + 32 + 4 ), (90 + 16 + i * 24 + 4)), it->first.c_str());
-            i++;
-        }
-    }
+
     if (saving)
     {
         SDL_Rect src_rect = {256, 305, 24, 24};

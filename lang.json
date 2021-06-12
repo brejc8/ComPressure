@@ -49,11 +49,1085 @@
                                             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button.",
             "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued…" :
                                             "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued..."
+            "Cross"                     :   "Cross",            
+            "50"                        :   "50",               
+            "Normally Open"             :   "Normally Open",    
+            "Normally Closed"           :   "Normally Closed",  
+            "Switch"                    :   "Switch",           
+            "Buffer"                    :   "Buffer",           
+            "Inverter"                  :   "Inverter",         
+            "Comparator"                :   "Comparator",       
+            "Amp50"                     :   "Amp50",            
+            "Div2"                      :   "Div2",             
+            "Mul2"                      :   "Mul2",             
+            "Encrypt"                   :   "Encrypt",          
+            "Decrypt"                   :   "Decrypt",          
+            "Sensor"                    :   "Sensor",           
+            "Subtractor"                :   "Subtractor",       
+            "Adder"                     :   "Adder",            
+            "Latch"                     :   "Latch",            
+            "Tabulator"                 :   "Tabulator",        
+            "Broken Link"               :   "Broken Link",      
+            "Zoom"                      :   "Zoom",             
+            "Flow Detector"             :   "Flow Detector",    
+            "LatchE"                    :   "LatchE",           
+            "Latch2"                    :   "Latch2",           
+            "Latch5"                    :   "Latch5",           
+            "Latch10"                   :   "Latch10",          
+            "Min"                       :   "Min",              
+            "Max"                       :   "Max",              
+            "Fuse"                      :   "Fuse",             
+            "Counter"                   :   "Counter",          
+            "ROM"                       :   "ROM",              
+            "Poem"                      :   "Poem",             
+            "Clock"                     :   "Clock",            
+            "Cross v2"                  :   "Cross v2",         
+            "CounterE"                  :   "CounterE",         
+            "Delay"                     :   "Delay",            
+            "Self-timed latch"          :   "Self-timed latch", 
+            "Lock Picking"              :   "Lock Picking",     
+            "Code filter"               :   "Code filter",      
+            "Steamputer"                :   "Steamputer",       
+            "END"                       :   "END",              
 
         },
         "help":
         [
             "In the level select menu, the bottom panel describes the design requirements. Each design has four ports and the requirements state the expected output in terms of other ports. Each port has a colour identifier. Click on the requirements to receive a hint.",
+            "Once you pass all the tests, the next design becomes available. You can always come back to refine your solution.\n\nPress the pipe button below to continue the tutorial. You can return to the help by pressing F1.",
+            "Pipes can be laid down by either left mouse button dragging the pipe from the source to the destination, or by clicking left mouse button to extend the pipe in the direction of the mouse. Right click to cancel pipe laying mode.",
+            "Hold the right mouse button to delete pipes and other elements.",
+            "The build menu allows you to add components into your design. Select the steam inlet component and hover over your design. The arrow buttons change the orientation. This can also be done using keys Q and E or the mouse scroll wheel. Clicking the left mouse button will place the component. Right click to exit steam inlet placing mode.",
+            "Valves can be placed in the same way. Pressing Tab, or middle mouse button, is a shortcut to enter valve placement mode. Pressing Tab, or middle mouse button, again switches to steam inlet placement.",
+            "A steam inlet will supply steam at pressure 100. Any pipes with open ends will vent the steam to the atmosphere at pressure 0.",
+            "Pressure at different points is visible on pipe connections. Note how each pipe has a little resistance.",
+            "Valves allow steam to pass through them if the (+) side of the valve is at a higher pressure than the (-) side. The higher it is, the more the valve is open. Steam on the (+) and (-) sides is not consumed.\n\nHere, the (-) side is vented to atmosphere and thus at 0 pressure. With (+) at 100 PSI and (-) at 0 PSI, the valve is 100% open. If (+) is at 75 and (-) is at 25, the valve will be 50% open.",
+            "If the pressure on the (+) side is equal or lower than the (-) side, the valve becomes closed and no steam will pass through.",
+            "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is lower than 100 PSI.\n\nAs before, the openness of the valve is the pressure on the (+) side minus the pressture on the (-) side.",
+            "Applying high pressure to the (-) side will close the valve as the pressure on the (-) side becomes equal or higher than the (+) side.",
+            "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively. You can also use hotkeys 1, 2 and 3.\n\nThe current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the worst of all tests.",
+            "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right. You can press Space to fast forward to the next phase.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far.",
+            "The experiment menu allows you to manually set the ports and examine your design's operation. The vertical sliders set the desired value. The horizontal sliders below set force of the input. Setting the slider all the way left makes it an output. Initial values are set from the current test.",
+            "The graph at the bottom shows the history of the port values.",
+            "Components can be selected by either clicking while holding Ctrl, or dragging while holding Shift. Selected components can be moved using WASD keys, or rotated using Q and E, if the destination is empty. Keys to copy and paste are: C for copy, X for cut and V for paste. To delete selected components, press Delete.\n\nUndo is reached through Z key (Ctrl is optional) and Redo through either Y or Shift+Z. Undo can also be triggered by holding right mouse button and clicking the left one.",
+            "Pressing Esc shows the game menu. The buttons allow you to exit the game, switch between windowed and full screen, join our Discord group and show credits.\n\nThe sliders adjust the sound effects and music volumes.",
+            "Completed designs are available for use as components. Available components are shown in the build menu. Changing a design will update its implementation in all components.\n\nDouble-clicking on the component allows you to inspect it. You can pop back up the stack by clicking the design icon in the top left. Pressing the customize button, while inspecting, creates a local design which can be edited and is no longer updated when the original is changed. The design will turn red to signify this.",
+            "There are four slots to save designs. The best design is also saved so it can be recalled later. Designs can be exchanged using a clipboard string.\n\nClicking the score shows the global score graph, and your score compared to your friends. Their designs are available to be examined.",
+            "One method of creating a specific pressure is by simultaneously supplying and venting a pipe at a specific ratio. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side.\n\nOpenness = P - N\n\nWhere P is the pressure on the Positive side of the valve and N is the pressure on the Negative side.Here the lower valve openness is 40 (60 - 20).",
+            "The pressure generated in this arrangement is, in percent, the openness of the source valve divided by the sum of the openness of both valves.\n\nPressure = S / (S + V)\n\nWhere S is Supply valve openness and V is Venting valve openness.\nIn this case, Supply is 40 (40 - 0). Venting is also 40 (60 - 20). The expected value between is 40 / (40 + 40) = 50%, thus 50 PSI.",
+            "Three scoring modes are available. The default (Accuracy) mode scores the proximity to the target value (for the worst test).\n\nPrice mode ranks designs by cost. Pipes cost £1 per port, valves cost £10 and steam inlets cost £5. There is an extra £4 charge for each subdesign.\n\nSteam mode measures the amount of steam supplied by the steam inlets.",
+            "It is possible to create user defined levels. These have a user defined icon, tests and can be exchanged through the clipboard.\nTests and test steps can be added/removed using the +/- buttons. The time period per step is configurable. If, when playing all tests, some steps can be skipped, the skip all button selects the subtest to start on. The design can be optionally reset on all or only in play one test mode. The port icons select which ports are used. Clicking the ports on the left of the value selects the ports used as the output. The values are changed in the experiment menu.",
+        ],
+        "dialogue":
+        [
+            [
+                {"who":"charles", "text":"Greetings Gertrude! My name is Charles Chavvington, the proprietor of these General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.\n\nMy dearly departed wife, Ada, stipulated that her research into the mathematical properties of steam should continue beyond her time with us. Which leads us to the reason for you coming into my employ. Your undertaking shall be to preserve her legacy and continue these scientific inquiries."},
+                {"who":"charles", "text":"I trust you have mastered elementary steam engineering in your prior studies, but before we allow you access to her laboratory, you must first demonstrate you are adept at basic steam pipe construction.\n\nConnect the West generator to the East facilities, and the North generator to the South facilities. Under no circumstance should you connect the pipes together! Doing so will deliver free steam to the South facilities, and they never pay their bills on time!\n\nIf you are unfamiliar with our High Pressure Steam pipes, there is an engineering manual available up on the top right with the \"?\" symbol."}
+            ],
+            [
+                {"who":"charles", "text":"Darn it! The secure door to Ada's laboratory is operated with low pressure steam! I could never figure out how she would get this blasted thing open.\n\nHere at General High Pressure Steam Works we generate steam at 100 Pounds per Square Inch. The door uses Moorhouse's low pressure steam which operates at 50 Pounds per Square Inch (PSI). I'll be damned if I pipe that degenerate Moorhouse steam onto my property!"},
+                {"who":"charles", "text":"Unless you can magic up a supply of low pressure steam at 50 PSI, we might as well give up.\n\nIn the build menu, you will find a steam inlet which can supply you plenty of High Pressure Steam at 100 PSI. It is up there, marked with a spanner. You can also press Tab twice to get access to it."}
+            ],
+            [
+                {"who":"charles", "text":"By Jove! You did it! Terrible waste of good steam, but it got the job done. I apologise for the untidy state, but some hoodlums have gained access and left a frightful mess.\n\nIn this laboratory, my dearest Ada conducted experiments on the valves I constructed to her exact specifications. By applying a good dose of High Pressure Steam to the port marked with a \"+\", we can open the valve, allowing steam to pass freely between the two unmarked ends.\n\nGive it a try. Connect West and East, but only when North is at a High Pressure."}
+            ],
+            [
+                {"who":"nicola", "text":"Impressive!"},
+                {"who":"charles", "text":"Ah, Nicola, you are just in time. Gertrude, Nicola will be your assistant. He has already begun studying the notes Ada left. Now, the next bit is a little more challenging for the old grey matter.\n\nWhile applying steam to the \"+\" port opens the valve, applying steam to the \"-\" side closes it. The valve is only open when \"+\" is under a Higher Pressure than the \"-\" side.\n\nAda asked me to add this so she could make a valve that closes upon application of High Pressure to the control pipe. Let's see if these valves still operate correctly.\n\n"},
+                {"who":"charles", "text":"Connect the East and West, but only when the pressure coming from the South is lower than 100 PSI.\n\nYou can use the steam inlet as a source of good High Pressure Steam."}
+            ],
+            [
+                {"who":"charles", "text":"Excellent! Now, combining these two designs, we can construct a component that switches between two sources.\n\nWhen the West control house supplies 100 PSI High Pressure Steam, the North generator should be connected to the East facilities. But when the West control house is at 0 PSI atmospheric pressure, the South generator should be connected to the East facilities."},
+                {"who":"nicola", "text":"What happens when the control house supplies a pressure between 0 and 100?"},
+                {"who":"charles", "text":"What!?! That would be low pressure steam! We do not work with low pressure steam! I did not make my fortune by supplying people with low pressure steam!\n\nNever mind all that low pressure nonsense. When West control is High Pressure, connect the North generator, otherwise connect the South generator."}
+            ],
+            [
+                {"who":"nicola", "text":"Lady Chavvington's notes talk about a steam connection between the laboratory and Lady Easley's residence that was used for communication."},
+                {"who":"charles", "text":"Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these walls."},
+                {"who":"nicola", "text":"I think we can still establish a connection without delivering any steam out. According to these notes..."},
+                {"who":"charles", "text":"Hah! Impossible! This is elementary steamology, my dear boy! Steam communication relies on the transfer of steam, and thou shalt not \"Transfer\" any of my steam out!\n\nIn any case, I am needed elsewhere. This matter does not appear as urgent as the investigations into my missing steam."},
+                {"who":"nicola", "text":"According to Lady Chavvington, Charles was not known as the greatest listener. She describes the design in some detail."},
+                {"who":"ada", "text":"June 5th\nI created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. Charles's valves appear to open to the pressure on the \"+\" side, minus the pressure on the \"-\" side.\n\nThis appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a \"buffer\"."},
+                {"who":"ada", "text":"Communication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit."},
+                {"who":"nicola", "text":"It appears some parts of the original design still remain installed in the wall. As long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint."}
+            ],
+            [
+                {"who":"nicola", "text":"Not perfect, but we can always come back and improve it. Fascinating, is it not? The combination of valves reproduces any pressure value. The incoming pressure opens the steam inlet and the atmosphere venting valves to the exact levels to correctly reproduce the pressure in the output pipe.\n\nLet us send our first message and visit Lady Easley to see if it works."},
+                {"who":"annie", "text":"[Some time later]\nYou gave me such a scare! For a minute I thought it was Ada talking to me from beyond the grave."},
+                {"who":"nicola", "text":"Our apologies Lady Easley. We are attempting to continue Lady Chavvington's research. We were trying to send 80 PSI which according to our codebook means \"Hello\""},
+                {"who":"annie", "text":"No! 80 PSI means, \"Help! I am trapped in the afterlife!\". It is 20 PSI that means \"Hello\".\n\nWhen Ada installed the system she made a mistake on the valves and all the pressures were received upside down. It was when investigating the issue she got her epiphany on the possibilities of steam. We never fixed it, and instead I inverted all the pressure values in my codebook."},
+                {"who":"nicola", "text":"Interesting. Perhaps we should see if we can make the same mistake."}
+            ],
+            [
+                {"who":"charles", "text":"Drat! For the life of me I cannot find the pressure comparator Ada made. Every year, the highly prestigious High Pressure Steam Society compares the pressures provided by all the High Pressure Steam Works to determine the supplier of the Highest Pressure Steam. Without an accurate comparator, we will have to cancel this year's competition.\n\nMy five year winning record will be ruined! I am sure she had another one around here somewhere..."},
+                {"who":"nicola", "text":"We should try and make it, otherwise he will just keep interfering..."},
+                {"who":"charles", "text":"What was that you say, boy?"},
+                {"who":"nicola", "text":"I said we could make one, sir."},
+                {"who":"charles", "text":"Splendid! Just remember, it is not enough to connect the output to High Pressure Steam when one input is greater than the other, one must also vent the output when the opposite is true. My pipes are fully sealed and never leak steam unless a valve is opened to permit them to vent."}
+            ],
+            [
+                {"who":"charles", "text":"Excellent! Such precision! I am sure it could detect the pressure of a feather on a cricket pitch.\n\nI need but one more device before I shall leave you to your investigations. In order to be admitted to the High Pressure Steam Society, one must show their steam works produce High Pressure Steam."},
+                {"who":"charles", "text":"Here at General High Pressure Steam Works, we produce High Pressure Steam at 100 PSI, the only pressure I would recognise as true High Pressure Steam. But technically any steam pressure above 50 PSI is considered High Pressure Steam. As the chair of the High Pressure Steam society, it is my responsibility to make sure inferior low pressure steam producing deviants are not permitted to join.\n\nI require a device to correctly determine the quality of the applicant's steam."},
+                {"who":"nicola", "text":"We still have your design for the 50 PSI steam generator in the tool box. We can use the designs we already made as components."}
+            ],
+            [
+                {"who":"charles", "text":"Bravo! With this contraption I will keep those low pressure steam producers out of our exclusive society."},
+                {"who":"nicola", "text":"How many members are there so far?"},
+                {"who":"charles", "text":"Well... One... As I said \"Very Exclusive\".\n\nIn any case, I must be off lest I miss the reception drinks!"},
+                {"who":"nicola", "text":"Finally...\n\nAccording to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of none other than Lord Moorhouse! Charles would not have been happy if he had found it. Look."},
+                {"who":"ada", "text":"June 17th\n\nWith the pipeline to Lord Moorhouse's estate complete, I am beginning work on a device to compact the high range of pressure values (0-100), to ones acceptable by the low pressure system (0-50). To my complete surprise, when powered by Lord Moorhouse's low pressure steam, but still using 100 PSI as the reference input, the pressure buffer was able to scale the input pressure to precisely one half.\n\nThese properties could have wondrous uses in the field of mathematics."},
+                {"who":"nicola", "text":"Really!?! How can that possibly work?"}
+            ],
+            [
+                {"who":"nicola", "text":"Astonishing! Well, that got us half way there. We can send; but now we need to receive. We must amplify their steam pressure to our range. According to Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure."}
+            ],
+            [
+                {"who":"nicola", "text":"Let's see if this works.\n\n80 PSI [Hello]\n55 PSI [Request meeting]\n57 PSI [Afternoon tea at Madingley Hall]"},
+                {"who":"george", "text":"...\n23 PSI [Negative]\n...\n6  PSI [6]\n12 PSI [/]\n7  PSI [7]"},
+                {"who":"nicola", "text":"What?!? 6/7? Let me check the diary.\n...\nAll the entry for June 7th talks about is the design of the pressure inverter. How could he even communicate with us if the pressures were reversed? ... reversed ... reversed? ...  Of course!\n\nMy apologies. Too much time spent in the colonies. Here is the correct entry."},
+                {"who":"ada", "text":"July 6th\n\nI suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand-delivered note was received at our residence informing me his laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost."},
+                {"who":"ada", "text":"I stored the code securely. Surely Charles would not have done such a thing. I immediately had the door on my laboratory replaced. Charles would rather die than operate a Moorhouse steam door."},
+                {"who":"ada", "text":"I no longer feel safe here. I contacted my sister to expect my imminent arrival. It was a perfect time to test my new encryption system, which will keep our communications secure. I still have not received the sign Charles promised to put on the pipe that leads to her residence. He can be so forgetful at times."},
+                {"who":"nicola", "text":"That was her last diary entry.\n\nOh dear! I didn't think that pipe was leading anywhere so I used the components for our other designs. Luckily some were welded down so I left them in place. The encryption unit seems mostly functional."}
+            ],
+            [
+                {"who":"nicola", "text":"Well that was simple. The encryption is simply an unbalanced buffer. But how could you possibly make a design which accurately reverses such a cypher?\n\nPerhaps Lady Easley could help. I shall enquire if she is available to assist us.\n..."},
+                {"who":"annie", "text":"Among Ada's papers, did you happen to find a napkin from the Madingley Hall tea rooms? I believe it was dated June 24th. We were discussing the new Royal Society paper on \"convergence in monotonic series\" when Ada began scribbling things down on a napkin. She then proceeded to run out exclaiming how she may have solved the decryption problem. Without settling the bill, I might add."},
+                {"who":"ada", "text":"June 24th\nA decryption device can be formed by repeatedly guessing the value, encrypting it and comparing it to the encrypted input. Should the input be higher, we increase the guess. Should it be lower, we reduce it. Such a device could reverse numerous functions.\n\nCharles's steam comparator was just what I needed, although I must remember to return it to him before this year's high pressure steam society meeting."},
+                {"who":"nicola", "text":"At least we know where his comparator got to."}
+            ],
+            [
+                {"who":"nicola", "text":"Incredible! Using this technique we could improve the precision of all our designs. Lady Chavvington's sister must have more information about these techniques.\n\n80 PSI [Hello]"},
+                {"who":"ada", "text":"80 PSI [Hello]\n93 PSI [This is Ada Chavvington]\n"},
+                {"who":"nicola", "text":"60 PSI [Who?]\n73 PSI [Repeat]"},
+                {"who":"ada", "text":"25 PSI [A], 28 PSI [D], 25 PSI [A]\n24 PSI [_]\n27 PSI [C], 32 PSI [H], 25 PSI [A], 46 PSI [V], 46 PSI [V], 33 PSI [I], 38 PSI [N], 31 PSI [G], 44 PSI [T], 39 PSI [O], 38 PSI [N]"},
+                {"who":"nicola", "text":"This is unexpected. We must inform Lord Chavvington at once.\n...\nLord Chavvington! We established a link to Lady Chavvington's sister's residence, but the person at the other end claims to be Lady Chavvington herself!"},
+                {"who":"charles", "text":"Ah, yes, that would be Ada."},
+                {"who":"nicola", "text":"B... But Lord Chavvington, you said Ada had died."},
+                {"who":"charles", "text":"What nonsense! Ada is perfectly fine and staying with her sister until we resolve this matter of the missing High Pressure Steam."},
+                {"who":"nicola", "text":"You called her your \"dearly departed\"."},
+                {"who":"charles", "text":"Yes... She has departed... To her sister's..."},
+                {"who":"nicola", "text":"Everyone assumed she died..."},
+                {"who":"charles", "text":"Hmm... Yes... On reflection, that would explain the flowers and cards expressing sympathy for my loss. I was touched by people's concern for the loss of my High Pressure Steam.\n\nNevertheless. The sooner you complete the steam calculation machine, the sooner we can get to the bottom of this. Continue the research post haste."},
+                {"who":"ada", "text":"June 27th\nTogether with Lord Moorhouse such progress has been made in our research into steam computation. Our previous designs suffered from inaccuracies. Only when the valves were perfectly balanced and produced an output of 50, was the result perfect. With this I was struck with an idea.\n\nI could sense how open any valve is, by placing a second valve which vented the steam and adjusting its openness. Only when the two valves are equally open, will the pressure between them be precisely 50. All I had to do is to adjust the value until this was the case."},
+                {"who":"ada", "text":"Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.\n\nLord Moorhouse is most shy yet smart as a whip, alas often he becomes too afraid to share his innovations."}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. We can now sense how open a valve is, but I don't see how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse."},
+                {"who":"nicola", "text":"Lord Moorhouse. Thank you for allowing us to call upon you. In her absence, we are attempting to continue the steam computation work of Lady Chavvington. Only you know the construction of the pressure adding unit and we beg you share it with us."},
+                {"who":"george", "text":"I do agree. Having thought on this, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of addition in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand."},
+                {"who":"nicola", "text":"Lady Chavvington is alive and well, staying with her sister."},
+                {"who":"george", "text":"That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. If one of those high pressure tankers were to explode, perish the thought, the destruction would be immense. I would not rest until the world was rid of this high pressure horror...\n\nOh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure its openness."},
+                {"who":"george", "text":"But now, you must leave. With Ada safe, I have an important task I must prepare for."}
+            ],
+            [
+                {"who":"charles", "text":"I have brought the sign for the pipe that Ada asked for."},
+                {"who":"nicola", "text":"That must have been months ago."},
+                {"who":"charles", "text":"Yes, well, when a Chavvington says he will do something, it will get done. You don't have to remind him every month.\n\nCould you please send her a message from me?\n\n80, 94, 76, 52, 68, 70"},
+                {"who":"nicola", "text":"I see you have learned the codes!"},
+                {"who":"charles", "text":"Learned?!? I designed them! It was during my time in the military. A combination of the most frequent messages exchanged between captains.\n\nBe a good chap and send it off at once."},
+                {"who":"nicola", "text":"80 PSI [Hello]\n94 PSI [This is Charles Chavvington]\n76 PSI [My sweetest angel]\n52 PSI [My heart yearns for you]\n68 PSI [I longingly await your return]\n70 PSI [Without you life has lost all meaning]"},
+                {"who":"charles", "text":"Good, now, I see the subtractor design is complete. Excellent! As my dearly departed Ada once said..."},
+                {"who":"nicola", "text":"Sir! You must stop using that phrase! People are beginning to think you a murderer..."},
+                {"who":"charles", "text":"Hmm... Yes. As Ada..., who is no longer with us, once said, \"An adder is but an inversion of a subtractor. The output minus one of the inputs must be equal to the other input\". But which input?\n\nShe spent some time frustrated as the design would get stuck when that input was zero and switching the inputs just made the design stuck when the other input was zero. Her eureka moment came when she realised it needed to be a combination of both approaches."}
+            ],
+            [
+                {"who":"annie", "text":"Why have you not been responding to my messages?"},
+                {"who":"nicola", "text":"Our apologies Lady Easley, we did not know you had sent any."},
+                {"who":"annie", "text":"They should be recorded on your message latches over here.\n...\n\nThey're missing! The latches must have been stolen by whoever broke into the laboratory. You should recreate them at once lest you miss any other important communications."},
+                {"who":"annie", "text":"When a message is stable, a pulse of steam is sent on the timing pipe. This causes the latch to capture the value at that time. The latch will record the value, but will maintain the old value until the timing pipe has returned to a low pressure level.\n\nBecause these latches can be placed in sequence to record a series of messages, it is important that the new value is only released once the timing pipe has returned to low pressure."},
+                {"who":"annie", "text":"I was always impressed about how well sealed Charles's valves are with a closed valve able to maintain the pressure within a pipe indefinitely.\n\nI do hope the design isn't lost, for I had such hopes for expanding it in a variety of ways."}
+            ],
+            [
+                {"who":"charles", "text":"Great news everyone! Allow me to introduce Professor Joseph Cogsworth. One of, if not THE, brightest mind in all of the lands. His gear based tabulating machines have done wonders for our accounting department.\n\nHe has been aiding in our missing High Pressure Steam situation and has condescended to take an interest in Ada's work."},
+                {"who":"joseph", "text":"Interesting to see how far you have come. I see you have reconstructed the latch to the same specification as Ada described in her notes."},
+                {"who":"nicola", "text":"Those notes went missing during the break in. How did you know of them?"},
+                {"who":"joseph", "text":"Ada was always a great admirer of my work. Although I thought her steam based approach to be crude and inaccurate, she would often seek my advice in hopes that it could be made adequate."},
+                {"who":"charles", "text":"Once you complete the steam tabulator, we will be able to determine which of my accountants has been embezzling my High Pressure Steam.\n\nEach tabulator either adds, or subtracts a value from the current tally. The North connection selects between adding or subtracting and the South connection provides a timing pulse of High Pressure Steam.\n\nAda had to improve all her previous designs to increase the accuracy of all the used components. Work she never managed to complete."}
+            ],
+            [
+                {"who":"charles", "text":"Very good, but alas too late, for Professor Cogsworth has already identified the guilty accountant."},
+                {"who":"joseph", "text":"Indeed, but in return all I ask is to take possession of this crude attempt at a steam based tabulating device. Ada wished for me to be the custodian of all her research. Gertrude? Nicola? Your work here is done."},
+                {"who":"ada", "text":"I hardly think so! Unlikely I would pass my work over to a man with both character and intellect of a parasitic wasp."},
+                {"who":"joseph", "text":"Ada! I was under the impression you had died."},
+                {"who":"ada", "text":"Charles! Apprehend this man, for he is the cause of all of this perturbation."},
+                {"who":"charles", "text":"What!?! I hardly think a man of his stature would be involved in such petty crimes."},
+                {"who":"george", "text":"It's true Charles. Joseph poisoned me against you with mistruths, manipulating us to detest one another. At first I collaborated with him due to his dislike of high pressure steam, but it was only later I realised his hatred of ALL steam!"},
+                {"who":"charles", "text":"Is this true Joseph? You have no passion for High Pressure Steam?"},
+                {"who":"joseph", "text":"Of course it is true! Ghastly substance. But to have me apprehended? For what? But you have no proof of any misdeeds."},
+                {"who":"ada", "text":"Actually we do. Your gear tabulating machines have been removing tiny fractions from each transaction. It was only when we compared the results to the steam tabulator that we spotted these errors. All this so you could slowly syphon off high pressure steam. Were it not for Charles's sense of something being amiss, this would have never been spotted."},
+                {"who":"joseph", "text":"Preposterous! What would I want with this revolting substance!"},
+                {"who":"george", "text":"To slowly fill the pressure vessel you asked me to construct under the town hall."},
+                {"who":"charles", "text":"What!?! But that's a low pressure vessel! Have you no idea of the consequences of filling it with High Pressure Steam!?!"},
+                {"who":"joseph", "text":"The only consequences would be the world finally rejecting steam once and for all! It should be reserved for executions and only seen in museums. To think! Steam invading the offices and displacing my machines! For it is only gears that can produce a...\n\nWHAT!?! Let go of me! Unhand me, you wretched fools! You cannot do this to me! Wait until the Academy hears about this!"},
+                {"who":"charles", "text":"The Academy certainly will hear about this!\n\nWell that's a satisfying conclusion to this matter. My High Pressure Steam is safe as is my dear Ada."},
+                {"who":"ada", "text":"Actually darling, I think the story of steam computation is only just beginning."},
+                {"who":"charles", "text":"Indeed. But, perhaps we should diffuse that steam bomb first."}
+            ],
+            [
+                {"who":"ada", "text":"Thank you Gertrude. If not for your quick thinking, we would have had a disaster on our hands."},
+                {"who":"george", "text":"I am also rather impressed. Ada, I cannot apologise enough for accusing you of ransacking my residence. Would it be possible for Gertrude and Nicola to aid me in my designs? I think their input will be highly constructive."},
+                {"who":"ada", "text":"Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this commotion. We shall return in a few days and I already look forward to inspecting your discoveries."},
+                {"who":"george", "text":"Thank you, and safe journey.\n\nNicola, could you find me that x2 pressure amplifier."},
+                {"who":"nicola", "text":"It's right here.\n\nThe construction is simple, yet I find the operation stunningly useful."},
+                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a minimum and maximum value, I do believe we can construct an amplifier which will zoom into any given range."},
+                {"who":"nicola", "text":"We shall name it the Zoom element."},
+                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the South our minimum. The East output will tell us where the West input lies within the range."}
+            ],
+            [
+                {"who":"george", "text":"Good, now we can zoom into any pressure range we choose. What I need next is a way of detecting if we are within a range. Take a look at this \"steam speedometer\".\n\nAda made it for Charles to measure the amount of steam passing through it. When steam passes through a long pipe, it will lose some pressure. The faster the steam is passing through, the more pressure it loses. If the two sides are at same pressure, there must be no moving steam. She even put some valves in the pipe to increase the resistance and make the difference greater."},
+                {"who":"george", "text":"What I need is a way of telling if the West input reference is between the two pressures. It must be lower than the North, but higher than the South."}
+            ],
+            [
+                {"who":"george", "text":"Now, by zooming into a range, I can tell more precisely how much steam someone is using, but I can also tell if I am within the range I am inspecting. I shall tell my customers to prepare for an extra decimal place on their next steam bills!"},
+                {"who":"annie", "text":"Has all this research been to solely to aid your company profits? This is not what our agreement was."},
+                {"who":"george", "text":"But Lady Easley! I made these for you. Believe me, these will be very useful components in the future."},
+                {"who":"annie", "text":"I highly doubt that. I think it is time for some pure research.\n\nLet's go back to the Latch design Ada and I were working on. I wanted a latch which can be enabled or disabled. If the North input is high, the latch operates as normal, but if it is low, it should neither drive the output, nor accept a new input upon seeing a timing pulse. We can use the old design, although it may be more efficient to make a custom one."}
+            ],
+            [
+                {"who":"annie", "text":"Now, the reason I wanted that design was to be able to construct an \"addressable latch\" where the North input selects between one of several latches. This way I could store several values and access each at will.\n\nLet's start with two. The North input selects between two latches. North value 0 to 50 will select one, and North value 50 to 100 will select the second."}
+            ],
+            [
+                {"who":"annie", "text":"Exactly, unfortunately this is as far as we got. Next I wanted a latch that could store five values, but Ada and I could never fit it all into a single design. The select ranges would be 0-20, 20-40, 40-60, 60-80 and 80-100. Unfortunately detecting which of the ranges the select signal was in was too difficult."},
+                {"who":"george", "text":"If only one had a range detecting design."},
+                {"who":"annie", "text":"Your design detects flow, not a pressure range."},
+                {"who":"george", "text":"Well, yes and no. It detects a pressure range of flowing steam. If placed in chain, and steam is passed through, they will detect a range of pressures."}
+            ],
+            [
+                {"who":"annie", "text":"I admit, that flow detector was quite ingenious and was just the trick we needed. But now, how would we go about strapping two of these Latch5 block to make a Latch10?\n\nThe select ranges would be 0-10, 10-20, 20-30..."},
+                {"who":"george", "text":"And this is why I asked for the zoom element to be designed. I have seen the genius in your ideas and have already planned ahead."}
+            ],
+            [
+                {"who":"ada", "text":"Well, I am impressed. We had only been gone a couple days and you have created the storage part of the Steamputer."},
+                {"who":"nicola", "text":"The what?"},
+                {"who":"annie", "text":"All will be revealed in good time.\n\nWell, I think my job here is done! I managed to design the storage. I will leave you to investigate the calculations and control?"},
+                {"who":"ada", "text":"Well let's start small. We need a component which gives us the smaller of the two input values. Should be simple enough."}
+            ],
+            [
+                {"who":"charles", "text":"Ada! My darling! Try this exciting new beverage George introduced me to! It is called \"Froffee Coffee\". Taste it!"},
+                {"who":"ada", "text":"Hmmm, yes it is rather ni..."},
+                {"who":"charles", "text":"You know what would make it even better!?!"},
+                {"who":"ada", "text":"High press..."},
+                {"who":"charles", "text":"High Pressure Steam!"},
+                {"who":"ada", "text":"Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the programme elements?"},
+                {"who":"charles", "text":"Already done! George is finalising the poem... or should I say requirements."},
+                {"who":"ada", "text":"Oh! Well we must quickly create the Max component and then you can have access to our engineers.\n\nThe output this time must be the maximum of the two inputs."}
+            ],
+            [
+                {"who":"charles", "text":"If we have some time before George comes, we should spend it making his pressure vessels safer. They are safe up to 90 PSI, but beyond that they are liable to explode. What I require is a \"steam fuse\". Allow the flow of steam from West to East, but once the pressure reaches beyond 90PSI, disconnect the supply and vent the vessel. Remember to disconnect the supply first, and only then vent the tank."}
+            ],
+            [
+                {"who":"charles", "text":"Come George! I think we have some privacy!"},
+                {"who":"george", "text":"Are you sure about this Charles? Lady Easley barely acknowledges my existence."},
+                {"who":"charles", "text":"Stiff upper lip old chap!"},
+                {"who":"george", "text":"Very well. This is somewhat of a sensitive matter. I require a device which increases by 10 PSI each cycle. It should start at 0 PSI and at each timing pulse should increase by 10 PSI. Instead of reaching 100 PSI, it should reset back to 0 PSI.\n\nPlease, do be discreet about its construction."}
+            ],
+            [
+                {"who":"george", "text":"Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace the object of affection from your \"High Pressure Steam\" to my \"Lady Easley\"."},
+                {"who":"george", "text":"Take a look at Easley's Latch10 design. We require something simpler, yet more complex. For each input value range, I need a specific pressure to be output. There is no need to ever update the values held.\n\nNow might be a good time to examine how to make custom components. You can use any old design as a basis and change the implementation for that instance."}
+            ],
+            [
+                {"who":"george", "text":"We are nearly there. Let's connect these parts together so it will replay my poem. At every steam pulse, the next value should be read out. This won't be trivial as our counter goes through a sequence 0, 10, 20, 30... while our poem storage wants a sequence 5, 15, 25, 35..."}
+            ],
+            [
+                {"who":"charles", "text":"Excellent stuff! It is just a shame we have to rely on these horrid Cogsworth clocks to provide the timing pulses."},
+                {"who":"nicola", "text":"Gertrude, do you remember how you diffused that bomb? I think we can make a clock just as precise."},
+                {"who":"charles", "text":"However you do it, I want it flip once every tick and I don't want it changing time depending on what it is connected to."}
+            ],
+            [
+                {"who":"ada", "text":"What have you two been up to?"},
+                {"who":"charles", "text":"George and I have just delivered a most marvellous poetry reciting machine to Lady Easley. It has been programmed to recite George's feelings towards her.\n\nWith sufficient refinement one could reduce such a device to the size of a horse."},
+                {"who":"ada", "text":"That sounds lovely. Although I do hope you reversed the pressures as Annie's codes are all negated."},
+                {"who":"george", "text":"WHAT!?! Nicola! What did I just send her?"},
+                {"who":"nicola", "text":"Hmm... It appears you complemented her on her magnificent beard ... requested her lewd etchings ... and instructed her to attack the enemy at dawn."},
+                {"who":"george", "text":"...\nOn that note, I shall return to my residence to spend some time with a bottle of brandy."},
+                {"who":"ada", "text":"Charles! Go and help him!\n\nWhile they are gone, perhaps you two can help. Charles was supposed to install two pipes into this wall, but it only has one. I need North connected to South, and West to East. Is there any way we can do this without waiting for a new pipe to be installed?"},
+                {"who":"nicola", "text":"Good thing we live in a clockwork universe because I think I have an idea."}
+            ],
+            [
+                {"who":"annie", "text":"Hello Ada. Is George here? I have come to speak with him about this machine that has been delivered to my residence."},
+                {"who":"ada", "text":"Oh Annie! I am so sorry. He and Charles were completely ignorant of the codebook differences."},
+                {"who":"annie", "text":"Oh, I figured that out immediately. It would have made it such a silly farce otherwise."},
+                {"who":"ada", "text":"Nicola! Go and fetch George and Charles, wherever they got to."},
+                {"who":"annie", "text":"This poetry device they made is quite a marvellous contraption. The components used are ingenious. Gertrude? This counter. I assume you had a hand in its construction. Could you adapt the design to include a way of setting the value? The new value would come on the West port, and the North port will select whether to use the new value."}
+            ],
+            [
+                {"who":"ada", "text":"I have to say Annie, do you not find all this rather complicated?"},
+                {"who":"annie", "text":"I do, but look how far we have come. Remember the week you spent trying to get the adder to work? Looking back, it all looks so simple now. Not only has our research progressed, but I think we have such a better understanding of steam."},
+                {"who":"ada", "text":"Then perhaps you could aid me in looking at one of your message latches. I can't figure out what's wrong. All the messages from Lady Bechdel come out as nonsense."},
+                {"who":"annie", "text":"Interesting. It appears that the timing pulse arrives little too early, before the value has become stable. If I could delay the pulse by a little less than a tick, then that would fix it. It would need to have a very quick shift between 0 and 100 PSI. Let us make something."}
+            ],
+            [
+                {"who":"annie", "text":"What does this gauge show?"},
+                {"who":"ada", "text":"That would be the steam pressure going to the Cogsworth Clockworks. Why?"},
+                {"who":"annie", "text":"Look. It is such a peculiar pattern. Also, are they not closed? It is a Sunday after all.\n\nIt jumps up to 100 PSI for one tick, then another value for another tick, before returning to 0 PSI."},
+                {"who":"ada", "text":"That is intriguing. I wonder if we could decode it."}
+            ],
+            [
+                {"who":"nicola", "text":"Lady Chavvington! I have searched all across the city and I have failed to locate..."},
+                {"who":"ada", "text":"We know where they are! George managed to get a message through to us by turning an inlet on and off. They have been locked in the Cogsworth Clockworks steam room. Let us go there at once!"},
+                {"who":"charles", "text":"[BANG] [BANG] [BANG]\nGet us out! The room is filling with High Pressure Steam! Oh, the cruel irony of being killed by the thing I love."},
+                {"who":"nicola", "text":"The key that should open this door doesn't work! It appears someone has shot at the lock and ruptured a pipe inside! I know nothing of picking locks, let alone broken ones."}
+            ],
+            [
+                {"who":"charles", "text":"Gertrude! I cannot thank you enough, not only for saving our lives, but also doing so using High Pressure Steam!"},
+                {"who":"ada", "text":"Darling, how did you get into this dreadful situation?"},
+                {"who":"charles", "text":"George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors began asking questions. His only choice was to silence us, giving him enough time to take his investors' money and beat a hasty retreat.\n\nQuick! To the aerodrome! We must not let him get away."},
+                {"who":"george", "text":"This pipe carries launch codes from West to East. Each one is three codes long and transmitted at two ticks per code. Once we see Cogsworth's code of 27, 39, 31, we will know he is here and trying to get away."},
+                {"who":"ada", "text":"Then it would be too late. By then he will have permission to launch and could get away. We must tell the aerodrome manager not to allow him to leave."},
+                {"who":"george", "text":"Alas, the manager has been replaced with a Cogsworth machine. Likely a compromised one.\n\nWe must not allow Cogsworth's launch code to get through, yet we must not disrupt the aerodrome lest he discovers we are onto him.\n\nWhat if we delayed the signal by a few ticks and if we see it, we could remove it? This will give us time to locate and apprehend him."}
+            ],
+            [
+                {"who":"ada", "text":"At last. With Cogsworth behind bars, we can finally complete our Steamputer.Â \n\nAll the parts are now in place. I have written what I shall name a \"programme\", to calculate Fibonacci numbers, but the results are incorrect.Â \n\nWe will need to refine the components until we get a functioning machine. There may be considerable time spent diagnosing the issues and fine tuning."}
+            ],
+            [
+                {"who":"charles", "text":"It is here! The response from the Academy.\n\n\"We thank you for your submission of the Steamputer for review by the Academy of Sciences. We find it has considerably extended our knowledge in steam computation. Therefore we are pleased to say your application for membership has been approved!\""},
+                {"who":"nicola", "text":"Congratulations Lady Chavvington."},
+                {"who":"ada", "text":"Actually, the application was not for me. It was on Gertrude's behalf.\n\nGertrude, you were the one who constructed all these components and have shown us how to manipulate steam to wondrous uses. It is you who should be teaching others of the steam computation."},
+                {"who":"charles", "text":"Huzzah!\n\nLet us celebrate this afternoon!"},
+                {"who":"george", "text":"Lady Easley? Will you join us for the occasion?"},
+                {"who":"annie", "text":"I am afraid I cannot, for I have an appointment this afternoon with a dashing gentleman."},
+                {"who":"george", "text":"Oh."},
+                {"who":"annie", "text":"That would be you George. Afternoon tea at Madingley Hall was offered and I graciously accept."},
+                {"who":"ada", "text":"Thank you for playing ComPressure."}
+            ]
+        ],
+        "hints":
+        [
+            [
+                {"who":"charles", "text":"Click and hold the left mouse button to place a new pipe from the start point to the end. If you drag a new pipe over the old one, it will not connect them. If you get something wrong, you can remove the pipes using the right mouse button."}
+            ],
+            [
+                {"who":"charles", "text":"The build menu lets you place a steam source which supplies steam at 100 PSI. An open ended pipe will release the pressure to 0. By tapping off a pipe somewhere in the middle, it may be possible to create a pressure somewhere in between."}
+            ],
+            [
+                {"who":"charles", "text":"The build menu has the valve component. By connecting the \"+\" side of the valve to the North, it allows the North input to control how open the valve is. You can then simply connect East and West to connect the two when North is at High Pressure."}
+            ],
+            [
+                {"who":"nicola", "text":"If I understand correctly, we need to connect the \"+\" port of the valve to a high pressure steam source, and the port marked \"-\" to the South input. This will connect East and West only when the South port pressure is low. If it is high, it will close the valve."}
+            ],
+            [
+                {"who":"nicola", "text":"When the input is high, we connect the North. We know how to do that from the \"Normally Open\" design. And when the input is low, we connect the South. That's our \"Normally Closed\" design."}
+            ],
+            [
+                {"who":"nicola", "text":"Well, let's start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. To connect to atmosphere, we simply leave the pipe end open.\n\nAs Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio."}
+            ],
+            [
+                {"who":"nicola", "text":"This time, when the input is high pressure, we want it to be connected to atmosphere. When the input is low is when we supply the steam. Our switch design was able to select between two values. Those values could be steam and atmosphere."}
+            ],
+            [
+                {"who":"nicola", "text":"We can use valves to measure which of North and South is higher. If North is higher, we connect the output to steam. If South is higher, we connect it to atmosphere.\n\nRemember, the steam in the output pipe will not drain away by itself, we need to  actively release it using a valve."}
+            ],
+            [
+                {"who":"nicola", "text":"I guess we already have a comparator, and we have a source of a precise value of 50."}
+            ],
+            [
+                {"who":"nicola", "text":"When the input is 100, we want the output to be 50. So I guess we connect our 50 generator to the output using a valve. And when the input is 0, we vent the output to atmosphere."}
+            ],
+            [
+                {"who":"nicola", "text":"This sounds like our buffer design again, but when the input is 50, we want the output to be 100. So the atmosphere venting valve should be closed once we reach 50. I guess, instead of using the 100 PSI on \"-\" side of the venting valve, we could switch it to 50. "}
+            ],
+            [
+                {"who":"nicola", "text":"I don't remember there being any other components in this. I think we just need to connect what is there to the output."}
+            ],
+            [
+                {"who":"nicola", "text":"If we pass the output through our encryption component, we can determine what the input must have been.\n\nWhen the two inputs on the comparator are equal, the output is neither pressurised, nor vented. If we get too much wobble, we should go back to our comparator design and make it less strong."}
+            ],
+            [
+                {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
+            ],
+            [
+                {"who":"nicola", "text":"We open one valve to the value of the West input minus the South input, we can then open a second valve to the same level of openness by looking for when the pressure between them is 50."}
+            ],
+            [
+                {"who":"nicola", "text":"This one is somewhat harder. Using a subtractor gives us too much wobble.\n\nComparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.\n\nClick the requirements for a diagram of this setup."}
+            ],
+            [
+                {"who":"annie", "text":"When the South input is high, we open our storage pipe. We can the use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the timing and output valves."}
+            ],
+            [
+                {"who":"nicola", "text":"The output is the value of a latch controlled by the South input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, a subtractor and a switch."}
+            ],
+            [
+                {"who":"nicola", "text":"For a change a wobble is actually desirable. Amplifiers in a ring configuration will make the design unstable and will wobble up and down."}
+            ],
+            [
+                {"who":"nicola", "text":"When West is higher than South, start adding more steam. When West is lower than North, start releasing more steam."}
+            ],
+            [
+                {"who":"nicola", "text":"You can put valves in series. Only if all the valves are open will steam flow through."}
+            ],
+            [
+                {"who":"nicola", "text":"This is not much different than our normal latch design, except the output and the timing pulse are not connected when the North input is low."}
+            ],
+            [
+                {"who":"nicola", "text":"If the North select input is higher than 50, we enable one latch, otherwise we enable the other."}
+            ],
+            [
+                {"who":"nicola", "text":"We need so many select signals! What if we chain a row of flow detectors with steam inlet at one end and atmosphere at the other? This would give us all the values we need to create."}
+            ],
+            [
+                {"who":"nicola", "text":"We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 â 50, or 50 â 100) to the range the Latch5 design takes (0 â 100).\n\nI guess that Zoom element is useful after all, but in this instance it may need to be quite powerful. Each zoom would be connected to five flow detectors, and it will take it a while to pressurize all those pipes. To make a design stronger, we could simply duplicate it."}
+            ],
+            [
+                {"who":"ada", "text":"It should be as easy as a comparator and a switch."}
+            ],
+            [
+                {"who":"ada", "text":"Is this not just the same as our Min component but selecting the other way round?"}
+            ],
+            [
+                {"who":"charles", "text":"We can form a value of 90 PSI using a long pipe venting pipe. A comparator between that and out input will tell us when to vent the vessel. As our comparator pressure rises from 0 PSI to 50 PSI, it should close off the input. Once it rises above 50 PSI it should open a valve to release the content of the vessel to the atmosphere."}
+            ],
+            [
+                {"who":"george", "text":"We can use an adder with a static 10 PSI on one input. Then use a latch to capture the new value. Finally a Fuse in the loop will reset the counter to 0 PSI."}
+            ],
+            [
+                {"who":"george", "text":"We can use the same method we used in the Latch10 design to select between ten values. Each value will need to be custom made and connected to the output when selected. This involves several custom designs."}
+            ],
+            [
+                {"who":"george", "text":"We can connect our counter to the ROM, but first we will need to add 5 using an adder."}
+            ],
+            [
+                {"who":"nicola", "text":"If we form a ring of Amp50 components with an inversion somewhere, we can get a regular beat. Once we get it close, we can tune it by adding pipe elements to slow it down a little."}
+            ],
+            [
+                {"who":"nicola", "text":"A clock can select between the two inputs and on the other side of the wall, a synchronised clock can select between the outputs. Although we should not connect both inputs. By the time we open one, the second should be sealed off. We can use a 50 PSI as a reference."}
+            ],
+            [
+                {"who":"annie", "text":"We can amend the counter to insert a switch to select between a new value or the incremented one."}
+            ],
+            [
+                {"who":"annie", "text":"We only need to delay values of 0 PSI and 100 PSI. A chain of Amp50 elements will delay the pulse, with some minor tuning."}
+            ],
+            [
+                {"who":"annie", "text":"A delay element will give us the timing pulse we need. Once we see the delayed pulse, we can capture the value, but also force the delay input to 0 PSI."}
+            ],
+            [
+                {"who":"nicola", "text":"Instead of just plugging the hole, we could attach it to 100 PSI. That would make it easier. To make a steam key, one can replicate the pressures that are formed inside the lock."}
+            ],
+            [
+                {"who":"george", "text":"We need three latches to delay the input sufficiently. A clock generator with a custom additional delay can clock them. To detect if all values are correct, a pipe can be slowly filled and if any latch value is either greater or less than the searched value, it can vent the pipe."}
+            ],
+            [
+                {"who":"ada", "text":"Take your time and understand how the machine works. Once you do, you can improve your designs so they improve the operation of the Steamputer."}
+            ],
+            [
+                {"who":"ada", "text":"No more hints. Enjoy your win."}
+            ]
+        ]
+    },
+    "中文":
+    {
+        "tooltips":
+        {
+            "Save"                      :   "保存",
+            "Restore"                   :   "查看",
+            "Best solution"             :   "最优设计",
+            "Customize"                 :   "自定义",
+            "Import level"              :   "导入关卡",
+            "Delete"                    :   "删除",
+            "Copy design\nto current"   :   "覆盖当前",
+            "Delete level"              :   "删除",
+            "Return"                    :   "返回",
+            "Level Editor"              :   "编辑器",
+            "Level select"              :   "选关",
+            "Design"                    :   "元件",
+            "Test"                      :   "测试",
+            "Experiment"                :   "调试",
+            "Scores"                    :   "分数",
+            "Help"                      :   "帮助",
+            "Repeat\ndialogue"          :   "对话",
+            "Hint"                      :   "提示",
+            "New design"                :   "新元件",
+            "Valve"                     :   "阀门",
+            "Steam Inlet"               :   "蒸汽源",
+            "Rotate left"               :   "左旋",
+            "Rotate right"              :   "右旋",
+            "Reflect\nvertically"       :   "垂直翻转",
+            "Reflect\nhorizontally"     :   "水平翻转",
+            "Lock blocks"               :   "锁定方块",
+            "Add sign"                  :   "注释",
+            "Stop tests"                :   "停止",
+            "Repeat 1 test"             :   "运行当前样例",
+            "Run all tests"             :   "运行所有样例",
+            "Export to\nclipboard"      :   "导出至剪贴板",
+            "Import from\nclipboard"    :   "导入自剪贴板",
+            "Accuracy mode"             :   "精准度模式",
+            "Price mode"                :   "价格模式",
+            "Steam mode"                :   "蒸汽量模式",
+            "Confirm"                   :   "确认",
+            "Cancel"                    :   "取消",
+            "Exit"                      :   "退出",
+            "Full Screen"               :   "全屏",
+            "Join our Discord group"    :   "加入Discord服务器",
+            "Info"                      :   "关于",
+            "Select language"           :   "语言",
+            "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
+                                            "如果您在游玩过程中遇到困难，可以前来Discord上与优秀的高压蒸汽协会成员一同讨论您遇到的挑战。按下Esc并点击“加入Discord服务器”来加入。",
+            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued…" :
+                                            "看来我们的旅程必须在此停下了。您将能够在完整游戏中继续您的冒险，敬请期待。"
+            "Cross"                     :   "Cross",            
+            "50"                        :   "50",               
+            "Normally Open"             :   "Normally Open",    
+            "Normally Closed"           :   "Normally Closed",  
+            "Switch"                    :   "Switch",           
+            "Buffer"                    :   "Buffer",           
+            "Inverter"                  :   "Inverter",         
+            "Comparator"                :   "Comparator",       
+            "Amp50"                     :   "Amp50",            
+            "Div2"                      :   "Div2",             
+            "Mul2"                      :   "Mul2",             
+            "Encrypt"                   :   "Encrypt",          
+            "Decrypt"                   :   "Decrypt",          
+            "Sensor"                    :   "Sensor",           
+            "Subtractor"                :   "Subtractor",       
+            "Adder"                     :   "Adder",            
+            "Latch"                     :   "Latch",            
+            "Tabulator"                 :   "Tabulator",        
+            "Broken Link"               :   "Broken Link",      
+            "Zoom"                      :   "Zoom",             
+            "Flow Detector"             :   "Flow Detector",    
+            "LatchE"                    :   "LatchE",           
+            "Latch2"                    :   "Latch2",           
+            "Latch5"                    :   "Latch5",           
+            "Latch10"                   :   "Latch10",          
+            "Min"                       :   "Min",              
+            "Max"                       :   "Max",              
+            "Fuse"                      :   "Fuse",             
+            "Counter"                   :   "Counter",          
+            "ROM"                       :   "ROM",              
+            "Poem"                      :   "Poem",             
+            "Clock"                     :   "Clock",            
+            "Cross v2"                  :   "Cross v2",         
+            "CounterE"                  :   "CounterE",         
+            "Delay"                     :   "Delay",            
+            "Self-timed latch"          :   "Self-timed latch", 
+            "Lock Picking"              :   "Lock Picking",     
+            "Code filter"               :   "Code filter",      
+            "Steamputer"                :   "Steamputer",       
+            "END"                       :   "END",              
+
+        },
+        "help":
+        [
+            "在选关页面中，下方的面板说明了此关的设计目标。\n每一关都有四个通道，每个通道有其对应的颜色。\n设计目标说明了通道之间应当如何相互作用。\n点击设计目标面板可以获得提示。",
+            "当您通过了所有测试样例时，您便可以进入下一关。\n您可以随时返回调整先前的解法。\n\n点击下方的管道按钮以继续进行教程。您可以按F1打开帮助。",
+            "管道可以通过两种方法放置：\n一是按住左键，从起点拖动至终点来放置管道；\n二是点击左键，使得管道向鼠标方向延伸。\n点击右键可以退出管道放置状态。",
+            "按住右键可以删除管道以及其他元件。",
+            "通过元件页面可以向关卡中添加元件。\n选中蒸汽源并将鼠标停留在关卡中时，可以通过方向键改变朝向。\n您也可以通过按Q键与E键或是滚轮来旋转。\n点击左键可以放置元件，点击右键可以退出元件放置模式。",
+            "阀门可以通过同种方式放置。\n按下Tab键或是滚轮，可以快速选中阀门；\n而再次按下Tab键或是滚轮，可以选中蒸汽源。",
+            "蒸汽源会提供压强为100 PSI的蒸汽，\n而断开的管道会将蒸汽散失至大气中，压强变为0 PSI。",
+            "在管道的连接处可以读出该点的压强。\n注意每个管道都有一部分阻抗。",
+            "当阀门的(+)端压强大于(-)端压强时，蒸汽可以通过。\n二者差值越大，阀门的开度越大。(+)端与(-)端的蒸汽不会被消耗。\n\n在图中，(-)端连接大气，因此为0 PSI；\n而(+)端为100 PSI，故阀门的开度为100%。\n如果(+)端为75 PSI而(-)端为25 PSI，则阀门的开度为50%。",
+            "如果(+)端的压强不大于(-)端的压强，那么阀门将会关闭，蒸汽无法通过。",
+            "如果在阀门的(+)端连接蒸汽源，那么只有当(-)端的压强小于100 PSI时，\n阀门才会打开。\n\n和之前一样，阀门的开度与(+)端与(-)端的差值成正比。",
+            "在阀门的(-)端连接蒸汽源会关闭阀门，\n因为(-)端的压强总是不小于(+)端的压强。",
+            "您可以通过测试页面观察您的设计运行结果如何。\n页面中的前三个按钮的作用分别是停止，运行当前样例和运行所有样例，\n它们的快捷键是1，2，3。\n\n每一样例上标注的是当前的分数，下方标注的是最好分数。\n在最右端是通过取分数最小值得到的最终成绩。",
+            "下方面板展示了当前样例的输入序列和预期输出。\n当前运行的样例将被高亮显示。\n上一次运行的结果记录在了输入序列右端。\n您可以按空格键切换至下一个样例。\n\n您所得的分数由输出与预期输出的差值决定。\n图像中将显示在最后一个输入时的输出曲线。\n淡线代表目前最优设计的曲线。",
+            "在调试页面中您可以手动改变各个通道的值，观察设计如何运行。\n竖直滑块可调整所需的值，水平滑块可调整输入强度。\n将水平滑块移至最左会变为输出通道。 \n各通道初始值由当前样例决定。",
+            "下方的图像记录了各个通道的值的变化。",
+            "有两种方法同时选中多个元件：按住Ctrl时点击，或是按住Shift时拖动。\n选中的元件在不被阻挡的情况下，可以通过WASD移动，通过Q和E旋转。\n可通过C键复制，X键剪切，V键粘贴。按下Delete可删除选中元件。\n可通过Z键或同时按下左右键撤销，Y键或是Shift+Z重做。",
+            "按下Esc可打开游戏菜单，可以退出游戏，切换窗口与全屏，\n加入Discord服务器或查看制作信息。\n\n右端滑块可调整音效与音乐音量大小。",
+            "已完成的设计可作为元件使用。元件页面中会列出可用的元件。\n改变元件的设计将会影响到所有使用该元件的关卡。\n\n双击元件可以查看元件内设计，可通过点击左上元件图标退出。\n查看元件内时，点击自定义可自由修改内部设计，不被原元件影响。\n红色元件表明这是一个自定义元件。",
+            "每关有四个可保存设计的档位，最优设计也会自动保存以便使用。\n设计可以通过剪贴板导入与导出。\n\n进入分数页面可展示全球分数分布曲线与您和您的好友的分数。\n您可以查看您与您的好友的设计。",
+            "在同时通过蒸汽源提供蒸汽并散失蒸汽至大气的情况下，\n调整蒸汽源供气与散气的比例可以产生特定的压强。\n阀门的开度由(+)端与(-)端的差值决定。\n\n开度 = ( P - N ）%\n\n其中P代表(+)端压强，N代表(-)端压强。\n左端下方的阀门开度为40% (60 - 20）。",
+            "左图中的设计产生的压强，可通过供气阀开度除以二者开度的和近似计算。\n\n压强 = 100 * S / (S + V)\n\n其中S表示供气阀的开度，V表示散气阀的开度。\n左图中，供气阀开度为40% (40 - 0)， 散气阀开度也为40% (60 - 20)。\n二者中间的输出值是100 * 40% / (40% + 40%） = 50，即50 PSI。",
+            "有三种计分模式可选择。\n默认模式（精确度模式）通过最差情况下与预期输出的差值计分排名。\n\n价格模式通过造价多少排名。管道开口各花费£1，阀门花费£5，\n蒸汽源花费£10，集成元件额外花费£4。\n\n蒸汽量模式通过计算蒸汽源的蒸汽消耗量计分。",
+            "玩家可制造自制关卡，绘制关卡图标，设计样例并通过剪贴板分享。\n测试样例可以通过+或-按钮来增加或删去，每个状态的时长都可调整。\n如果运行所有样例时有些状态可被跳过，可以通过跳过全部按钮来设置。\n设计可以只在当前样例下重置，也可以在所有样例下重置。\n通过通道图标可选择需要的通道以及输出通道。\n输入值可以通过调试页面更改。",
+        ],
+        "dialogue":
+        [
+            [
+                {"who":"charles", "text":"你好，Gertrude！  我是Charles Chavvington， 是这项通用高压蒸汽工程的所有人。 我们从这里向半个城市提供高压蒸汽， 为从蒸汽伞到蒸汽木琴的所有东西提供动力。\n\n我已离去的妻子Ada要求， 在她离开我们之后， 我们要继续她对蒸汽的数学性质的研究， 因此我们雇用了你。 你的职责是维护她留下的设计并继续进行这些研究。"},
+                {"who":"charles", "text":"我相信你在之前的学习中已经掌握了基本的蒸汽工程， 但你在进入她的实验室之前， 必须先证明你能熟练做到基础的蒸汽管道建造。\n\n将西部的蒸汽厂连接到东部设施， 并将北部的蒸汽厂连接到南部设施。 不要把管子连在一起！ 这样做将为南部的设施提供免费蒸汽， 而且他们从不按时付账！\n\n如果你还不太熟悉我们的高压蒸汽管道， 右上角有一本标着“？”的工程手册。"}
+            ],
+            [
+                {"who":"charles", "text":"见鬼， Ada实验室的安全门是用低压蒸汽操作的！ 我不知道她是怎么把这玩意打开的。\n\n在通用高压蒸汽工程里， 我们生产的蒸汽压力都是100磅每平方英寸（PSI）。 但这个门用的是Moorhouse的低压蒸汽， 工作压力是50磅每平方英寸（PSI）。 如果我把那变质的蒸汽引到我的屋里， 我会被诅咒的！"},
+                {"who":"charles", "text":"如果你不能提供50 PSI的低压蒸汽，我们就只能放弃了。\n\n在“元件”菜单中， 你可以找到蒸汽源， 它可以为你提供大量的100 PSI高压蒸汽。 就在上面， 用扳手标记着。 你也可以按两次Tab来选中。"}
+            ],
+            [
+                {"who":"charles", "text":"天哪， 你做到了！ 虽然白白浪费了大量的优质蒸汽， 但它确实能用。 抱歉这里面并不太整洁， 因为一些流氓闯入过， 把这里弄得一团糟。\n\n在这个实验室里， 我亲爱的Ada研究了我按她给的精确规格制造的阀门。 通过在标有“+”的端口上施加大量高压蒸汽， 阀门可以被打开， 蒸汽可以在两个未标记的端口之间自由流动。\n\n试一试吧， 当北部处于高压时， 连接西部和东部。"}
+            ],
+            [
+                {"who":"nicola", "text":"做得好！"},
+                {"who":"charles", "text":"啊， Nicola， 你来得正是时候。 Gertrude， Nicola将是你的助手， 他已经开始研究Ada留下的笔记了。 下一个部分对你将会是更大的挑战。\n\n向“+”端通入蒸汽时会打开阀门， 而向“-”端通入蒸汽会关闭阀门。 阀门只有在“+”端的压力高于“-”端时才会打开。 \n\nAda让我加上这个， 这样她就可以在向控制管施加高压时关闭阀门。 让我们看看这些阀门是不是还能正常工作。"},
+                {"who":"charles", "text":"当来自南部的压力低于100 PSI时， 连接西部和东部。\n\n你可以使用蒸汽源提供良好的高压蒸汽。"}
+            ],
+            [
+                {"who":"charles", "text":"Excellent! Now, combining these two designs, we can construct a component that switches between two sources.\n\nWhen the West control house supplies 100 PSI High Pressure Steam, the North generator should be connected to the East facilities. But when the West control house is at 0 PSI atmospheric pressure, the South generator should be connected to the East facilities."},
+                {"who":"nicola", "text":"What happens when the control house supplies a pressure between 0 and 100?"},
+                {"who":"charles", "text":"What!?! That would be low pressure steam! We do not work with low pressure steam! I did not make my fortune by supplying people with low pressure steam!\n\nNever mind all that low pressure nonsense. When West control is High Pressure, connect the North generator, otherwise connect the South generator."}
+            ],
+            [
+                {"who":"nicola", "text":"Lady Chavvington's notes talk about a steam connection between the laboratory and Lady Easley's residence that was used for communication."},
+                {"who":"charles", "text":"Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these walls."},
+                {"who":"nicola", "text":"I think we can still establish a connection without delivering any steam out. According to these notes..."},
+                {"who":"charles", "text":"Hah! Impossible! This is elementary steamology, my dear boy! Steam communication relies on the transfer of steam, and thou shalt not \"Transfer\" any of my steam out!\n\nIn any case, I am needed elsewhere. This matter does not appear as urgent as the investigations into my missing steam."},
+                {"who":"nicola", "text":"According to Lady Chavvington, Charles was not known as the greatest listener. She describes the design in some detail."},
+                {"who":"ada", "text":"June 5th\nI created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. Charles's valves appear to open to the pressure on the \"+\" side, minus the pressure on the \"-\" side.\n\nThis appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a \"buffer\"."},
+                {"who":"ada", "text":"Communication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit."},
+                {"who":"nicola", "text":"It appears some parts of the original design still remain installed in the wall. As long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint."}
+            ],
+            [
+                {"who":"nicola", "text":"Not perfect, but we can always come back and improve it. Fascinating, is it not? The combination of valves reproduces any pressure value. The incoming pressure opens the steam inlet and the atmosphere venting valves to the exact levels to correctly reproduce the pressure in the output pipe.\n\nLet us send our first message and visit Lady Easley to see if it works."},
+                {"who":"annie", "text":"[Some time later]\nYou gave me such a scare! For a minute I thought it was Ada talking to me from beyond the grave."},
+                {"who":"nicola", "text":"Our apologies Lady Easley. We are attempting to continue Lady Chavvington's research. We were trying to send 80 PSI which according to our codebook means \"Hello\""},
+                {"who":"annie", "text":"No! 80 PSI means, \"Help! I am trapped in the afterlife!\". It is 20 PSI that means \"Hello\".\n\nWhen Ada installed the system she made a mistake on the valves and all the pressures were received upside down. It was when investigating the issue she got her epiphany on the possibilities of steam. We never fixed it, and instead I inverted all the pressure values in my codebook."},
+                {"who":"nicola", "text":"Interesting. Perhaps we should see if we can make the same mistake."}
+            ],
+            [
+                {"who":"charles", "text":"Drat! For the life of me I cannot find the pressure comparator Ada made. Every year, the highly prestigious High Pressure Steam Society compares the pressures provided by all the High Pressure Steam Works to determine the supplier of the Highest Pressure Steam. Without an accurate comparator, we will have to cancel this year's competition.\n\nMy five year winning record will be ruined! I am sure she had another one around here somewhere..."},
+                {"who":"nicola", "text":"We should try and make it, otherwise he will just keep interfering..."},
+                {"who":"charles", "text":"What was that you say, boy?"},
+                {"who":"nicola", "text":"I said we could make one, sir."},
+                {"who":"charles", "text":"Splendid! Just remember, it is not enough to connect the output to High Pressure Steam when one input is greater than the other, one must also vent the output when the opposite is true. My pipes are fully sealed and never leak steam unless a valve is opened to permit them to vent."}
+            ],
+            [
+                {"who":"charles", "text":"Excellent! Such precision! I am sure it could detect the pressure of a feather on a cricket pitch.\n\nI need but one more device before I shall leave you to your investigations. In order to be admitted to the High Pressure Steam Society, one must show their steam works produce High Pressure Steam."},
+                {"who":"charles", "text":"Here at General High Pressure Steam Works, we produce High Pressure Steam at 100 PSI, the only pressure I would recognise as true High Pressure Steam. But technically any steam pressure above 50 PSI is considered High Pressure Steam. As the chair of the High Pressure Steam society, it is my responsibility to make sure inferior low pressure steam producing deviants are not permitted to join.\n\nI require a device to correctly determine the quality of the applicant's steam."},
+                {"who":"nicola", "text":"We still have your design for the 50 PSI steam generator in the tool box. We can use the designs we already made as components."}
+            ],
+            [
+                {"who":"charles", "text":"Bravo! With this contraption I will keep those low pressure steam producers out of our exclusive society."},
+                {"who":"nicola", "text":"How many members are there so far?"},
+                {"who":"charles", "text":"Well... One... As I said \"Very Exclusive\".\n\nIn any case, I must be off lest I miss the reception drinks!"},
+                {"who":"nicola", "text":"Finally...\n\nAccording to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of none other than Lord Moorhouse! Charles would not have been happy if he had found it. Look."},
+                {"who":"ada", "text":"June 17th\n\nWith the pipeline to Lord Moorhouse's estate complete, I am beginning work on a device to compact the high range of pressure values (0-100), to ones acceptable by the low pressure system (0-50). To my complete surprise, when powered by Lord Moorhouse's low pressure steam, but still using 100 PSI as the reference input, the pressure buffer was able to scale the input pressure to precisely one half.\n\nThese properties could have wondrous uses in the field of mathematics."},
+                {"who":"nicola", "text":"Really!?! How can that possibly work?"}
+            ],
+            [
+                {"who":"nicola", "text":"Astonishing! Well, that got us half way there. We can send; but now we need to receive. We must amplify their steam pressure to our range. According to Lady Chavvington, we must power the device with our 100 PSI steam, but use 50 PSI as the reference pressure."}
+            ],
+            [
+                {"who":"nicola", "text":"Let's see if this works.\n\n80 PSI [Hello]\n55 PSI [Request meeting]\n57 PSI [Afternoon tea at Madingley Hall]"},
+                {"who":"george", "text":"...\n23 PSI [Negative]\n...\n6  PSI [6]\n12 PSI [/]\n7  PSI [7]"},
+                {"who":"nicola", "text":"What?!? 6/7? Let me check the diary.\n...\nAll the entry for June 7th talks about is the design of the pressure inverter. How could he even communicate with us if the pressures were reversed? ... reversed ... reversed? ...  Of course!\n\nMy apologies. Too much time spent in the colonies. Here is the correct entry."},
+                {"who":"ada", "text":"July 6th\n\nI suspect our communications have been compromised! After days of pleading, Lord Moorhouse agreed to combine our research efforts. We exchanged the codes to the doors of our respective laboratories over our steam communicator. Just hours later, a hand-delivered note was received at our residence informing me his laboratory has been ransacked and I was no longer welcome. I rushed to find mine had also been broken into! So much work lost."},
+                {"who":"ada", "text":"I stored the code securely. Surely Charles would not have done such a thing. I immediately had the door on my laboratory replaced. Charles would rather die than operate a Moorhouse steam door."},
+                {"who":"ada", "text":"I no longer feel safe here. I contacted my sister to expect my imminent arrival. It was a perfect time to test my new encryption system, which will keep our communications secure. I still have not received the sign Charles promised to put on the pipe that leads to her residence. He can be so forgetful at times."},
+                {"who":"nicola", "text":"That was her last diary entry.\n\nOh dear! I didn't think that pipe was leading anywhere so I used the components for our other designs. Luckily some were welded down so I left them in place. The encryption unit seems mostly functional."}
+            ],
+            [
+                {"who":"nicola", "text":"Well that was simple. The encryption is simply an unbalanced buffer. But how could you possibly make a design which accurately reverses such a cypher?\n\nPerhaps Lady Easley could help. I shall enquire if she is available to assist us.\n..."},
+                {"who":"annie", "text":"Among Ada's papers, did you happen to find a napkin from the Madingley Hall tea rooms? I believe it was dated June 24th. We were discussing the new Royal Society paper on \"convergence in monotonic series\" when Ada began scribbling things down on a napkin. She then proceeded to run out exclaiming how she may have solved the decryption problem. Without settling the bill, I might add."},
+                {"who":"ada", "text":"June 24th\nA decryption device can be formed by repeatedly guessing the value, encrypting it and comparing it to the encrypted input. Should the input be higher, we increase the guess. Should it be lower, we reduce it. Such a device could reverse numerous functions.\n\nCharles's steam comparator was just what I needed, although I must remember to return it to him before this year's high pressure steam society meeting."},
+                {"who":"nicola", "text":"At least we know where his comparator got to."}
+            ],
+            [
+                {"who":"nicola", "text":"Incredible! Using this technique we could improve the precision of all our designs. Lady Chavvington's sister must have more information about these techniques.\n\n80 PSI [Hello]"},
+                {"who":"ada", "text":"80 PSI [Hello]\n93 PSI [This is Ada Chavvington]\n"},
+                {"who":"nicola", "text":"60 PSI [Who?]\n73 PSI [Repeat]"},
+                {"who":"ada", "text":"25 PSI [A], 28 PSI [D], 25 PSI [A]\n24 PSI [_]\n27 PSI [C], 32 PSI [H], 25 PSI [A], 46 PSI [V], 46 PSI [V], 33 PSI [I], 38 PSI [N], 31 PSI [G], 44 PSI [T], 39 PSI [O], 38 PSI [N]"},
+                {"who":"nicola", "text":"This is unexpected. We must inform Lord Chavvington at once.\n...\nLord Chavvington! We established a link to Lady Chavvington's sister's residence, but the person at the other end claims to be Lady Chavvington herself!"},
+                {"who":"charles", "text":"Ah, yes, that would be Ada."},
+                {"who":"nicola", "text":"B... But Lord Chavvington, you said Ada had died."},
+                {"who":"charles", "text":"What nonsense! Ada is perfectly fine and staying with her sister until we resolve this matter of the missing High Pressure Steam."},
+                {"who":"nicola", "text":"You called her your \"dearly departed\"."},
+                {"who":"charles", "text":"Yes... She has departed... To her sister's..."},
+                {"who":"nicola", "text":"Everyone assumed she died..."},
+                {"who":"charles", "text":"Hmm... Yes... On reflection, that would explain the flowers and cards expressing sympathy for my loss. I was touched by people's concern for the loss of my High Pressure Steam.\n\nNevertheless. The sooner you complete the steam calculation machine, the sooner we can get to the bottom of this. Continue the research post haste."},
+                {"who":"ada", "text":"June 27th\nTogether with Lord Moorhouse such progress has been made in our research into steam computation. Our previous designs suffered from inaccuracies. Only when the valves were perfectly balanced and produced an output of 50, was the result perfect. With this I was struck with an idea.\n\nI could sense how open any valve is, by placing a second valve which vented the steam and adjusting its openness. Only when the two valves are equally open, will the pressure between them be precisely 50. All I had to do is to adjust the value until this was the case."},
+                {"who":"ada", "text":"Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.\n\nLord Moorhouse is most shy yet smart as a whip, alas often he becomes too afraid to share his innovations."}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. We can now sense how open a valve is, but I don't see how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse."},
+                {"who":"nicola", "text":"Lord Moorhouse. Thank you for allowing us to call upon you. In her absence, we are attempting to continue the steam computation work of Lady Chavvington. Only you know the construction of the pressure adding unit and we beg you share it with us."},
+                {"who":"george", "text":"I do agree. Having thought on this, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of addition in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand."},
+                {"who":"nicola", "text":"Lady Chavvington is alive and well, staying with her sister."},
+                {"who":"george", "text":"That is a relief. The idea of her spending any more time in that high pressure death trap keeps me up at night. If one of those high pressure tankers were to explode, perish the thought, the destruction would be immense. I would not rest until the world was rid of this high pressure horror...\n\nOh... Where was I? The addition design. Before you can make one, you must make one of subtraction. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side. Once you create such a valve, you can then measure its openness."},
+                {"who":"george", "text":"But now, you must leave. With Ada safe, I have an important task I must prepare for."}
+            ],
+            [
+                {"who":"charles", "text":"I have brought the sign for the pipe that Ada asked for."},
+                {"who":"nicola", "text":"That must have been months ago."},
+                {"who":"charles", "text":"Yes, well, when a Chavvington says he will do something, it will get done. You don't have to remind him every month.\n\nCould you please send her a message from me?\n\n80, 94, 76, 52, 68, 70"},
+                {"who":"nicola", "text":"I see you have learned the codes!"},
+                {"who":"charles", "text":"Learned?!? I designed them! It was during my time in the military. A combination of the most frequent messages exchanged between captains.\n\nBe a good chap and send it off at once."},
+                {"who":"nicola", "text":"80 PSI [Hello]\n94 PSI [This is Charles Chavvington]\n76 PSI [My sweetest angel]\n52 PSI [My heart yearns for you]\n68 PSI [I longingly await your return]\n70 PSI [Without you life has lost all meaning]"},
+                {"who":"charles", "text":"Good, now, I see the subtractor design is complete. Excellent! As my dearly departed Ada once said..."},
+                {"who":"nicola", "text":"Sir! You must stop using that phrase! People are beginning to think you a murderer..."},
+                {"who":"charles", "text":"Hmm... Yes. As Ada..., who is no longer with us, once said, \"An adder is but an inversion of a subtractor. The output minus one of the inputs must be equal to the other input\". But which input?\n\nShe spent some time frustrated as the design would get stuck when that input was zero and switching the inputs just made the design stuck when the other input was zero. Her eureka moment came when she realised it needed to be a combination of both approaches."}
+            ],
+            [
+                {"who":"annie", "text":"Why have you not been responding to my messages?"},
+                {"who":"nicola", "text":"Our apologies Lady Easley, we did not know you had sent any."},
+                {"who":"annie", "text":"They should be recorded on your message latches over here.\n...\n\nThey're missing! The latches must have been stolen by whoever broke into the laboratory. You should recreate them at once lest you miss any other important communications."},
+                {"who":"annie", "text":"When a message is stable, a pulse of steam is sent on the timing pipe. This causes the latch to capture the value at that time. The latch will record the value, but will maintain the old value until the timing pipe has returned to a low pressure level.\n\nBecause these latches can be placed in sequence to record a series of messages, it is important that the new value is only released once the timing pipe has returned to low pressure."},
+                {"who":"annie", "text":"I was always impressed about how well sealed Charles's valves are with a closed valve able to maintain the pressure within a pipe indefinitely.\n\nI do hope the design isn't lost, for I had such hopes for expanding it in a variety of ways."}
+            ],
+            [
+                {"who":"charles", "text":"Great news everyone! Allow me to introduce Professor Joseph Cogsworth. One of, if not THE, brightest mind in all of the lands. His gear based tabulating machines have done wonders for our accounting department.\n\nHe has been aiding in our missing High Pressure Steam situation and has condescended to take an interest in Ada's work."},
+                {"who":"joseph", "text":"Interesting to see how far you have come. I see you have reconstructed the latch to the same specification as Ada described in her notes."},
+                {"who":"nicola", "text":"Those notes went missing during the break in. How did you know of them?"},
+                {"who":"joseph", "text":"Ada was always a great admirer of my work. Although I thought her steam based approach to be crude and inaccurate, she would often seek my advice in hopes that it could be made adequate."},
+                {"who":"charles", "text":"Once you complete the steam tabulator, we will be able to determine which of my accountants has been embezzling my High Pressure Steam.\n\nEach tabulator either adds, or subtracts a value from the current tally. The North connection selects between adding or subtracting and the South connection provides a timing pulse of High Pressure Steam.\n\nAda had to improve all her previous designs to increase the accuracy of all the used components. Work she never managed to complete."}
+            ],
+            [
+                {"who":"charles", "text":"Very good, but alas too late, for Professor Cogsworth has already identified the guilty accountant."},
+                {"who":"joseph", "text":"Indeed, but in return all I ask is to take possession of this crude attempt at a steam based tabulating device. Ada wished for me to be the custodian of all her research. Gertrude? Nicola? Your work here is done."},
+                {"who":"ada", "text":"I hardly think so! Unlikely I would pass my work over to a man with both character and intellect of a parasitic wasp."},
+                {"who":"joseph", "text":"Ada! I was under the impression you had died."},
+                {"who":"ada", "text":"Charles! Apprehend this man, for he is the cause of all of this perturbation."},
+                {"who":"charles", "text":"What!?! I hardly think a man of his stature would be involved in such petty crimes."},
+                {"who":"george", "text":"It's true Charles. Joseph poisoned me against you with mistruths, manipulating us to detest one another. At first I collaborated with him due to his dislike of high pressure steam, but it was only later I realised his hatred of ALL steam!"},
+                {"who":"charles", "text":"Is this true Joseph? You have no passion for High Pressure Steam?"},
+                {"who":"joseph", "text":"Of course it is true! Ghastly substance. But to have me apprehended? For what? But you have no proof of any misdeeds."},
+                {"who":"ada", "text":"Actually we do. Your gear tabulating machines have been removing tiny fractions from each transaction. It was only when we compared the results to the steam tabulator that we spotted these errors. All this so you could slowly syphon off high pressure steam. Were it not for Charles's sense of something being amiss, this would have never been spotted."},
+                {"who":"joseph", "text":"Preposterous! What would I want with this revolting substance!"},
+                {"who":"george", "text":"To slowly fill the pressure vessel you asked me to construct under the town hall."},
+                {"who":"charles", "text":"What!?! But that's a low pressure vessel! Have you no idea of the consequences of filling it with High Pressure Steam!?!"},
+                {"who":"joseph", "text":"The only consequences would be the world finally rejecting steam once and for all! It should be reserved for executions and only seen in museums. To think! Steam invading the offices and displacing my machines! For it is only gears that can produce a...\n\nWHAT!?! Let go of me! Unhand me, you wretched fools! You cannot do this to me! Wait until the Academy hears about this!"},
+                {"who":"charles", "text":"The Academy certainly will hear about this!\n\nWell that's a satisfying conclusion to this matter. My High Pressure Steam is safe as is my dear Ada."},
+                {"who":"ada", "text":"Actually darling, I think the story of steam computation is only just beginning."},
+                {"who":"charles", "text":"Indeed. But, perhaps we should diffuse that steam bomb first."}
+            ],
+            [
+                {"who":"ada", "text":"Thank you Gertrude. If not for your quick thinking, we would have had a disaster on our hands."},
+                {"who":"george", "text":"I am also rather impressed. Ada, I cannot apologise enough for accusing you of ransacking my residence. Would it be possible for Gertrude and Nicola to aid me in my designs? I think their input will be highly constructive."},
+                {"who":"ada", "text":"Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this commotion. We shall return in a few days and I already look forward to inspecting your discoveries."},
+                {"who":"george", "text":"Thank you, and safe journey.\n\nNicola, could you find me that x2 pressure amplifier."},
+                {"who":"nicola", "text":"It's right here.\n\nThe construction is simple, yet I find the operation stunningly useful."},
+                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a minimum and maximum value, I do believe we can construct an amplifier which will zoom into any given range."},
+                {"who":"nicola", "text":"We shall name it the Zoom element."},
+                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the South our minimum. The East output will tell us where the West input lies within the range."}
+            ],
+            [
+                {"who":"george", "text":"Good, now we can zoom into any pressure range we choose. What I need next is a way of detecting if we are within a range. Take a look at this \"steam speedometer\".\n\nAda made it for Charles to measure the amount of steam passing through it. When steam passes through a long pipe, it will lose some pressure. The faster the steam is passing through, the more pressure it loses. If the two sides are at same pressure, there must be no moving steam. She even put some valves in the pipe to increase the resistance and make the difference greater."},
+                {"who":"george", "text":"What I need is a way of telling if the West input reference is between the two pressures. It must be lower than the North, but higher than the South."}
+            ],
+            [
+                {"who":"george", "text":"Now, by zooming into a range, I can tell more precisely how much steam someone is using, but I can also tell if I am within the range I am inspecting. I shall tell my customers to prepare for an extra decimal place on their next steam bills!"},
+                {"who":"annie", "text":"Has all this research been to solely to aid your company profits? This is not what our agreement was."},
+                {"who":"george", "text":"But Lady Easley! I made these for you. Believe me, these will be very useful components in the future."},
+                {"who":"annie", "text":"I highly doubt that. I think it is time for some pure research.\n\nLet's go back to the Latch design Ada and I were working on. I wanted a latch which can be enabled or disabled. If the North input is high, the latch operates as normal, but if it is low, it should neither drive the output, nor accept a new input upon seeing a timing pulse. We can use the old design, although it may be more efficient to make a custom one."}
+            ],
+            [
+                {"who":"annie", "text":"Now, the reason I wanted that design was to be able to construct an \"addressable latch\" where the North input selects between one of several latches. This way I could store several values and access each at will.\n\nLet's start with two. The North input selects between two latches. North value 0 to 50 will select one, and North value 50 to 100 will select the second."}
+            ],
+            [
+                {"who":"annie", "text":"Exactly, unfortunately this is as far as we got. Next I wanted a latch that could store five values, but Ada and I could never fit it all into a single design. The select ranges would be 0-20, 20-40, 40-60, 60-80 and 80-100. Unfortunately detecting which of the ranges the select signal was in was too difficult."},
+                {"who":"george", "text":"If only one had a range detecting design."},
+                {"who":"annie", "text":"Your design detects flow, not a pressure range."},
+                {"who":"george", "text":"Well, yes and no. It detects a pressure range of flowing steam. If placed in chain, and steam is passed through, they will detect a range of pressures."}
+            ],
+            [
+                {"who":"annie", "text":"I admit, that flow detector was quite ingenious and was just the trick we needed. But now, how would we go about strapping two of these Latch5 block to make a Latch10?\n\nThe select ranges would be 0-10, 10-20, 20-30..."},
+                {"who":"george", "text":"And this is why I asked for the zoom element to be designed. I have seen the genius in your ideas and have already planned ahead."}
+            ],
+            [
+                {"who":"ada", "text":"Well, I am impressed. We had only been gone a couple days and you have created the storage part of the Steamputer."},
+                {"who":"nicola", "text":"The what?"},
+                {"who":"annie", "text":"All will be revealed in good time.\n\nWell, I think my job here is done! I managed to design the storage. I will leave you to investigate the calculations and control?"},
+                {"who":"ada", "text":"Well let's start small. We need a component which gives us the smaller of the two input values. Should be simple enough."}
+            ],
+            [
+                {"who":"charles", "text":"Ada! My darling! Try this exciting new beverage George introduced me to! It is called \"Froffee Coffee\". Taste it!"},
+                {"who":"ada", "text":"Hmmm, yes it is rather ni..."},
+                {"who":"charles", "text":"You know what would make it even better!?!"},
+                {"who":"ada", "text":"High press..."},
+                {"who":"charles", "text":"High Pressure Steam!"},
+                {"who":"ada", "text":"Darling. I very much appreciate you have made amends with George, but were you two not supposed to be planning the programme elements?"},
+                {"who":"charles", "text":"Already done! George is finalising the poem... or should I say requirements."},
+                {"who":"ada", "text":"Oh! Well we must quickly create the Max component and then you can have access to our engineers.\n\nThe output this time must be the maximum of the two inputs."}
+            ],
+            [
+                {"who":"charles", "text":"If we have some time before George comes, we should spend it making his pressure vessels safer. They are safe up to 90 PSI, but beyond that they are liable to explode. What I require is a \"steam fuse\". Allow the flow of steam from West to East, but once the pressure reaches beyond 90PSI, disconnect the supply and vent the vessel. Remember to disconnect the supply first, and only then vent the tank."}
+            ],
+            [
+                {"who":"charles", "text":"Come George! I think we have some privacy!"},
+                {"who":"george", "text":"Are you sure about this Charles? Lady Easley barely acknowledges my existence."},
+                {"who":"charles", "text":"Stiff upper lip old chap!"},
+                {"who":"george", "text":"Very well. This is somewhat of a sensitive matter. I require a device which increases by 10 PSI each cycle. It should start at 0 PSI and at each timing pulse should increase by 10 PSI. Instead of reaching 100 PSI, it should reset back to 0 PSI.\n\nPlease, do be discreet about its construction."}
+            ],
+            [
+                {"who":"george", "text":"Charles, I cannot thank you enough for letting me use your poems. This one perfectly articulates my feelings for Lady Easley. It describes her beauty, her kindness and her ingenious latch designs. All I needed to do is replace the object of affection from your \"High Pressure Steam\" to my \"Lady Easley\"."},
+                {"who":"george", "text":"Take a look at Easley's Latch10 design. We require something simpler, yet more complex. For each input value range, I need a specific pressure to be output. There is no need to ever update the values held.\n\nNow might be a good time to examine how to make custom components. You can use any old design as a basis and change the implementation for that instance."}
+            ],
+            [
+                {"who":"george", "text":"We are nearly there. Let's connect these parts together so it will replay my poem. At every steam pulse, the next value should be read out. This won't be trivial as our counter goes through a sequence 0, 10, 20, 30... while our poem storage wants a sequence 5, 15, 25, 35..."}
+            ],
+            [
+                {"who":"charles", "text":"Excellent stuff! It is just a shame we have to rely on these horrid Cogsworth clocks to provide the timing pulses."},
+                {"who":"nicola", "text":"Gertrude, do you remember how you diffused that bomb? I think we can make a clock just as precise."},
+                {"who":"charles", "text":"However you do it, I want it flip once every tick and I don't want it changing time depending on what it is connected to."}
+            ],
+            [
+                {"who":"ada", "text":"What have you two been up to?"},
+                {"who":"charles", "text":"George and I have just delivered a most marvellous poetry reciting machine to Lady Easley. It has been programmed to recite George's feelings towards her.\n\nWith sufficient refinement one could reduce such a device to the size of a horse."},
+                {"who":"ada", "text":"That sounds lovely. Although I do hope you reversed the pressures as Annie's codes are all negated."},
+                {"who":"george", "text":"WHAT!?! Nicola! What did I just send her?"},
+                {"who":"nicola", "text":"Hmm... It appears you complemented her on her magnificent beard ... requested her lewd etchings ... and instructed her to attack the enemy at dawn."},
+                {"who":"george", "text":"...\nOn that note, I shall return to my residence to spend some time with a bottle of brandy."},
+                {"who":"ada", "text":"Charles! Go and help him!\n\nWhile they are gone, perhaps you two can help. Charles was supposed to install two pipes into this wall, but it only has one. I need North connected to South, and West to East. Is there any way we can do this without waiting for a new pipe to be installed?"},
+                {"who":"nicola", "text":"Good thing we live in a clockwork universe because I think I have an idea."}
+            ],
+            [
+                {"who":"annie", "text":"Hello Ada. Is George here? I have come to speak with him about this machine that has been delivered to my residence."},
+                {"who":"ada", "text":"Oh Annie! I am so sorry. He and Charles were completely ignorant of the codebook differences."},
+                {"who":"annie", "text":"Oh, I figured that out immediately. It would have made it such a silly farce otherwise."},
+                {"who":"ada", "text":"Nicola! Go and fetch George and Charles, wherever they got to."},
+                {"who":"annie", "text":"This poetry device they made is quite a marvellous contraption. The components used are ingenious. Gertrude? This counter. I assume you had a hand in its construction. Could you adapt the design to include a way of setting the value? The new value would come on the West port, and the North port will select whether to use the new value."}
+            ],
+            [
+                {"who":"ada", "text":"I have to say Annie, do you not find all this rather complicated?"},
+                {"who":"annie", "text":"I do, but look how far we have come. Remember the week you spent trying to get the adder to work? Looking back, it all looks so simple now. Not only has our research progressed, but I think we have such a better understanding of steam."},
+                {"who":"ada", "text":"Then perhaps you could aid me in looking at one of your message latches. I can't figure out what's wrong. All the messages from Lady Bechdel come out as nonsense."},
+                {"who":"annie", "text":"Interesting. It appears that the timing pulse arrives little too early, before the value has become stable. If I could delay the pulse by a little less than a tick, then that would fix it. It would need to have a very quick shift between 0 and 100 PSI. Let us make something."}
+            ],
+            [
+                {"who":"annie", "text":"What does this gauge show?"},
+                {"who":"ada", "text":"That would be the steam pressure going to the Cogsworth Clockworks. Why?"},
+                {"who":"annie", "text":"Look. It is such a peculiar pattern. Also, are they not closed? It is a Sunday after all.\n\nIt jumps up to 100 PSI for one tick, then another value for another tick, before returning to 0 PSI."},
+                {"who":"ada", "text":"That is intriguing. I wonder if we could decode it."}
+            ],
+            [
+                {"who":"nicola", "text":"Lady Chavvington! I have searched all across the city and I have failed to locate..."},
+                {"who":"ada", "text":"We know where they are! George managed to get a message through to us by turning an inlet on and off. They have been locked in the Cogsworth Clockworks steam room. Let us go there at once!"},
+                {"who":"charles", "text":"[BANG] [BANG] [BANG]\nGet us out! The room is filling with High Pressure Steam! Oh, the cruel irony of being killed by the thing I love."},
+                {"who":"nicola", "text":"The key that should open this door doesn't work! It appears someone has shot at the lock and ruptured a pipe inside! I know nothing of picking locks, let alone broken ones."}
+            ],
+            [
+                {"who":"charles", "text":"Gertrude! I cannot thank you enough, not only for saving our lives, but also doing so using High Pressure Steam!"},
+                {"who":"ada", "text":"Darling, how did you get into this dreadful situation?"},
+                {"who":"charles", "text":"George and I were enjoying a couple drinks at the Old Brass tavern when things turned blurry. The next thing I remember is waking up in this room with Cogsworth accusing us of ruining his life. After being dismissed from the Academy, his investors began asking questions. His only choice was to silence us, giving him enough time to take his investors' money and beat a hasty retreat.\n\nQuick! To the aerodrome! We must not let him get away."},
+                {"who":"george", "text":"This pipe carries launch codes from West to East. Each one is three codes long and transmitted at two ticks per code. Once we see Cogsworth's code of 27, 39, 31, we will know he is here and trying to get away."},
+                {"who":"ada", "text":"Then it would be too late. By then he will have permission to launch and could get away. We must tell the aerodrome manager not to allow him to leave."},
+                {"who":"george", "text":"Alas, the manager has been replaced with a Cogsworth machine. Likely a compromised one.\n\nWe must not allow Cogsworth's launch code to get through, yet we must not disrupt the aerodrome lest he discovers we are onto him.\n\nWhat if we delayed the signal by a few ticks and if we see it, we could remove it? This will give us time to locate and apprehend him."}
+            ],
+            [
+                {"who":"ada", "text":"At last. With Cogsworth behind bars, we can finally complete our Steamputer.Â \n\nAll the parts are now in place. I have written what I shall name a \"programme\", to calculate Fibonacci numbers, but the results are incorrect.Â \n\nWe will need to refine the components until we get a functioning machine. There may be considerable time spent diagnosing the issues and fine tuning."}
+            ],
+            [
+                {"who":"charles", "text":"It is here! The response from the Academy.\n\n\"We thank you for your submission of the Steamputer for review by the Academy of Sciences. We find it has considerably extended our knowledge in steam computation. Therefore we are pleased to say your application for membership has been approved!\""},
+                {"who":"nicola", "text":"Congratulations Lady Chavvington."},
+                {"who":"ada", "text":"Actually, the application was not for me. It was on Gertrude's behalf.\n\nGertrude, you were the one who constructed all these components and have shown us how to manipulate steam to wondrous uses. It is you who should be teaching others of the steam computation."},
+                {"who":"charles", "text":"Huzzah!\n\nLet us celebrate this afternoon!"},
+                {"who":"george", "text":"Lady Easley? Will you join us for the occasion?"},
+                {"who":"annie", "text":"I am afraid I cannot, for I have an appointment this afternoon with a dashing gentleman."},
+                {"who":"george", "text":"Oh."},
+                {"who":"annie", "text":"That would be you George. Afternoon tea at Madingley Hall was offered and I graciously accept."},
+                {"who":"ada", "text":"Thank you for playing ComPressure."}
+            ]
+        ],
+        "hints":
+        [
+            [
+                {"who":"charles", "text":"Click and hold the left mouse button to place a new pipe from the start point to the end. If you drag a new pipe over the old one, it will not connect them. If you get something wrong, you can remove the pipes using the right mouse button."}
+            ],
+            [
+                {"who":"charles", "text":"The build menu lets you place a steam source which supplies steam at 100 PSI. An open ended pipe will release the pressure to 0. By tapping off a pipe somewhere in the middle, it may be possible to create a pressure somewhere in between."}
+            ],
+            [
+                {"who":"charles", "text":"The build menu has the valve component. By connecting the \"+\" side of the valve to the North, it allows the North input to control how open the valve is. You can then simply connect East and West to connect the two when North is at High Pressure."}
+            ],
+            [
+                {"who":"nicola", "text":"If I understand correctly, we need to connect the \"+\" port of the valve to a high pressure steam source, and the port marked \"-\" to the South input. This will connect East and West only when the South port pressure is low. If it is high, it will close the valve."}
+            ],
+            [
+                {"who":"nicola", "text":"When the input is high, we connect the North. We know how to do that from the \"Normally Open\" design. And when the input is low, we connect the South. That's our \"Normally Closed\" design."}
+            ],
+            [
+                {"who":"nicola", "text":"Well, let's start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. To connect to atmosphere, we simply leave the pipe end open.\n\nAs Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio."}
+            ],
+            [
+                {"who":"nicola", "text":"This time, when the input is high pressure, we want it to be connected to atmosphere. When the input is low is when we supply the steam. Our switch design was able to select between two values. Those values could be steam and atmosphere."}
+            ],
+            [
+                {"who":"nicola", "text":"We can use valves to measure which of North and South is higher. If North is higher, we connect the output to steam. If South is higher, we connect it to atmosphere.\n\nRemember, the steam in the output pipe will not drain away by itself, we need to  actively release it using a valve."}
+            ],
+            [
+                {"who":"nicola", "text":"I guess we already have a comparator, and we have a source of a precise value of 50."}
+            ],
+            [
+                {"who":"nicola", "text":"When the input is 100, we want the output to be 50. So I guess we connect our 50 generator to the output using a valve. And when the input is 0, we vent the output to atmosphere."}
+            ],
+            [
+                {"who":"nicola", "text":"This sounds like our buffer design again, but when the input is 50, we want the output to be 100. So the atmosphere venting valve should be closed once we reach 50. I guess, instead of using the 100 PSI on \"-\" side of the venting valve, we could switch it to 50. "}
+            ],
+            [
+                {"who":"nicola", "text":"I don't remember there being any other components in this. I think we just need to connect what is there to the output."}
+            ],
+            [
+                {"who":"nicola", "text":"If we pass the output through our encryption component, we can determine what the input must have been.\n\nWhen the two inputs on the comparator are equal, the output is neither pressurised, nor vented. If we get too much wobble, we should go back to our comparator design and make it less strong."}
+            ],
+            [
+                {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
+            ],
+            [
+                {"who":"nicola", "text":"We open one valve to the value of the West input minus the South input, we can then open a second valve to the same level of openness by looking for when the pressure between them is 50."}
+            ],
+            [
+                {"who":"nicola", "text":"This one is somewhat harder. Using a subtractor gives us too much wobble.\n\nComparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.\n\nClick the requirements for a diagram of this setup."}
+            ],
+            [
+                {"who":"annie", "text":"When the South input is high, we open our storage pipe. We can the use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the timing and output valves."}
+            ],
+            [
+                {"who":"nicola", "text":"The output is the value of a latch controlled by the South input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, a subtractor and a switch."}
+            ],
+            [
+                {"who":"nicola", "text":"For a change a wobble is actually desirable. Amplifiers in a ring configuration will make the design unstable and will wobble up and down."}
+            ],
+            [
+                {"who":"nicola", "text":"When West is higher than South, start adding more steam. When West is lower than North, start releasing more steam."}
+            ],
+            [
+                {"who":"nicola", "text":"You can put valves in series. Only if all the valves are open will steam flow through."}
+            ],
+            [
+                {"who":"nicola", "text":"This is not much different than our normal latch design, except the output and the timing pulse are not connected when the North input is low."}
+            ],
+            [
+                {"who":"nicola", "text":"If the North select input is higher than 50, we enable one latch, otherwise we enable the other."}
+            ],
+            [
+                {"who":"nicola", "text":"We need so many select signals! What if we chain a row of flow detectors with steam inlet at one end and atmosphere at the other? This would give us all the values we need to create."}
+            ],
+            [
+                {"who":"nicola", "text":"We can use two Latch5 elements and switch between them depending if the select is below or above 50. But then we would need to scale the select from one of the two ranges (0 â 50, or 50 â 100) to the range the Latch5 design takes (0 â 100).\n\nI guess that Zoom element is useful after all, but in this instance it may need to be quite powerful. Each zoom would be connected to five flow detectors, and it will take it a while to pressurize all those pipes. To make a design stronger, we could simply duplicate it."}
+            ],
+            [
+                {"who":"ada", "text":"It should be as easy as a comparator and a switch."}
+            ],
+            [
+                {"who":"ada", "text":"Is this not just the same as our Min component but selecting the other way round?"}
+            ],
+            [
+                {"who":"charles", "text":"We can form a value of 90 PSI using a long pipe venting pipe. A comparator between that and out input will tell us when to vent the vessel. As our comparator pressure rises from 0 PSI to 50 PSI, it should close off the input. Once it rises above 50 PSI it should open a valve to release the content of the vessel to the atmosphere."}
+            ],
+            [
+                {"who":"george", "text":"We can use an adder with a static 10 PSI on one input. Then use a latch to capture the new value. Finally a Fuse in the loop will reset the counter to 0 PSI."}
+            ],
+            [
+                {"who":"george", "text":"We can use the same method we used in the Latch10 design to select between ten values. Each value will need to be custom made and connected to the output when selected. This involves several custom designs."}
+            ],
+            [
+                {"who":"george", "text":"We can connect our counter to the ROM, but first we will need to add 5 using an adder."}
+            ],
+            [
+                {"who":"nicola", "text":"If we form a ring of Amp50 components with an inversion somewhere, we can get a regular beat. Once we get it close, we can tune it by adding pipe elements to slow it down a little."}
+            ],
+            [
+                {"who":"nicola", "text":"A clock can select between the two inputs and on the other side of the wall, a synchronised clock can select between the outputs. Although we should not connect both inputs. By the time we open one, the second should be sealed off. We can use a 50 PSI as a reference."}
+            ],
+            [
+                {"who":"annie", "text":"We can amend the counter to insert a switch to select between a new value or the incremented one."}
+            ],
+            [
+                {"who":"annie", "text":"We only need to delay values of 0 PSI and 100 PSI. A chain of Amp50 elements will delay the pulse, with some minor tuning."}
+            ],
+            [
+                {"who":"annie", "text":"A delay element will give us the timing pulse we need. Once we see the delayed pulse, we can capture the value, but also force the delay input to 0 PSI."}
+            ],
+            [
+                {"who":"nicola", "text":"Instead of just plugging the hole, we could attach it to 100 PSI. That would make it easier. To make a steam key, one can replicate the pressures that are formed inside the lock."}
+            ],
+            [
+                {"who":"george", "text":"We need three latches to delay the input sufficiently. A clock generator with a custom additional delay can clock them. To detect if all values are correct, a pipe can be slowly filled and if any latch value is either greater or less than the searched value, it can vent the pipe."}
+            ],
+            [
+                {"who":"ada", "text":"Take your time and understand how the machine works. Once you do, you can improve your designs so they improve the operation of the Steamputer."}
+            ],
+            [
+                {"who":"ada", "text":"No more hints. Enjoy your win."}
+            ]
+        ]
+    },
+    "Česky":
+    {
+        "tooltips":
+        {
+            "Save"                      :   "Uložit",
+            "Restore"                   :   "Obnovit",
+            "Best solution"             :   "Nejlepší řešení",
+            "Customize"                 :   "Přizpůsobit",
+            "Import level"              :   "Načíst úroveň",
+            "Delete"                    :   "Smazat",
+            "Copy design\nto current"   :   "Zkpírovat design\ndo současné úrovně",
+            "Delete level"              :   "Smazat úroveň",
+            "Return"                    :   "Návrat",
+            "Level Editor"              :   "Editovat",
+            "Level select"              :   "Úrovně",
+            "Design"                    :   "Návrh",
+            "Test"                      :   "Testování",
+            "Experiment"                :   "Experimenty",
+            "Scores"                    :   "Výsledky",
+            "Help"                      :   "Dokumentace",
+            "Repeat\ndialogue"          :   "Zopakovat\nrozhovor",
+            "Hint"                      :   "Nápověda",
+            "New design"                :   "Založit\nnovou úroveň",
+            "Valve"                     :   "Ventil",
+            "Steam Inlet"               :   "Přívod páry",
+            "Rotate left"               :   "Otočit doleva",
+            "Rotate right"              :   "Otočit doprava",
+            "Reflect\nvertically"       :   "Překlopit\nsvisle",
+            "Reflect\nhorizontally"     :   "Překlopit\nvodorovně",
+            "Lock blocks"               :   "Uzamknout bloky",
+            "Add sign"                  :   "Přidat komentář",
+            "Stop tests"                :   "Zastavit testy",
+            "Repeat 1 test"             :   "Opakovat jeden test",
+            "Run all tests"             :   "Spustit všechny testy",
+            "Export to\nclipboard"      :   "Uložt úroveň\ndo clipboardu",
+            "Import from\nclipboard"    :   "Načíst úroveň\nz clipboardu",
+            "Accuracy mode"             :   "Mód: přesnost",
+            "Price mode"                :   "Mód: cena",
+            "Steam mode"                :   "Mód: spotřeba páry",
+            "Confirm"                   :   "Potvrdit",
+            "Cancel"                    :   "Zrušit",
+            "Exit"                      :   "Odejít",
+            "Full Screen"               :   "Celá obrazovka",
+            "Join our Discord group"    :   "Přidejte se k našemu Discordu",
+            "Info"                      :   "Informace",
+            "Select language"           :   "Vybrat jazyk",
+            "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
+                                            "Pokud jste se vám nedaří, zkuste probrat své problémy s odborníky Spolku pro Vysokotlakou Páru na našem Discordu. Zmáčkněte Esc a klikněte na tlačítko \"Přidejte se k našemu Discordu\".",
+            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued…" :
+                                            "Tento příběh zde prozatím končí. Naše dobrodružství ale pokračuje\nv plné verzi hry\n\nPokračování příště..."
+            "Cross"                     :   "Cross",            
+            "50"                        :   "50",               
+            "Normally Open"             :   "Normally Open",    
+            "Normally Closed"           :   "Normally Closed",  
+            "Switch"                    :   "Switch",           
+            "Buffer"                    :   "Buffer",           
+            "Inverter"                  :   "Inverter",         
+            "Comparator"                :   "Comparator",       
+            "Amp50"                     :   "Amp50",            
+            "Div2"                      :   "Div2",             
+            "Mul2"                      :   "Mul2",             
+            "Encrypt"                   :   "Encrypt",          
+            "Decrypt"                   :   "Decrypt",          
+            "Sensor"                    :   "Sensor",           
+            "Subtractor"                :   "Subtractor",       
+            "Adder"                     :   "Adder",            
+            "Latch"                     :   "Latch",            
+            "Tabulator"                 :   "Tabulator",        
+            "Broken Link"               :   "Broken Link",      
+            "Zoom"                      :   "Zoom",             
+            "Flow Detector"             :   "Flow Detector",    
+            "LatchE"                    :   "LatchE",           
+            "Latch2"                    :   "Latch2",           
+            "Latch5"                    :   "Latch5",           
+            "Latch10"                   :   "Latch10",          
+            "Min"                       :   "Min",              
+            "Max"                       :   "Max",              
+            "Fuse"                      :   "Fuse",             
+            "Counter"                   :   "Counter",          
+            "ROM"                       :   "ROM",              
+            "Poem"                      :   "Poem",             
+            "Clock"                     :   "Clock",            
+            "Cross v2"                  :   "Cross v2",         
+            "CounterE"                  :   "CounterE",         
+            "Delay"                     :   "Delay",            
+            "Self-timed latch"          :   "Self-timed latch", 
+            "Lock Picking"              :   "Lock Picking",     
+            "Code filter"               :   "Code filter",      
+            "Steamputer"                :   "Steamputer",       
+            "END"                       :   "END",              
+
+        },
+        "help":
+        [
+            "TEST: Nechť již hříšné saxofony ďáblů rozezvučí síň úděsnými tóny waltzu, tanga a quickstepu.\n\nIn the level select menu, the bottom panel describes the design requirements. Each design has four ports and the requirements state the expected output in terms of other ports. Each port has a colour identifier. Click on the requirements to receive a hint.",
             "Once you pass all the tests, the next design becomes available. You can always come back to refine your solution.\n\nPress the pipe button below to continue the tutorial. You can return to the help by pressing F1.",
             "Pipes can be laid down by either left mouse button dragging the pipe from the source to the destination, or by clicking left mouse button to extend the pipe in the direction of the mouse. Right click to cancel pipe laying mode.",
             "Hold the right mouse button to delete pipes and other elements.",
