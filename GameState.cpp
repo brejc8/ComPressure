@@ -2337,6 +2337,8 @@ void GameState::render(bool saving)
                 else assert(0);
             }
         }
+        if (current_language->get_item("tooltips")->get_map()->has_key(text))
+            tooltip_string = current_language->get_item("tooltips")->get_map()->get_string(text);
 
         if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
         {
