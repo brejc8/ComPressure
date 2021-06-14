@@ -47,7 +47,7 @@
             "Select language"           :   "Select language",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button.",
-            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued…" :
+            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued..." :
                                             "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued...",
             "Cross"                     :   "Cross",            
             "50"                        :   "50",               
@@ -122,19 +122,21 @@
         [
             [
                 {"who":"charles", "text":"Greetings Gertrude! My name is Charles Chavvington, the proprietor of these General High Pressure Steam Works. From here we supply High Pressure Steam across half the city, powering everything from steam umbrellas to steam xylophones.\n\nMy dearly departed wife, Ada, stipulated that her research into the mathematical properties of steam should continue beyond her time with us. Which leads us to the reason for you coming into my employ. Your undertaking shall be to preserve her legacy and continue these scientific inquiries."},
-                {"who":"charles", "text":"I trust you have mastered elementary steam engineering in your prior studies, but before we allow you access to her laboratory, you must first demonstrate you are adept at basic steam pipe construction.\n\nConnect the West generator to the East facilities, and the North generator to the South facilities. Under no circumstance should you connect the pipes together! Doing so will deliver free steam to the South facilities, and they never pay their bills on time!\n\nIf you are unfamiliar with our High Pressure Steam pipes, there is an engineering manual available up on the top right with the \"?\" symbol."}
+                {"who":"charles", "text":"I trust you have mastered elementary steam engineering in your prior studies, but before we allow you access to her laboratory, you must first demonstrate you are adept at basic steam pipe construction.\n\nConnect the West generator to the East facilities, and the North generator to the South facilities. Under no circumstance should you connect the pipes together! Doing so will deliver free steam to the South facilities, and they never pay their bills on time!"},
+                {"who":"charles", "text":"If you are unfamiliar with our High Pressure Steam pipes, there is an engineering manual available up on the top right with the \"?\" symbol."}
             ],
             [
                 {"who":"charles", "text":"Darn it! The secure door to Ada's laboratory is operated with low pressure steam! I could never figure out how she would get this blasted thing open.\n\nHere at General High Pressure Steam Works we generate steam at 100 Pounds per Square Inch. The door uses Moorhouse's low pressure steam which operates at 50 Pounds per Square Inch (PSI). I'll be damned if I pipe that degenerate Moorhouse steam onto my property!"},
                 {"who":"charles", "text":"Unless you can magic up a supply of low pressure steam at 50 PSI, we might as well give up.\n\nIn the build menu, you will find a steam inlet which can supply you plenty of High Pressure Steam at 100 PSI. It is up there, marked with a spanner. You can also press Tab twice to get access to it."}
             ],
             [
-                {"who":"charles", "text":"By Jove! You did it! Terrible waste of good steam, but it got the job done. I apologise for the untidy state, but some hoodlums have gained access and left a frightful mess.\n\nIn this laboratory, my dearest Ada conducted experiments on the valves I constructed to her exact specifications. By applying a good dose of High Pressure Steam to the port marked with a \"+\", we can open the valve, allowing steam to pass freely between the two unmarked ends.\n\nGive it a try. Connect West and East, but only when North is at a High Pressure."}
+                {"who":"charles", "text":"By Jove! You did it! Terrible waste of good steam, but it got the job done. I apologise for the untidy state, but some hoodlums have gained access and left a frightful mess.\n\nIn this laboratory, my dearest Ada conducted experiments on the valves I constructed to her exact specifications. By applying a good dose of High Pressure Steam to the port marked with a \"+\", we can open the valve, allowing steam to pass freely between the two unmarked ends."},
+                {"who":"charles", "text":"Give it a try. Connect West and East, but only when North is at a High Pressure."}
             ],
             [
                 {"who":"nicola", "text":"Impressive!"},
-                {"who":"charles", "text":"Ah, Nicola, you are just in time. Gertrude, Nicola will be your assistant. He has already begun studying the notes Ada left. Now, the next bit is a little more challenging for the old grey matter.\n\nWhile applying steam to the \"+\" port opens the valve, applying steam to the \"-\" side closes it. The valve is only open when \"+\" is under a Higher Pressure than the \"-\" side.\n\nAda asked me to add this so she could make a valve that closes upon application of High Pressure to the control pipe. Let's see if these valves still operate correctly.\n\n"},
-                {"who":"charles", "text":"Connect the East and West, but only when the pressure coming from the South is lower than 100 PSI.\n\nYou can use the steam inlet as a source of good High Pressure Steam."}
+                {"who":"charles", "text":"Ah, Nicola, you are just in time. Gertrude, Nicola will be your assistant. He has already begun studying the notes Ada left. Now, the next bit is a little more challenging for the old grey matter.\n\nWhile applying steam to the \"+\" port opens the valve, applying steam to the \"-\" side closes it. The valve is only open when \"+\" is under a Higher Pressure than the \"-\" side."},
+                {"who":"charles", "text":"Ada asked me to add this so she could make a valve that closes upon application of High Pressure to the control pipe. Let's see if these valves still operate correctly.\n\nConnect the East and West, but only when the pressure coming from the South is lower than 100 PSI.\n\nYou can use the steam inlet as a source of good High Pressure Steam."}
             ],
             [
                 {"who":"charles", "text":"Excellent! Now, combining these two designs, we can construct a component that switches between two sources.\n\nWhen the West control house supplies 100 PSI High Pressure Steam, the North generator should be connected to the East facilities. But when the West control house is at 0 PSI atmospheric pressure, the South generator should be connected to the East facilities."},
@@ -147,8 +149,8 @@
                 {"who":"nicola", "text":"I think we can still establish a connection without delivering any steam out. According to these notes..."},
                 {"who":"charles", "text":"Hah! Impossible! This is elementary steamology, my dear boy! Steam communication relies on the transfer of steam, and thou shalt not \"Transfer\" any of my steam out!\n\nIn any case, I am needed elsewhere. This matter does not appear as urgent as the investigations into my missing steam."},
                 {"who":"nicola", "text":"According to Lady Chavvington, Charles was not known as the greatest listener. She describes the design in some detail."},
-                {"who":"ada", "text":"June 5th\nI created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. Charles's valves appear to open to the pressure on the \"+\" side, minus the pressure on the \"-\" side.\n\nThis appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a \"buffer\"."},
-                {"who":"ada", "text":"Communication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit."},
+                {"who":"ada", "text":"June 5th\nI created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. Charles's valves appear to open to the pressure on the \"+\" side, minus the pressure on the \"-\" side."},
+                {"who":"ada", "text":"This appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a \"buffer\".\n\nCommunication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit."},
                 {"who":"nicola", "text":"It appears some parts of the original design still remain installed in the wall. As long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint."}
             ],
             [
@@ -175,7 +177,7 @@
                 {"who":"nicola", "text":"How many members are there so far?"},
                 {"who":"charles", "text":"Well... One... As I said \"Very Exclusive\".\n\nIn any case, I must be off lest I miss the reception drinks!"},
                 {"who":"nicola", "text":"Finally...\n\nAccording to Lady Chavvington's diary, a second communication pipeline was installed leading to the residence of none other than Lord Moorhouse! Charles would not have been happy if he had found it. Look."},
-                {"who":"ada", "text":"June 17th\n\nWith the pipeline to Lord Moorhouse's estate complete, I am beginning work on a device to compact the high range of pressure values (0-100), to ones acceptable by the low pressure system (0-50). To my complete surprise, when powered by Lord Moorhouse's low pressure steam, but still using 100 PSI as the reference input, the pressure buffer was able to scale the input pressure to precisely one half.\n\nThese properties could have wondrous uses in the field of mathematics."},
+                {"who":"ada", "text":"June 17th\n\nWith the pipeline to Lord Moorhouse's estate complete, I am beginning work on a device to compact the high range of pressure values (0-100), to ones acceptable by the low pressure system (0-50). To my complete surprise, when powered by Lord Moorhouse's low pressure steam, but still using 100 PSI as the reference input, the pressure buffer was able to scale the input pressure to precisely one half."},
                 {"who":"nicola", "text":"Really!?! How can that possibly work?"}
             ],
             [
@@ -564,7 +566,7 @@
             "Select language"           :   "语言",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "如果您在游玩过程中遇到困难，可以前来Discord上与优秀的高压蒸汽协会成员一同讨论您遇到的挑战。按下Esc并点击“加入Discord服务器”来加入。",
-            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued…" :
+            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued..." :
                                             "看来我们的旅程必须在此停下了。您将能够在完整游戏中继续您的冒险，敬请期待。",
             "Cross"                     :   "Cross",            
             "50"                        :   "50",               
@@ -1081,7 +1083,7 @@
             "Select language"           :   "Vybrat jazyk",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "Pokud jste se vám nedaří, zkuste probrat své problémy s odborníky Spolku pro Vysokotlakou Páru na našem Discordu. Zmáčkněte Esc a klikněte na tlačítko \"Přidejte se k našemu Discordu\".",
-            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued…" :
+            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued..." :
                                             "Tento příběh zde prozatím končí. Naše dobrodružství ale pokračuje\nv plné verzi hry\n\nPokračování příště...",
             "Cross"                     :   "Cross",            
             "50"                        :   "50",               
@@ -1181,8 +1183,8 @@
                 {"who":"nicola", "text":"I think we can still establish a connection without delivering any steam out. According to these notes..."},
                 {"who":"charles", "text":"Hah! Impossible! This is elementary steamology, my dear boy! Steam communication relies on the transfer of steam, and thou shalt not \"Transfer\" any of my steam out!\n\nIn any case, I am needed elsewhere. This matter does not appear as urgent as the investigations into my missing steam."},
                 {"who":"nicola", "text":"According to Lady Chavvington, Charles was not known as the greatest listener. She describes the design in some detail."},
-                {"who":"ada", "text":"June 5th\nI created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. Charles's valves appear to open to the pressure on the \"+\" side, minus the pressure on the \"-\" side.\n\nThis appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a \"buffer\"."},
-                {"who":"ada", "text":"Communication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit."},
+                {"who":"ada", "text":"June 5th\nI created a fantastic pressure replicating device today. To create a pressure of a specific value, I used valves, supplying and venting steam, at a precise ratio. By opening the steam valve to 80%, and opening the atmospheric venting valve to 20%, I could recreate the original pressure of 80 PSI. Charles's valves appear to open to the pressure on the \"+\" side, minus the pressure on the \"-\" side."},
+                {"who":"ada", "text":"This appears to work for a whole range of values with the minimal of error. Due to its isolating properties I shall name it a \"buffer\".\n\nCommunication through pressure, rather than the flow of steam, offers wondrous possibilities as the value is not distorted by the resistance of long pipes. I explained the idea to Charles, although he was more consumed with matters of company profit."},
                 {"who":"nicola", "text":"It appears some parts of the original design still remain installed in the wall. As long as we use Lady Easley's steam to power the devices beyond the wall, Charles will have no complaint."}
             ],
             [

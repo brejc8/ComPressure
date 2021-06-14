@@ -2377,7 +2377,7 @@ void GameState::render(bool saving)
             SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
             SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
             render_texture(src_rect, dst_rect);
-            render_text_wrapped(XYPos(pic_on_left ? 48 + 128 : 24, 180 + 24), text.c_str(), 640 - 80 - 128);
+            render_text_wrapped(XYPos(pic_on_left ? 48 + 120 : 24, 180 + 24), text.c_str(), 640 - 80 - 110);
         }
 
     }
