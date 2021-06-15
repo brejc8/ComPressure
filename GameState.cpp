@@ -629,8 +629,8 @@ void GameState::render_number_2digit_err(XYPos pos, unsigned value, unsigned sca
 void GameState::render_number_pressure(XYPos pos, Pressure value, unsigned scale_mul, unsigned bg_colour, unsigned fg_colour)
 {
     int myscale = scale * scale_mul;
-    unsigned p = (value * 100 + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR;
-    render_number_2digit(pos, p / 100, scale_mul, bg_colour, fg_colour);
+    int64_t p = (int64_t(value) * 10000 + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR;
+    render_number_2digit(pos, (p / 10000) % 100, scale_mul, bg_colour, fg_colour);
     pos.x += 9 * myscale;
     {
         SDL_Rect src_rect = {49 + int(fg_colour/4) * 64, 160 + int(fg_colour%4) * 5, 1, 5};
@@ -638,6 +638,8 @@ void GameState::render_number_pressure(XYPos pos, Pressure value, unsigned scale
         render_texture(src_rect, dst_rect);
     }
     pos.x += 1 * myscale;
+    render_number_2digit(pos, (p / 100) % 100, scale_mul, bg_colour, fg_colour);
+    pos.x += 8 * myscale;
     render_number_2digit(pos, p % 100, scale_mul, bg_colour, fg_colour);
     
 }
@@ -1800,7 +1802,7 @@ void GameState::render(bool saving)
             }
             //render_number_2digit(XYPos((port_index * 48 + current_level->current_simpoint.force[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), current_level->current_simpoint.force[port_index]*3);
             
-            render_number_pressure(XYPos((port_index * 48 + 8 + 6 ) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), current_level->ports[port_index].value);
+            render_number_pressure(XYPos((port_index * 48 + 8 + 2 ) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), current_level->ports[port_index].value);
 
             
         }
@@ -2256,7 +2258,7 @@ void GameState::render(bool saving)
         if (pos.y >= 0 && pos.x >= 0 && pos.x < 200)
         {
             if (test_mode == TEST_MODE_ACCURACY)
-                tooltip_string = std::to_string(pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]));
+                tooltip_string = std::to_string(pressure_as_percent_float(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]));
             else
                 tooltip_string = std::to_string(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]);
         }

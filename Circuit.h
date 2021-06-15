@@ -25,6 +25,12 @@ static unsigned pressure_as_percent(Pressure p)
     return std::min(std::max((p + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR, Pressure(0)), Pressure(100));
 }
 
+static double pressure_as_percent_float(Pressure p)
+{
+    return std::min(std::max(float(p) / PRESSURE_SCALAR, float(Pressure(0))), float(Pressure(100)));
+}
+
+
 static Pressure percent_as_pressure(unsigned p)
 {
     return p * PRESSURE_SCALAR;
