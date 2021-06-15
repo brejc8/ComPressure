@@ -2620,7 +2620,7 @@ void GameState::render(bool saving)
         }
         else
         {
-            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\n\nGraphic assets by Carl Olsson\n\nSilver font by Poppy Works\n\nBuild: " 
+            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\nGraphic assets by Carl Olsson\nSilver font by Poppy Works\nTranslations\n    Chinese:    Leaving Leaves\n\nBuild: " 
 #include "date.string"
             ;
             render_text_wrapped(XYPos(160 + 32 + 4, 90 + 16 + 4), about_text, 320 - 64);
