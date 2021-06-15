@@ -2590,7 +2590,8 @@ void GameState::render(bool saving)
             render_button(XYPos((160 + 32 + 64) * scale, (90 + 32 + 48)  * scale), XYPos(256+24, 256), 0, "Info");
 
             render_button(XYPos((160 + 32) * scale, (90 + 96 + 32)  * scale), XYPos(280, 304), 0, "Select language");
-            render_button(XYPos((160 + 32 + 64) * scale, (90 + 96 + 32)  * scale), XYPos(number_high_precision ? 280 : 256, 400), 0, "Number resolution");
+            if (highest_level >= 20)
+                render_button(XYPos((160 + 32 + 64) * scale, (90 + 96 + 32)  * scale), XYPos(number_high_precision ? 280 : 256, 400), 0, "Number resolution");
 
             render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
             {
@@ -4367,7 +4368,7 @@ bool GameState::events()
                         {
                             display_about = true;
                         }
-                        if ((pos - XYPos(0, 96)).inside(XYPos(32, 32)))
+                        if ((pos - XYPos(0, 96)).inside(XYPos(32, 32)) && highest_level >= 20)
                         {
                             number_high_precision = !number_high_precision;
                         }
