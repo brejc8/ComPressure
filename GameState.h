@@ -182,6 +182,8 @@ public:
     bool flash_steam_inlet = true;
     bool flash_valve = true;
 
+    bool number_high_precision = false;
+
     std::string tooltip_string;
 
 //    bool requesting_help = false;

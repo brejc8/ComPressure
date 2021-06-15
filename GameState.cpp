@@ -121,6 +121,8 @@ GameState::GameState(const char* filename)
             discord_joined = omap->get_num("discord_joined");
             if (omap->has_key("language"))
             	language_name = omap->get_string("language");
+            if (omap->has_key("number_high_precision"))
+                number_high_precision = omap->get_num("number_high_precision");
 
             delete omap;
             load_was_good = true;
@@ -210,6 +212,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("minutes_played", minutes_played + SDL_GetTicks()/ 1000 / 60);
     omap->add_num("discord_joined", discord_joined);
     omap->add_string("language", language_name);
+    omap->add_num("number_high_precision", number_high_precision);
     return omap;
 }
 
@@ -639,8 +642,11 @@ void GameState::render_number_pressure(XYPos pos, Pressure value, unsigned scale
     }
     pos.x += 1 * myscale;
     render_number_2digit(pos, (p / 100) % 100, scale_mul, bg_colour, fg_colour);
-    pos.x += 8 * myscale;
-    render_number_2digit(pos, p % 100, scale_mul, bg_colour, fg_colour);
+    if (number_high_precision)
+    {
+        pos.x += 8 * myscale;
+        render_number_2digit(pos, p % 100, scale_mul, bg_colour, fg_colour);
+    }
     
 }
 
@@ -969,6 +975,8 @@ void GameState::render(bool saving)
     {
         highest_level++;
         level_win_animation = 100;
+        if (highest_level == 20)
+            number_high_precision = true;
     }
     
     {
@@ -1802,7 +1810,7 @@ void GameState::render(bool saving)
             }
             //render_number_2digit(XYPos((port_index * 48 + current_level->current_simpoint.force[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), current_level->current_simpoint.force[port_index]*3);
             
-            render_number_pressure(XYPos((port_index * 48 + 8 + 2 ) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), current_level->ports[port_index].value);
+            render_number_pressure(XYPos((port_index * 48 + 8 + (number_high_precision ? 2 : 6)) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), current_level->ports[port_index].value);
 
             
         }
@@ -2582,6 +2590,7 @@ void GameState::render(bool saving)
             render_button(XYPos((160 + 32 + 64) * scale, (90 + 32 + 48)  * scale), XYPos(256+24, 256), 0, "Info");
 
             render_button(XYPos((160 + 32) * scale, (90 + 96 + 32)  * scale), XYPos(280, 304), 0, "Select language");
+            render_button(XYPos((160 + 32 + 64) * scale, (90 + 96 + 32)  * scale), XYPos(number_high_precision ? 280 : 256, 400), 0, "Number resolution");
 
             render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
             {
@@ -4357,6 +4366,10 @@ bool GameState::events()
                         if ((pos - XYPos(0, 48)).inside(XYPos(32, 32)))
                         {
                             display_about = true;
+                        }
+                        if ((pos - XYPos(0, 96)).inside(XYPos(32, 32)))
+                        {
+                            number_high_precision = !number_high_precision;
                         }
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 128)))
