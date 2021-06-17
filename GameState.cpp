@@ -2287,7 +2287,7 @@ void GameState::render(bool saving)
         render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
         render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
     }
-    if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
+    if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT && !display_language_dialogue)
     {
     
 #ifdef COMPRESSURE_DEMO
