@@ -633,7 +633,7 @@ void GameState::render_number_pressure(XYPos pos, Pressure value, unsigned scale
 {
     int myscale = scale * scale_mul;
     int64_t p = (int64_t(value) * 10000 + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR;
-    render_number_2digit(pos, (p / 10000) % 100, scale_mul, bg_colour, fg_colour);
+    render_number_2digit(pos, (p / 10000), scale_mul, bg_colour, fg_colour);
     pos.x += 9 * myscale;
     {
         SDL_Rect src_rect = {49 + int(fg_colour/4) * 64, 160 + int(fg_colour%4) * 5, 1, 5};
@@ -1671,7 +1671,7 @@ void GameState::render(bool saving)
         
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
-        if (next_dialogue_level > 24)
+        if (next_dialogue_level > 24 && !current_circuit_is_read_only)
             render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
 
 
@@ -2084,7 +2084,7 @@ void GameState::render(bool saving)
             
             int c = int64_t(int64_t(current_level->substep_count) * PRESSURE_SCALAR) / 10000;
             
-            render_number_pressure(XYPos(panel_offset.x + 71 * scale, panel_offset.y + (32 + 32 + 16 + 3) * scale), c, 2, 9, 1);
+            render_number_pressure(XYPos(panel_offset.x + (number_high_precision ? 54 : 71) * scale, panel_offset.y + (32 + 32 + 16 + 3) * scale), c, 2, 9, 1);
 
 
         }
@@ -2348,7 +2348,7 @@ void GameState::render(bool saving)
             }
         }
         if (current_language->get_item("tooltips")->get_map()->has_key(text))
-            tooltip_string = current_language->get_item("tooltips")->get_map()->get_string(text);
+            text = current_language->get_item("tooltips")->get_map()->get_string(text);
 
         if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
         {
@@ -3252,7 +3252,7 @@ void GameState::mouse_click_in_panel()
             dialogue_index = 0;
             
         }
-        else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)) && next_dialogue_level > 24)  // New
+        else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)) && next_dialogue_level > 24 && !current_circuit_is_read_only)  // New
         {
             set_level(edited_level_set->new_user_level());
             set_level_set(edited_level_set);
@@ -3496,7 +3496,7 @@ void GameState::mouse_click_in_panel()
                 level_set->touch(current_level_index);
             }
         }
-        if (editing_level && (panel_grid_pos == XYPos(current_level->tests.size() + 1, 2)))
+        if (editing_level && (panel_grid_pos == XYPos(current_level->tests.size() + 1, 2)) && current_level->tests.size() < 14)
         {
             current_level->tests.insert(current_level->tests.begin() + current_level->test_index, current_level->tests[current_level->test_index]);
             current_level->test_index++;
@@ -3647,6 +3647,8 @@ void GameState::mouse_click_in_panel()
                             current_level->sim_point_index = current_level->tests[current_level->test_index].sim_points.size() - 1;
                         if (current_level->tests[current_level->test_index].first_simpoint >= current_level->tests[current_level->test_index].sim_points.size())
                             current_level->tests[current_level->test_index].first_simpoint = current_level->tests[current_level->test_index].sim_points.size() - 1;
+                        current_level->current_simpoint = current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index];
+
                     }
                 
                 }
