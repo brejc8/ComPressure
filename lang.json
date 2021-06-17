@@ -89,7 +89,7 @@
             "Lock Picking"              :   "Lock Picking",
             "Code filter"               :   "Code filter",
             "Steamputer"                :   "Steamputer",
-            "END"                       :   "END",
+            "END"                       :   "END"
 
         },
         "help":
@@ -117,7 +117,7 @@
             "One method of creating a specific pressure is by simultaneously supplying and venting a pipe at a specific ratio. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side.\n\nOpenness = P - N\n\nWhere P is the pressure on the Positive side of the valve and N is the pressure on the Negative side. Here the lower valve openness is 40 (60 - 20).",
             "The pressure generated in this arrangement is, in percent, the openness of the source valve divided by the sum of the openness of both valves.\n\nPressure = S / (S + V)\n\nWhere S is Supply valve openness and V is Venting valve openness.\nIn this case, Supply is 40 (40 - 0). Venting is also 40 (60 - 20). The expected value between is 40 / (40 + 40) = 50%, thus 50 PSI.",
             "Three scoring modes are available. The default (Accuracy) mode scores the proximity to the target value (for the worst test).\n\nPrice mode ranks designs by cost. Pipes cost £1 per port, valves cost £10 and steam inlets cost £5. There is an extra £4 charge for each subdesign.\n\nSteam mode measures the amount of steam supplied by the steam inlets.",
-            "It is possible to create user defined levels. These have a user defined icon, tests and can be exchanged through the clipboard.\nTests and test steps can be added/removed using the +/- buttons. The time period per step is configurable. If, when playing all tests, some steps can be skipped, the skip all button selects the subtest to start on. The design can be optionally reset on all or only in play one test mode. The port icons select which ports are used. Clicking the ports on the left of the value selects the ports used as the output. The values are changed in the experiment menu.",
+            "It is possible to create user defined levels. These have a user defined icon, tests and can be exchanged through the clipboard.\nTests and test steps can be added/removed using the +/- buttons. The time period per step is configurable. If, when playing all tests, some steps can be skipped, the skip all button selects the subtest to start on. The design can be optionally reset on all or only in play one test mode. The port icons select which ports are used. Clicking the ports on the left of the value selects the ports used as the output. The values are changed in the experiment menu."
         ],
         "dialogue":
         [
@@ -640,7 +640,7 @@
             "在同时通过蒸汽源导入蒸汽并排放蒸汽至大气的情况下， 适当调整导气与排气的比例可以产生特定的压强。 阀门的开度由“+”端与“-”端的差值决定。\n\n开度 = ( P - N ）%\n\n其中P代表“+”端压强， N代表“-”端压强。 左端下方的阀门开度为40% (60 - 20）。",
             "左图中的设计产生的压强， 可通过导气阀开度除以二者开度的和近似计算。\n\n压强 = 100 * S / (S + V)\n\n其中S表示导气阀的开度， V表示排气阀的开度。 左图中， 导气阀开度为40% (40 - 0)， 排气阀开度也为40% (60 - 20)。\n二者之间的输出值是100 * 40% / (40% + 40%） = 50， 即50 PSI。",
             "有三种计分模式可供选择。\n默认模式（精确度模式）通过最差情况下与预期输出的差值计分排名。\n\n价格模式通过造价多少排名。 管道开口各花费£1， 阀门花费£5，  蒸汽源花费£10， 集成元件额外花费£4。\n\n蒸汽量模式通过计算蒸汽源的蒸汽消耗量排名。",
-            "玩家可制造自制关卡， 绘制关卡图标、 设计样例并通过剪贴板分享。 测试样例可以通过+或-按钮来增加或删去， 每个状态的时长都可自行调整。 如果在运行所有样例时有些状态可被跳过， 也可通过对应按钮来设置。 设计可只在当前样例下重置， 也可在所有样例下重置。 可通过管道图标选择需要的管道以及输出管道。 输入值均可通过调试页面更改。",
+            "玩家可制造自制关卡， 绘制关卡图标、 设计样例并通过剪贴板分享。 测试样例可以通过+或-按钮来增加或删去， 每个状态的时长都可自行调整。 如果在运行所有样例时有些状态可被跳过， 也可通过对应按钮来设置。 设计可只在当前样例下重置， 也可在所有样例下重置。 可通过管道图标选择需要的管道以及输出管道。 输入值均可通过调试页面更改。"
         ],
         "dialogue":
         [
@@ -657,7 +657,7 @@
             ],
             [
                 {"who":"nicola", "text":"做得好！"},
-                {"who":"charles", "text":"啊， Nicola， 你来得正是时候。 Gertrude， Nicola将成为你的助手， 他已经开始研究Ada留下的笔记了。 下一个部分对你将会是更大的挑战。\n\n向“+”端通入蒸汽时会打开阀门， 而向“-”端通入蒸汽会关闭阀门。 阀门只有在“+”端的压强高于“-”端时才会打开。 \n\nAda让我加上这个， 这样她就能在向控制管施加高压时关闭阀门。 让我们试试这些阀门还能不能正常工作。"},
+                {"who":"charles", "text":"啊， Nicola， 你来得正是时候。 Gertrude， Nicola将成为你的助手， 他已经开始研究Ada留下的笔记了。 下一个部分对你将会是更大的挑战。\n\n向“+”端通入蒸汽时会打开阀门， 而向“-”端通入蒸汽会关闭阀门。 阀门只有在“+”端的压强高于“-”端时才会打开。\n\nAda让我加上这个， 这样她就能在向控制管施加高压时关闭阀门。 让我们试试这些阀门还能不能正常工作。"},
                 {"who":"charles", "text":"当南部的压强低于100 PSI时， 连接西部和东部。\n\n你可以使用蒸汽源提供良好的高压蒸汽。"}
             ],
             [
@@ -708,7 +708,7 @@
             [
                 {"who":"nicola", "text":"试试看这能不能起作用。\n\n80 PSI[你好]\n55 PSI[请求会面]\n57 PSI[在Madingley大厅进行下午茶]"},
                 {"who":"george", "text":"……\n23 PSI [拒绝]\n……\n6  PSI [6]\n12 PSI [/]\n7  PSI [7]"},
-                {"who":"nicola", "text":"什么？！？ 6/7？ 让我查一下笔记。\n……\n 6月7日的所有内容都是关于压强翻转器的设计。 如果压强翻转了，他怎么能和我们沟通呢……翻转的……翻转？……对了！\n\n抱歉， 之前我的所在地使用的日月顺序是相反的。 这才是正确的笔记。"},
+                {"who":"nicola", "text":"什么？！？ 6/7？ 让我查一下笔记。\n……\n6月7日的所有内容都是关于压强翻转器的设计。 如果压强翻转了，他怎么能和我们沟通呢……翻转的……翻转？……对了！\n\n抱歉， 之前我的所在地使用的日月顺序是相反的。 这才是正确的笔记。"},
                 {"who":"ada", "text":"7月6日\n\n我怀疑我们的通讯管道被破坏了！ 经过几天的恳求， Moorhouse先生终于同意了与我一同进行研究工作。 我们通过通讯管道交换了各自实验室门的密码。 但在几小时后， 我就收到了一张他手写的便条， 告知我他的实验室已被洗劫一空， 不愿再接受我的合作了。 我赶紧前往我的实验室， 发现也已经被人闯入了！ 许多工作成果都已经丢失了。"},
                 {"who":"ada", "text":"我把密码保存地很安全， 而Charles也肯定不会做出这种事。 我立刻把实验室的门换掉了。 Charles宁死也不愿开Moorhouse的低压蒸汽门。"},
                 {"who":"ada", "text":"我感觉这里不再安全了。 我联系了我姐姐， 告知她我很快就会前往她家。 这正适合测试我的新加密系统， 因为它能保持我们的通信安全。 Charles曾答应过会通过管道向姐姐的住所发送信号， 但我仍然没有收到。 他有时真的很健忘。"},
@@ -1050,7 +1050,7 @@
             "Customize"                 :   "Přizpůsobit",
             "Import level"              :   "Načíst úroveň",
             "Delete"                    :   "Smazat",
-            "Copy design\nto current"   :   "Zkpírovat design\ndo současné úrovně",
+            "Copy design\nto current"   :   "Zkopírovat design\ndo současné úrovně",
             "Delete level"              :   "Smazat úroveň",
             "Return"                    :   "Návrat",
             "Level Editor"              :   "Editovat",
@@ -1074,7 +1074,7 @@
             "Stop tests"                :   "Zastavit testy",
             "Repeat 1 test"             :   "Opakovat jeden test",
             "Run all tests"             :   "Spustit všechny testy",
-            "Export to\nclipboard"      :   "Uložt úroveň\ndo clipboardu",
+            "Export to\nclipboard"      :   "Uložit úroveň\ndo clipboardu",
             "Import from\nclipboard"    :   "Načíst úroveň\nz clipboardu",
             "Accuracy mode"             :   "Mód: přesnost",
             "Price mode"                :   "Mód: cena",
@@ -1091,47 +1091,46 @@
                                             "Pokud jste se vám nedaří, zkuste probrat své problémy s odborníky Spolku pro Vysokotlakou Páru na našem Discordu. Zmáčkněte Esc a klikněte na tlačítko \"Přidejte se k našemu Discordu\".",
             "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued..." :
                                             "Tento příběh zde prozatím končí. Naše dobrodružství ale pokračuje\nv plné verzi hry\n\nPokračování příště...",
-            "Cross"                     :   "Cross",
+            "Cross"                     :   "Kříž",
             "50"                        :   "50",
-            "Normally Open"             :   "Normally Open",
-            "Normally Closed"           :   "Normally Closed",
-            "Switch"                    :   "Switch",
-            "Buffer"                    :   "Buffer",
-            "Inverter"                  :   "Inverter",
-            "Comparator"                :   "Comparator",
-            "Amp50"                     :   "Amp50",
-            "Div2"                      :   "Div2",
-            "Mul2"                      :   "Mul2",
-            "Encrypt"                   :   "Encrypt",
-            "Decrypt"                   :   "Decrypt",
-            "Sensor"                    :   "Sensor",
-            "Subtractor"                :   "Subtractor",
-            "Adder"                     :   "Adder",
-            "Latch"                     :   "Latch",
-            "Tabulator"                 :   "Tabulator",
-            "Broken Link"               :   "Broken Link",
-            "Zoom"                      :   "Zoom",
-            "Flow Detector"             :   "Flow Detector",
-            "LatchE"                    :   "LatchE",
-            "Latch2"                    :   "Latch2",
-            "Latch5"                    :   "Latch5",
-            "Latch10"                   :   "Latch10",
-            "Min"                       :   "Min",
-            "Max"                       :   "Max",
-            "Fuse"                      :   "Fuse",
-            "Counter"                   :   "Counter",
-            "ROM"                       :   "ROM",
-            "Poem"                      :   "Poem",
-            "Clock"                     :   "Clock",
-            "Cross v2"                  :   "Cross v2",
-            "CounterE"                  :   "CounterE",
-            "Delay"                     :   "Delay",
-            "Self-timed latch"          :   "Self-timed latch",
-            "Lock Picking"              :   "Lock Picking",
-            "Code filter"               :   "Code filter",
-            "Steamputer"                :   "Steamputer",
-            "END"                       :   "END",
-
+            "Normally Open"             :   "Spínač",
+            "Normally Closed"           :   "Rozpínač",
+            "Switch"                    :   "Přepínač",
+            "Buffer"                    :   "Vyrovnávač",
+            "Inverter"                  :   "Měnič",
+            "Comparator"                :   "Komparátor",
+            "Amp50"                     :   "Zesilovač 50",
+            "Div2"                      :   "Násobič 2",
+            "Mul2"                      :   "Dělič 2",
+            "Encrypt"                   :   "Šifrovač",
+            "Decrypt"                   :   "Dešifrovač",
+            "Sensor"                    :   "Senzor",
+            "Subtractor"                :   "Odčítač",
+            "Adder"                     :   "Sčítač",
+            "Latch"                     :   "Paměť",
+            "Tabulator"                 :   "Tabulátor",
+            "Broken Link"               :   "Přerušené spojení",
+            "Zoom"                      :   "Transfokátor",
+            "Flow Detector"             :   "Detektor průtoku",
+            "LatchE"                    :   "Paměť s aktivátorem",
+            "Latch2"                    :   "Paměť 2",
+            "Latch5"                    :   "Paměť 5",
+            "Latch10"                   :   "Paměť 10",
+            "Min"                       :   "Minimalizátor",
+            "Max"                       :   "Maximalizátor",
+            "Fuse"                      :   "Pojistka",
+            "Counter"                   :   "Čítač",
+            "ROM"                       :   "Programová paměť",
+            "Poem"                      :   "Báseň",
+            "Clock"                     :   "Časovač",
+            "Cross v2"                  :   "Kříž v2",
+            "CounterE"                  :   "Čítač s aktivátorem",
+            "Delay"                     :   "Zpožďovač",
+            "Self-timed latch"          :   "Samočinná paměť",
+            "Lock Picking"              :   "Parošperhák",
+            "Code filter"               :   "Filtrovač",
+            "Steamputer"                :   "Paročítač",
+            "END"                       :   "Konec"
         },
         "help":
         [
@@ -1158,7 +1157,7 @@
             "One method of creating a specific pressure is by simultaneously supplying and venting a pipe at a specific ratio. A valve is as open as the pressure on the (+) side minus the pressure on the (-) side.\n\nOpenness = P - N\n\nWhere P is the pressure on the Positive side of the valve and N is the pressure on the Negative side. Here the lower valve openness is 40 (60 - 20).",
             "The pressure generated in this arrangement is, in percent, the openness of the source valve divided by the sum of the openness of both valves.\n\nPressure = S / (S + V)\n\nWhere S is Supply valve openness and V is Venting valve openness.\nIn this case, Supply is 40 (40 - 0). Venting is also 40 (60 - 20). The expected value between is 40 / (40 + 40) = 50%, thus 50 PSI.",
             "Three scoring modes are available. The default (Accuracy) mode scores the proximity to the target value (for the worst test).\n\nPrice mode ranks designs by cost. Pipes cost £1 per port, valves cost £10 and steam inlets cost £5. There is an extra £4 charge for each subdesign.\n\nSteam mode measures the amount of steam supplied by the steam inlets.",
-            "It is possible to create user defined levels. These have a user defined icon, tests and can be exchanged through the clipboard.\nTests and test steps can be added/removed using the +/- buttons. The time period per step is configurable. If, when playing all tests, some steps can be skipped, the skip all button selects the subtest to start on. The design can be optionally reset on all or only in play one test mode. The port icons select which ports are used. Clicking the ports on the left of the value selects the ports used as the output. The values are changed in the experiment menu.",
+            "It is possible to create user defined levels. These have a user defined icon, tests and can be exchanged through the clipboard.\nTests and test steps can be added/removed using the +/- buttons. The time period per step is configurable. If, when playing all tests, some steps can be skipped, the skip all button selects the subtest to start on. The design can be optionally reset on all or only in play one test mode. The port icons select which ports are used. Clicking the ports on the left of the value selects the ports used as the output. The values are changed in the experiment menu."
         ],
         "dialogue":
         [
@@ -1673,7 +1672,7 @@
             "Fertige Konstruktionen stehen zur Verwendung als Komponenten zur Verfügung. Verfügbare Komponenten werden im Erstellungsmenü angezeigt. Wenn Sie einen Entwurf ändern, wird seine Implementierung in allen Komponenten aktualisiert.\n\nDurch Doppelklicken auf die Komponente können Sie sie inspizieren. Sie können den Stapel wieder aufklappen, indem Sie auf das Design-Symbol oben links klicken. Wenn Sie während der Inspektion auf die Schaltfläche \"Anpassen\" klicken, wird ein lokaler Entwurf erstellt, der bearbeitet werden kann und nicht mehr aktualisiert wird, wenn das Original geändert wird. Der Entwurf wird rot, um dies zu signalisieren.",
             "Es gibt vier Steckplätze zum Speichern von Designs. Das beste Design wird ebenfalls gespeichert, so dass es später abgerufen werden kann. Designs können über eine Zeichenfolge in der Zwischenablage ausgetauscht werden.\n\nKlicken Sie auf den Punktestand, um die globale Punktegrafik und Ihren Punktestand im Vergleich zu Ihren Freunden anzuzeigen. Deren Designs können eingesehen werden.",
             "Eine Methode, einen bestimmten Druck zu erzeugen, ist das gleichzeitige Be- und Entlüften einer Leitung in einem bestimmten Verhältnis. Ein Ventil ist so offen wie der Druck auf der (+) Seite minus dem Druck auf der (-) Seite.\n\nOpenness = P - N\n\nWobei P der Druck auf der positiven Seite des Ventils und N der Druck auf der negativen Seite ist. Hier ist die untere Ventilöffnung 40 (60 - 20).",
-            "Der in dieser Anordnung erzeugte Druck ist in Prozent die Offenheit des Quellventils geteilt durch die Summe der Offenheit beider Ventile.\n\nDruck = S / (S + V)\n\n Wobei S die Offenheit des Versorgungsventils und V die Offenheit des Entlüftungsventils ist.\n In diesem Fall ist die Versorgung 40 (40 - 0). Die Entlüftung ist ebenfalls 40 (60 - 20). Der erwartete Wert dazwischen ist 40 / (40 + 40) = 50%, also 50 PSI.",
+            "Der in dieser Anordnung erzeugte Druck ist in Prozent die Offenheit des Quellventils geteilt durch die Summe der Offenheit beider Ventile.\n\nDruck = S / (S + V)\n\nWobei S die Offenheit des Versorgungsventils und V die Offenheit des Entlüftungsventils ist.\nIn diesem Fall ist die Versorgung 40 (40 - 0). Die Entlüftung ist ebenfalls 40 (60 - 20). Der erwartete Wert dazwischen ist 40 / (40 + 40) = 50%, also 50 PSI.",
             "Es sind drei Bewertungsmodi verfügbar. Der Standardmodus (Genauigkeit) bewertet die Nähe zum Zielwert (für den schlechtesten Test).\n\nDer Preismodus ordnet Designs nach Kosten. Rohre kosten £1 pro Anschluss, Ventile kosten £10 und Dampfeinlässe kosten £5. Für jede Unterkonstruktion wird eine zusätzliche Gebühr von 4 £ erhoben.\n\nDer Dampfmodus misst die von den Dampfeinlässen gelieferte Dampfmenge.",
             "Es ist möglich, benutzerdefinierte Ebenen zu erstellen. Diese haben ein benutzerdefiniertes Symbol, Tests und können über die Zwischenablage ausgetauscht werden.\nTests und Testschritte können über die +/- Tasten hinzugefügt/entfernt werden. Die Zeitspanne pro Schritt ist konfigurierbar. Wenn beim Abspielen aller Tests einige Schritte übersprungen werden können, wählt die Schaltfläche \"Alle überspringen\" den Untertest aus, mit dem begonnen werden soll. Der Entwurf kann wahlweise auf alle oder nur im Modus \"Play one test\" zurückgesetzt werden. Die Port-Symbole wählen aus, welche Ports verwendet werden. Durch Anklicken der Ports links neben dem Wert werden die verwendeten Ports als Ausgang ausgewählt. Die Werte werden im Menü \"Experiment\" geändert."
         ],
@@ -1686,7 +1685,7 @@
             ],
             [
                 {"who": "charles", "text": "Verflixt noch mal! Die Sicherheitstür zu Adas Labor wird mit Niederdruckdampf betrieben! Ich konnte nie herausfinden, wie sie dieses verflixte Ding aufbekommen hat.\n\nHier bei General High Pressure Steam Works erzeugen wir Dampf mit 100 Pfund pro Quadratzoll. Die Tür verwendet den Niederdruckdampf von Moorhouse, der mit 50 Pfund pro Quadratzoll (PSI) arbeitet. Ich will verdammt sein, wenn ich diesen degenerierten Moorhouse-Dampf auf mein Grundstück leite!"},
-                {"who": "charles", "text": "Wenn Sie nicht eine Versorgung mit Niederdruckdampf bei 50 PSI herbeizaubern können, können wir genauso gut aufgeben.\n\n Im Baumenü finden Sie einen Dampfeinlass, der Sie mit reichlich Hochdruckdampf bei 100 PSI versorgen kann. Er befindet sich dort oben und ist mit einem Schraubenschlüssel markiert. Sie können auch zweimal die Tabulatortaste drücken, um Zugriff darauf zu erhalten."}
+                {"who": "charles", "text": "Wenn Sie nicht eine Versorgung mit Niederdruckdampf bei 50 PSI herbeizaubern können, können wir genauso gut aufgeben.\n\nIm Baumenü finden Sie einen Dampfeinlass, der Sie mit reichlich Hochdruckdampf bei 100 PSI versorgen kann. Er befindet sich dort oben und ist mit einem Schraubenschlüssel markiert. Sie können auch zweimal die Tabulatortaste drücken, um Zugriff darauf zu erhalten."}
             ],
             [
                 {"who": "charles", "text": "Meine Güte! Du hast es geschafft! Schreckliche Verschwendung von gutem Dampf, aber es hat den Job erledigt. Ich entschuldige mich für den unaufgeräumten Zustand, aber einige Ganoven haben sich Zugang verschafft und eine furchtbare Sauerei hinterlassen.\n\nIn diesem Labor hat meine liebste Ada Experimente an den Ventilen durchgeführt, die ich nach ihren genauen Vorgaben konstruiert habe. Indem wir eine gute Dosis Hochdruckdampf auf die mit einem \"+\" markierte Öffnung geben, können wir das Ventil öffnen, so dass der Dampf frei zwischen den beiden nicht markierten Enden hindurchströmen kann."},
@@ -1727,7 +1726,7 @@
                 {"who": "charles", "text": "Hervorragend! Denken Sie nur daran, dass es nicht ausreicht, den Ausgang mit Hochdruckdampf zu verbinden, wenn ein Eingang größer als der andere ist, man muss auch den Ausgang entlüften, wenn das Gegenteil der Fall ist. Meine Rohre sind vollständig abgedichtet und lassen nie Dampf austreten, es sei denn, man öffnet ein Ventil, um sie zu entlüften."}
             ],
             [
-                {"who": "charles", "text": "Ausgezeichnet! Solche Präzision! Ich bin sicher, es könnte den Druck einer Feder auf einem Kricketfeld erkennen.\n\n Ich brauche nur noch ein weiteres Gerät, bevor ich Sie Ihren Untersuchungen überlasse. Um in die Hochdruck-Dampf-Gesellschaft aufgenommen zu werden, muss man nachweisen, dass sein Dampfwerk Hochdruckdampf erzeugt."},
+                {"who": "charles", "text": "Ausgezeichnet! Solche Präzision! Ich bin sicher, es könnte den Druck einer Feder auf einem Kricketfeld erkennen.\n\nIch brauche nur noch ein weiteres Gerät, bevor ich Sie Ihren Untersuchungen überlasse. Um in die Hochdruck-Dampf-Gesellschaft aufgenommen zu werden, muss man nachweisen, dass sein Dampfwerk Hochdruckdampf erzeugt."},
                 {"who": "charles", "text": "Hier bei General High Pressure Steam Works produzieren wir Hochdruckdampf bei 100 PSI, dem einzigen Druck, den ich als echten Hochdruckdampf anerkennen würde. Aber technisch gesehen wird jeder Dampfdruck über 50 PSI als Hochdruckdampf angesehen. Als Vorsitzender der Hochdruckdampf-Gesellschaft ist es meine Aufgabe, dafür zu sorgen, dass minderwertige, Niederdruckdampf produzierende Abweichler nicht zugelassen werden."},
                 {"who": "nicola", "text": "Wir haben noch Ihre Konstruktion für den 50 PSI-Dampfgenerator in der Werkzeugkiste. Wir können die bereits erstellten Entwürfe als Komponenten verwenden."}
             ],
@@ -1745,7 +1744,7 @@
             [
                 {"who": "nicola", "text": "Mal sehen, ob das funktioniert.\n\n80 PSI [Hallo]\n55 PSI [Anfrage Meeting]\n57 PSI [Afternoon Tea in Madingley Hall]"},
                 {"who": "george", "text":"...\n23 PSI [Negativ]\n...\n6 PSI [6]\n12 PSI [/]\n7 PSI [7]"},
-                {"who": "nicola", "text": "Was?!? 6/7? Lassen Sie mich im Tagebuch nachsehen.\n...\nAlles, worüber der Eintrag für den 7. Juni spricht, ist die Konstruktion des Druckinverters. Wie konnte er überhaupt mit uns kommunizieren, wenn die Drücke vertauscht waren? ... vertauscht ... vertauscht? ...  Natürlich! \n\nMeine Entschuldigung. Ich habe zu viel Zeit in den Kolonien verbracht. Hier ist der korrekte Eintrag."},
+                {"who": "nicola", "text": "Was?!? 6/7? Lassen Sie mich im Tagebuch nachsehen.\n...\nAlles, worüber der Eintrag für den 7. Juni spricht, ist die Konstruktion des Druckinverters. Wie konnte er überhaupt mit uns kommunizieren, wenn die Drücke vertauscht waren? ... vertauscht ... vertauscht? ...  Natürlich!\n\nMeine Entschuldigung. Ich habe zu viel Zeit in den Kolonien verbracht. Hier ist der korrekte Eintrag."},
                 {"who": "ada", "text": "\"6. Juli\" Ich vermute, dass unsere Kommunikation kompromittiert wurde! Nach tagelangem Bitten stimmte Lord Moorhouse zu, unsere Forschungsbemühungen zu vereinen. Wir tauschten die Codes für die Türen unserer jeweiligen Labore über unseren Dampfkommunikator aus. Nur wenige Stunden später kam eine handschriftliche Nachricht in unserer Residenz an, die mich darüber informierte, dass sein Labor geplündert wurde und ich nicht mehr willkommen sei. Ich beeilte mich, um festzustellen, dass in mein Labor ebenfalls eingebrochen worden war! So viel Arbeit ist verloren gegangen"},
                 {"who": "ada", "text": "Ich habe den Code sicher gespeichert. Sicherlich hätte Charles so etwas nicht getan. Ich habe sofort die Tür meines Labors austauschen lassen. Charles würde eher sterben, als eine Moorhouse-Dampftür zu bedienen."},
                 {"who": "ada", "text": "Ich fühle mich hier nicht mehr sicher. Ich habe meine Schwester kontaktiert, um meine baldige Ankunft zu erwarten. Es war ein perfekter Zeitpunkt, um mein neues Verschlüsselungssystem zu testen, das unsere Kommunikation sicher halten wird. Ich habe immer noch nicht das Schild erhalten, das Charles versprochen hat, an dem Rohr anzubringen, das zu ihrer Residenz führt. Er kann manchmal so vergesslich sein."},
@@ -1790,7 +1789,7 @@
                 {"who": "nicola", "text": "80 PSI [Hallo]\n94 PSI [Hier ist Charles Chavvington]\n76 PSI [Mein liebster Engel]\n52 PSI [Mein Herz sehnt sich nach dir]\n68 PSI [Ich warte sehnsüchtig auf deine Rückkehr]\n70 PSI [Ohne dich hat das Leben jeden Sinn verloren]"},
                 {"who": "charles", "text": "Gut, wie ich sehe, ist die Konstruktion des Subtraktors abgeschlossen. Ausgezeichnet! Wie meine geliebte verstorbene Ada einst sagte..."},
                 {"who": "nicola", "text": "Sir! Sie müssen aufhören, diesen Ausdruck zu verwenden! Die Leute fangen an, Sie für einen Mörder zu halten..."},
-                {"who": "charles", "text": "Hmm... Ja. Wie Ada..., die nicht mehr unter uns weilt, einmal sagte: \"Ein Addierer ist nichts anderes als die Inversion eines Subtrahierers. Der Ausgang minus einen der Eingänge muss gleich dem anderen Eingang sein\". Aber welcher Eingang? \n\nSie verbrachte einige Zeit damit, frustriert zu sein, da der Entwurf stecken blieb, wenn dieser Eingang Null war, und das Umschalten der Eingänge führte nur dazu, dass der Entwurf stecken blieb, wenn der andere Eingang Null war. Ihr Heureka-Moment kam, als sie erkannte, dass es eine Kombination aus beiden Ansätzen sein musste."}
+                {"who": "charles", "text": "Hmm... Ja. Wie Ada..., die nicht mehr unter uns weilt, einmal sagte: \"Ein Addierer ist nichts anderes als die Inversion eines Subtrahierers. Der Ausgang minus einen der Eingänge muss gleich dem anderen Eingang sein\". Aber welcher Eingang?\n\nSie verbrachte einige Zeit damit, frustriert zu sein, da der Entwurf stecken blieb, wenn dieser Eingang Null war, und das Umschalten der Eingänge führte nur dazu, dass der Entwurf stecken blieb, wenn der andere Eingang Null war. Ihr Heureka-Moment kam, als sie erkannte, dass es eine Kombination aus beiden Ansätzen sein musste."}
             ],
             [
                 {"who": "annie", "text": "Warum hast du nicht auf meine Nachrichten geantwortet?"},
@@ -1846,7 +1845,7 @@
                 {"who": "annie", "text": "Das bezweifle ich stark. Ich denke, es ist Zeit für etwas reine Forschung.\n\nZurück zu dem Latch-Entwurf, an dem Ada und ich gearbeitet haben. Ich wollte ein Latch, das aktiviert oder deaktiviert werden kann. Wenn der North-Eingang high ist, arbeitet das Latch ganz normal, aber wenn er low ist, sollte es weder den Ausgang ansteuern, noch einen neuen Eingang akzeptieren, wenn es einen Zeitimpuls sieht. Wir können das alte Design verwenden, obwohl es vielleicht effizienter ist, ein eigenes zu bauen."}
             ],
             [
-                {"who": "annie", "text": "Nun, der Grund, warum ich dieses Design wollte, war, dass ich in der Lage sein wollte, ein \"adressierbares Latch\" zu konstruieren, bei dem der North-Eingang zwischen einem von mehreren Latches auswählt. Auf diese Weise könnte ich mehrere Werte speichern und auf jeden nach Belieben zugreifen.\n\n Beginnen wir mit zwei. Der Nord-Eingang wählt zwischen zwei Zwischenspeichern aus. Der Nordwert 0 bis 50 wählt einen aus, und der Nordwert 50 bis 100 wählt den zweiten aus."}
+                {"who": "annie", "text": "Nun, der Grund, warum ich dieses Design wollte, war, dass ich in der Lage sein wollte, ein \"adressierbares Latch\" zu konstruieren, bei dem der North-Eingang zwischen einem von mehreren Latches auswählt. Auf diese Weise könnte ich mehrere Werte speichern und auf jeden nach Belieben zugreifen.\n\nBeginnen wir mit zwei. Der Nord-Eingang wählt zwischen zwei Zwischenspeichern aus. Der Nordwert 0 bis 50 wählt einen aus, und der Nordwert 50 bis 100 wählt den zweiten aus."}
             ],
             [
                 {"who": "annie", "text": "Genau, leider ist das alles, was wir erreicht haben. Als Nächstes wollte ich einen Riegel, der fünf Werte speichern kann, aber Ada und ich konnten nicht alles in ein einziges Design packen. Die Auswahlbereiche wären 0-20, 20-40, 40-60, 60-80 und 80-100. Leider war es zu schwierig zu erkennen, in welchem der Bereiche sich das Select-Signal befand."},
@@ -1901,7 +1900,7 @@
                 {"who": "ada", "text": "Das klingt schön. Obwohl ich hoffe, dass Sie die Drücke umgekehrt haben, da Annies Codes alle negiert sind."},
                 {"who": "george", "text": "WHAT!?! Nicola! Was habe ich ihr gerade geschickt?"},
                 {"who": "nicola", "text": "Hmm... Es scheint, Sie haben sie zu ihrem prächtigen Bart beglückwünscht ... ihre anzüglichen Ätzungen angefordert ... und sie angewiesen, den Feind im Morgengrauen anzugreifen."},
-                {"who": "george", "text":"...\n In diesem Sinne werde ich zu meiner Residenz zurückkehren, um einige Zeit mit einer Flasche Brandy zu verbringen."},
+                {"who": "george", "text":"...\nIn diesem Sinne werde ich zu meiner Residenz zurückkehren, um einige Zeit mit einer Flasche Brandy zu verbringen."},
                 {"who": "ada", "text": "Charles! Geh und hilf ihm!\n\nWährend sie weg sind, könnt ihr zwei vielleicht helfen. Charles sollte zwei Rohre in diese Wand einbauen, aber sie hat nur eins. Ich brauche eine Verbindung von Norden nach Süden und von Westen nach Osten. Gibt es eine Möglichkeit, dass wir das machen können, ohne auf ein neues Rohr zu warten?"},
                 {"who": "nicola", "text": "Gut, dass wir in einem Uhrwerk-Universum leben, denn ich glaube, ich habe eine Idee."}
             ],
@@ -2081,11 +2080,11 @@
    {
         "tooltips":
         {
-            "Save" : "Save",
+            "Save" : "セーブ",
             "Restore" : "リストア",
-            "Best solution" : "「ベストソリューション",
+            "Best solution" : "高得点",
             "Customize" : "カスタマイズ",
-            "Import Level" : "輸入レベル」のことです",
+            "Import Level" : "レベルを輸入",
             "Delete" : "削除",
             "Copy design\nto current" : "Copy design\nto current",
             "Delete level" : "Delete level",
@@ -2098,23 +2097,23 @@
             "Score" : "スコア",
             "Help" : "ヘルプ",
             "Repeat\ndialogue" : "Repeat\ndialogue",
-            "Hint" : "Hint",
+            "Hint" : "ヒント",
             "New Design" : "新しいデザイン",
-            "Valve" : "バルブ」のことです",
-            "Steam Inlet" : "スチームインレット",
-            "Rotate left" : "Rotate left",
-            "Rotate right" : "Rotate right",
+            "Valve" : "バルブ",
+            "Steam Inlet" : "蒸気吸気口",
+            "Rotate left" : "左回す",
+            "Rotate right" : "右回す",
             "Reflect\nvertically"       :   "Reflect\nvertically",
             "Reflect\nhorizontally"     :   "Reflect\nhorizontally",
             "Lock Blocks" : "Lock Blocks",
             "Add sign" : "Add sign",
             "Stop tests" : "テストの停止",
-            "Repeat 1 test" : "のことです",
+            "Repeat 1 test" : "一つのテストを繰り返す",
             "Run all tests" : "すべてのテストを実行する",
-            "Export to\nclipboard" : "○○クリップボードに書き出す",
-            "Import from\nclipboard" : "○○クリップボードからインポート」と表示されます",
+            "Export to\nclipboard" : "クリップボードに書き出す",
+            "Import from\nclipboard" : "クリップボードからインポート",
             "Accuracy mode" : "Accuracy mode",
-            "Price mode" : "価格モード」のことです",
+            "Price mode" : "価格モード",
             "Steam mode" : "Steam mode",
             "Confirm" : "確認",
             "Cancel" : "キャンセル",
@@ -2127,7 +2126,7 @@
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "もし行き詰ったら、DiscordでHigh Pressure Steam Societyの聡明な頭脳と課題を議論することを検討してください。Escキーを押しながら「Join our Discord group」ボタンをクリックしてください",
             "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued..." :
-                                            "残念ながら我々の旅はどこかで止まらなければならない。冒険はゲーム本編で＿＿＿続きます。続きはこちら",
+                                            "残念ながら我々の旅はどこかで止まらなければならない。冒険はゲーム本編で\n続きます。続きはこちら",
             "Cross" : "クロス」",
             "50"   :   "50",
             "Normally Open" : "Normally Open",
@@ -2159,13 +2158,13 @@
             "Counter" : "カウンター",
             "ROM" : "ROM",
             "Poem" : "ポエム",
-            "Clock" : "時計」のことです",
+            "Clock" : "時計",
             "Cross v2" : "Cross v2",
             "CounterE" : "CounterE",
             "Delay" : "ディレイ",
             "Self-timed latch" : "Self-timed latch",
             "Lock Picking" : "ロックピッキング",
-            "Code filter" : "コードフィルター」のことです",
+            "Code filter" : "コードフィルター",
             "Steamputer" : "Steamputer",
             "END" : "エンド"
 
@@ -2173,28 +2172,28 @@
         "help":
         [
             "レベルセレクト メニューでは、一番下のパネルにデザインの要求事項が書かれています。各デザインには4つのポートがあり、要件には他のポートに関して期待される出力が記載されています。各ポートにはカラーの識別子がついています。要件をクリックするとヒントが表示されます",
-            "すべてのテストに合格すると、次のデザインが使えるようになります。あなたはいつでも自分のソリューションを改良するために戻ってくることができます。___ 下のパイプボタンを押して、チュートリアルを続けてください。F1を押すと、ヘルプに戻ることができます。",
+            "すべてのテストに合格すると、次のデザインが使えるようになります。あなたはいつでも自分のソリューションを改良するために戻ってくることができます。\n下のパイプボタンを押して、チュートリアルを続けてください。F1を押すと、ヘルプに戻ることができます。",
             "パイプの敷設は、マウスの左ボタンでパイプを敷設元から敷設先にドラッグするか、マウスの左ボタンをクリックしてマウスの方向にパイプを伸ばすことで行うことができます。右クリックでパイプ敷設モードをキャンセルできます。",
             "マウスの右ボタンを押したまま、パイプなどの要素を削除する",
             "ビルド \"メニューでは、デザインにコンポーネントを追加することができます。スチームインレットコンポーネントを選択し、デザインの上にカーソルを置きます。矢印ボタンで向きを変えることができます。この操作は、QとEキー、またはマウスのスクロールホイールでも行えます。マウスの左ボタンをクリックすると、コンポーネントが配置されます。右クリックで蒸気インレット配置モードを終了します",
             "バルブ \"も同様の方法で配置できます。Tab、またはマウスの中ボタンを押すと、バルブの配置モードに入るショートカットです。もう一度Tab、またはマウスの中ボタンを押すと、蒸気口の配置に切り替わります。",
             "蒸気口は圧力100で蒸気を供給します。端が開いているパイプは、圧力0で蒸気を大気に放出します",
             "パイプの接続部には、異なるポイントでの圧力が見える。それぞれのパイプに少しの抵抗があることに注意してください",
-            "バルブは、バルブの(+)側が(-)側よりも高い圧力であれば、蒸気を通過させることができます。高ければ高いほど、バルブは開きます。(+)側と(-)側の蒸気は消費されません。___\nここでは、（-）側は大気に排出されているため、圧力は0です。(+)が100PSI、(-)が0PSIの場合、バルブは100%開いています。(+)が75、(-)が25の場合、バルブは50%の開度になります",
+            "バルブは、バルブの(+)側が(-)側よりも高い圧力であれば、蒸気を通過させることができます。高ければ高いほど、バルブは開きます。(+)側と(-)側の蒸気は消費されません。\n\nここでは、（-）側は大気に排出されているため、圧力は0です。(+)が100PSI、(-)が0PSIの場合、バルブは100%開いています。(+)が75、(-)が25の場合、バルブは50%の開度になります",
             "（＋）側の圧力が（-）側と同等かそれ以下の場合、バルブは閉じた状態になり、蒸気は通過しません。",
-            "蒸気口で(+)側を加圧することにより、(-)側の圧力が100PSIよりも低い場合にのみ、バルブは開状態になります。___ _ 前のように、バルブの開度は、(+)側の圧力から(-)側の圧力を引いたものです",
+            "蒸気口で(+)側を加圧することにより、(-)側の圧力が100PSIよりも低い場合にのみ、バルブは開状態になります。\n前のように、バルブの開度は、(+)側の圧力から(-)側の圧力を引いたものです",
             "(-)側に高圧をかけると、(-)側の圧力が(+)側と同等かそれ以上になってバルブが閉まる",
             "テスト \"メニューでは、デザインの性能を検査することができます。最初の3つのボタンは、それぞれテストの一時停止、1つのテストの繰り返し実行、すべてのテストの実行を行います。また、ホットキー1、2、3を使用することもできます。個々のテストの現在のスコアが表示されます。右側には、すべてのテストの中で最も悪いものから形成された最終スコアが表示されます",
             "次のパネルは、現在のテストの入力と期待される出力のシーケンスを示しています。現在のフェーズがハイライトされています。前回の実行時に記録された出力が右側に表示されています。Spaceを押すと、次のフェーズに早送りできます。グラフは、テストの最終段階での出力値を示しています。グラフの中の色あせた線は、これまでのベストデザインの経路を示しています",
             "experiment \"メニューでは、ポートを手動で設定し、デザインの動作を検証することができます。縦のスライダで希望の値を設定します。下の水平方向のスライダは、入力の力を設定します。スライダーを左いっぱいにすると出力になります。初期値は現在のテストから設定されています",
             "下部のグラフは、ポート値の履歴を示しています。",
             "コンポーネントは、Ctrlを押しながらのクリック、またはShiftを押しながらのドラッグで選択できます。選択されたコンポーネントはWASDキーで移動でき、移動先が空の場合はQとEで回転させることができます。コピー＆ペーストのキーはC はコピー、X はカット、V はペーストを意味します。選択したコンポーネントを削除するには、Delete キーを押します。元に戻すには Z キー（Ctrl はオプション）、やり直しには Y または Shift+Z キーを使用します。元に戻すには、マウスの右ボタンを押しながら左ボタンをクリックすることでもできます",
-            "Esc \"を押すと、ゲームメニューが表示されます。ボタンでは、ゲームの終了、ウィンドウ/フルスクリーンの切り替え、Discordグループへの参加、クレジットの表示ができます。___\nスライダーは、効果音や音楽の音量を調整します。",
-            "完成したデザインは、部品として使用することができます。利用可能なコンポーネントはビルドメニューに表示されます。デザインを変更すると、すべてのコンポーネントの実装が更新されます。___\nコンポーネントをダブルクリックすると、そのコンポーネントを検査することができます。左上のデザイン・アイコンをクリックすると、スタックにポップアップで戻ることができます。インスペクション中にカスタマイズボタンを押すと、編集可能なローカルデザインが作成され、オリジナルが変更されても更新されなくなります。このことを示すために、デザインは赤に変わります",
+            "Esc \"を押すと、ゲームメニューが表示されます。ボタンでは、ゲームの終了、ウィンドウ/フルスクリーンの切り替え、Discordグループへの参加、クレジットの表示ができます。\n\nスライダーは、効果音や音楽の音量を調整します。",
+            "完成したデザインは、部品として使用することができます。利用可能なコンポーネントはビルドメニューに表示されます。デザインを変更すると、すべてのコンポーネントの実装が更新されます。\n\nコンポーネントをダブルクリックすると、そのコンポーネントを検査することができます。左上のデザイン・アイコンをクリックすると、スタックにポップアップで戻ることができます。インスペクション中にカスタマイズボタンを押すと、編集可能なローカルデザインが作成され、オリジナルが変更されても更新されなくなります。このことを示すために、デザインは赤に変わります",
             "デザインを保存するスロットが4つあります。一番良いデザインも保存されるので、後で呼び出すことができます。クリップボードの文字列を使ってデザインを交換することができます。彼らのデザインを見ることができます",
             "特定の圧力 \"を作り出す方法のひとつとして、配管内に特定の比率で同時に供給と排出を行う方法がある。バルブの開度は、＋側の圧力から-側の圧力を引いた値になります。ここで、Pはバルブのプラス側の圧力、Nはマイナス側の圧力を表しています。ここでは、下側のバルブの開度を40（60-20）としています",
-            "この配置で発生する圧力は、パーセントで言うと、供給弁の開度を両方の弁の開度の合計で割ったものです。___ 圧力 = S / (S + V)\n___ ここで、Sは供給バルブの開度、Vは排出バルブの開度です。___ この場合、Supplyは40（40 - 0）。ベントも40（60 - 20）です。この間の期待値は40 / (40 + 40) = 50%、つまり50PSI」となります",
-            "3つの採点モードが用意されています。デフォルト（Accuracy）モードでは、（最悪のテストに対する）目標値への近さを採点します。＿＿＿価格モードは、デザインをコストでランク付けします。パイプは1ポートにつき1ポンド、バルブは10ポンド、スチームインレットは5ポンドです。各サブデザインには4ポンドの追加料金がかかります。___\n蒸気モードでは、蒸気インレットから供給される蒸気の量を測定します",
+            "この配置で発生する圧力は、パーセントで言うと、供給弁の開度を両方の弁の開度の合計で割ったものです。\n圧力 = S / (S + V)\n\nここで、Sは供給バルブの開度、Vは排出バルブの開度です。\nこの場合、Supplyは40（40 - 0）。ベントも40（60 - 20）です。この間の期待値は40 / (40 + 40) = 50%、つまり50PSI」となります",
+            "3つの採点モードが用意されています。デフォルト（Accuracy）モードでは、（最悪のテストに対する）目標値への近さを採点します。\n価格モードは、デザインをコストでランク付けします。パイプは1ポートにつき1ポンド、バルブは10ポンド、スチームインレットは5ポンドです。各サブデザインには4ポンドの追加料金がかかります。\n\n蒸気モードでは、蒸気インレットから供給される蒸気の量を測定します",
             "ユーザー定義のレベルを作成することができます。これらのレベルには、ユーザー定義のアイコンとテストがあり、クリップボードを通じて交換することができます。テストとテストステップは、+/-ボタンで追加／削除できます。ステップごとの時間は設定可能です。すべてのテストを再生する際に、一部のステップをスキップできる場合は、「skip all」ボタンで開始するサブテストを選択します。デザインのリセットは、すべてのテストで行うことも、プレイワンテストモードでのみ行うことも可能です。ポートのアイコンは、使用するポートを選択します。値の左にあるポートをクリックすると、出力として使われるポートが選択されます。値の変更は実験メニューで行います。"
         ],
         "dialogue":
@@ -2205,7 +2204,7 @@
                 {"who": "charles", "text": "高圧蒸気管についてよくわからない場合は、右上の「？」マークのところにエンジニアリングマニュアルがありますので、そちらをご覧ください。"}
             ],
             [
-                {"who": "charles", "text": "Darn it!エイダの研究室のセキュリティドアは、低圧蒸気で操作されているのだ。彼女がどうやってこの爆発したドアを開けるのか、私には理解できませんでした。___ _ ここGeneral High Pressure Steam Worksでは、1平方インチあたり100ポンドの蒸気を発生させています。このドアはムーアハウス社の低圧蒸気を使用しており、1平方インチあたり50ポンド（PSI）で作動します。あの変態的なムーアハウス社の蒸気を私の敷地内に配管したら、とんでもないことになりますよ！」｝。"},
+                {"who": "charles", "text": "Darn it!エイダの研究室のセキュリティドアは、低圧蒸気で操作されているのだ。彼女がどうやってこの爆発したドアを開けるのか、私には理解できませんでした。\n_ ここGeneral High Pressure Steam Worksでは、1平方インチあたり100ポンドの蒸気を発生させています。このドアはムーアハウス社の低圧蒸気を使用しており、1平方インチあたり50ポンド（PSI）で作動します。あの変態的なムーアハウス社の蒸気を私の敷地内に配管したら、とんでもないことになりますよ！」｝。"},
                 {"who": "charles", "text": "50PSIの低圧蒸気を魔法で供給できない限り、諦めた方がいいかもしれません。ビルドメニューの中に、100PSIの高圧蒸気を大量に供給できる蒸気口があります。その上にスパナのマークがついています。Tabキーを2回押してもアクセスできます」。"}
             ],
             [
@@ -2236,11 +2235,11 @@
                 {"who": "nicola", "text": "完璧ではないけれど、いつでも戻ってきて改善することができる。魅力的ですよね。バルブの組み合わせで、あらゆる圧力値を再現します。入力された圧力は、出力パイプ内の圧力を正しく再現するために、蒸気入口バルブと大気開放バルブを正確なレベルで開きます"},
                 {"who": "annie", "text":"[しばらくしてから]\nYou gave me so scare!一瞬、エイダが墓の向こうから話しかけているのかと思ったよ」"},
                 {"who": "nicola", "text": "Our apologies Lady Easley.私たちはチャビントン夫人の研究を続けようとしています。コードブックによると「こんにちは」という意味の80PSIを送ろうとしていたのですが..."},
-                {"who": "annie", "text": "No! 80PSIは「助けて!私は死後の世界に閉じ込められています！」という意味です。こんにちは」を意味するのは20PSIです。___ _ エイダがシステムを設置したとき、彼女はバルブを間違えて、すべての圧力を逆さまに受け取ってしまいました。この問題を調査したときに、彼女は蒸気の可能性についてひらめきました。私たちはそれを修正することなく、代わりに私はコードブックのすべての圧力値を反転させました」｝。"},
+                {"who": "annie", "text": "No! 80PSIは「助けて!私は死後の世界に閉じ込められています！」という意味です。こんにちは」を意味するのは20PSIです。\n_ エイダがシステムを設置したとき、彼女はバルブを間違えて、すべての圧力を逆さまに受け取ってしまいました。この問題を調査したときに、彼女は蒸気の可能性についてひらめきました。私たちはそれを修正することなく、代わりに私はコードブックのすべての圧力値を反転させました」｝。"},
                 {"who": "nicola", "text": "面白いですね。同じ間違いをしないか見てみましょう」。"}
             ],
             [
-                {"who": "charles", "text": "Drat!エイダが作った圧力比較器がどうしても見つかりません。高名な高圧蒸気協会は、毎年、すべての高圧蒸気機関の圧力を比較して、最も高い圧力の蒸気を供給している機関を決定している。正確な比較器がなければ、今年の大会は中止せざるを得ません。___ _ 5年間の優勝記録が台無しになってしまう！？彼女はきっとどこかに別のものを持っていたのでしょう...」｝。"},
+                {"who": "charles", "text": "Drat!エイダが作った圧力比較器がどうしても見つかりません。高名な高圧蒸気協会は、毎年、すべての高圧蒸気機関の圧力を比較して、最も高い圧力の蒸気を供給している機関を決定している。正確な比較器がなければ、今年の大会は中止せざるを得ません。\n_ 5年間の優勝記録が台無しになってしまう！？彼女はきっとどこかに別のものを持っていたのでしょう...」｝。"},
                 {"who": "nicola", "text": "頑張ってみましょう、でないと彼はずっと邪魔をしてきますよ..." },
                 {"who": "charles", "text": "What was that you say, boy?" },
                 {"who": "nicola", "text": "I said we could make one, sir." },
@@ -2254,35 +2253,35 @@
             [
                 {"who": "charles", "text": "Bravo!この装置があれば、低圧蒸気発生装置を我々の排他的な社会から締め出すことができる」｝。"},
                 {"who": "nicola", "text": "How many members are there some far?"},
-                {"who": "charles", "text": "Well...一つ目は...\"非常に限定的 \"と言った通りです。___\nいずれにしても、レセプションの飲み物に乗り遅れないように、そろそろ失礼します！"},
+                {"who": "charles", "text": "Well...一つ目は...\"非常に限定的 \"と言った通りです。\n\nいずれにしても、レセプションの飲み物に乗り遅れないように、そろそろ失礼します！"},
                 {"who": "nicola", "text": "ついに...チャールズがそれを見つけたら、喜んではいられないだろう。見てください」。"},
-                {"who": "ada", "text": "6月17日＿＿＿ムーアハウス卿の屋敷へのパイプラインが完成したので、高域の圧力値（0〜100）を低圧システムで許容できる値（0〜50）に圧縮する装置の開発に着手しています。驚いたことに、ムーアハウス卿の低圧蒸気を動力源とし、なおかつ100PSIを基準入力とした場合、圧力バッファは入力圧力を正確に1/2に縮小することができた。"},
+                {"who": "ada", "text": "6月17日\nムーアハウス卿の屋敷へのパイプラインが完成したので、高域の圧力値（0〜100）を低圧システムで許容できる値（0〜50）に圧縮する装置の開発に着手しています。驚いたことに、ムーアハウス卿の低圧蒸気を動力源とし、なおかつ100PSIを基準入力とした場合、圧力バッファは入力圧力を正確に1/2に縮小することができた。"},
                 {"who": "nicola", "text": "Really!!!!そんなのうまくいくわけないじゃないですか" }
             ],
             [
                 {"who": "nicola", "text": "Astonishing!さて、これで半分が終わりました。送ることはできても、今度は受け取ることが必要です。相手の蒸気圧をこちらの範囲まで増幅しなければなりません。チャビントン夫人によれば 100PSIの蒸気を使うが 基準圧力は50PSIだ"}
             ],
             [
-                {"who": "nicola", "text": "Let's see if this works.___ 80 PSI [Hello]\n55 PSI [Request meeting]\n57 PSI [Afternoon tea at Madingley Hall]"},
-                {"who": "george", "text":"...___ 23 PSI [Negative]\n...___ 6 psi [6]\n12 psi [/]\n7 psi [7]"},
+                {"who": "nicola", "text": "Let's see if this works.\n80 PSI [Hello]\n55 PSI [Request meeting]\n57 PSI [Afternoon tea at Madingley Hall]"},
+                {"who": "george", "text":"...\n23 PSI [Negative]\n...\n6 psi [6]\n12 psi [/]\n7 psi [7]"},
                 {"who": "nicola", "text": "What?!6/7?日記を見てみましょう。6月7日のエントリーには 圧力インバーターの設計について書かれています圧力が逆になっていたら どうやってコミュニケーションを取っていたんだろう？  もちろんです！_ _ すみません植民地での生活が長すぎましたこれが正しいエントリーです。"},
-                {"who": "ada", "text": "7月6日＿＿＿通信が遮断されたのではないか！？ムーアハウス卿は、何日もかけて懇願した結果、私たちの研究活動を統合することに同意した。私たちは蒸気通信機を使って、それぞれの研究室のドアのコードを交換した。その数時間後、私たちの家に手渡しのメモが届き、彼の研究室が荒らされたので、私はもう歓迎されないという内容だった。慌てて行ってみると、私の研究室も荒らされていました。多くの仕事を失った」。"},
+                {"who": "ada", "text": "7月6日\n通信が遮断されたのではないか！？ムーアハウス卿は、何日もかけて懇願した結果、私たちの研究活動を統合することに同意した。私たちは蒸気通信機を使って、それぞれの研究室のドアのコードを交換した。その数時間後、私たちの家に手渡しのメモが届き、彼の研究室が荒らされたので、私はもう歓迎されないという内容だった。慌てて行ってみると、私の研究室も荒らされていました。多くの仕事を失った」。"},
                 {"who": "ada", "text": "I saved the code secure.きっとチャールズはそんなことはしないだろう。私はすぐに研究室のドアを交換してもらった。チャールズはムーアハウスのスチームドアを操作するくらいなら、死んだほうがましだと思っています」。"},
                 {"who": "ada", "text": "ここはもう安全ではありません。私は妹に連絡を取り、私がもうすぐ到着することを伝えた。私たちの通信を安全に保つための新しい暗号化システムを試すのに最適なタイミングでした。チャールズが彼女の家につながるパイプにつけると約束したサインはまだ受け取っていない。彼は忘れっぽいところがあるからね」。"},
-                {"who": "nicola", "text": "それが彼女の最後の日記でした。______ あららそのパイプがどこかにつながっているとは思わなかったので、その部品を他のデザインに使いました。幸い、いくつかは溶接されていたので、そのままにしておきました。暗号化装置はほぼ機能しているようです。"}
+                {"who": "nicola", "text": "それが彼女の最後の日記でした。\n\nあららそのパイプがどこかにつながっているとは思わなかったので、その部品を他のデザインに使いました。幸い、いくつかは溶接されていたので、そのままにしておきました。暗号化装置はほぼ機能しているようです。"}
             ],
             [
-                {"who": "nicola", "text": "Well that was simple.暗号は単純にアンバランスなバッファーである。しかし、このような暗号を正確に反転させるデザインをどうやって作ることができるでしょうか？彼女の協力が得られるかどうか、問い合わせてみます。___ ..."},
+                {"who": "nicola", "text": "Well that was simple.暗号は単純にアンバランスなバッファーである。しかし、このような暗号を正確に反転させるデザインをどうやって作ることができるでしょうか？彼女の協力が得られるかどうか、問い合わせてみます。\n..."},
                 {"who": "annie", "text": "エイダの書類の中に、メイディングリーホールのティールームで使われたナプキンがありましたか？日付は6月24日だったと思います。王立協会の新しい論文「単調系列の収束」について議論していたとき、エイダはナプキンに何かを書き留め始めたのです。そして、解読問題を解決したかもしれないと叫んで飛び出していった。その時、彼女は自分が解読問題を解決したかもしれないと叫んで走り出した。"},
                 {"who": "ada", "text": "June 24th\n値を推測し、それを暗号化し、暗号化された入力と比較することを繰り返すことで、復号化装置を形成することができます。入力値が高ければ推測値を大きくし、低ければ小さくする。逆に入力が少なければ、推測値を小さくする。このような装置は、多くの機能を反転させることができます。でも、今年の高圧蒸気学会の前には、忘れずに彼に返さなければなりません」。"},
                 {"who": "nicola", "text": "At least we know where his comparator got to"}
             ],
             [
-                {"who": "nicola", "text": "信じられない!この技術を使えば、すべてのデザインの精度を上げることができる。チャビントン夫人の妹は、この技術についてもっと情報を持っているに違いない。＿＿＿ 80 PSI [Hello]"},
+                {"who": "nicola", "text": "信じられない!この技術を使えば、すべてのデザインの精度を上げることができる。チャビントン夫人の妹は、この技術についてもっと情報を持っているに違いない。\n80 PSI [Hello]"},
                 {"who": "ada", "text": "80 PSI [Hello]\n93 PSI [This is Ada Chavvington]\n"},
                 {"who": "nicola", "text": "60 PSI [Who?]\n73 PSI [Repeat]"},
                 {"who": "ada", "text": "25 PSI [A], 28 PSI [D], 25 PSI [A]\n24 PSI [_]\n27 PSI [C], 32 PSI [H], 25 PSI [A], 46 PSI [V], 46 PSI [V], 33 PSI [I], 38 PSI [N], 31 PSI [G], 44 PSI [T], 39 PSI [O], 38 PSI [N]"},
-                {"who": "nicola", "text": "This is unexpected.すぐにChavvington卿に報告しなければなりません。___ ...チャビントン卿！チャビントン夫人の妹の家に接続しましたが相手はチャビントン夫人本人だと言っています！"},
+                {"who": "nicola", "text": "This is unexpected.すぐにChavvington卿に報告しなければなりません。\n...チャビントン卿！チャビントン夫人の妹の家に接続しましたが相手はチャビントン夫人本人だと言っています！"},
                 {"who": "charles", "text": "Ah, yes, that would be Ada."},
                 {"who": "nicola", "text": "B...でもチャビントン卿、エイダは死んだって言ってたわよね」｝。"},
                 {"who": "charles", "text": "何を言っているんだ！？エイダは完全に元気で、高圧蒸気がなくなった件が解決するまで姉のところにいる」｝。"},
@@ -2291,7 +2290,7 @@
                 {"who": "nicola", "text": "Everyone assumed she died..."},
                 {"who": "charles", "text": "Hmm....そうですね...。よくよく考えてみると、私の死を悼む花やカードの説明がつきます。私の高圧蒸気を失ったことを心配してくださった方々に感動しました。(´・ω・`)それにしても。早く蒸気計算機を完成させてくれれば、すぐにでも真相を究明することができます。急いで研究を続けてください」｝。"},
                 {"who": "ada", "text": "6月27日\nムーアハウス卿と共に、蒸気計算の研究に大きな進展がありました。それまでの設計では、不正確な点がありました。バルブのバランスが完璧で、出力が50の場合にのみ、完璧な結果が得られました。これを見て、私はあることを思いつきました。蒸気を排出するもう一つのバルブを設置し、そのバルブの開度を調整することで、どのバルブがどれだけ開いているかを知ることができるのです。二つの弁が同じように開いているときだけ、二つの弁の間の圧力は正確に50になります。あとはそれになるように調整すればよいのです」。"},
-                {"who": "ada", "text": "これを使って、ムーアハウス卿は蒸気圧を加える部品を作ることができました。___\nLord Moorhouseは最も恥ずかしがり屋ですが、鞭のように賢いので、残念ながら自分の革新技術を共有するのを恐れてしまうことがよくあります。"}
+                {"who": "ada", "text": "これを使って、ムーアハウス卿は蒸気圧を加える部品を作ることができました。\n\nLord Moorhouseは最も恥ずかしがり屋ですが、鞭のように賢いので、残念ながら自分の革新技術を共有するのを恐れてしまうことがよくあります。"}
             ],
             [
                 {"who": "nicola", "text": "うまくいきました。バルブがどれだけ開いているかを感知できるようになりましたが、これでどうやって蒸気の計算に近づけるのかわかりません。ムーアハウス卿に聞いてみましょうか」。"},
@@ -2304,9 +2303,9 @@
             [
                 {"who": "charles", "text": "エイダさんに頼まれていたパイプのサインを持ってきました"},
                 {"who": "nicola", "text": "That must have been months ago."},
-                {"who": "charles", "text": "そうですね、Chavvingtonが何かをすると言ったら、それは実行されます。毎月、彼に思い出させる必要はありません。___ _ 私からのメッセージを彼女に送ってもらえませんか？___ \n80, 94, 76, 52, 68, 70"},
+                {"who": "charles", "text": "そうですね、Chavvingtonが何かをすると言ったら、それは実行されます。毎月、彼に思い出させる必要はありません。\n_ 私からのメッセージを彼女に送ってもらえませんか？\n\n80, 94, 76, 52, 68, 70"},
                 {"who": "nicola", "text": "I see you have learned the codes!" },
-                {"who": "charles", "text": "学んだ？私がデザインしたんだ！」。兵役中のことです。隊長の間で交わされる最も頻繁なメッセージの組み合わせ。___\nBe a good chap and send it off at once." },
+                {"who": "charles", "text": "学んだ？私がデザインしたんだ！」。兵役中のことです。隊長の間で交わされる最も頻繁なメッセージの組み合わせ。\n\nBe a good chap and send it off at once." },
                 {"who": "nicola", "text": "80 PSI [Hello]\n94 PSI [This is Charles Chavvington]\n76 PSI [My sweetest angel]\n52 PSI [My heart yearns for you]\n68 PSI [I longly awns for your return]\n70 PSI [Without you life has lost all meaning]"},
                 {"who": "charles", "text": "よし、これで減算器の設計は完了だな。素晴らしいですね。親愛なるエイダがかつて言ったように..."},
                 {"who": "nicola", "text": "先生！その言い方はやめたほうがいいですよ。人はあなたを殺人者と思い始めています..."},
@@ -2315,7 +2314,7 @@
             [
                 {"who": "annie", "text": "Why have been responding to my messages?"},
                 {"who": "nicola", "text": "Our apologies Lady Easley, we did not know you had had sent any"},
-                {"who": "annie", "text": "こちらのメッセージラッチに記録されているはずです。___ ..._ _ _ 消えてしまった！研究室に侵入した者がラッチを盗んだのでしょう。他の重要な通信を見逃さないためにも、すぐに作り直してください"},
+                {"who": "annie", "text": "こちらのメッセージラッチに記録されているはずです。\n..._ _ _ 消えてしまった！研究室に侵入した者がラッチを盗んだのでしょう。他の重要な通信を見逃さないためにも、すぐに作り直してください"},
                 {"who": "annie", "text": "メッセージが安定すると、タイミングパイプに蒸気のパルスが送られます。これにより、ラッチはその時の値を捕捉します。ラッチは値を記録しますが、タイミングパイプが低圧レベルに戻るまで、古い値を維持します"},
                 {"who": "annie", "text": "チャールズのバルブの密閉性の高さにはいつも感心していました。このデザインが失われないことを願っています。"}
             ],
@@ -2348,8 +2347,8 @@
                 {"who": "ada", "text": "ありがとう、ガートルード。あなたの迅速な判断がなければ、大惨事になっていたでしょう" },
                 {"who": "george", "text": "私もかなり感心しました。エイダ、あなたが私の家を略奪したことを非難したことを、いくら謝っても足りません。ガートルードとニコラに私のデザインを手伝ってもらうことはできないだろうか？彼らの意見は非常に建設的だと思います。"},
                 {"who": "ada", "text": "もうこの話はしないでください、私も許されなければなりませんから。親切の印として、私の...私たちの研究室を自由に使ってください。イーズリー女史がすでに利用しています。チャールズと私はこの騒動から少し離れる必要があると思っています。数日後に戻ってきますが、あなたの発見を調べるのが楽しみです。"},
-                {"who": "george", "text": "Thank you, and safe journey.___\nニコラ、x2プレッシャー・アンプを探してくれないか？" },
-                {"who": "nicola", "text": "ここにあります。___\n構造はシンプルですが、操作は驚くほど便利だと思います。"},
+                {"who": "george", "text": "Thank you, and safe journey.\n\nニコラ、x2プレッシャー・アンプを探してくれないか？" },
+                {"who": "nicola", "text": "ここにあります。\n\n構造はシンプルですが、操作は驚くほど便利だと思います。"},
                 {"who": "george", "text": "確かに。この装置は、0〜50の特定の範囲の値を0〜100の範囲まで増幅しますが最小値と最大値が与えられれば、任意の範囲を拡大するアンプを構築できると思います"},
                 {"who": "nicola", "text": "We shall name it the Zoom element."},
                 {"who": "george", "text": "その通りだが、まず我々がそれを考案すべきだ。北が最大、南が最小になります。東の出力は、西の入力がその範囲内のどこにあるかを教えてくれます」。"}
@@ -2362,7 +2361,7 @@
                 {"who": "george", "text": "さて、範囲を拡大することで、誰かが使っている蒸気の量をより正確に知ることができますが、自分が検査している範囲に入っているかどうかもわかりません。お客様には、次回の蒸気代の請求書に小数点以下の桁数が増えることを覚悟するように言っておこう！」｝。"},
                 {"who": "annie", "text": "これまでの研究は、あなたの会社の利益のためだけに行われてきたのですか？これは、私たちの契約とは異なります」。"},
                 {"who": "george", "text": "But Lady Easley!私はあなたのためにこれを作りました。信じてください、これは将来とても役に立つ部品になりますよ」｝。"},
-                {"who": "annie", "text": "I very doubt that.私は、純粋な研究をするべきだと思います。___ _ エイダと私が取り組んでいたラッチのデザインに戻りましょう。私は、有効にも無効にもできるラッチが欲しかったのです。ノース入力が高ければラッチは通常通り動作しますが、低ければ出力を駆動せず、タイミングパルスを見ても新しい入力を受け付けないようにします。古いデザインを使ってもいいのですが、カスタムで作った方が効率がいいかもしれません」。"}
+                {"who": "annie", "text": "I very doubt that.私は、純粋な研究をするべきだと思います。\n_ エイダと私が取り組んでいたラッチのデザインに戻りましょう。私は、有効にも無効にもできるラッチが欲しかったのです。ノース入力が高ければラッチは通常通り動作しますが、低ければ出力を駆動せず、タイミングパルスを見ても新しい入力を受け付けないようにします。古いデザインを使ってもいいのですが、カスタムで作った方が効率がいいかもしれません」。"}
             ],
             [
                 {"who": "annie", "text": "さて、私がこのデザインを求めた理由は、North入力が複数のラッチのうちの1つを選択する「アドレス可能なラッチ」を構築できるようにするためでした。この方法では、複数の値を保存し、それぞれに自由にアクセスすることができます。North入力は、2つのラッチを選択します。北の値0〜50で1つ、北の値50〜100で2つ目が選択されます」。"}
@@ -2374,7 +2373,7 @@
                 {"who": "george", "text": "Well, yes and no.流れている蒸気の圧力範囲を検出します。鎖状に配置して蒸気を通すと、圧力の範囲を検出します」。"}
             ],
             [
-                {"who": "annie", "text": "確かに、あのフローディテクターは非常に独創的で、私たちが必要としていたトリックでした。しかし今度は、このLatch5ブロックを2つ繋げてLatch10を作るにはどうしたらいいでしょうか？___\n選択範囲は、0-10、10-20、20-30..."},
+                {"who": "annie", "text": "確かに、あのフローディテクターは非常に独創的で、私たちが必要としていたトリックでした。しかし今度は、このLatch5ブロックを2つ繋げてLatch10を作るにはどうしたらいいでしょうか？\n\n選択範囲は、0-10、10-20、20-30..."},
                 {"who": "george", "text": "そして、これがズームエレメントのデザインを依頼した理由です。あなたのアイデアには天才的なものを感じ、すでに計画を立てています」"}
             ],
             [
@@ -2391,7 +2390,7 @@
                 {"who": "charles", "text": "High Pressure Steam!" },
                 {"who": "ada", "text": "ダーリン。あなたがジョージと仲直りしたことはとても感謝していますが、お二人は番組の要素を計画するはずではありませんでしたか？"},
                 {"who": "charles", "text": "Already done!ジョージが詩の最終調整をしています...いや、要件というべきでしょうか" },
-                {"who": "ada", "text": "おぉ！早速Maxコンポーネントを作成して、弊社のエンジニアにアクセスしてみましょうか。___\n今回の出力は、2つの入力の最大値でなければなりません。"}
+                {"who": "ada", "text": "おぉ！早速Maxコンポーネントを作成して、弊社のエンジニアにアクセスしてみましょうか。\n\n今回の出力は、2つの入力の最大値でなければなりません。"}
             ],
             [
                 {"who": "charles", "text": "もし、ジョージが来るまでに時間があったら、彼の圧力容器をより安全にするために使うべきだ。90PSIまでは安全ですが、それ以上になると爆発してしまいます。私が必要とするのは「蒸気ヒューズ」です。西から東への蒸気の流れを許容するが、圧力が90PSIを超えたら、供給を切り離して容器を排気する。まず電源を切り、それからタンクの空気を抜くことを忘れないでください」。"}
@@ -2416,11 +2415,11 @@
             ],
             [
                 {"who": "ada", "text": "What have you two been up to?" },
-                {"who": "charles", "text": "George and I have just delivered a most marvellous poetry reciting machine to Lady Easley.この機械は、ジョージの彼女に対する気持ちを朗読するようにプログラムされています。___\n十分な改良を加えれば、このような装置を馬の大きさにまで小さくすることができます"},
+                {"who": "charles", "text": "George and I have just delivered a most marvellous poetry reciting machine to Lady Easley.この機械は、ジョージの彼女に対する気持ちを朗読するようにプログラムされています。\n\n十分な改良を加えれば、このような装置を馬の大きさにまで小さくすることができます"},
                 {"who": "ada", "text": "それは素敵ですね。でも、アニーのコードがすべて否定されているので、圧力を元に戻してほしいですね」。"},
                 {"who": "george", "text": "WHAT!!! Nicola!何を送ったんだろう？" },
                 {"who": "nicola", "text": "Hmm...どうやら、彼女の立派なヒゲを褒めて...淫らな絵を要求して...夜明けに敵を攻撃するように指示したようですね」｝。"},
-                {"who": "george", "text":"・・・。___ それはそうと、私は自分の住居に戻って、ブランデーのボトルを飲みながらしばらく過ごすことにしよう」"},
+                {"who": "george", "text":"・・・。\nそれはそうと、私は自分の住居に戻って、ブランデーのボトルを飲みながらしばらく過ごすことにしよう」"},
                 {"who": "ada", "text": "Charles!彼を助けに行ってください！2人がいない間に、あなたたち2人が手伝ってあげてください。チャールズは、この壁に2本のパイプを取り付けるはずでしたが、1本しかありません。北と南、西と東をつなぐ必要があります。どうにかして新しいパイプを待たずに取り付けられないだろうか？"},
                 {"who": "nicola", "text": "Good thing we live in clockwork universe because I think I have an idea."}
             ],
@@ -2440,7 +2439,7 @@
             [
                 {"who": "annie", "text": "What does this gauge show?" },
                 {"who": "ada", "text": "それは、コグスワース・クロックワークスに向かう蒸気の圧力でしょう。なぜ？"},
-                {"who": "annie", "text": "見てください。こんなに独特な模様があるんですよ。また、休みではないのですか？今日は日曜日だからね。___ _ _ 1ティックで100PSIまで跳ね上がり、もう1ティックで別の値になり、その後0PSIに戻ります"},
+                {"who": "annie", "text": "見てください。こんなに独特な模様があるんですよ。また、休みではないのですか？今日は日曜日だからね。\n_ _ 1ティックで100PSIまで跳ね上がり、もう1ティックで別の値になり、その後0PSIに戻ります"},
                 {"who": "ada", "text": "That is intriguing.解読できないかな」"}
             ],
             [
@@ -2461,10 +2460,10 @@
                 {"who": "ada", "text": "やっとだ。コグスワースを牢屋に入れて、ようやくスチームコンピューターを完成させることができました。フィボナッチ数を計算する「プログラム」と名付けたものを書きましたが、結果は不正確です。問題の診断と微調整にかなりの時間を費やすことになるかもしれません」。"}
             ],
             [
-                {"who": "charles", "text": "It is here!アカデミーからの回答です。___\n「科学アカデミーの審査のために『スチームコンピューター』を提出してくださったことに感謝します。我々は、この製品が蒸気計算に関する我々の知識を大幅に拡大したことを確認しました。したがって、あなたの会員申請が承認されたことを喜んでお伝えします！"},
+                {"who": "charles", "text": "It is here!アカデミーからの回答です。\n\n「科学アカデミーの審査のために『スチームコンピューター』を提出してくださったことに感謝します。我々は、この製品が蒸気計算に関する我々の知識を大幅に拡大したことを確認しました。したがって、あなたの会員申請が承認されたことを喜んでお伝えします！"},
                 {"who": "nicola", "text": "Congratulations Lady Chavvington."},
                 {"who": "ada", "text": "実は、あの申請は私のためではありませんでした。ガートルードのためのものでした。ガートルード、あなたはこれらすべての部品を作った人であり、蒸気を不思議な方法で操作する方法を私たちに教えてくれました。あなたこそ、蒸気の計算方法を他の人に教えるべきです」。"},
-                {"who": "charles", "text": "Huzzah!___\n今日の午後、お祝いしましょう！"},
+                {"who": "charles", "text": "Huzzah!\n\n今日の午後、お祝いしましょう！"},
                 {"who": "george", "text": "Lady Easley?この機会にご一緒にいかがですか？"},
                 {"who": "annie", "text": "I am afraid I can't hide, because I have an appointment this afternoon with a dashing gentleman." },
                 {"who": "george", "text": "Oh."},
@@ -2520,7 +2519,7 @@
                 {"who": "nicola", "text": "西の入力から南の入力を引いた値に合わせて1つのバルブを開き、その間の圧力が50になった時を見計らって、2つ目のバルブを同じレベルの開度にすることができます"}
             ],
             [
-                {"who": "nicola", "text": "これはちょっと難しいですね。減算器を使うと、揺れが大きすぎます。しかしその場合は、2つ目のバルブペアを使って同じ比較を行い、入力を切り替えることができます。その後、Amp50を使って、4つのバルブ間の圧力が50PSIであることを確認できます。___\n要件をクリックすると、この設定の図が表示されます。"}
+                {"who": "nicola", "text": "これはちょっと難しいですね。減算器を使うと、揺れが大きすぎます。しかしその場合は、2つ目のバルブペアを使って同じ比較を行い、入力を切り替えることができます。その後、Amp50を使って、4つのバルブ間の圧力が50PSIであることを確認できます。\n\n要件をクリックすると、この設定の図が表示されます。"}
             ],
             [
                 {"who": "annie", "text": "南側の入力が大きいときには、ストレージパイプを開きます。バッファを使って、出力を取り込んだのと同じレベルまで加圧することができます。新しい圧力が伝わらないように、South入力が高い間は出力を閉じなければなりません。これを保証する最も簡単な方法は、タイミングバルブと出力バルブの閾値を50にすることです」。"}
