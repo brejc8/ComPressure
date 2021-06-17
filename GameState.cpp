@@ -4515,8 +4515,6 @@ bool GameState::events()
                 {
                     if(e.wheel.y > 0)
                     {
-                        if (next_dialogue_level <= 3)
-                            break;
                         dir_flip = dir_flip.rotate(true);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             clipboard.rotate(false);
@@ -4526,8 +4524,6 @@ bool GameState::events()
 
                     if(e.wheel.y < 0)
                     {
-                        if (next_dialogue_level <= 3)
-                            break;
                         dir_flip = dir_flip.rotate(false);
                         if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                             clipboard.rotate(true);
