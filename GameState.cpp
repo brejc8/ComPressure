@@ -1671,14 +1671,34 @@ void GameState::render(bool saving)
         
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
-        if (next_dialogue_level > 24 && !current_circuit_is_read_only)
+        if (next_dialogue_level > 32 && !current_circuit_is_read_only)
+        {
+            switch (test_mode)
+            {
+                case TEST_MODE_ACCURACY:
+                    render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 352), 0, "Accuracy mode");
+                    break;
+                case TEST_MODE_PRICE:
+                    render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(280, 352), 0, "Price mode");
+                    break;
+                case TEST_MODE_STEAM:
+                    render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 376), 0, "Steam mode");
+                    break;
+            }
+
             render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
-
-
+        }
         {
             SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};                    // Requirements
             SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
             render_texture_custom(sdl_levels_texture, src_rect, dst_rect);
+        }
+        if (scoring_mode_dialogue)
+        {
+            render_box(XYPos(panel_offset.x + (160-8) * scale, panel_offset.y + (144-8) * scale), XYPos(32*3+16, 32+16), 4);
+            render_button(XYPos(panel_offset.x + 5*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 352), test_mode == TEST_MODE_ACCURACY, "Accuracy mode");
+            render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(280, 352), test_mode == TEST_MODE_PRICE, "Price mode");
+            render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 376), test_mode == TEST_MODE_STEAM, "Steam mode");
         }
     }
     else if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level)
@@ -2167,21 +2187,14 @@ void GameState::render(bool saving)
 
     } else if (panel_state == PANEL_STATE_SCORES)
     {
-        if ((next_dialogue_level >= 39))
-        {
-            render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(256, 352), test_mode == TEST_MODE_ACCURACY, "Accuracy mode");
-            render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(280, 352), test_mode == TEST_MODE_PRICE, "Price mode");
-            render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(256, 376), test_mode == TEST_MODE_STEAM, "Steam mode");
-        }
-
-        XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
+        XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32));
         
         friend_score_scroll.total_rows = edited_level_set->levels[current_level_index]->friend_scores.size();
 
         render_scroll_bar(friend_score_scroll);
 
 
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < 11; i++)
         {
             if (i >= edited_level_set->levels[current_level_index]->friend_scores.size())
                 break;
@@ -3252,6 +3265,10 @@ void GameState::mouse_click_in_panel()
             dialogue_index = 0;
             
         }
+        else if ((panel_pos - XYPos(6*32,144)).inside(XYPos(32,32)) && next_dialogue_level > 32)  // Scoring mode
+        {
+            scoring_mode_dialogue = true;
+        }
         else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)) && next_dialogue_level > 24 && !current_circuit_is_read_only)  // New
         {
             set_level(edited_level_set->new_user_level());
@@ -3688,43 +3705,14 @@ void GameState::mouse_click_in_panel()
         return;
     } else if (panel_state == PANEL_STATE_SCORES)
     {
-
-        XYPos panel_grid_pos = panel_pos / 32;
-        if (panel_grid_pos.y == 0)
+        if ((panel_pos - XYPos(8 * 32, 0)).inside(XYPos(16, 11 * 16)))
         {
-            if ((panel_grid_pos.x < 3) && (next_dialogue_level >= 39))
-            {
-                if (panel_grid_pos.x == test_mode)
-                    return;
-                test_mode = TestMode(panel_grid_pos.x);
-                switch (test_mode)
-                {
-                    case TEST_MODE_ACCURACY:
-                        edited_level_set = level_set_accuracy;
-                        break;
-                    case TEST_MODE_PRICE:
-                        edited_level_set = level_set_price;
-                        break;
-                    case TEST_MODE_STEAM:
-                        edited_level_set = level_set_steam;
-                        break;
-                }
-                if (!current_level_set_is_inspected)
-                {
-                    set_level_set(edited_level_set);
-                    set_level(current_level_index);
-                }
-            }
-        }
-
-        if ((panel_pos - XYPos(8 * 32, 32)).inside(XYPos(16, 9 * 16)))
-        {
-            click_scroll_bar(friend_score_scroll, panel_pos - XYPos(8*32, 32));
+            click_scroll_bar(friend_score_scroll, panel_pos - XYPos(8*32, 0));
         }
 
 
-        XYPos table_pos = mouse / scale - XYPos((8 + 32 * 11), (8 + 8 + 32 + 32));
-        if (table_pos.inside(XYPos(16,9*16)))
+        XYPos table_pos = mouse / scale - XYPos((8 + 32 * 11), (8 + 8 + 32));
+        if (table_pos.inside(XYPos(16,11*16)))
         {
             int i = table_pos.y / 16;
             if (i < edited_level_set->levels[current_level_index]->friend_scores.size())
@@ -4442,6 +4430,17 @@ bool GameState::events()
                     else if (show_dialogue_discord_prompt)
                     {
                         show_dialogue_discord_prompt = false;
+                        break;
+                    }
+                    else if (scoring_mode_dialogue)
+                    {
+                        if (((mouse - panel_offset) / scale - XYPos(5*32, 144)).inside(XYPos(32, 32)))
+                            test_mode = TEST_MODE_ACCURACY;
+                        if (((mouse - panel_offset) / scale - XYPos(6*32, 144)).inside(XYPos(32, 32)))
+                            test_mode = TEST_MODE_PRICE;
+                        if (((mouse - panel_offset) / scale - XYPos(7*32, 144)).inside(XYPos(32, 32)))
+                            test_mode = TEST_MODE_STEAM;
+                        scoring_mode_dialogue = false;
                         break;
                     }
                     else if (show_dialogue)
