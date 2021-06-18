@@ -133,8 +133,7 @@ public:
 
     bool editing_level = false;
     int pixel_colour = 0;
-
-
+    bool editing_pixel_fg = false;
 
     char* last_clip = NULL;
     LevelSet* clipboard_level_set = NULL;

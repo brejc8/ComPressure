@@ -237,18 +237,27 @@ SaveObject* Level::save(bool lite)
         omap->add_item("forced_elements", circuit->save_forced());
 
         SaveObjectList* y_list = new SaveObjectList;
-        for (unsigned y = 0; y < 12; y++)
+        for (unsigned y = 0; y < 24; y++)
         {
             SaveObjectList* x_list = new SaveObjectList;
-            for (unsigned x = 0; x < 12; x++)
+            for (unsigned x = 0; x < 24; x++)
             {
-                x_list->add_num(icon_pixels[y][x]);
+                x_list->add_num(icon_pixels_bg[y][x]);
             }
             y_list->add_item(x_list);
         }
-        omap->add_item("icon", y_list);
-        omap->add_num("icon_rotate", icon_rotate);
-        
+        omap->add_item("icon_bg", y_list);
+        y_list = new SaveObjectList;
+        for (unsigned y = 0; y < 24; y++)
+        {
+            SaveObjectList* x_list = new SaveObjectList;
+            for (unsigned x = 0; x < 24; x++)
+            {
+                x_list->add_num(icon_pixels_fg[y][x]);
+            }
+            y_list->add_item(x_list);
+        }
+        omap->add_item("icon_fg", y_list);
     }
 
     return omap;
@@ -289,7 +298,17 @@ void Level::init_tests(SaveObjectMap* omap)
         loaded_level_version = omap->get_num("level_version");
     
     SaveObjectMap* desc = level_index < LEVEL_COUNT ? level_desc->get_item(level_index)->get_map() : omap;
-    
+
+    for (unsigned y = 0; y < 24; y++)
+    {
+        for (unsigned x = 0; x < 24; x++)
+        {
+            icon_pixels_bg[y][x] = 8;
+            icon_pixels_fg[y][x] = 8;
+        }
+    }
+
+
     if (desc)
     {
         name = desc->get_string("name");
@@ -340,20 +359,30 @@ void Level::init_tests(SaveObjectMap* omap)
             
             t.load(player_map, test_map);
         }
-        if (desc->has_key("icon"))
+        if (desc->has_key("icon_bg"))
         {
-            SaveObjectList* icon_list_y = desc->get_item("icon")->get_list();
-            for (unsigned y = 0; y < icon_list_y->get_count() && y < 12; y++)
+            SaveObjectList* icon_list_y = desc->get_item("icon_bg")->get_list();
+            for (unsigned y = 0; y < icon_list_y->get_count() && y < 24; y++)
             {
                 SaveObjectList* icon_list_x = icon_list_y->get_item(y)->get_list();
-                for (unsigned x = 0; x < icon_list_x->get_count() && x < 12; x++)
+                for (unsigned x = 0; x < icon_list_x->get_count() && x < 24; x++)
                 {
-                    icon_pixels[y][x] = icon_list_x->get_num(x);
+                    icon_pixels_bg[y][x] = icon_list_x->get_num(x);
                 }
             }
         }
-        if (desc->has_key("icon_rotate"))
-            icon_rotate = desc->get_num("icon_rotate");
+        if (desc->has_key("icon_fg"))
+        {
+            SaveObjectList* icon_list_y = desc->get_item("icon_fg")->get_list();
+            for (unsigned y = 0; y < icon_list_y->get_count() && y < 24; y++)
+            {
+                SaveObjectList* icon_list_x = icon_list_y->get_item(y)->get_list();
+                for (unsigned x = 0; x < icon_list_x->get_count() && x < 24; x++)
+                {
+                    icon_pixels_fg[y][x] = icon_list_x->get_num(x);
+                }
+            }
+        }
     }
     else
     {
@@ -766,9 +795,12 @@ unsigned LevelSet::import_level(LevelSet* other_set, int level_index)
     Level* new_level = levels[new_index];
     new_level->name = old_level->name;
     
-    for (unsigned y = 0; y < 12; y++)
-        for (unsigned x = 0; x < 12; x++)
-            new_level->icon_pixels[y][x] = old_level->icon_pixels[y][x];
+    for (unsigned y = 0; y < 24; y++)
+        for (unsigned x = 0; x < 24; x++)
+        {
+            new_level->icon_pixels_bg[y][x] = old_level->icon_pixels_bg[y][x];
+            new_level->icon_pixels_fg[y][x] = old_level->icon_pixels_fg[y][x];
+        }
     
     new_level->tests = old_level->tests;
     new_level->circuit->copy_in(old_level->circuit);

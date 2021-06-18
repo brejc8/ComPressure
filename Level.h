@@ -78,8 +78,8 @@ class Level
 {
 public:
 
-    uint8_t icon_pixels[12][12] = {0};
-    bool icon_rotate = false;
+    uint8_t icon_pixels_fg[24][24] = {0};
+    uint8_t icon_pixels_bg[24][24] = {0};
 
     std::string name = "";
     CircuitPressure ports[4];
@@ -91,9 +91,9 @@ public:
     bool hidden = false;
     Circuit* circuit;
     LevelSet *best_design = NULL;
-    LevelSet *saved_designs[4] = {NULL};
+    LevelSet *saved_designs[4] = {NULL,NULL,NULL,NULL};
 
-    int pin_order[4] = {-1};
+    int pin_order[4] = {-1, -1, -1, -1};
 
     unsigned connection_mask = 0;
     
@@ -128,7 +128,7 @@ public:
     class PressureRecord
     {
     public:
-        Pressure values[4] = {-1};
+        Pressure values[4] = {-1, -1, -1, -1};
         unsigned marker = 0;
     } test_pressure_histroy[192];
     int test_pressure_histroy_index = 0;
