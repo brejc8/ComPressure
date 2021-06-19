@@ -2879,6 +2879,8 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 }
                 edited_level_set->levels[current_level_index]->circuit->ammend();
                 edited_level_set->levels[current_level_index]->circuit->copy_elements(*current_circuit);
+                edited_level_set->remove_circles(current_level_index);
+                edited_level_set->touch(current_level_index);
                 current_level_set_is_inspected = false;
                 if (free_level_set_on_return)
                 {
