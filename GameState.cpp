@@ -1720,20 +1720,27 @@ void GameState::render(bool saving)
             src_rect = {320, 144, 16, 16};
             dst_rect = {(12*16+16+8) * scale + panel_offset.x, (32 + 8 + pixel_colour * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
-            
-            src_rect = {496, editing_pixel_fg ? 128+16 : 128, 16, 16};
-            dst_rect = {(12*16+16+8) * scale + panel_offset.x, (32 + 8 + 10 * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
-            render_texture(src_rect, dst_rect);
         }
         
         for (pos.y = 0; pos.y < 24; pos.y++)
         for (pos.x = 0; pos.x < 24; pos.x++)
         {
             int colour;
-            if (editing_pixel_fg)
-                colour = level_set->levels[current_level_index]->icon_pixels_fg[pos.y][pos.x];
+            if (editing_icon_index == -1)
+            {
+                colour = level_set->levels[current_level_index]->icon_pixels[pos.y][pos.x];
+                for (int i = 0; i < 8; i++)
+                {
+                    XYPos npos = DirFlip(i).trans(pos, 24);
+                    if (colour != level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24])
+                    {
+                        colour = 8;
+                        break;
+                    }
+                }
+            }
             else
-                colour = level_set->levels[current_level_index]->icon_pixels_bg[pos.y][pos.x];
+                colour = level_set->levels[current_level_index]->icon_pixels[pos.y][pos.x + editing_icon_index * 24];
             SDL_Rect src_rect = {503, 80 + colour, 1, 1};
             SDL_Rect dst_rect = {(pos.x * 8 + 8) * scale + panel_offset.x, (32 + 8 + pos.y * 8)* scale + panel_offset.y, 8 * scale, 8 * scale};
             if (colour == 8)
@@ -1746,7 +1753,7 @@ void GameState::render(bool saving)
             SDL_Texture* tex = level_set->levels[current_level_index]->getimage_fg_texture()->get_texture();
             for (int i = 0; i < 8; i++)
             {
-                SDL_Rect src_rect = {208, 160, 24, 24};
+                SDL_Rect src_rect = {editing_icon_index == i ? 232 : 208, 160, 24, 24};
                 SDL_Rect dst_rect = {(4 + i * 24)* scale + panel_offset.x, (32 + 12*16+16 + 4)* scale + panel_offset.y, 24 * scale, 24 * scale};
                 render_texture(src_rect, dst_rect);
             }
@@ -3315,10 +3322,6 @@ void GameState::mouse_click_in_panel()
             {
                 pixel_colour = index;
             }
-            else if (index == 10)
-            {
-                editing_pixel_fg = !editing_pixel_fg;
-            }
             return;
         }
 
@@ -3326,22 +3329,50 @@ void GameState::mouse_click_in_panel()
         if (pixel_pos.inside(XYPos(24*8, 24*8)))
         {
             pixel_pos /= 8;
-            if (editing_pixel_fg)
+            if (keyboard_ctrl)
             {
-                if (level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] != pixel_colour)
+                int new_pixel_colour;
+                if (editing_icon_index == -1)
+                    new_pixel_colour = level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x];
+                else
+                    new_pixel_colour = level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x + editing_icon_index * 24];
+                if (new_pixel_colour != 8)
+                    pixel_colour = new_pixel_colour;
+                return;
+            }
+            if (editing_icon_index == -1)
+            {
+                bool changed = false;
+                for (int i = 0; i < 8; i++)
                 {
-                    level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = pixel_colour;
-                    set_level_set(level_set);
+                    XYPos npos = DirFlip(i).trans(pixel_pos, 24);
+                    if (pixel_colour != level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24])
+                    {
+                        changed = true;
+                        level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24] = pixel_colour;
+                    }
                 }
+                if (changed)
+                    set_level_set(level_set);
             }
             else
             {
-                if (level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] != pixel_colour)
+                if (level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x + editing_icon_index * 24] != pixel_colour)
                 {
-                    level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = pixel_colour;
+                    level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x + editing_icon_index * 24] = pixel_colour;
                     set_level_set(level_set);
                 }
             }
+            return;
+        }
+        XYPos direction_pos = panel_pos - XYPos(4, 32 + 12*16+16);
+        if (direction_pos.inside(XYPos(8*24, 24)))
+        {
+            int new_dir = direction_pos.x / 24;
+            if (new_dir == editing_icon_index)
+                editing_icon_index = -1;
+            else
+                editing_icon_index = new_dir;
             return;
         }
 
@@ -3810,19 +3841,26 @@ void GameState::mouse_motion()
             if (pixel_pos.inside(XYPos(24*8, 24*8)))
             {
                 pixel_pos /= 8;
-                if (editing_pixel_fg)
+                if (editing_icon_index == -1)
                 {
-                    if (level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] != 8)
+                    bool changed = false;
+                    for (int i = 0; i < 8; i++)
                     {
-                        level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = 8;
-                        set_level_set(level_set);
+                        XYPos npos = DirFlip(i).trans(pixel_pos, 24);
+                        if (level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24] != 8)
+                        {
+                            changed = true;
+                            level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24] = 8;
+                        }
                     }
+                    if (changed)
+                        set_level_set(level_set);
                 }
                 else
                 {
-                    if (level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] != 8)
+                    if (level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x + editing_icon_index * 24] != 8)
                     {
-                        level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = 8;
+                        level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x + editing_icon_index * 24] = 8;
                         set_level_set(level_set);
                     }
                 }
@@ -3914,19 +3952,26 @@ void GameState::mouse_motion()
         if (pixel_pos.inside(XYPos(24*8, 24*8)))
         {
             pixel_pos /= 8;
-            if (editing_pixel_fg)
+            if (editing_icon_index == -1)
             {
-                if (level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] != pixel_colour)
+                bool changed = false;
+                for (int i = 0; i < 8; i++)
                 {
-                    level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = pixel_colour;
-                    set_level_set(level_set);
+                    XYPos npos = DirFlip(i).trans(pixel_pos, 24);
+                    if (pixel_colour != level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24])
+                    {
+                        changed = true;
+                        level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24] = pixel_colour;
+                    }
                 }
+                if (changed)
+                    set_level_set(level_set);
             }
             else
             {
-                if (level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] != pixel_colour)
+                if (level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x + editing_icon_index * 24] != pixel_colour)
                 {
-                    level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = pixel_colour;
+                    level_set->levels[current_level_index]->icon_pixels[pixel_pos.y][pixel_pos.x + editing_icon_index * 24] = pixel_colour;
                     set_level_set(level_set);
                 }
             }
@@ -4831,30 +4876,15 @@ void GameState::set_level_set(LevelSet* new_level_set)
 //         }
 
         for (int y = 0; y < 24; y++)
-        for (int x = 0; x < 24; x++)
+        for (int x = 0; x < 24*8; x++)
         {
             for (int r = 0; r < 8; r++)
             {
-                int colour = level_set->levels[i]->icon_pixels_bg[y][x];
-                int ix = x;
-                int iy = y;
-                for (int s = 0; s < (r & 3); s++)
-                {
-                    int ox = ix;
-                    ix = 23 - iy;
-                    iy = ox;
-                }
-                if (r & 4)
-                {
-                    iy = 23 - iy;
-                }
-                int colour2 = level_set->levels[i]->icon_pixels_fg[iy][ix];
-                if (colour2 != 8)
-                    colour = colour2;
+                int colour = level_set->levels[i]->icon_pixels[y][x];
                 if (colour != 8)
                 {
                     SDL_Rect src_rect = {503, 80 + colour, 1, 1};
-                    SDL_Rect dst_rect = {ix + r * 24, iy, 1, 1};
+                    SDL_Rect dst_rect = {x, y, 1, 1};
                     SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
                 }
             }

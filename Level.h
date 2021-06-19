@@ -78,8 +78,7 @@ class Level
 {
 public:
 
-    uint8_t icon_pixels_fg[24][24] = {0};
-    uint8_t icon_pixels_bg[24][24] = {0};
+    uint8_t icon_pixels[24][24*8] = {0};
 
     std::string name = "";
     CircuitPressure ports[4];

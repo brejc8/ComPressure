@@ -32,6 +32,7 @@ inline Direction direction_flip(Direction direction, bool vertically)
         return direction;
 }
 
+class XYPos;
 class DirFlip
 {
 public:
@@ -95,6 +96,7 @@ public:
             return DirFlip(dir, !flp);
         return DirFlip(Direction((int(dir) + 2) % 4), !flp);
     }
+    XYPos trans(XYPos pos, int size);
 };
 
 class Rand

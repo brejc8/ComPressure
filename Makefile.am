@@ -16,7 +16,8 @@ ComPressureServer_SOURCES =  ComPressureServer.cpp \
                     Compress.cpp Compress.h \
                     SaveState.cpp SaveState.h \
                     Circuit.cpp Circuit.h \
-                    Level.cpp Level.h
+                    Level.cpp Level.h \
+                    Misc.cpp Misc.h
 
 ComPressureServer_CXXFLAGS = @CXXFLAGS@ @SDL2_CFLAGS@
 ComPressureServer_LDADD= -lz 
