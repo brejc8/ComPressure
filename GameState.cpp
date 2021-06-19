@@ -154,7 +154,7 @@ GameState::GameState(const char* filename)
     set_level(current_level_index);
 
     sdl_window = SDL_CreateWindow( "ComPressure", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640*scale, 360*scale, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | (full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP  | SDL_WINDOW_BORDERLESS : 0));
-    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 	sdl_texture = loadTexture("texture.png");
 	sdl_tutorial_texture = loadTexture("tutorial.png");
 	sdl_levels_texture = loadTexture("levels.png");
@@ -1738,12 +1738,18 @@ void GameState::render(bool saving)
             SDL_Rect dst_rect = {(pos.x * 8 + 8) * scale + panel_offset.x, (32 + 8 + pos.y * 8)* scale + panel_offset.y, 8 * scale, 8 * scale};
             if (colour == 8)
             {
-                src_rect = {496, 88, 2, 2};
+                src_rect = {488, 80, 8, 8};
             }
             render_texture(src_rect, dst_rect);
         }
         {
             SDL_Texture* tex = level_set->levels[current_level_index]->getimage_fg_texture()->get_texture();
+            for (int i = 0; i < 8; i++)
+            {
+                SDL_Rect src_rect = {208, 160, 24, 24};
+                SDL_Rect dst_rect = {(4 + i * 24)* scale + panel_offset.x, (32 + 12*16+16 + 4)* scale + panel_offset.y, 24 * scale, 24 * scale};
+                render_texture(src_rect, dst_rect);
+            }
             SDL_Rect src_rect = {0, 0, 24*8, 24};
             SDL_Rect dst_rect = {(4)* scale + panel_offset.x, (32 + 12*16+16 + 4)* scale + panel_offset.y, 24*8 * scale, 24 * scale};
             render_texture_custom(tex, src_rect, dst_rect);
@@ -3321,10 +3327,21 @@ void GameState::mouse_click_in_panel()
         {
             pixel_pos /= 8;
             if (editing_pixel_fg)
-                level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = pixel_colour;
+            {
+                if (level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] != pixel_colour)
+                {
+                    level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = pixel_colour;
+                    set_level_set(level_set);
+                }
+            }
             else
-                level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = pixel_colour;
-            set_level_set(level_set);
+            {
+                if (level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] != pixel_colour)
+                {
+                    level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = pixel_colour;
+                    set_level_set(level_set);
+                }
+            }
             return;
         }
 
@@ -3794,10 +3811,21 @@ void GameState::mouse_motion()
             {
                 pixel_pos /= 8;
                 if (editing_pixel_fg)
-                    level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = 8;
+                {
+                    if (level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] != 8)
+                    {
+                        level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = 8;
+                        set_level_set(level_set);
+                    }
+                }
                 else
-                    level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = 8;
-                set_level_set(level_set);
+                {
+                    if (level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] != 8)
+                    {
+                        level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = 8;
+                        set_level_set(level_set);
+                    }
+                }
                 return;
             }
         }
@@ -3887,10 +3915,21 @@ void GameState::mouse_motion()
         {
             pixel_pos /= 8;
             if (editing_pixel_fg)
-                level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = pixel_colour;
+            {
+                if (level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] != pixel_colour)
+                {
+                    level_set->levels[current_level_index]->icon_pixels_fg[pixel_pos.y][pixel_pos.x] = pixel_colour;
+                    set_level_set(level_set);
+                }
+            }
             else
-                level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = pixel_colour;
-            set_level_set(level_set);
+            {
+                if (level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] != pixel_colour)
+                {
+                    level_set->levels[current_level_index]->icon_pixels_bg[pixel_pos.y][pixel_pos.x] = pixel_colour;
+                    set_level_set(level_set);
+                }
+            }
             return;
         }
     }
@@ -4776,15 +4815,15 @@ void GameState::set_level_set(LevelSet* new_level_set)
 //             SDL_Rect dst_rect = {0, 0, 192, 24};
 //             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 //         }
-        for (int a = 0; a < 4; a++)
-        {
-            if ((level_set->levels[i]->connection_mask >> a) & 1)
-            {
-                SDL_Rect src_rect = {192, 800 + a * 24, 192, 24};
-                SDL_Rect dst_rect = {0, 0, 192, 24};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-            }
-        }
+//         for (int a = 0; a < 4; a++)
+//         {
+//             if ((level_set->levels[i]->connection_mask >> a) & 1)
+//             {
+//                 SDL_Rect src_rect = {192, 800 + a * 24, 192, 24};
+//                 SDL_Rect dst_rect = {0, 0, 192, 24};
+//                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//             }
+//         }
 //         {
 //             SDL_Rect src_rect = {192, 800 + 5 * 24, 192, 24};
 //             SDL_Rect dst_rect = {0, 0, 192, 24};
@@ -4794,10 +4833,9 @@ void GameState::set_level_set(LevelSet* new_level_set)
         for (int y = 0; y < 24; y++)
         for (int x = 0; x < 24; x++)
         {
-            int colour = level_set->levels[i]->icon_pixels_bg[y][x];
-            SDL_Rect src_rect = {503, 80 + colour, 1, 1};
             for (int r = 0; r < 8; r++)
             {
+                int colour = level_set->levels[i]->icon_pixels_bg[y][x];
                 int ix = x;
                 int iy = y;
                 for (int s = 0; s < (r & 3); s++)
@@ -4810,25 +4848,28 @@ void GameState::set_level_set(LevelSet* new_level_set)
                 {
                     iy = 23 - iy;
                 }
-                SDL_Rect dst_rect = {ix + r * 24, iy, 1, 1};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                int colour2 = level_set->levels[i]->icon_pixels_fg[iy][ix];
+                if (colour2 != 8)
+                    colour = colour2;
+                if (colour != 8)
+                {
+                    SDL_Rect src_rect = {503, 80 + colour, 1, 1};
+                    SDL_Rect dst_rect = {ix + r * 24, iy, 1, 1};
+                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+                }
             }
         }
-        for (int y = 0; y < 24; y++)
-        for (int x = 0; x < 24; x++)
-        {
-            int colour = level_set->levels[i]->icon_pixels_fg[y][x];
-            SDL_Rect src_rect = {503, 80 + colour, 1, 1};
-            for (int r = 0; r < 8; r++)
-            {
-                SDL_Rect dst_rect = {x + r * 24, y, 1, 1};
-                SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-            }
-        }
-
-
-
-
+//         for (int y = 0; y < 24; y++)
+//         for (int x = 0; x < 24; x++)
+//         {
+//             int colour = level_set->levels[i]->icon_pixels_fg[y][x];
+//             SDL_Rect src_rect = {503, 80 + colour, 1, 1};
+//             for (int r = 0; r < 8; r++)
+//             {
+//                 SDL_Rect dst_rect = {x + r * 24, y, 1, 1};
+//                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
+//             }
+//         }
         SDL_SetRenderTarget(sdl_renderer, NULL);
         level_set->levels[i]->setimage_fg_texture(new GameStateWrappedTexture(my_canvas));
     }
