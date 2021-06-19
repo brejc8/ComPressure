@@ -4469,12 +4469,31 @@ bool GameState::events()
                     }
                     else if (scoring_mode_dialogue)
                     {
+                        bool swi = false;
                         if (((mouse - panel_offset) / scale - XYPos(5*32, 144)).inside(XYPos(32, 32)))
+                        {
                             test_mode = TEST_MODE_ACCURACY;
+                            edited_level_set = level_set_accuracy;
+                            swi = true;
+                        }
                         if (((mouse - panel_offset) / scale - XYPos(6*32, 144)).inside(XYPos(32, 32)))
+                        {
                             test_mode = TEST_MODE_PRICE;
+                            edited_level_set = level_set_price;
+                            swi = true;
+                        }
                         if (((mouse - panel_offset) / scale - XYPos(7*32, 144)).inside(XYPos(32, 32)))
+                        {
                             test_mode = TEST_MODE_STEAM;
+                            edited_level_set = level_set_steam;
+                            swi = true;
+                        }
+                        if (swi && !current_level_set_is_inspected)
+                        {
+                            set_level_set(edited_level_set);
+                            set_level(current_level_index);
+                            swi = true;
+                        }
                         scoring_mode_dialogue = false;
                         break;
                     }
