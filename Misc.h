@@ -97,6 +97,7 @@ public:
         return DirFlip(Direction((int(dir) + 2) % 4), !flp);
     }
     XYPos trans(XYPos pos, int size);
+    XYPos trans_inv(XYPos pos, int size);
 };
 
 class Rand

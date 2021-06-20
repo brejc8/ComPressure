@@ -858,7 +858,10 @@ Circuit::Circuit(SaveObjectMap* omap)
         SaveObjectList* slist_x = slist_y->get_item(pos.y)->get_list();
         for (pos.x = 0; pos.x < 9; pos.x++)
         {
-            elements[pos.y][pos.x] = CircuitElement::load(slist_x->get_item(pos.x));
+            if (pos.x < slist_x->get_count())
+                elements[pos.y][pos.x] = CircuitElement::load(slist_x->get_item(pos.x));
+            else
+                elements[pos.y][pos.x] = new CircuitElementEmpty();
         }
     }
     if (omap->has_key("signs"))
@@ -921,6 +924,17 @@ SaveObject* Circuit::save()
         SaveObjectList* slist_x = new SaveObjectList;
         for (pos.x = 0; pos.x < 9; pos.x++)
         {
+            int x = pos.x;
+            while (true)
+            {
+                if (!is_blocked(XYPos(x, pos.y)) && !elements[pos.y][x]->is_empty())
+                    break;
+                x++;
+                if (x >= 9)
+                    break;
+            }
+            if (x >= 9)
+                break;
             if (is_blocked(pos))
             {
                 CircuitElementEmpty tmp;

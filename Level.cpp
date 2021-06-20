@@ -116,24 +116,27 @@ SaveObject* Test::save(bool custom, bool lite)
     }
     if (custom)
     {
-        omap->add_num("tested_direction", tested_direction);
+        if (tested_direction != DIRECTION_E)
+            omap->add_num("tested_direction", tested_direction);
         SaveObjectList* slist = new SaveObjectList;
         for (SimPoint& sp: sim_points)
         {
             SaveObjectMap* sp_map = new SaveObjectMap;
-            sp_map->add_num("N", sp.values[0]);
-            sp_map->add_num("E", sp.values[1]);
-            sp_map->add_num("S", sp.values[2]);
-            sp_map->add_num("W", sp.values[3]);
-            sp_map->add_num("NF", sp.force[0]);
-            sp_map->add_num("EF", sp.force[1]);
-            sp_map->add_num("SF", sp.force[2]);
-            sp_map->add_num("WF", sp.force[3]);
+            if (sp.values[0]) sp_map->add_num("N", sp.values[0]);
+            if (sp.values[1]) sp_map->add_num("E", sp.values[1]);
+            if (sp.values[2]) sp_map->add_num("S", sp.values[2]);
+            if (sp.values[3]) sp_map->add_num("W", sp.values[3]);
+            if (sp.force[0] != ((tested_direction == DIRECTION_N) ? 0 : 50)) sp_map->add_num("NF", sp.force[0]);
+            if (sp.force[1] != ((tested_direction == DIRECTION_E) ? 0 : 50)) sp_map->add_num("EF", sp.force[1]);
+            if (sp.force[2] != ((tested_direction == DIRECTION_S) ? 0 : 50)) sp_map->add_num("SF", sp.force[2]);
+            if (sp.force[3] != ((tested_direction == DIRECTION_W) ? 0 : 50)) sp_map->add_num("WF", sp.force[3]);
             slist->add_item(sp_map);
         }
         omap->add_item("points", slist);
-        omap->add_num("reset", reset);
-        omap->add_num("first_simpoint", first_simpoint);
+        if (reset)
+            omap->add_num("reset", reset);
+        if (first_simpoint)
+            omap->add_num("first_simpoint", first_simpoint);
     }
 
     return omap;
@@ -235,20 +238,52 @@ SaveObject* Level::save(bool lite)
         }
         omap->add_num("substep_count", substep_count);
         omap->add_item("forced_elements", circuit->save_forced());
+        
+        uint8_t base_pixels[24][24];
 
         SaveObjectList* y_list = new SaveObjectList;
         for (unsigned y = 0; y < 24; y++)
         {
             SaveObjectList* x_list = new SaveObjectList;
+            for (unsigned x = 0; x < 24; x++)
+            {
+                int colour = icon_pixels[y][x];
+                for (int i = 0; i < 8; i++)
+                {
+                    XYPos npos = DirFlip(i).trans(XYPos(x,y), 24);
+                    if (colour != icon_pixels[npos.y][npos.x + i * 24])
+                    {
+                        colour = 8;
+                        break;
+                    }
+                }
+                base_pixels[y][x] = colour;
+                x_list->add_num(colour);
+            }
+            while (x_list->get_count() && x_list->get_num(x_list->get_count() - 1) == 8)
+                x_list->pop_back();
+            y_list->add_item(x_list);
+        }
+        omap->add_item("icon_bg", y_list);
+
+        y_list = new SaveObjectList;
+        for (unsigned y = 0; y < 24; y++)
+        {
+            SaveObjectList* x_list = new SaveObjectList;
             for (unsigned x = 0; x < 24*8; x++)
             {
-                x_list->add_num(icon_pixels[y][x]);
+                XYPos npos = DirFlip(x / 24).trans_inv(XYPos(x%24,y), 24);
+                if (base_pixels[npos.y][npos.x] != icon_pixels[y][x])
+                    x_list->add_num(icon_pixels[y][x]);
+                else
+                    x_list->add_num(8);
             }
+            while (x_list->get_count() && x_list->get_num(x_list->get_count() - 1) == 8)
+                x_list->pop_back();
             y_list->add_item(x_list);
         }
         omap->add_item("icon", y_list);
     }
-
     return omap;
 }
 
@@ -287,15 +322,6 @@ void Level::init_tests(SaveObjectMap* omap)
         loaded_level_version = omap->get_num("level_version");
     
     SaveObjectMap* desc = level_index < LEVEL_COUNT ? level_desc->get_item(level_index)->get_map() : omap;
-
-    for (unsigned y = 0; y < 24; y++)
-    {
-        for (unsigned x = 0; x < 24*8; x++)
-        {
-            icon_pixels[y][x] = 8;
-        }
-    }
-
 
     if (desc)
     {
@@ -347,6 +373,11 @@ void Level::init_tests(SaveObjectMap* omap)
             
             t.load(player_map, test_map);
         }
+
+        for (unsigned y = 0; y < 24; y++)
+            for (unsigned x = 0; x < 24*8; x++)
+                icon_pixels[y][x] = 8;
+
         if (desc->has_key("icon_bg"))
         {
             SaveObjectList* icon_list_y = desc->get_item("icon_bg")->get_list();
@@ -371,7 +402,9 @@ void Level::init_tests(SaveObjectMap* omap)
                 SaveObjectList* icon_list_x = icon_list_y->get_item(y)->get_list();
                 for (unsigned x = 0; x < icon_list_x->get_count() && x < 24*8; x++)
                 {
-                    icon_pixels[y][x] = icon_list_x->get_num(x);
+                    uint8_t colour = icon_list_x->get_num(x);
+                    if (colour != 8)
+                        icon_pixels[y][x] = colour;
                 }
             }
         }

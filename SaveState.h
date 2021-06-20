@@ -103,6 +103,7 @@ public:
     std::string get_string(int index);
     SaveObject* dup();
     virtual bool is_list(){return true;};
+    void pop_back();
 
 };
 

@@ -281,6 +281,11 @@ SaveObject* SaveObjectList::dup()
     return rep;
 };
 
+void SaveObjectList::pop_back()
+{
+    delete olist.back();
+    olist.pop_back();
+}
 
 SaveObjectNull::SaveObjectNull(std::istream& f)
 {
