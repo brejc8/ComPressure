@@ -608,11 +608,11 @@ void GameState::render_number_2digit(XYPos pos, unsigned value, unsigned scale_m
 
 }
 
-void GameState::render_number_2digit_err(XYPos pos, unsigned value, unsigned scale_mul, unsigned bg_colour, unsigned fg_colour)
+void GameState::render_score_2digit_err(XYPos pos, Pressure value, unsigned scale_mul, unsigned bg_colour, unsigned fg_colour)
 {
     if (value)
     {
-        render_number_2digit(pos, value, scale_mul, bg_colour, fg_colour);
+        render_number_2digit(pos, pressure_as_percent(value), scale_mul, bg_colour, fg_colour);
     }
     else
     {
@@ -1651,7 +1651,7 @@ void GameState::render(bool saving)
             switch (test_mode)
             {
                 case TEST_MODE_ACCURACY:
-                    render_number_2digit_err(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), pressure_as_percent(level_set->levels[level_index]->best_score));
+                    render_score_2digit_err(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_score);
                     break;
                 case TEST_MODE_PRICE:
                 {
@@ -1984,8 +1984,8 @@ void GameState::render(bool saving)
                 src_rect.x = 368;
             SDL_Rect dst_rect = {panel_offset.x + (16 + i * 16) * scale, panel_offset.y + (32 + 8) * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
-            render_number_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), pressure_as_percent(current_level->tests[i].last_score));
-            render_number_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), pressure_as_percent(current_level->tests[i].best_score));
+            render_score_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->tests[i].last_score);
+            render_score_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->tests[i].best_score);
         }
 
         if (editing_level)

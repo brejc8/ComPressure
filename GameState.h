@@ -253,7 +253,7 @@ public:
     XYPos get_text_size(std::string& text);
     void render_texture(SDL_Rect& src_rect, SDL_Rect& dst_rect);
     void render_texture_custom(SDL_Texture* texture, SDL_Rect& src_rect, SDL_Rect& dst_rect);
-    void render_number_2digit_err(XYPos pos, unsigned value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
+    void render_score_2digit_err(XYPos pos, Pressure value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_2digit(XYPos pos, unsigned value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_pressure(XYPos pos, Pressure value, unsigned scale_mul = 1, unsigned bg_colour = 9, unsigned fg_colour = 0);
     void render_number_long(XYPos pos, unsigned value, unsigned scale_mul = 1);
