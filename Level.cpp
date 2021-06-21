@@ -723,6 +723,10 @@ SaveObject* LevelSet::save_one(int level_index)
         else
             slist->add_item(new SaveObjectNull);
     }
+    while (slist->get_count() && slist->get_item(slist->get_count() - 1)->is_null())
+        slist->pop_back();
+
+
     return slist;
 }
 
