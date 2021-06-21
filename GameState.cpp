@@ -2090,10 +2090,20 @@ void GameState::render(bool saving)
             SDL_Rect src_rect = {256 + pin_index * 16, 144, 16, 16};
             SDL_Rect dst_rect = {panel_offset.x + 8 * scale, y_pos, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
+
+            for (int i2 = sim_point_offset; (i2 < sim_point_count) && (i2 < (sim_point_offset + 12)); i2++)
+            {
+                unsigned force = current_level->tests[test_index].sim_points[i2].force[pin_index];
+                unsigned value = current_level->tests[test_index].sim_points[i2].values[pin_index];
+                if (force || (i2 == sim_point_count-1))
+                {
+                    render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (i2 - sim_point_offset) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == i2 ? 4 : (force ? 3: 0));
+                }
+            }
             if ((sim_point_count  - sim_point_offset) <= 12)
             {
-                unsigned value = current_level->tests[test_index].sim_points[sim_point_count-1].values[pin_index];
-                render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == sim_point_count - 1 ? 4 : 0);
+//                unsigned value = current_level->tests[test_index].sim_points[sim_point_count-1].values[pin_index];
+//                render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == sim_point_count - 1 ? 4 : 0);
                 if (editing_level)
                 {
                     SDL_Rect src_rect = {464, 160, 8, 16};
