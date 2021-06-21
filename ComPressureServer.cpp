@@ -571,7 +571,7 @@ public:
                         SaveObject* scores = db.get_scores(level, omap->get_num("steam_id"), friends, type);
                         std::ostringstream stream;
                         scores->save(stream);
-                        std::string comp = compress_string(stream.str());
+                        std::string comp = compress_string_zlib(stream.str());
                         uint32_t length = comp.length();
                         outbuf.append((char*)&length, 4);
                         outbuf.append(comp);
@@ -589,7 +589,7 @@ public:
                         SaveObject* design = db.get_design(level_steam_id, level_index, type);
                         std::ostringstream stream;
                         design->save(stream);
-                        std::string comp = compress_string(stream.str());
+                        std::string comp = compress_string_zlib(stream.str());
                         uint32_t length = comp.length();
                         outbuf.append((char*)&length, 4);
                         outbuf.append(comp);

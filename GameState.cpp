@@ -3493,9 +3493,8 @@ void GameState::mouse_click_in_panel()
                 std::ostringstream stream;
                 omap->save(stream);
                 delete omap;
-                std::string comp = compress_string(stream.str());
-                std::u32string s32;
-                std::string reply= "ComPressure Level ";
+                std::string reply;
+                reply = "ComPressure Level ";
                 reply += std::to_string(current_level_index + 1);
                 reply += ": \"";
                 reply += level_set->levels[current_level_index]->name;
@@ -3503,24 +3502,39 @@ void GameState::mouse_click_in_panel()
                 reply += level_set->levels[current_level_index]->score_set ? std::to_string(pressure_as_percent(level_set->levels[current_level_index]->last_score)) : "Err";
                 reply += "%)\n";
                 
-                s32 += 0x1F682;                 // steam engine
-                unsigned spaces = 2;
-                for(char& c : comp)
+                if (keyboard_shift)
                 {
-                    if (spaces >= 80)
-                    {
-                        s32 += '\n';
-                        spaces = 0;
-                    }
-                    spaces++;
-                    s32 += uint32_t(0x2800 + (unsigned char)(c));
+                    reply += stream.str();
+                    reply += "\n";
+                }
+                else
+                {
+                    std::string comp;
+                    if (keyboard_ctrl)
+                        comp = compress_string_zlib(stream.str());
+                    else
+                        comp = compress_string_zstd(stream.str());
+                    std::u32string s32;
 
-                } 
-                s32 += 0x1F6D1;                 // stop sign
-                
-                std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-                reply += conv.to_bytes(s32);
-                reply += "\n";
+                    s32 += 0x1F682;                 // steam engine
+                    unsigned spaces = 2;
+                    for(char& c : comp)
+                    {
+                        if (spaces >= 80)
+                        {
+                            s32 += '\n';
+                            spaces = 0;
+                        }
+                        spaces++;
+                        s32 += uint32_t(0x2800 + (unsigned char)(c));
+
+                    } 
+                    s32 += 0x1F6D1;                 // stop sign
+
+                    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+                    reply += conv.to_bytes(s32);
+                    reply += "\n";
+                }
 
                 SDL_SetClipboardText(reply.c_str());
             }
@@ -4289,6 +4303,18 @@ bool GameState::events()
                     case SDL_SCANCODE_F5:
                         show_debug = !show_debug;
                         break;
+                    case SDL_SCANCODE_F7:
+                    {
+                        SaveObjectMap* omap = new SaveObjectMap;
+                        omap->add_num("level_index", current_level_index);
+                        omap->add_item("levels", edited_level_set->save_one(current_level_index));
+                        std::ostringstream stream;
+                        omap->save(stream);
+                        delete omap;
+                        std::string reply = stream.str();
+                        SDL_SetClipboardText(reply.c_str());
+                        break;
+                    }
                     case SDL_SCANCODE_F8:
                     {
                         SaveObject* sav = current_circuit->save();
@@ -4298,7 +4324,7 @@ bool GameState::events()
                         delete sav;
                         break;
                     }
-                    case SDL_SCANCODE_F11:
+                   case SDL_SCANCODE_F11:
                         full_screen = !full_screen;
                         SDL_SetWindowFullscreen(sdl_window, full_screen? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
                         SDL_SetWindowBordered(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
