@@ -610,7 +610,6 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& oth
     level_index = other.level_index;
     level = other.level;
     custom  = other.custom;
-    read_only  = other.read_only;
     name = other.name;
     if (other.circuit)
     {
