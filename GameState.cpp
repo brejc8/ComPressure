@@ -455,11 +455,14 @@ void GameState::advance()
     {
         if (!discord_joined)
             show_dialogue_discord_prompt = true;
-        if (edited_level_set->levels[current_level_index]->help_design)
-            edited_level_set->levels[highest_level]->tip_revealed = true;
         time_last_progress = SDL_GetTicks();
     }
 
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 15)))
+    {
+        if (edited_level_set->levels[current_level_index]->help_design)
+            edited_level_set->levels[highest_level]->tip_revealed = true;
+    }
 
     if (SDL_TICKS_PASSED(time, debug_last_time + period))
     {
