@@ -4128,6 +4128,17 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_A:
+                        if (keyboard_ctrl)
+                        {
+                            XYPos pos;
+                            for (pos.y = 0; pos.y < 9; pos.y++)
+                            for (pos.x = 0; pos.x < 9; pos.x++)
+                            {
+                                if (!current_circuit->elements[pos.y][pos.x]->is_empty())
+                                    selected_elements.insert(pos);
+                            }
+                            break;
+                        }
                         if (next_dialogue_level <= 3)
                             break;
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
