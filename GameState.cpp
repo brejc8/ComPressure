@@ -1679,7 +1679,7 @@ void GameState::render(bool saving)
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
         if (tip_revealed >= current_level_index && edited_level_set->levels[current_level_index]->help_design)
             render_button(XYPos(panel_offset.x + 64 * scale, panel_offset.y + 144 * scale), XYPos(352, 160), 0, "Reveal a solution");   // Help
-        if (next_dialogue_level > 32 && !current_circuit_is_read_only)
+        if (next_dialogue_level > 32)
         {
             switch (test_mode)
             {
@@ -1693,9 +1693,10 @@ void GameState::render(bool saving)
                     render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 376), 0, "Steam mode");
                     break;
             }
-
-            render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
         }
+
+        if (next_dialogue_level > 24 && !current_circuit_is_read_only)
+            render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
         {
             SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};                    // Requirements
             SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
