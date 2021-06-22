@@ -458,10 +458,10 @@ void GameState::advance()
         time_last_progress = SDL_GetTicks();
     }
 
-    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 15)))
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * (2 + tip_revealed * 2))))
     {
-        if (edited_level_set->levels[current_level_index]->help_design)
-            edited_level_set->levels[highest_level]->tip_revealed = true;
+        if (highest_level > tip_revealed)
+            tip_revealed++;
     }
 
     if (SDL_TICKS_PASSED(time, debug_last_time + period))
@@ -1677,7 +1677,7 @@ void GameState::render(bool saving)
         
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
-        if (edited_level_set->levels[current_level_index]->tip_revealed && edited_level_set->levels[current_level_index]->help_design)
+        if (tip_revealed >= current_level_index && edited_level_set->levels[current_level_index]->help_design)
             render_button(XYPos(panel_offset.x + 64 * scale, panel_offset.y + 144 * scale), XYPos(352, 160), 0, "Reveal a solution");   // Help
         if (next_dialogue_level > 32 && !current_circuit_is_read_only)
         {
@@ -3314,7 +3314,7 @@ void GameState::mouse_click_in_panel()
             
         }
         else if ((panel_pos - XYPos(64,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT)
-                 && edited_level_set->levels[current_level_index]->tip_revealed
+                 && tip_revealed >= current_level_index
                  && edited_level_set->levels[current_level_index]->help_design)   // Help
         {
             if (free_level_set_on_return)

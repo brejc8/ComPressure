@@ -145,7 +145,6 @@ public:
     bool best_price_set = false;
     bool best_steam_set = false;
     bool server_refreshed = false;
-    bool tip_revealed = false;
 
     unsigned test_index = 0;
     unsigned sim_point_index = 0;
