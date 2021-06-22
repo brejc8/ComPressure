@@ -3635,6 +3635,525 @@
                 {"who":"ada", "text":"N Больше подсказок нет. Наслаждайтесь своей победой."}
             ]
         ]
-    }
+    },
+    "Español":
+    {
+        "tooltips":
+        {
+            "Save"                      :   "Save",
+            "Restore"                   :   "Restore",
+            "Best solution"             :   "Best solution",
+            "Customize"                 :   "Customize",
+            "Import level"              :   "Import level",
+            "Delete"                    :   "Delete",
+            "Copy design\nto current"   :   "Copy design\nto current",
+            "Delete level"              :   "Delete level",
+            "Return"                    :   "Return",
+            "Level Editor"              :   "Level Editor",
+            "Level select"              :   "Level select",
+            "Design"                    :   "Design",
+            "Test"                      :   "Test",
+            "Experiment"                :   "Experiment",
+            "Scores"                    :   "Scores",
+            "Help"                      :   "Help",
+            "Repeat\ndialogue"          :   "Repeat\ndialogue",
+            "Hint"                      :   "Hint",
+            "New design"                :   "New design",
+            "Valve"                     :   "Valve",
+            "Steam Inlet"               :   "Steam Inlet",
+            "Rotate left"               :   "Rotate left",
+            "Rotate right"              :   "Rotate right",
+            "Reflect\nvertically"       :   "Reflect\nvertically",
+            "Reflect\nhorizontally"     :   "Reflect\nhorizontally",
+            "Lock blocks"               :   "Lock blocks",
+            "Add sign"                  :   "Add sign",
+            "Stop tests"                :   "Stop tests",
+            "Repeat 1 test"             :   "Repeat 1 test",
+            "Run all tests"             :   "Run all tests",
+            "Export to\nclipboard"      :   "Export to\nclipboard",
+            "Import from\nclipboard"    :   "Import from\nclipboard",
+            "Accuracy mode"             :   "Accuracy mode",
+            "Price mode"                :   "Price mode",
+            "Steam mode"                :   "Steam mode",
+            "Confirm"                   :   "Confirm",
+            "Cancel"                    :   "Cancel",
+            "Exit"                      :   "Exit",
+            "Full Screen"               :   "Full Screen",
+            "Join our Discord group"    :   "Join our Discord group",
+            "Info"                      :   "Info",
+            "Select language"           :   "Select language",
+            "Number resolution"         :   "Number resolution",
+            "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
+                                            "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button.",
+            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued..." :
+                                            "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued...",
+            "Cross"                     :   "Cross",
+            "50"                        :   "50",
+            "Normally Open"             :   "Normally Open",
+            "Normally Closed"           :   "Normally Closed",
+            "Switch"                    :   "Switch",
+            "Buffer"                    :   "Buffer",
+            "Inverter"                  :   "Inverter",
+            "Comparator"                :   "Comparator",
+            "Amp50"                     :   "Amp50",
+            "Div2"                      :   "Div2",
+            "Mul2"                      :   "Mul2",
+            "Encrypt"                   :   "Encrypt",
+            "Decrypt"                   :   "Decrypt",
+            "Sensor"                    :   "Sensor",
+            "Subtractor"                :   "Subtractor",
+            "Adder"                     :   "Adder",
+            "Latch"                     :   "Latch",
+            "Tabulator"                 :   "Tabulator",
+            "Broken Link"               :   "Broken Link",
+            "Zoom"                      :   "Zoom",
+            "Flow Detector"             :   "Flow Detector",
+            "LatchE"                    :   "LatchE",
+            "Latch2"                    :   "Latch2",
+            "Latch5"                    :   "Latch5",
+            "Latch10"                   :   "Latch10",
+            "Min"                       :   "Min",
+            "Max"                       :   "Max",
+            "Fuse"                      :   "Fuse",
+            "Counter"                   :   "Counter",
+            "ROM"                       :   "ROM",
+            "Poem"                      :   "Poem",
+            "Clock"                     :   "Clock",
+            "Cross v2"                  :   "Cross v2",
+            "CounterE"                  :   "CounterE",
+            "Delay"                     :   "Delay",
+            "Self-timed latch"          :   "Self-timed latch",
+            "Lock Picking"              :   "Lock Picking",
+            "Code filter"               :   "Code filter",
+            "Steamputer"                :   "Steamputer",
+            "END"                       :   "END"
 
+        },
+        "help":
+        [
+            "En el menú de selección de nivel, el panel inferior describe los requisitos de diseño. Cada diseño tiene cuatro puertos y los requisitos establecen la salida esperada en términos de otros puertos. Cada puerto tiene un identificador de color. Haga clic en los requisitos para recibir una pista" ,
+            "Una vez que pases todas las pruebas, el siguiente diseño estará disponible. Siempre puedes volver para refinar tu solución. \n\nPresiona el botón de tubería a continuación para continuar con el tutorial. Puedes regresar a la ayuda presionando F1.",
+            "Las tuberías se pueden colocar ya sea con el botón izquierdo del mouse arrastrando la tubería desde el origen al destino, o haciendo clic con el botón izquierdo del mouse para extender la tubería en la dirección del mouse. Haga clic con el botón derecho para cancelar el modo de colocación de tuberías.",
+            "Mantenga presionado el botón derecho del mouse para eliminar tuberías y otros elementos",
+            "El menú de construcción le permite agregar componentes a su diseño. Seleccione el componente de entrada de vapor y coloque el cursor sobre su diseño. Los botones de flecha cambian la orientación. Esto también se puede hacer usando las teclas Q y E o la rueda de desplazamiento del mouse. Al hacer clic en el botón izquierdo el botón del mouse colocará el componente. Haga clic derecho para salir del modo de colocación de entrada de vapor. ",
+            "Las válvulas se pueden colocar de la misma manera. Presionar Tab, o el botón central del mouse, es un atajo para ingresar al modo de colocación de válvulas. Al presionar Tab, o el botón central del mouse, nuevamente se cambia a la ubicación de la entrada de vapor.",
+            "Una entrada de vapor suministrará vapor a una presión de 100. Cualquier tubería con extremos abiertos ventilará el vapor a la atmósfera a una presión de 0.",
+            "La presión en diferentes puntos es visible en las conexiones de las tuberías. Observe cómo cada tubería tiene un poco de resistencia",
+            "Las válvulas permiten que el vapor pase a través de ellas si el lado (+) de la válvula está a una presión más alta que el lado (-). Cuanto más alta es, más abierta está la válvula. Vapor en el (+) y (-) ) lados no se consume. \n\nAquí, el lado (-) se ventila a la atmósfera y, por lo tanto, a presión 0. Con (+) a 100 PSI y (-) a 0 PSI, la válvula está 100% abierta. Si ( +) está en 75 y (-) está en 25, la válvula estará abierta al 50%. ",
+            "Si la presión en el lado (+) es igual o menor que en el lado (-), la válvula se cierra y no pasa vapor",
+            "Al presurizar el lado (+) con una entrada de vapor, la válvula se abrirá solo si la presión en el lado (-) es inferior a 100 PSI. \n\nComo antes, la apertura de la válvula es la presión en el ( El lado +) menos la presión del lado (-). ",
+            "La aplicación de alta presión en el lado (-) cerrará la válvula a medida que la presión en el lado (-) sea igual o superior a la del lado (+).",
+            "El menú de prueba le permite inspeccionar qué tan bien está funcionando su diseño. Los primeros tres botones pausan la prueba, ejecutan repetidamente una sola prueba y ejecutan todas las pruebas respectivamente. También puede usar las teclas de acceso rápido 1, 2 y 3. \n\nLa corriente las puntuaciones de las pruebas individuales se muestran con las puntuaciones del mejor diseño que se muestran a continuación. A la derecha está la puntuación final formada a partir de la peor de todas las pruebas. ",
+            "El siguiente panel muestra la secuencia de entradas y salidas esperadas para la prueba actual. La fase actual está resaltada. La salida registrada en la última ejecución se muestra a la derecha. Puede presionar la barra espaciadora para avanzar rápidamente a la siguiente fase. \n\nLa puntuación se basa en qué tan cerca está la salida del valor objetivo. El gráfico muestra el valor de salida durante la etapa final de la prueba. La línea atenuada en el gráfico muestra la ruta del mejor diseño hasta el momento. ",
+            "El menú de experimentos te permite configurar manualmente los puertos y examinar el funcionamiento de tu diseño. Los controles deslizantes verticales establecen el valor deseado. Los controles deslizantes horizontales debajo establecen la fuerza de la entrada. Si configuras el control deslizante completamente a la izquierda, se convierte en una salida. Los valores iniciales son establecido a partir de la prueba actual. ",
+            "El gráfico de la parte inferior muestra el historial de los valores del puerto.",
+            "Los componentes se pueden seleccionar haciendo clic mientras se mantiene presionada la tecla Ctrl o arrastrando mientras se mantiene presionada la tecla Mayús. Los componentes seleccionados se pueden mover usando las teclas WASD o rotar usando Q y E, si el destino está vacío. Las teclas para copiar y pegar son: C para copiar , X para cortar y V para pegar. Para eliminar los componentes seleccionados, presione Eliminar. \n\nSe accede a Deshacer a través de la tecla Z (Ctrl es opcional) y Rehacer con Y o Shift + Z. Deshacer también se puede activar manteniendo presionado el botón derecho del mouse y haciendo clic en el de la izquierda. ",
+            "Al presionar Esc se muestra el menú del juego. Los botones te permiten salir del juego, cambiar entre pantalla completa y ventana, unirte a nuestro grupo Discord y mostrar créditos. \n\nLos controles deslizantes ajustan los efectos de sonido y el volumen de la música.",
+            "Los diseños completos están disponibles para su uso como componentes. Los componentes disponibles se muestran en el menú de compilación. Al cambiar un diseño, se actualizará su implementación en todos los componentes. \n\nHacer doble clic en el componente le permite inspeccionarlo. Puede hacer una copia de seguridad emergente la pila haciendo clic en el ícono de diseño en la parte superior izquierda. Al presionar el botón personalizar, mientras se inspecciona, se crea un diseño local que se puede editar y ya no se actualiza cuando se cambia el original. El diseño se volverá rojo para indicar esto. ",
+            "Hay cuatro espacios para guardar diseños. El mejor diseño también se guarda para poder recuperarlo más tarde. Los diseños se pueden intercambiar usando una cadena de portapapeles. \n\nHacer clic en la puntuación muestra el gráfico de puntuación global y su puntuación en comparación con sus amigos . Sus diseños están disponibles para ser examinados. ",
+            "Un método para crear una presión específica es suministrar y ventilar simultáneamente una tubería en una proporción específica. Una válvula está tan abierta como la presión en el lado (+) menos la presión en el lado (-). \n\nApertura = P - N \n\nDonde P es la presión en el lado positivo de la válvula y N es la presión en el lado negativo. Aquí la apertura de la válvula inferior es 40 (60 - 20). ",
+            "La presión generada en esta disposición es, en porcentaje, la apertura de la válvula de la fuente dividida por la suma de la apertura de ambas válvulas. \n\nPresión = S / (S + V) \n\nDonde S es la apertura de la válvula de suministro y V es la apertura de la válvula de ventilación. \nEn este caso, el suministro es 40 (40 - 0). La ventilación también es 40 (60 - 20). El valor esperado entre es 40 / (40 + 40) = 50%, por lo tanto 50 PSI . ",
+            "Hay tres modos de puntuación disponibles. El modo predeterminado (Precisión) puntúa la proximidad al valor objetivo (para la peor prueba). \n\nEl modo de precio clasifica los diseños por costo. Las tuberías cuestan £ 1 por puerto, las válvulas cuestan £ 10 y vapor las entradas cuestan £ 5. Hay un cargo adicional de £ 4 por cada subdiseño. \n\nEl modo de vapor mide la cantidad de vapor suministrada por las entradas de vapor. ",
+            "Es posible crear niveles definidos por el usuario. Estos tienen un ícono definido por el usuario, pruebas y se pueden intercambiar a través del portapapeles. \nLas pruebas y los pasos de prueba se pueden agregar / eliminar usando los botones +/-. El período de tiempo por paso es configurable . Si, al reproducir todas las pruebas, se pueden omitir algunos pasos, el botón Omitir todas selecciona la subprueba para comenzar. El diseño se puede restablecer opcionalmente en todas o solo en el modo de prueba de reproducción. Los iconos de puerto seleccionan los puertos que se utilizan. Al hacer clic en los puertos a la izquierda del valor, se seleccionan los puertos utilizados como salida. Los valores se cambian en el menú del experimento "
+        ],
+        "dialogue":
+        [
+            [
+                {"who":"charles", "text":"¡Saludos Gertrude! Mi nombre es Charles Chavvington, el propietario de estas plantas generales de vapor de alta presión. Desde aquí suministramos vapor de alta presión a la mitad de la ciudad, alimentando todo, desde paraguas de vapor hasta xilófonos de vapor. \n\nMi querida difunta esposa, Ada , estipuló que su investigación sobre las propiedades matemáticas del vapor debería continuar más allá de su tiempo con nosotros. Lo que nos lleva a la razón por la que usted entró a trabajar para mí. Su compromiso será preservar su legado y continuar con estas investigaciones científicas. "},
+                {"who":"charles", "text":"Confío en que haya dominado la ingeniería de vapor elemental en sus estudios anteriores, pero antes de que le permitamos el acceso a su laboratorio, primero debe demostrar que es experto en la construcción básica de tuberías de vapor. \n\nConecte el generador del oeste a las instalaciones del este y el generador del norte a las instalaciones del sur. ¡Bajo ninguna circunstancia debe conectar las tuberías juntas! Si lo hace, entregará vapor gratis a las instalaciones del sur, ¡y nunca pagan sus facturas a tiempo! "},
+                {"who":"charles", "text":"Si no está familiarizado con nuestras tuberías de vapor de alta presión, hay un manual de ingeniería disponible en la parte superior derecha con el símbolo \"? \"."}
+            ],
+            [
+                {"who":"charles", "text":"¡Maldita sea! ¡La puerta de seguridad del laboratorio de Ada funciona con vapor de baja presión! Nunca pude imaginar cómo podría abrir esta maldita cosa. \n\nAquí en General High Pressure Steam Works generamos vapor a 100 libras por pulgada cuadrada . La puerta usa vapor de baja presión de Moorhouse que opera a 50 libras por pulgada cuadrada (PSI). ¡Que me condenen si canalizo ese vapor degenerado de Moorhouse a mi propiedad! "},
+                {"who":"charles", "text":"A menos que pueda obtener un suministro de vapor de baja presión a 50 PSI, es mejor que nos demos por vencidos. \n\nEn el menú de construcción, encontrará una entrada de vapor que puede suministrarle una gran cantidad de vapor de alta presión a 100 PSI. Está arriba, marcado con una llave inglesa. También puedes presionar el tabulador dos veces para acceder a él. "}
+            ],
+            [
+                {"who":"charles", "text":"¡Por Jove! ¡Lo hiciste! Terrible desperdicio de buen vapor, pero hizo el trabajo. Pido disculpas por el estado desordenado, pero algunos matones han tenido acceso y han dejado un desastre espantoso. \n\nEn este laboratorio, mi querida Ada llevé a cabo experimentos en las válvulas que construí según sus especificaciones exactas. Aplicando una buena dosis de vapor de alta presión al puerto marcado con un \"+ \", podemos abrir la válvula, permitiendo que el vapor pase libremente entre los dos extremos sin marcar. "},
+                {"who":"charles", "text":"Pruébelo. Conecte el oeste y el este, pero solo cuando el norte esté en alta presión."}
+            ],
+            [
+                {"who":"nicola", "text":"¡Impresionante!"},
+                {"who":"charles", "text":"Ah, Nicola, llegaste justo a tiempo. Gertrude, Nicola será tu asistente. Él ya ha comenzado a estudiar las notas que Ada dejó. Ahora, la siguiente parte es un poco más desafiante para la vieja materia gris. \n\nMientras postulas vapor al puerto \"+ \" abre la válvula, aplicando vapor al lado \"- \" la cierra. La válvula solo está abierta cuando \"+ \" está bajo una presión más alta que el lado \"- \" . "},
+                {"who":"charles", "text":"Ada me pidió que agregara esto para poder hacer una válvula que se cierre al aplicar alta presión a la tubería de control. Veamos si estas válvulas aún funcionan correctamente. \n\nConecte el este y el oeste, pero solo cuando la presión provenga de el sur es inferior a 100 PSI. \n\nPuedes usar la entrada de vapor como fuente de buen vapor a alta presión."}
+            ],
+            [
+                {"who":"charles", "text":"¡Excelente! Ahora, combinando estos dos diseños, podemos construir un componente que cambie entre dos fuentes. \n\nCuando la casa de control del Oeste suministre vapor de alta presión de 100 PSI, el generador del Norte debería estar conectado a las instalaciones del Este. Pero cuando el La casa de control del oeste está a una presión atmosférica de 0 PSI, el generador del sur debe estar conectado a las instalaciones del este. "},
+                {"who":"nicola", "text":"¿Qué sucede cuando la casa de control suministra una presión entre 0 y 100?"},
+                {"who":"charles", "text":"¡¿¡Qué!?! ¡Eso sería vapor de baja presión! ¡No trabajamos con vapor de baja presión! ¡No hice mi fortuna suministrando vapor a baja presión a la gente! \n\nNo te preocupes por todas esas tonterías de baja presión. Cuando el control occidental es Alta presión, conecte el generador del norte, de lo contrario, conecte el generador del sur. "}
+            ],
+            [
+                {"who":"nicola", "text":"Las notas de Lady Chavvington hablan de una conexión de vapor entre el laboratorio y la residencia de Lady Easley que se utilizó para la comunicación."},
+                {"who":"charles", "text":"Sí, lo quité. Nuevos procedimientos. Faltaba demasiado de nuestro vapor de alta presión. El único vapor que se permite salir de nuestras instalaciones es medido y proporcionado a los clientes que pagan. Ninguno de mi vapor de alta presión puede salir de estas paredes."},
+                {"who":"nicola", "text":"Creo que aún podemos establecer una conexión sin generar ninguna salida. Según estas notas ..."},
+                {"who":"charles", "text":"¡Hah! ¡Imposible! ¡Esto es vaporología elemental, querido muchacho! La comunicación de vapor se basa en la transferencia de vapor, ¡y tú no \" Transferirás \"nada de mi vapor! \n\nEn cualquier caso, me necesitan en otro lugar. Este asunto no parece tan urgente como las investigaciones sobre mi falta de vapor. "},
+                {"who":"nicola", "text":"Según Lady Chavvington, Charles no era conocido como el mejor oyente. Ella describe el diseño con cierto detalle."},
+                {"who":"ada", "text":"5 de junio \nHoy creé un fantástico dispositivo de reproducción de presión. Para crear una presión de un valor específico, usé válvulas, suministrando y ventilando vapor, en una proporción precisa. Abriendo la válvula de vapor al 80% y abriendo la ventilación atmosférica válvula al 20%, podría recrear la presión original de 80 PSI. Las válvulas de Charles parecen abrirse a la presión en el lado \"+ \", menos la presión en el lado \"- \". "},
+                {"who":"ada", "text":"Esto parece funcionar para una amplia gama de valores con el mínimo de error. Debido a sus propiedades aislantes, lo llamaré \" búfer \". \n\nLa comunicación a través de la presión, en lugar del flujo de vapor, ofrece maravillosas posibilidades ya que el valor no se distorsiona por la resistencia de las tuberías largas. Le expliqué la idea a Charles, aunque estaba más consumido por cuestiones de lucro empresarial. "},
+                {"who":"nicola", "text":"Parece que algunas partes del diseño original aún permanecen instaladas en la pared. Mientras usemos el vapor de Lady Easley para alimentar los dispositivos más allá de la pared, Charles no tendrá ninguna queja."}
+            ],
+            [
+                {"who":"nicola", "text":"No es perfecto, pero siempre podemos volver y mejorarlo. Fascinante, ¿no? La combinación de válvulas reproduce cualquier valor de presión. La presión entrante abre la entrada de vapor y las válvulas de ventilación de la atmósfera a los niveles exactos para reproducir correctamente la presión en la tubería de salida. \n\nDéjenos enviar nuestro primer mensaje y visitar a Lady Easley para ver si funciona. "},
+                {"who":"annie", "text":"[Algún tiempo después] \n¡Me diste tanto susto! Por un minuto pensé que era Ada hablándome desde más allá de la tumba."},
+                {"who":"nicola", "text":"Nuestras disculpas, Lady Easley. Estamos intentando continuar con la investigación de Lady Chavvington. Estábamos intentando enviar 80 PSI, que según nuestro libro de códigos significa \" Hola \""},
+                {"who":"annie", "text":"¡No! 80 PSI significa \" ¡Ayuda! ¡Estoy atrapado en la otra vida! \". Son 20 PSI lo que significa \" Hola \". \n\nCuando Ada instaló el sistema, cometió un error en las válvulas y todas las presiones se recibieron al revés. Fue al investigar el problema que tuvo su epifanía sobre las posibilidades del vapor. Nunca lo arreglamos, y en su lugar invertí todos los valores de presión en mi libro de códigos. "},
+                {"who":"nicola", "text":"Interesante. Quizás deberíamos ver si podemos cometer el mismo error."}
+            ],
+            [
+                {"who":"charles", "text":"¡Diablos! Por mi vida no puedo encontrar el comparador de presión que hizo Ada. Cada año, la prestigiosa Sociedad de Vapor de Alta Presión compara las presiones proporcionadas por todos los Trabajos de Vapor de Alta Presión para determinar el proveedor del Vapor de Presión Más Alta. Sin un comparador preciso, tendremos que cancelar la competencia de este año. \n\n¡Mi récord de victorias de cinco años se arruinará! Estoy seguro de que tenía otro por aquí en alguna parte ... "},
+                {"who":"nicola", "text":"Deberíamos intentar lograrlo, de lo contrario seguirá interfiriendo ..."},
+                {"who":"charles", "text":"¿Qué fue lo que dijiste, chico?"},
+                {"who":"nicola", "text":"Dije que podíamos hacer uno, señor."},
+                {"who":"charles", "text":"¡Espléndido! Solo recuerde, no es suficiente conectar la salida a vapor de alta presión cuando una entrada es mayor que la otra, también se debe ventilar la salida cuando ocurre lo contrario. Mis tuberías están completamente selladas y nunca pierden vapor a menos que un se abre la válvula para permitirles ventilar. "}
+            ],
+            [
+                {"who":"charles", "text":"¡Excelente! ¡Qué precisión! Estoy seguro de que podría detectar la presión de una pluma en un campo de cricket. \n\nNecesito un dispositivo más antes de dejarlo con sus investigaciones. Para ser admitido en el Vapor de alta presión Sociedad, hay que demostrar que sus fábricas de vapor producen vapor de alta presión. "},
+                {"who":"charles", "text":"Aquí, en General High Pressure Steam Works, producimos vapor de alta presión a 100 PSI, la única presión que reconocería como verdadero vapor de alta presión. Pero técnicamente cualquier presión de vapor superior a 50 PSI se considera vapor de alta presión. Sociedad de vapor a presión, es mi responsabilidad asegurarme de que no se permita la participación de personas que produzcan vapor de baja presión de calidad inferior. \n\nNecesito un dispositivo para determinar correctamente la calidad del vapor del solicitante. "},
+                {"who":"nicola", "text":"Todavía tenemos su diseño para el generador de vapor de 50 PSI en la caja de herramientas. Podemos usar los diseños que ya hicimos como componentes."}
+            ],
+            [
+                {"who":"charles", "text":"¡Bravo! Con este artilugio mantendré a esos productores de vapor de baja presión fuera de nuestra sociedad exclusiva."},
+                {"who":"nicola", "text":"¿Cuántos miembros hay hasta ahora?"},
+                {"who":"charles", "text":"Bueno ... Uno ... Como dije \" Muy exclusivo \". \n\nEn cualquier caso, ¡debo irme para no perderme las bebidas de la recepción!"},
+                {"who":"nicola", "text":"Finalmente ... \n\nSegún el diario de Lady Chavvington, se instaló una segunda tubería de comunicación que conduce a la residencia de nada menos que Lord Moorhouse! Charles no habría estado feliz si la hubiera encontrado. Mira."},
+                {"who":"ada", "text":"17 de junio \n\nCon la tubería a la finca de Lord Moorhouse completa, estoy comenzando a trabajar en un dispositivo para compactar el rango alto de valores de presión (0-100), a unos aceptables por el sistema de baja presión (0-50). Para mi completa sorpresa, cuando funcionaba con el vapor de baja presión de Lord Moorhouse, pero aún usando 100 PSI como entrada de referencia, el búfer de presión pudo escalar la presión de entrada exactamente a la mitad. "},
+                {"who":"nicola", "text":"¡¿De verdad?! ¿Cómo es posible que eso funcione?"}
+            ],
+            [
+                {"who":"nicola", "text":"¡Asombroso! Bueno, eso nos llevó a la mitad del camino. Podemos enviar; pero ahora necesitamos recibir. Debemos amplificar su presión de vapor a nuestro rango. Según Lady Chavvington, debemos alimentar el dispositivo con nuestro vapor de 100 PSI, pero use 50 PSI como presión de referencia. "}
+            ],
+            [
+                {"who":"nicola", "text":"Veamos si esto funciona. \n\n80 PSI [Hola] \n55 PSI [Solicitar reunión] \n57 PSI [Té de la tarde en Madingley Hall]"},
+                {"who":"george", "text":"... \n23 PSI [Negativo] \n ... \n6 PSI [6] \n12 PSI [/] \n7 PSI [7]"},
+                {"who":"nicola", "text":"¿¡Qué?!? 6/7? Déjame revisar el diario. \n ... \nTodo lo que habla la entrada del 7 de junio es el diseño del inversor de presión. ¿Cómo podría siquiera comunicarse con nosotros si las presiones se invirtieran? ... invertido ... invertido? ... Por supuesto! \n\nMis disculpas. Demasiado tiempo en las colonias. Aquí está la entrada correcta."},
+                {"who":"ada", "text":"6 de julio \n\n¡Sospecho que nuestras comunicaciones se han visto comprometidas! Después de días de suplicar, Lord Moorhouse acordó combinar nuestros esfuerzos de investigación. Intercambiamos los códigos a las puertas de nuestros respectivos laboratorios a través de nuestro comunicador de vapor. Apenas unas horas más tarde, una mano -Se recibió una nota entregada en nuestra residencia informándome que su laboratorio había sido saqueado y que ya no era bienvenido. ¡Me apresuré a encontrar que el mío también había sido asaltado! Tanto trabajo perdido. "},
+                {"who":"ada", "text":"Guardé el código de forma segura. Seguramente Charles no habría hecho tal cosa. Inmediatamente hice reemplazar la puerta de mi laboratorio. Charles preferiría morir antes que operar una puerta de vapor Moorhouse."},
+                {"who":"ada", "text":"Ya no me siento seguro aquí. Me comuniqué con mi hermana para esperar mi llegada inminente. Era un momento perfecto para probar mi nuevo sistema de cifrado, que mantendrá nuestras comunicaciones seguras. Aún no he recibido el letrero que Charles prometió poner en el tubería que conduce a su residencia. A veces puede ser tan olvidadizo. "},
+                {"who":"nicola", "text":"Esa fue su última entrada en el diario. \n\n¡Oh! No pensé que la tubería condujera a ninguna parte, así que usé los componentes para nuestros otros diseños. Afortunadamente, algunos estaban soldados, así que los dejé en su lugar. La unidad de cifrado parece principalmente funcional. "}
+            ],
+            [
+                {"who":"nicola", "text":"Bueno, eso fue simple. El cifrado es simplemente un búfer desequilibrado. Pero, ¿cómo podría hacer un diseño que invierta con precisión tal cifrado? \n\nQuizá Lady Easley pueda ayudar. Preguntaré si está disponible para ayudarnos. \" norte..."},
+                {"who":"annie", "text":"Entre los documentos de Ada, ¿encontró una servilleta de los salones de té de Madingley Hall? Creo que estaba fechada el 24 de junio. Estábamos discutiendo el nuevo documento de la Royal Society sobre \" convergencia en series monótonas \"cuando Ada empezó a escribir cosas en una servilleta. Luego procedió a salir corriendo y exclamando cómo pudo haber resuelto el problema de descifrado. Sin saldar la cuenta, podría agregar. "},
+                {"who":"ada", "text":"24 de junio \nSe puede formar un dispositivo de descifrado adivinando repetidamente el valor, cifrándolo y comparándolo con la entrada cifrada. Si la entrada es mayor, aumentamos la conjetura. Si es menor, la reducimos. Tal dispositivo podría invertir numerosas funciones. \n\nEl comparador de vapor de Charles era justo lo que necesitaba, aunque debo recordar devolvérselo antes de la reunión de la sociedad de vapor de alta presión de este año. "},
+                {"who":"nicola", "text":"Al menos sabemos adónde llegó su comparador."}
+            ],
+            [
+                {"who":"nicola", "text":"¡Increíble! Con esta técnica podríamos mejorar la precisión de todos nuestros diseños. La hermana de Lady Chavvington debe tener más información sobre estas técnicas. \n\n80 PSI [Hola]"},
+                {"who":"ada", "text":"80 PSI [Hola] \n93 PSI [Soy Ada Chavvington] \n"},
+                {"who":"nicola", "text":"60 PSI [¿Quién?] \n73 PSI [Repetir]"},
+                {"who":"ada", "text":"25 PSI [A], 28 PSI [D], 25 PSI [A] \n24 PSI [_] \n27 PSI [C], 32 PSI [H], 25 PSI [A], 46 PSI [V], 46 PSI [V], 33 PSI [I], 38 PSI [N], 31 PSI [G], 44 PSI [T], 39 PSI [O], 38 PSI [N] "},
+                {"who":"nicola", "text":"Esto es inesperado. Debemos informar a Lord Chavvington de inmediato. \n ... \n¡Lord Chavvington! Establecimos un vínculo con la residencia de la hermana de Lady Chavvington, ¡pero la persona en el otro extremo dice ser la misma Lady Chavvington!"},
+                {"who":"charles", "text":"Ah, sí, esa sería Ada."},
+                {"who":"nicola", "text":"B ... Pero Lord Chavvington, dijiste que Ada había muerto."},
+                {"who":"charles", "text":"¡Qué tontería! Ada está perfectamente bien y se queda con su hermana hasta que resolvamos este asunto del vapor de alta presión que falta."},
+                {"who":"nicola", "text":"La llamaste tu \" difunta \"."},
+                {"who":"charles", "text":"Sí ... Se ha ido ... a casa de su hermana ..."},
+                {"who":"nicola", "text":"Todos asumieron que ella murió ..."},
+                {"who":"charles", "text":"Hmm ... Sí ... Reflexionando, eso explicaría las flores y tarjetas que expresan su simpatía por mi pérdida. Me conmovió la preocupación de la gente por la pérdida de mi vapor de alta presión. \n\nNo obstante. Cuanto antes complete el máquina de cálculo de vapor, antes podremos llegar al fondo de esto. Continúe la investigación después de la prisa. "},
+                {"who":"ada", "text":"27 de junio \nJunto con Lord Moorhouse se ha logrado tal progreso en nuestra investigación sobre el cálculo de vapor. Nuestros diseños anteriores adolecían de imprecisiones. Sólo cuando las válvulas estaban perfectamente equilibradas y producían una salida de 50, el resultado era perfecto. Con esto yo estaba tuve una idea. \n\nPude sentir cuán abierta está cualquier válvula, colocando una segunda válvula que ventila el vapor y ajustando su apertura. Solo cuando las dos válvulas estén igualmente abiertas, la presión entre ellas será exactamente 50. Todos Lo que tenía que hacer era ajustar el valor hasta que este fuera el caso. "},
+                {"who":"ada", "text":"Con esto, Lord Moorhouse pudo crear un componente de adición de presión de vapor, que espero que me revele. \n\nLord Moorhouse es muy tímido pero inteligente como un látigo, por desgracia, a menudo tiene demasiado miedo de compartir sus innovaciones. "}
+            ],
+            [
+                {"who":"nicola", "text":"Bueno, funciona. Ahora podemos sentir cuán abierta está una válvula, pero no veo cómo esto nos acerca al cálculo de vapor. Supongo que debemos preguntarle a Lord Moorhouse."},
+                {"who":"nicola", "text":"Lord Moorhouse. Gracias por permitirnos llamarle. En su ausencia, estamos intentando continuar el trabajo de cálculo de vapor de Lady Chavvington. Sólo usted conoce la construcción de la unidad de adición de presión y le rogamos que la comparta con nosotros."},
+                {"who":"george", "text":"Estoy de acuerdo. Habiendo pensado en esto, el avance del conocimiento debe continuar a pesar de su colusión con Charles en mi contra. Revelaré el secreto de la adición a cambio de la seguridad de que ella está a salvo de él. Al escuchar los rumores que pasan por estos pasillos, sospecho que está muerta por su mano. "},
+                {"who":"nicola", "text":"Lady Chavvington está viva y bien, quedándose con su hermana."},
+                {"who":"george", "text":"Es un alivio. La idea de que pase más tiempo en esa trampa mortal de alta presión me mantiene despierto por la noche. Si uno de esos camiones cisterna de alta presión explotara, perecería el pensamiento, la destrucción sería inmensa. No lo haría. Descanse hasta que el mundo se libere de este horror de alta presión ... \n\nOh ... ¿Dónde estaba yo? El diseño de suma. Antes de que pueda hacer uno, debe hacer uno de resta. Una válvula está tan abierta como la presión en el lado (+) menos la presión en el lado (-). Una vez que crea una válvula de este tipo, puede medir su apertura. "},
+                {"who":"george", "text":"Pero ahora, debes irte. Con Ada a salvo, tengo una tarea importante para la que debo prepararme."}
+            ],
+            [
+                {"who":"charles", "text":"He traído el cartel de la pipa que pidió Ada."},
+                {"who":"nicola", "text":"Eso debe haber sido hace meses."},
+                {"who":"charles", "text":"Sí, bueno, cuando un Chavvington dice que hará algo, se hará. No tienes que recordárselo todos los meses. \n\n¿Podrías enviarle un mensaje mío? \n\n80, 94, 76, 52, 68, 70 "},
+                {"who":"nicola", "text":"¡Veo que has aprendido los códigos!"},
+                {"who":"charles", "text":"¿¡¿Aprendidos?!? ¡Los diseñé! Fue durante mi tiempo en el ejército. Una combinación de los mensajes más frecuentes intercambiados entre capitanes. \n\nSé un buen tipo y envíalo de inmediato."},
+                {"who":"nicola", "text":"80 PSI [Hola] \n94 PSI [Soy Charles Chavvington] \n76 PSI [Mi ángel más dulce] \n52 PSI [Mi corazón te anhela] \n68 PSI [Espero ansiosamente tu regreso] \n70 PSI [Sin tu vida ha perdido todo significado] "},
+                {"who":"charles", "text":"Bien, ahora veo que el diseño del restador está completo. ¡Excelente! Como dijo una vez mi querida difunta Ada ..."},
+                {"who":"nicola", "text":"¡Señor! ¡Debe dejar de usar esa frase! La gente empieza a pensar que usted es un asesino ..."},
+                {"who":"charles", "text":"Hmm ... Sí. Como Ada ..., que ya no está con nosotros, dijo una vez:\"Un sumador no es más que una inversión de un sustractor. La salida menos una de las entradas debe ser igual a la otra entrada\". ¿Pero qué entrada? \n\nPasó un tiempo frustrada porque el diseño se atascaba cuando esa entrada era cero y cambiar las entradas simplemente hacía que el diseño se atascara cuando la otra entrada fue cero. Su momento eureka llegó cuando se dio cuenta de que tenía que ser una combinación de ambos enfoques."}
+            ],
+            [
+                {"who":"annie", "text":"¿Por qué no has respondido a mis mensajes?"},
+                {"who":"nicola", "text":"Nuestras disculpas, Lady Easley, no sabíamos que había enviado ninguna."},
+                {"who":"annie", "text":"Deberían grabarse en los pestillos de mensajes de aquí. \n ... \n\n¡Están perdidos! Los pestillos deben haber sido robados por quien irrumpió en el laboratorio. Debería recrearlos de inmediato para que no se pierda ningún otro elemento importante. comunicaciones. "},
+                {"who":"annie", "text":"Cuando un mensaje es estable, se envía un pulso de vapor a la tubería de sincronización. Esto hace que el pestillo capture el valor en ese momento. El pestillo registrará el valor, pero mantendrá el valor anterior hasta que la tubería de sincronización haya regresado a un nivel de presión bajo. \n\nDebido a que estos pestillos se pueden colocar en secuencia para grabar una serie de mensajes, es importante que el nuevo valor solo se libere una vez que la tubería de sincronización haya vuelto a la presión baja. "},
+                {"who":"annie", "text":"Siempre me impresionó lo bien selladas que están las válvulas de Charles con una válvula cerrada capaz de mantener la presión dentro de una tubería de manera indefinida. \n\nEspero que el diseño no se pierda, porque tenía tantas esperanzas de expandirlo en una variedad de maneras."}
+            ],
+            [
+                {"who":"charles", "text":"¡Buenas noticias a todos! Permítanme presentarles al profesor Joseph Cogsworth. Una de las mentes más brillantes, si no LA, de todos los países. Sus máquinas de tabulación basadas en equipos han hecho maravillas para nuestro departamento de contabilidad. \n\nHa estado ayudando en nuestro falta la situación del vapor de alta presión y se ha dignado a interesarse por el trabajo de Ada. "},
+                {"who":"joseph", "text":"Es interesante ver qué tan lejos ha llegado. Veo que ha reconstruido el pestillo con la misma especificación que Ada describió en sus notas."},
+                {"who":"nicola", "text":"Esas notas desaparecieron durante el robo. ¿Cómo las conociste?"},
+                {"who":"joseph", "text":"Ada siempre fue una gran admiradora de mi trabajo. Aunque pensé que su enfoque basado en vapor era crudo e inexacto, a menudo buscaba mi consejo con la esperanza de que pudiera ser adecuado."},
+                {"who":"charles", "text":"Una vez que complete el tabulador de vapor, podremos determinar cuál de mis contadores ha estado malversando mi vapor de alta presión. \n\nCada tabulador suma o resta un valor del recuento actual. La conexión norte selecciona entre sumar o restando y la conexión sur proporciona un pulso de sincronización de vapor de alta presión. \n\nAda tuvo que mejorar todos sus diseños anteriores para aumentar la precisión de todos los componentes usados. Trabajo que nunca logró completar. "}
+            ],
+            [
+                {"who":"charles", "text":"Muy bien, pero lamentablemente demasiado tarde, porque el profesor Cogsworth ya ha identificado al contable culpable."},
+                {"who":"joseph", "text":"De hecho, pero a cambio todo lo que pido es tomar posesión de este tosco intento de un dispositivo de tabulación basado en vapor. Ada deseaba que yo fuera el custodio de toda su investigación. ¿Gertrude? ¿Nicola? Tu trabajo aquí está hecho."},
+                {"who":"ada", "text":"¡No lo creo! Es improbable que le pase mi trabajo a un hombre con el carácter y el intelecto de una avispa parásita."},
+                {"who":"joseph", "text":"¡Ada! Tenía la impresión de que habías muerto."},
+                {"who":"ada", "text":"¡Charles! Detenga a este hombre, porque él es la causa de toda esta perturbación."},
+                {"who":"charles", "text":"¿¡Qué!?! No creo que un hombre de su estatura esté involucrado en delitos tan insignificantes."},
+                {"who":"george", "text":"Es cierto Charles. Joseph me envenenó contra ti con falsedades, manipulándonos para que nos detestamos unos a otros. Al principio colaboré con él debido a su disgusto por el vapor de alta presión, ¡pero fue solo más tarde que me di cuenta de su odio por TODO vapor!"} ,
+                {"who":"charles", "text":"¿Es esto cierto Joseph? ¿No tienes pasión por el vapor de alta presión?"},
+                {"who":"joseph", "text":"¡Por supuesto que es verdad! Sustancia espantosa. ¿Pero para que me arresten? ¿Para qué? Pero no tienes pruebas de ninguna fechoría."},
+                {"who":"ada", "text":"De hecho, lo hacemos. Sus máquinas de tabulación de engranajes han estado eliminando pequeñas fracciones de cada transacción. Solo cuando comparamos los resultados con el tabulador de vapor detectamos estos errores. Todo esto para que pueda extraer lentamente el vapor de alta presión. no por la sensación de Charles de que algo andaba mal, esto nunca se habría detectado. "},
+                {"who":"joseph", "text":"¡Absurdo! ¿Qué querría yo con esta sustancia repugnante?"},
+                {"who":"george", "text":"Para llenar lentamente el recipiente a presión que me pediste que construyera debajo del ayuntamiento."},
+                {"who":"charles", "text":"¡¿¡Qué!?! ¡Pero eso es un recipiente de baja presión! ¿¡No tienes idea de las consecuencias de llenarlo con vapor de alta presión!?!"},
+                {"who":"joseph", "text":"¡Las únicas consecuencias serían que el mundo finalmente rechazara el vapor de una vez por todas! Debería estar reservado para ejecuciones y solo visto en museos. ¡Pensar! ¡El vapor invadiendo las oficinas y desplazando mis máquinas! ¡Porque son solo los engranajes los que pueden producir un. .. \n\n¡¿QUÉ!?! ¡Suéltame! ¡Suéltame, malditos tontos! ¡No puedes hacerme esto! ¡Espera hasta que la Academia se entere de esto! "},
+                {"who":"charles", "text":"¡La Academia sin duda se enterará de esto! \n\nBueno, esa es una conclusión satisfactoria para este asunto. Mi vapor de alta presión está a salvo, al igual que mi querida Ada."},
+                {"who":"ada", "text":"En realidad, cariño, creo que la historia de la computación de vapor apenas está comenzando."},
+                {"who":"charles", "text":"De hecho. Pero, quizás deberíamos difundir esa bomba de vapor primero."}
+            ],
+            [
+                {"who":"ada", "text":"Gracias Gertrude. Si no fuera por tu rapidez de pensamiento, habríamos tenido un desastre en nuestras manos."},
+                {"who":"george", "text":"También estoy bastante impresionado. Ada, no puedo disculparme lo suficiente por acusarla de saquear mi residencia. ¿Sería posible que Gertrude y Nicola me ayudaran en mis diseños? Creo que su aportación será muy constructiva."},
+                {"who":"ada", "text":"No hables más de esto, porque yo también debo ser perdonado. Como un gesto de buena voluntad, siéntete libre de usar mi ... nuestro laboratorio. Lady Easley ya tiene acceso. Creo que Charles y yo necesitamos un poco de descanso de toda esta conmoción. Regresaremos en unos días y ya espero con ansias inspeccionar tus descubrimientos. "},
+                {"who":"george", "text":"Gracias y buen viaje. \n\nNicola, ¿podrías encontrarme ese amplificador de presión x2?"},
+                {"who":"nicola", "text":"Está justo aquí. \n\nLa construcción es simple, pero encuentro la operación increíblemente útil."},
+                {"who":"george", "text":"De hecho. Aunque este dispositivo amplifica valores desde un rango específico de 0 a 50 hasta el rango de 0 a 100. Dado un valor mínimo y máximo, creo que podemos construir un amplificador que se acerque a cualquier rango dado."},
+                {"who":"nicola", "text":"Lo llamaremos el elemento Zoom."},
+                {"who":"george", "text":"Absolutamente, aunque deberíamos inventarlo primero. El norte puede ser nuestro máximo y el sur nuestro mínimo. La salida del este nos dirá dónde se encuentra la entrada del oeste dentro del rango."}
+            ],
+            [
+                {"who":"george", "text":"Bien, ahora podemos acercarnos a cualquier rango de presión que elijamos. Lo que necesito a continuación es una forma de detectar si estamos dentro de un rango. Echa un vistazo a este \" velocímetro de vapor \". \n\nAda lo hizo para Charles para medir la cantidad de vapor que pasa a través de él. Cuando el vapor pasa a través de una tubería larga, pierde algo de presión. Cuanto más rápido pasa el vapor, más presión pierde. Si los dos lados están a la misma presión, debe haber sin vapor en movimiento. Incluso puso algunas válvulas en la tubería para aumentar la resistencia y hacer la diferencia mayor. "},
+                {"who":"george", "text":"Lo que necesito es una forma de saber si la referencia de entrada del Oeste está entre las dos presiones. Debe ser más baja que la del Norte, pero más alta que la del Sur."}
+            ],
+            [
+                {"who":"george", "text":"Ahora, al hacer zoom en un rango, puedo decir con mayor precisión cuánto vapor está usando alguien, pero también puedo saber si estoy dentro del rango que estoy inspeccionando. Les diré a mis clientes que se preparen para un lugar decimal adicional en su próximas facturas de vapor! "},
+                {"who":"annie", "text":"¿Toda esta investigación ha sido únicamente para ayudar a las ganancias de su empresa? Este no es nuestro acuerdo."},
+                {"who":"george", "text":"¡Pero Lady Easley! Los hice para usted. Créame, serán componentes muy útiles en el futuro."},
+                {"who":"annie", "text":"Lo dudo mucho. Creo que es hora de una investigación pura. \n\nRegresemos al diseño del pestillo en el que trabajamos Ada y yo. Quería un pestillo que se pueda habilitar o deshabilitar. Si la entrada norte es alta , el pestillo funciona normalmente, pero si está bajo, no debería impulsar la salida ni aceptar una nueva entrada al ver un pulso de sincronización.Podemos usar el diseño anterior, aunque puede ser más eficiente hacer uno personalizado. "}
+            ],
+            [
+                {"who":"annie", "text":"Ahora, la razón por la que quería ese diseño era poder construir un \" pestillo direccionable \"donde la entrada norte selecciona entre uno de varios pestillos. De esta manera podría almacenar varios valores y acceder a cada uno a voluntad. \n\n empezar con dos. La entrada Norte selecciona entre dos pestillos. El valor Norte 0 a 50 seleccionará uno, y el valor Norte 50 a 100 seleccionará el segundo. "}
+            ],
+            [
+                {"who":"annie", "text":"Exactamente, desafortunadamente esto es lo que hemos llegado. Luego quería un pestillo que pudiera almacenar cinco valores, pero Ada y yo nunca pudimos encajarlo todo en un solo diseño. Los rangos seleccionados serían 0-20, 20-40, 40-60, 60-80 y 80-100. Desafortunadamente, detectar en cuál de los rangos estaba la señal seleccionada fue demasiado difícil. "},
+                {"who":"george", "text":"Si solo uno tuviera un diseño de detección de rango."},
+                {"who":"annie", "text":"Su diseño detecta flujo, no un rango de presión."},
+                {"who":"george", "text":"Bueno, sí y no. Detecta un rango de presión de vapor que fluye. Si se coloca en la cadena y el vapor pasa, detectarán un rango de presiones."}
+            ],
+            [
+                {"who":"annie", "text":"Lo admito, ese detector de flujo era bastante ingenioso y era el truco que necesitábamos. Pero ahora, ¿cómo haríamos para atar dos de estos bloques Latch5 para hacer un Latch10? \n\nLos rangos seleccionados serían 0-10, 10 -20, 20-30 ... "},
+                {"who":"george", "text":"Y es por eso que pedí que se diseñara el elemento de zoom. He visto la genialidad en sus ideas y ya lo he planeado con anticipación."}
+            ],
+            [
+                {"who":"ada", "text":"Bueno, estoy impresionado. Solo nos habíamos ido un par de días y tú has creado la parte de almacenamiento del Steamputer."},
+                {"who":"nicola", "text":"¿El qué?"},
+                {"who":"annie", "text":"Todo se revelará a su debido tiempo. \n\nBueno, ¡creo que mi trabajo aquí está hecho! Me las arreglé para diseñar el almacenamiento. ¿Dejaré que investigues los cálculos y el control?"},
+                {"who":"ada", "text":"Bueno, comencemos con algo pequeño. Necesitamos un componente que nos dé el menor de los dos valores de entrada. Debería ser lo suficientemente simple."}
+            ],
+            [
+                {"who":"charles", "text":"¡Ada! ¡Querida! ¡Prueba esta nueva y emocionante bebida que me presentó George! Se llama \" Froffee Coffee \". ¡Pruébala!"},
+                {"who":"ada", "text":"Hmmm, sí, es bastante ni ..."},
+                {"who":"charles", "text":"¿¡Sabes qué lo haría aún mejor!?!"},
+                {"who":"ada", "text":"Presión alta ..."},
+                {"who":"charles", "text":"¡Vapor a alta presión!"},
+                {"who":"ada", "text":"Cariño. Aprecio mucho que hayas hecho las paces con George, pero ¿no se suponía que ustedes dos estaban planeando los elementos del programa?"},
+                {"who":"charles", "text":"¡Ya hecho! George está finalizando el poema ... o debería decir requisitos."},
+                {"who":"ada", "text":"¡Oh! Bueno, debemos crear rápidamente el componente Max y luego podrás tener acceso a nuestros ingenieros. \n\nLa salida esta vez debe ser el máximo de las dos entradas."}
+            ],
+            [
+                {"who":"charles", "text":"Si tenemos algo de tiempo antes de que llegue George, deberíamos gastarlo en hacer que sus recipientes a presión sean más seguros. Son seguros hasta 90 PSI, pero más allá de eso, pueden explotar. Lo que necesito es un \" fusible de vapor \". Permitir el flujo de vapor de oeste a este, pero una vez que la presión supere los 90 psi, desconecte el suministro y ventile el recipiente. Recuerde desconectar el suministro primero y solo luego ventilar el tanque. "}
+            ],
+            [
+                {"who":"charles", "text":"¡Ven, George! ¡Creo que tenemos algo de privacidad!"},
+                {"who":"george", "text":"¿Estás seguro de este Charles? Lady Easley apenas reconoce mi existencia."},
+                {"who":"charles", "text":"¡Viejo, labio superior rígido!"},
+                {"who":"george", "text":"Muy bien. Esto es algo delicado. Necesito un dispositivo que aumente en 10 PSI en cada ciclo. Debería comenzar a 0 PSI y en cada pulso de tiempo debería aumentar en 10 PSI. En lugar de alcanzar 100 PSI, debería reiniciarse de nuevo a 0 PSI. \n\nPor favor, sea discreto acerca de su construcción. "}
+            ],
+            [
+                {"who":"george", "text":"Charles, no puedo agradecerte lo suficiente por dejarme usar tus poemas. Este articula perfectamente mis sentimientos por Lady Easley. Describe su belleza, su amabilidad y sus ingeniosos diseños de pestillo. Todo lo que tenía que hacer era reemplazar el objeto de afecto de su \"Vapor de alta presión \" a mi \"Lady Easley \". "},
+                {"who":"george", "text":"Eche un vistazo al diseño Latch10 de Easley. Necesitamos algo más simple, pero más complejo. Para cada rango de valores de entrada, necesito una presión específica para la salida. No es necesario actualizar los valores retenidos. \n\nAhora podría ser es un buen momento para examinar cómo crear componentes personalizados. Puede usar cualquier diseño antiguo como base y cambiar la implementación para esa instancia ."}
+            ],
+            [
+                {"who":"george", "text":"Ya casi estamos allí. Conectemos estas partes para que se reproduzca mi poema. En cada pulso de vapor, se debe leer el siguiente valor. Esto no será trivial ya que nuestro contador pasa por una secuencia de 0, 10, 20, 30 ... mientras que nuestro almacenamiento de poemas quiere una secuencia 5, 15, 25, 35 ... "}
+            ],
+            [
+                {"who":"charles", "text":"¡Excelente material! Es una pena que tengamos que confiar en estos horribles relojes Cogsworth para proporcionar los pulsos de sincronización."},
+                {"who":"nicola", "text":"Gertrude, ¿recuerdas cómo difundiste esa bomba? Creo que podemos hacer un reloj con la misma precisión."},
+                {"who":"charles", "text":"Independientemente de cómo lo hagas, quiero que se dé la vuelta una vez por cada tic y no quiero que cambie de hora dependiendo de a qué esté conectado."}
+            ],
+            [
+                {"who":"ada", "text":"¿Qué han estado haciendo ustedes dos?"},
+                {"who":"charles", "text":"George y yo acabamos de entregarle una maravillosa máquina recitadora de poesía a Lady Easley. Ha sido programada para recitar los sentimientos de George hacia ella. \n\nCon suficiente refinamiento se podría reducir tal dispositivo al tamaño de un caballo."},
+                {"who":"ada", "text":"Eso suena encantador. Aunque espero que hayas revertido las presiones ya que los códigos de Annie están todos negados."},
+                {"who":"george", "text":"¡¿QUÉ?! Nicola! ¿Qué le acabo de enviar?"},
+                {"who":"nicola", "text":"Hmm ... Parece que la complementaste con su magnífica barba ... solicitaste sus grabados lascivos ... y le dijiste que atacara al enemigo al amanecer."},
+                {"who":"george", "text":"... \nEn esa nota, regresaré a mi residencia para pasar un rato con una botella de brandy."},
+                {"who":"ada", "text":"¡Charles! ¡Ve y ayúdalo! \n\nMientras se vayan, quizás ustedes dos puedan ayudar. Se suponía que Charles instalaría dos tuberías en esta pared, pero solo tiene una. Necesito que el norte esté conectado al sur y el oeste al este. . ¿Hay alguna forma de hacer esto sin esperar a que se instale una nueva tubería? "},
+                {"who":"nicola", "text":"Menos mal que vivimos en un universo de relojería porque creo que tengo una idea."}
+            ],
+            [
+                {"who":"annie", "text":"Hola Ada. ¿Está George aquí? Vengo a hablar con él sobre esta máquina que me han entregado a mi residencia."},
+                {"who":"ada", "text":"¡Oh Annie! Lo siento mucho. Él y Charles ignoraban por completo las diferencias del libro de códigos."},
+                {"who":"annie", "text":"Oh, me di cuenta de eso de inmediato. De lo contrario, lo habría convertido en una farsa tan tonta."},
+                {"who":"ada", "text":"¡Nicola! Ve a buscar a George y Charles, donde sea que lleguen."},
+                {"who":"annie", "text":"Este dispositivo de poesía que hicieron es un artilugio maravilloso. Los componentes utilizados son ingeniosos. ¿Gertrude? Este contador. Supongo que usted participó en su construcción. ¿Podría adaptar el diseño para incluir una forma de establecer el valor? El nuevo valor vendría en el puerto Oeste, y el puerto Norte seleccionará si usar el nuevo valor. "}
+            ],
+            [
+                {"who":"ada", "text":"Tengo que decir Annie, ¿no encuentras todo esto bastante complicado?"},
+                {"who":"annie", "text":"Lo hago, pero mira lo lejos que hemos llegado. ¿Recuerdas la semana que pasaste tratando de que la víbora funcionara? Mirando hacia atrás, todo parece tan simple ahora. No solo nuestra investigación ha progresado, sino que creo que tenemos una mejor comprensión del vapor. "},
+                {"who":"ada", "text":"Entonces tal vez podrías ayudarme a mirar uno de los pestillos de tus mensajes. No puedo entender qué está mal. Todos los mensajes de Lady Bechdel salen como una tontería."},
+                {"who":"annie", "text":"Interesante. Parece que el pulso de sincronización llega demasiado pronto, antes de que el valor se estabilice. Si pudiera retrasar el pulso un poco menos de un tic, eso lo arreglaría. Necesitaría un cambio muy rápido entre 0 y 100 PSI. Hagamos algo. "}
+            ],
+            [
+                {"who":"annie", "text":"¿Qué muestra este indicador?"},
+                {"who":"ada", "text":"Esa sería la presión de vapor que va a Cogsworth Clockworks. ¿Por qué?"},
+                {"who":"annie", "text":"Mira. Es un patrón tan peculiar. Además, ¿no están cerrados? Después de todo, es domingo. \n\nSalta hasta 100 PSI por un tic, luego otro valor por otro tic, antes de volver a 0 PSI. "},
+                {"who":"ada", "text":"Eso es intrigante. Me pregunto si podríamos decodificarlo."}
+            ],
+            [
+                {"who":"nicola", "text":"¡Lady Chavvington! He buscado por toda la ciudad y no he podido localizar ..."},
+                {"who":"ada", "text":"¡Sabemos dónde están! George se las arregló para hacernos llegar un mensaje encendiendo y apagando una entrada. Los han encerrado en la sala de vapor de Cogsworth Clockworks. ¡Vayamos allí de inmediato!"},
+                {"who":"charles", "text":"[BANG] [BANG] [BANG] \n¡Sácanos! ¡La habitación se está llenando de vapor a alta presión! ¡Oh, la cruel ironía de ser asesinado por lo que amo!"},
+                {"who":"nicola", "text":"¡La llave que debería abrir esta puerta no funciona! ¡Parece que alguien disparó a la cerradura y rompió una tubería! No sé nada de abrir cerraduras, y mucho menos de las rotas."}
+            ],
+            [
+                {"who":"charles", "text":"¡Gertrude! ¡No puedo agradecerte lo suficiente, no solo por salvar nuestras vidas, sino también por hacerlo usando vapor de alta presión!"},
+                {"who":"ada", "text":"Cariño, ¿cómo te metiste en esta terrible situación?"},
+                {"who":"charles", "text":"George y yo estábamos disfrutando de un par de tragos en la taberna Old Brass cuando las cosas se pusieron borrosas. Lo siguiente que recuerdo es despertarme en esta habitación con Cogsworth acusándonos de arruinar su vida. Después de ser despedido de la Academia, sus inversores comenzaron a preguntas. Su única opción era silenciarnos, dándole tiempo suficiente para tomar el dinero de sus inversores y emprender una rápida retirada. \n\n¡Rápido! ¡Al aeródromo! No debemos dejar que se escape. "},
+                {"who":"george", "text":"Esta tubería transporta códigos de lanzamiento de oeste a este. Cada uno tiene tres códigos y se transmite a dos tics por código. Una vez que veamos el código de Cogsworth de 27, 39, 31, sabremos que está aquí y está tratando de escapar."},
+                {"who":"ada", "text":"Entonces sería demasiado tarde. Para entonces tendrá permiso para despegar y podría escapar. Debemos decirle al gerente del aeródromo que no le permita salir."},
+                {"who":"george", "text":"Por desgracia, el administrador ha sido reemplazado por una máquina Cogsworth. Probablemente una comprometida. \n\nNo debemos permitir que el código de lanzamiento de Cogsworth pase, pero no debemos interrumpir el aeródromo para que no descubra que lo perseguimos. \n\n¿Y si retrasamos la señal unos cuantos tics y si la vemos, podríamos eliminarla? Esto nos dará tiempo para localizarlo y detenerlo ."}
+            ],
+            [
+                {"who":"ada", "text":"Por fin. Con Cogsworth tras las rejas, finalmente podemos completar nuestro Steamputer. \n\nTodas las partes ahora están en su lugar. He escrito lo que llamaré un \" programa \", para calcular los números de Fibonacci, pero los resultados son incorrecto. \n\nTendremos que refinar los componentes hasta que obtengamos una máquina en funcionamiento. Puede que se dedique un tiempo considerable a diagnosticar los problemas y ajustarlos. "}
+            ],
+            [
+                {"who":"charles", "text":"¡Está aquí! La respuesta de la Academia. \n\n \" Le agradecemos su envío del Steamputer para que lo revise la Academia de Ciencias. Descubrimos que ha ampliado considerablemente nuestro conocimiento en el cálculo del vapor. Por lo tanto, nos complace informarle que su solicitud de membresía ha sido aprobada. \""},
+                {"who":"nicola", "text":"Felicitaciones Lady Chavvington."},
+                {"who":"ada", "text":"En realidad, la aplicación no era para mí. Fue en nombre de Gertrude. \n\nGertrude, tú fuiste quien construyó todos estos componentes y nos has mostrado cómo manipular el vapor para usos maravillosos. Eres tú quien debería enseñar a otros del cálculo de vapor. "},
+                {"who":"charles", "text":"¡Hurra! \n\n ¡Celebremos esta tarde!"},
+                {"who":"george", "text":"¿Lady Easley? ¿Te unirás a nosotros para la ocasión?"},
+                {"who":"annie", "text":"Me temo que no puedo, porque tengo una cita esta tarde con un apuesto caballero."},
+                {"who":"george", "text":"Oh."},
+                {"who":"annie", "text":"Ese serías tú, George. Se ofreció el té de la tarde en Madingley Hall y acepto gentilmente."},
+                {"who":"ada", "text":"Gracias por jugar a ComPressure."}
+            ]
+        ],
+        "hints":
+        [
+            [
+                {"who":"charles", "text":"Haga clic y mantenga presionado el botón izquierdo del mouse para colocar una tubería nueva desde el punto de inicio hasta el final. Si arrastra una tubería nueva sobre la anterior, no los conectará. Si tiene algún problema, puede quitar las tuberías usando el botón derecho del mouse. "}
+            ],
+            [
+                {"who":"charles", "text":"El menú de construcción le permite colocar una fuente de vapor que suministre vapor a 100 PSI. Una tubería de extremo abierto liberará la presión a 0. Al golpear una tubería en algún lugar en el medio, es posible crear una presión en algún punto intermedio. "}
+            ],
+            [
+                {"who":"charles", "text":"El menú de construcción tiene el componente de la válvula. Al conectar el lado \" + \"de la válvula al norte, permite que la entrada norte controle qué tan abierta está la válvula. Luego, simplemente puede conectar el este y el oeste para conectar los dos cuando el norte está en alta presión. "}
+            ],
+            [
+                {"who":"nicola", "text":"Si lo he entendido correctamente, debemos conectar el puerto \" + \"de la válvula a una fuente de vapor de alta presión, y el puerto marcado como \" - \"a la entrada sur. Esto conectará el este y el oeste solo cuando el La presión del puerto sur es baja. Si es alta, cerrará la válvula. "}
+            ],
+            [
+                {"who":"nicola", "text":"Cuando la entrada es alta, conectamos el norte. Sabemos cómo hacerlo desde el diseño \" Normalmente abierto \". Y cuando la entrada es baja, conectamos el Sur. Ese es nuestro diseño \" Normalmente cerrado \". "}
+            ],
+            [
+                {"who":"nicola", "text":"Bueno, comencemos con lo básico. Cuando la entrada sea alta, conectaremos la salida a una fuente de vapor. Cuando esté baja, nos conectaremos a la atmósfera. Para conectarnos a la atmósfera, simplemente dejamos abierto el extremo de la tubería. \n\nComo señaló Lady Chavvington, las válvulas son analógicas y parece que cuando los valores están entre 0 y 100, las válvulas se abrirán parcialmente y recrearán la proporción exacta. "}
+            ],
+            [
+                {"who":"nicola", "text":"Esta vez, cuando la entrada es de alta presión, queremos que esté conectada a la atmósfera. Cuando la entrada es baja es cuando suministramos el vapor. Nuestro diseño de interruptor pudo seleccionar entre dos valores. Esos valores podrían ser vapor y atmósfera . "}
+            ],
+            [
+                {"who":"nicola", "text":"Podemos usar válvulas para medir cuál es más alto entre el Norte y el Sur. Si el Norte es más alto, conectamos la salida al vapor. Si el Sur es más alto, lo conectamos a la atmósfera. \n\nRecuerde, el vapor en la tubería de salida no se escurre por sí solo, necesitamos liberarlo activamente usando una válvula. "}
+            ],
+            [
+                {"who":"nicola", "text":"Supongo que ya tenemos un comparador y tenemos una fuente de un valor preciso de 50."}
+            ],
+            [
+                {"who":"nicola", "text":"Cuando la entrada es 100, queremos que la salida sea 50. Así que supongo que conectamos nuestro generador 50 a la salida usando una válvula. Y cuando la entrada es 0, ventilamos la salida a la atmósfera."}
+            ],
+            [
+                {"who":"nicola", "text":"Esto suena como nuestro diseño de búfer de nuevo, pero cuando la entrada es 50, queremos que la salida sea 100. Por lo tanto, la válvula de ventilación de la atmósfera debería cerrarse una vez que lleguemos a 50. Supongo que, en lugar de usar 100 PSI en \" + \"lado de la válvula de ventilación, podríamos cambiarlo a 50."}
+            ],
+            [
+                {"who":"nicola", "text":"No recuerdo que haya otros componentes en esto. Creo que solo tenemos que conectar lo que está allí a la salida."}
+            ],
+            [
+                {"who":"nicola", "text":"Si pasamos la salida a través de nuestro componente de cifrado, podemos determinar cuál debe haber sido la entrada. \n\nCuando las dos entradas en el comparador son iguales, la salida no está presurizada ni ventilada. Si obtenemos demasiada oscilación, deberíamos volver al diseño de nuestro comparador y hacerlo menos sólido. "}
+            ],
+            [
+                {"who":"nicola", "text":"Podemos usar el mismo truco que en nuestro diseño de descifrado. Aumentamos o disminuimos la cantidad que abrimos la válvula inferior hasta que la presión entre ellas sea exactamente 50. Tenemos un Amp50 que hace esto."}
+            ],
+            [
+                {"who":"nicola", "text":"Abrimos una válvula al valor de la entrada Oeste menos la entrada Sur, luego podemos abrir una segunda válvula al mismo nivel de apertura buscando cuando la presión entre ellas es 50."}
+            ],
+            [
+                {"who":"nicola", "text":"Este es un poco más difícil. Usar un sustractor nos da demasiada oscilación. \n\nComparar la salida menos una de las entradas con la otra entrada falla si la segunda entrada es 0 y la válvula está completamente cerrada. Pero en ese caso podemos usar un segundo par de válvulas para hacer la misma comparación y cambiar las entradas. Luego, podemos usar un Amp50 para asegurarnos de que la presión entre las cuatro válvulas sea 50 PSI. \n\nHaga clic en los requisitos para ver un diagrama de esta configuración. "}
+            ],
+            [
+                {"who":"annie", "text":"Cuando la entrada del sur es alta, abrimos nuestra tubería de almacenamiento. Podemos usar un búfer para presurizar la salida al mismo nivel que capturamos. Tenemos que cerrar la salida mientras que la entrada del sur es alta para no dejar la nueva presión se propaga a través. La forma más fácil de garantizar esto es usar el umbral de 50 en las válvulas de sincronización y de salida. "}
+            ],
+            [
+                {"who":"nicola", "text":"La salida es el valor de un pestillo controlado por la entrada Sur. La entrada al pestillo es la salida del pestillo más o menos la entrada Oeste. La entrada Norte selecciona entre ellos. Tenemos un sumador, un sustractor y un interruptor. "}
+            ],
+            [
+                {"who":"nicola", "text":"Para variar, un bamboleo es realmente deseable. Los amplificadores en una configuración de anillo harán que el diseño sea inestable y se bamboleará hacia arriba y hacia abajo."}
+            ],
+            [
+                {"who":"nicola", "text":"Cuando el Oeste es más alto que el Sur, comience a agregar más vapor. Cuando el Oeste sea más bajo que el Norte, comience a liberar más vapor."}
+            ],
+            [
+                {"who":"nicola", "text":"Puede poner válvulas en serie. Solo si todas las válvulas están abiertas, el vapor fluirá."}
+            ],
+            [
+                {"who":"nicola", "text":"Esto no es muy diferente de nuestro diseño de pestillo normal, excepto que la salida y el pulso de temporización no están conectados cuando la entrada norte es baja."}
+            ],
+            [
+                {"who":"nicola", "text":"Si la entrada de selección Norte es superior a 50, habilitamos un pestillo; de lo contrario, habilitamos el otro."}
+            ],
+            [
+                {"who":"nicola", "text":"¡Necesitamos tantas señales selectas! ¿Qué pasa si encadenamos una fila de detectores de flujo con entrada de vapor en un extremo y atmósfera en el otro? Esto nos daría todos los valores que necesitamos crear."}
+            ],
+            [
+                {"who":"nicola", "text":"Podemos usar dos elementos Latch5 y cambiar entre ellos dependiendo de si la selección está por debajo o por encima de 50. Pero luego tendríamos que escalar la selección de uno de los dos rangos (0 - 50 o 50 - 100) al rango de El diseño de Latch5 toma (0 - 100). \n\nCreo que el elemento Zoom es útil después de todo, pero en este caso puede que necesite ser bastante poderoso. Cada zoom estaría conectado a cinco detectores de flujo, y lo tomará un mientras que presurizar todas esas tuberías. Para hacer un diseño más fuerte, simplemente podríamos duplicarlo. "}
+            ],
+            [
+                {"who":"ada", "text":"Debería ser tan fácil como un comparador y un cambio."}
+            ],
+            [
+                {"who":"ada", "text":"¿No es lo mismo que nuestro componente Mín, sino que se selecciona al revés?"}
+            ],
+            [
+                {"who":"charles", "text":"Podemos formar un valor de 90 PSI utilizando una tubería de ventilación de tubería larga. Un comparador entre esa y la entrada de salida nos dirá cuándo ventilar el recipiente. A medida que la presión de nuestro comparador aumenta de 0 PSI a 50 PSI, debería cerrar la entrada . Una vez que se eleva por encima de 50 PSI, debe abrir una válvula para liberar el contenido del recipiente a la atmósfera. "}
+            ],
+            [
+                {"who":"george", "text":"Podemos usar un sumador con 10 PSI estáticos en una entrada. Luego, use un pestillo para capturar el nuevo valor. Finalmente, un fusible en el bucle restablecerá el contador a 0 PSI."}
+            ],
+            [
+                {"who":"george", "text":"Podemos usar el mismo método que usamos en el diseño de Latch10 para seleccionar entre diez valores. Cada valor deberá ser personalizado y conectado a la salida cuando se seleccione. Esto implica varios diseños personalizados."}
+            ],
+            [
+                {"who":"george", "text":"Podemos conectar nuestro contador a la ROM, pero primero necesitaremos agregar 5 usando un sumador."}
+            ],
+            [
+                {"who":"nicola", "text":"Si formamos un anillo de componentes Amp50 con una inversión en algún lugar, podemos obtener un ritmo regular. Una vez que lo acercamos, podemos sintonizarlo agregando elementos de tubería para ralentizarlo un poco."}
+            ],
+            [
+                {"who":"nicola", "text":"Un reloj puede seleccionar entre las dos entradas y en el otro lado de la pared, un reloj sincronizado puede seleccionar entre las salidas. Aunque no debemos conectar ambas entradas. Para cuando abramos una, la segunda debería estar sellada. puede usar 50 PSI como referencia. "}
+            ],
+            [
+                {"who":"annie", "text":"Podemos modificar el contador para insertar un interruptor para seleccionar entre un valor nuevo o el incrementado."}
+            ],
+            [
+                {"who":"annie", "text":"Solo necesitamos retrasar valores de 0 PSI y 100 PSI. Una cadena de elementos Amp50 retrasará el pulso, con algunos ajustes menores."}
+            ],
+            [
+                {"who":"annie", "text":"Un elemento de retardo nos dará el pulso de tiempo que necesitamos. Una vez que veamos el pulso retardado, podemos capturar el valor, pero también forzar la entrada de retardo a 0 PSI."}
+            ],
+            [
+                {"who":"nicola", "text":"En lugar de simplemente tapar el orificio, podríamos conectarlo a 100 PSI. Eso lo haría más fácil. Para hacer una llave de vapor, uno puede replicar las presiones que se forman dentro de la cerradura."}
+            ],
+            [
+                {"who":"george", "text":"Necesitamos tres pestillos para retrasar la entrada lo suficiente. Un generador de reloj con un retraso adicional personalizado puede sincronizarlos. Para detectar si todos los valores son correctos, una tubería se puede llenar lentamente y si algún valor de pestillo es mayor o menor que el buscado valor, puede ventilar la tubería. "}
+            ],
+            [
+                {"who":"ada", "text":"Tómese su tiempo y comprenda cómo funciona la máquina. Una vez que lo haga, puede mejorar sus diseños para que mejoren el funcionamiento del Steamputer."}
+            ],
+            [
+                {"who":"ada", "text":"No más pistas. Disfruta tu victoria."}
+            ]
+        ]
+    }
 }
