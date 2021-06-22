@@ -4828,21 +4828,29 @@ void GameState::check_clipboard()
     clipboard_level_set = NULL;
  
     SaveObjectMap* omap = NULL;
-    if (!comp.empty())
+    try 
     {
-        try 
+        if (!comp.empty())
         {
             std::string decomp = decompress_string(comp);
             std::istringstream decomp_stream(decomp);
             omap = SaveObject::load(decomp_stream)->get_map();
-            clipboard_level_index = omap->get_num("level_index");
-            LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
-            clipboard_level_set = new_set;
         }
-        catch (const std::runtime_error& error)
+        else
         {
-            std::cerr << error.what() << "\n";
+            std::string decomp(new_clip);
+            while (!decomp.empty() && decomp[0] != '{')
+                decomp.erase(0, 1);
+            std::istringstream decomp_stream(decomp);
+            omap = SaveObject::load(decomp_stream)->get_map();
         }
+        clipboard_level_index = omap->get_num("level_index");
+        LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
+        clipboard_level_set = new_set;
+    }
+    catch (const std::runtime_error& error)
+    {
+        std::cerr << error.what() << "\n";
     }
     delete omap;
 }
