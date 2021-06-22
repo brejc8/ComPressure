@@ -1489,6 +1489,7 @@ void Circuit::force_element(XYPos pos, CircuitElement* element)
     delete elements[pos.y][pos.x];
     elements[pos.y][pos.x] = element;
     blocked[pos.y][pos.x] = true;
+    elements[pos.y][pos.x]->set_read_only(true);
 }
 
 void Circuit::force_sign(Sign new_sign)
