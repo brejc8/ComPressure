@@ -151,8 +151,9 @@ Level::Level(int level_index_, bool hidden_):
     init_tests();
 }
 
-Level::Level(int level_index_, SaveObject* sobj):
-    level_index(level_index_)
+Level::Level(int level_index_, SaveObject* sobj, bool inspected_):
+    level_index(level_index_),
+    inspected(inspected_)
 {
     pin_order[0] = -1; pin_order[1] = -1; pin_order[2] = -1; pin_order[3] = -1;
     SaveObjectMap* omap = sobj->get_map();
@@ -347,6 +348,8 @@ void Level::init_tests(SaveObjectMap* omap)
                 circuit->force_element(pos, elem);
             }
         }
+        if (desc->has_key("help_design") && !inspected && !hidden)
+            help_design = new LevelSet(desc->get_item("help_design"), true);
 
         if (desc->has_key("forced_signs"))
         {
@@ -664,7 +667,7 @@ LevelSet::LevelSet(SaveObject* sobj, bool inspect)
                 sobj = NULL;
         }
         if (sobj)
-            levels.push_back(new Level(i, sobj));
+            levels.push_back(new Level(i, sobj, inspect));
         else
             levels.push_back(new Level(i, inspect));
     }
@@ -672,7 +675,7 @@ LevelSet::LevelSet(SaveObject* sobj, bool inspect)
     {
         SaveObject *sobj = slist->get_item(i);
         if (!sobj->is_null())
-            levels.push_back(new Level(i, sobj));
+            levels.push_back(new Level(i, sobj, inspect));
         else
             levels.push_back(new Level(i, inspect));
     }

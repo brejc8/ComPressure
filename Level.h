@@ -112,9 +112,11 @@ public:
 
     int level_index;
     bool hidden = false;
+    bool inspected = false;
     Circuit* circuit;
     LevelSet *best_design = NULL;
     LevelSet *saved_designs[4] = {NULL,NULL,NULL,NULL};
+    LevelSet *help_design = NULL;
 
     int pin_order[4] = {-1, -1, -1, -1};
 
@@ -143,6 +145,7 @@ public:
     bool best_price_set = false;
     bool best_steam_set = false;
     bool server_refreshed = false;
+    bool tip_revealed = false;
 
     unsigned test_index = 0;
     unsigned sim_point_index = 0;
@@ -173,7 +176,7 @@ public:
     bool global_score_graph_set = false;
     unsigned global_score_graph_time = 0;
 
-    Level(int level_index_, SaveObject* sobj);
+    Level(int level_index_, SaveObject* sobj, bool inspected);
     Level(int level_index_, bool hidden_ = false);
     ~Level();
     SaveObject* save(bool lite = false);

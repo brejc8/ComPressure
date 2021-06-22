@@ -451,9 +451,12 @@ void GameState::advance()
     unsigned period = 200;
     unsigned time = SDL_GetTicks();
 
-    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 30)) && !discord_joined)
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 30)))
     {
-        show_dialogue_discord_prompt = true;
+        if (!discord_joined)
+            show_dialogue_discord_prompt = true;
+        if (edited_level_set->levels[current_level_index]->help_design)
+            edited_level_set->levels[highest_level]->tip_revealed = true;
         time_last_progress = SDL_GetTicks();
     }
 
@@ -1671,6 +1674,8 @@ void GameState::render(bool saving)
         
         render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
         render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
+        if (edited_level_set->levels[current_level_index]->tip_revealed && edited_level_set->levels[current_level_index]->help_design)
+            render_button(XYPos(panel_offset.x + 64 * scale, panel_offset.y + 144 * scale), XYPos(352, 160), 0, "Reveal a solution");   // Help
         if (next_dialogue_level > 32 && !current_circuit_is_read_only)
         {
             switch (test_mode)
@@ -3304,6 +3309,19 @@ void GameState::mouse_click_in_panel()
             show_dialogue_hint = true;
             dialogue_index = 0;
             
+        }
+        else if ((panel_pos - XYPos(64,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT)
+                 && edited_level_set->levels[current_level_index]->tip_revealed
+                 && edited_level_set->levels[current_level_index]->help_design)   // Help
+        {
+            if (free_level_set_on_return)
+                delete level_set;
+            deletable_level_set = NULL;
+            set_level_set(edited_level_set->levels[current_level_index]->help_design);
+            free_level_set_on_return = false;
+            set_current_circuit_read_only();
+            current_level_set_is_inspected = true;
+            set_level(current_level_index);
         }
         else if ((panel_pos - XYPos(6*32,144)).inside(XYPos(32,32)) && next_dialogue_level > 32)  // Scoring mode
         {
