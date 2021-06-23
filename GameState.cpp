@@ -2635,7 +2635,7 @@ void GameState::render(bool saving)
         for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); ++it)
         {
             render_box(XYPos((160 + 32 + col * 160) * scale, (90 + 16 + i * 24) * scale), XYPos(160 - 64, 24), 0);
-            render_text(XYPos((160 + 32 + 4 + col * 160), (90 + 16 + i * 24 + 4)), it->first.c_str());
+            render_text(XYPos((160 + 32 + 4 + col * 160), (90 + 16 + i * 24 + 5)), it->first.c_str());
             i++;
             if (i >= 7)
             {
