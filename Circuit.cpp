@@ -709,7 +709,7 @@ XYPos CircuitElementSubCircuit::getimage(void)
         return XYPos(128 + 3 * 32, 32 + 3 * 32);
     assert(level);
 //    return level->getimage(dir_flip);
-    int mask = dir_flip.mask(getconnections());
+    int mask = getconnections();
     return XYPos(128 + (mask & 0x3) * 32, 32 + ((mask >> 2) & 0x3) * 32);
 }
 
