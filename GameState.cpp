@@ -2631,11 +2631,17 @@ void GameState::render(bool saving)
     {
         render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0);
         int i = 0;
+        int col = 0;
         for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); ++it)
         {
-            render_box(XYPos((160 + 32) * scale, (90 + 16 + i * 24) * scale), XYPos(320 - 64, 24), 0);
-            render_text(XYPos((160 + 32 + 4 ), (90 + 16 + i * 24 + 4)), it->first.c_str());
+            render_box(XYPos((160 + 32 + col * 160) * scale, (90 + 16 + i * 24) * scale), XYPos(160 - 64, 24), 0);
+            render_text(XYPos((160 + 32 + 4 + col * 160), (90 + 16 + i * 24 + 4)), it->first.c_str());
             i++;
+            if (i >= 7)
+            {
+                col++;
+                i = 0;
+            }
         }
     }
     else if (show_main_menu)
@@ -4503,9 +4509,10 @@ bool GameState::events()
                     if (display_language_dialogue)
                     {
                         int i = 0;
+                        int col = 0;
                         for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); it++)
                         {
-                            if ((mouse / scale - XYPos((160 + 32), (90 + 16 + i * 24))).inside(XYPos(320 - 64, 24)))
+                            if ((mouse / scale - XYPos((160 + 32 + col * 160), (90 + 16 + i * 24))).inside(XYPos(160 - 64, 24)))
                             {
                                 language_name = it->first;
                                 load_lang();
@@ -4513,6 +4520,11 @@ bool GameState::events()
                                 break;
                             }
                             i++;
+                            if (i >= 7)
+                            {
+                                col++;
+                                i = 0;
+                            }
                         }
                         display_language_dialogue = false;
                     }
