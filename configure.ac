@@ -12,5 +12,14 @@ PKG_CHECK_MODULES([SDL2_ttf], [SDL2_ttf])
 PKG_CHECK_MODULES([ZLIB], [zlib])
 PKG_CHECK_MODULES([ZSTD], [libzstd])
 
-AC_OUTPUT
+AC_ARG_ENABLE([steam],
+[  --disable-steam    Turn off Steam],
+[case "${enableval}" in
+  yes) steam=true ;;
+  no)  steam=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-steam]) ;;
+esac],[steam=true])
 
+AM_CONDITIONAL([NO_STEAM], [test x$steam = xfalse])
+
+AC_OUTPUT
