@@ -171,11 +171,11 @@ GameState::GameState(const char* filename)
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     Mix_AllocateChannels(16);
     
-    vent_steam_wav = Mix_LoadWAV("vent_steam.wav");
+    vent_steam_wav = Mix_LoadWAV("vent_steam.ogg");
     Mix_PlayChannel(0, vent_steam_wav, -1);
     Mix_Volume(0, 0);
     
-    move_steam_wav = Mix_LoadWAV("move_steam.wav");
+    move_steam_wav = Mix_LoadWAV("move_steam.ogg");
     Mix_PlayChannel(1, move_steam_wav, -1);
     Mix_Volume(1, 0);
     
