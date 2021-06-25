@@ -705,9 +705,9 @@ SDL_Rect CircuitElementSubCircuit::getimage_bg(void)
 
 XYPos CircuitElementSubCircuit::getimage(void)
 {
-    if (level_index < 0)
-        return XYPos(128 + 3 * 32, 32 + 3 * 32);
-    assert(level);
+//    if (level_index < 0)
+//        return XYPos(128 + 3 * 32, 32 + 3 * 32);
+//    assert(level);
 //    return level->getimage(dir_flip);
     int mask = getconnections();
     return XYPos(128 + (mask & 0x3) * 32, 32 + ((mask >> 2) & 0x3) * 32);
