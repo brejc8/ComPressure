@@ -393,6 +393,25 @@ void GameState::score_fetch(int level_index)
     fetch_from_server(omap, &scores_from_server);
 }
 
+void GameState::score_fetch(std::string name)
+{
+    if (scores_from_server.working)
+        return;
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "score_fetch");
+    omap->add_num("steam_id", steam_id);
+    omap->add_num("type", test_mode);
+    omap->add_string("steam_username", steam_username);
+    omap->add_string("name", name);
+
+    SaveObjectList* slist = new SaveObjectList;
+    for (uint64_t f : friends)
+        slist->add_num(f);
+    omap->add_item("friends", slist);
+
+    fetch_from_server(omap, &scores_from_server);
+}
+
 void GameState::design_fetch(uint64_t level_steam_id, int level_index)
 {
     if (design_from_server.working)
@@ -404,6 +423,20 @@ void GameState::design_fetch(uint64_t level_steam_id, int level_index)
     omap->add_string("steam_username", steam_username);
     omap->add_num("level_steam_id", level_steam_id);
     omap->add_num("level_index", level_index);
+    fetch_from_server(omap, &design_from_server);
+}
+
+void GameState::design_fetch(uint64_t level_steam_id, std::string name)
+{
+    if (design_from_server.working)
+        return;
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "design_fetch");
+    omap->add_num("steam_id", steam_id);
+    omap->add_num("type", test_mode);
+    omap->add_string("steam_username", steam_username);
+    omap->add_num("level_steam_id", level_steam_id);
+    omap->add_string("name", name);
     fetch_from_server(omap, &design_from_server);
 }
 
@@ -2319,7 +2352,10 @@ void GameState::render(bool saving)
         if (!edited_level_set->levels[current_level_index]->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), edited_level_set->levels[current_level_index]->global_score_graph_time + 1000 * 10))
         {
             edited_level_set->levels[current_level_index]->global_score_graph_time = SDL_GetTicks();
-            score_fetch(current_level_index);
+            if (current_level_index >= LEVEL_COUNT)
+                score_fetch(edited_level_set->levels[current_level_index]->name);
+            else
+                score_fetch(current_level_index);
         }
 
         XYPos pos = ((mouse - graph_pos) / scale);
@@ -3838,7 +3874,10 @@ void GameState::mouse_click_in_panel()
             if (i < edited_level_set->levels[current_level_index]->friend_scores.size())
             {
                 Level::FriendScore& score = edited_level_set->levels[current_level_index]->friend_scores[friend_score_scroll.offset_rows + i];
-                design_fetch(score.steam_id, current_level_index);
+                if (current_level_index <  LEVEL_COUNT)
+                    design_fetch(score.steam_id, current_level_index);
+                else
+                    design_fetch(score.steam_id, edited_level_set->levels[current_level_index]->name);
             }
         }
         return;
@@ -4854,6 +4893,8 @@ void GameState::check_clipboard()
             std::string decomp(new_clip);
             while (!decomp.empty() && decomp[0] != '{')
                 decomp.erase(0, 1);
+            if (decomp == "")
+                return;
             std::istringstream decomp_stream(decomp);
             omap = SaveObject::load(decomp_stream)->get_map();
         }
@@ -4875,7 +4916,21 @@ void GameState::deal_with_scores()
         try 
         {
             SaveObjectMap* omap = scores_from_server.resp->get_map();
-            int level = omap->get_num("level");
+            int level;
+            if (omap->has_key("level"))
+                level = omap->get_num("level");
+            else
+            {
+                std::string name = omap->get_string("name");
+                level = LEVEL_COUNT;
+                while (edited_level_set->levels[level]->name != name)
+                {
+                    level++;
+                    if (level >= edited_level_set->levels.size())
+                        throw(std::runtime_error("level name not found"));
+                }
+            }
+            
             edited_level_set->levels[level]->global_fetched_score = omap->get_num("score");
             SaveObjectList* glist = omap->get_item("graph")->get_list();
             for (unsigned i = 0; i < 200; i++)

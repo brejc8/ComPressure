@@ -245,7 +245,9 @@ public:
     void save_to_server(bool sync = false);
     void score_submit(int level_index, bool sync = false);
     void score_fetch(int level);
+    void score_fetch(std::string name);
     void design_fetch(uint64_t design_steam_id, int level_index);
+    void design_fetch(uint64_t level_steam_id, std::string name);
 
     ~GameState();
     SDL_Texture* loadTexture(const char* filename);

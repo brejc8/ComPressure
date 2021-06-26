@@ -186,6 +186,7 @@ public:
     void setimage_fg_texture(WrappedTexture* texture_);
 
     void init_tests(SaveObjectMap* omap = NULL);
+    void re_init_tests(SaveObjectMap* desc);
     void reset();
     void advance(unsigned ticks);
     void select_test(unsigned t);

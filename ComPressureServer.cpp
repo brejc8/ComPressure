@@ -143,9 +143,77 @@ class Player
 {
 public:
     std::string steam_username;
-    bool priv;
-    std::list<ChatMessage> messages;
+//    bool priv;
+//    std::list<ChatMessage> messages;
 };
+
+class CustomLevel
+{
+public:
+    std::string name;
+    int level_index;
+    SaveObject* sobj = NULL;
+    ScoreTable accuracy_scores;
+    ScoreTable price_scores;
+    ScoreTable steam_scores;
+    
+    CustomLevel()
+    {
+    }
+    CustomLevel(std::string name_, int level_index_, SaveObject* sobj_)
+    {
+        name = name_;
+        level_index = level_index_;
+        sobj = sobj_->dup();
+    }
+
+    CustomLevel(const CustomLevel& other)
+    {
+        name = other.name;
+        level_index = other.level_index;
+        if (other.sobj)
+            sobj = other.sobj->dup();
+        accuracy_scores = other.accuracy_scores;
+        price_scores = other.price_scores;
+        steam_scores = other.steam_scores;
+    }
+
+    ~CustomLevel()
+    {
+        delete sobj;
+    }
+
+    SaveObject* save()
+    {
+        SaveObjectMap* omap = new SaveObjectMap;
+        
+        SaveObjectList* player_list = new SaveObjectList;
+
+        omap->add_item("accuracy_scores", accuracy_scores.save());
+        omap->add_item("price_scores", price_scores.save());
+        omap->add_item("steam_scores", steam_scores.save());
+        
+        omap->add_item("design", sobj->dup());
+        omap->add_string("name", name);
+        omap->add_num("level_index", level_index);
+
+        return omap;
+    }
+
+    void load(SaveObject* sobjin)
+    {
+        SaveObjectMap* omap = sobjin->get_map();
+        name = omap->get_string("name");
+        level_index = omap->get_num("level_index");
+        sobj = omap->get_item("design")->dup();
+        accuracy_scores.load(omap->get_item("accuracy_scores"));
+        price_scores.load(omap->get_item("price_scores"));
+        steam_scores.load(omap->get_item("steam_scores"));
+    }
+        
+
+};
+
 
 class Database
 {
@@ -154,17 +222,18 @@ public:
     std::vector<ScoreTable> levels;
     std::vector<ScoreTable> levels_price;
     std::vector<ScoreTable> levels_steam;
+    std::list<CustomLevel> custom_levels;
 
     void update_name(uint64_t steam_id, std::string& steam_username)
     {
         players[steam_id].steam_username = steam_username;
     }
 
-    void update_priv(uint64_t steam_id, bool priv)
-    {
-        players[steam_id].priv = priv;
-    }
-
+//     void update_priv(uint64_t steam_id, bool priv)
+//     {
+//         players[steam_id].priv = priv;
+//     }
+// 
     void update_score(uint64_t steam_id, unsigned level, int64_t score, SaveObject* sobj)
     {
         if (level >= levels.size())
@@ -196,17 +265,17 @@ public:
             std::string name;
             uint64_t id = omap->get_num("id");
             omap->get_string("steam_username", name);
-            bool priv = omap->get_num("priv");
+//            bool priv = omap->get_num("priv");
             update_name(id, name);
-            update_priv(id, priv);
-            if (omap->has_key("chat"))
-            {
-                SaveObjectList* chat_list = omap->get_item("chat")->get_list();
-                for (unsigned i = 0; i < chat_list->get_count(); i++)
-                {
-                    
-                }
-            }
+//             update_priv(id, priv);
+//             if (omap->has_key("chat"))
+//             {
+//                 SaveObjectList* chat_list = omap->get_item("chat")->get_list();
+//                 for (unsigned i = 0; i < chat_list->get_count(); i++)
+//                 {
+//                     
+//                 }
+//             }
         }
 
         SaveObjectList* level_list = omap->get_item("levels")->get_list();
@@ -242,6 +311,28 @@ public:
             }
         }
 
+        if (omap->has_key("levels_steam"))
+        {
+            SaveObjectList* level_list = omap->get_item("levels_steam")->get_list();
+            if (level_list->get_count() > levels_steam.size())
+                levels_steam.resize(level_list->get_count());
+            for (unsigned i = 0; i < level_list->get_count(); i++)
+            {
+                SaveObject* sobj = level_list->get_item(i);
+                levels_steam[i].load(sobj);
+            }
+        }
+
+        if (omap->has_key("custom_levels"))
+        {
+            SaveObjectList* level_list = omap->get_item("custom_levels")->get_list();
+            for (unsigned i = 0; i < level_list->get_count(); i++)
+            {
+                custom_levels.push_back(CustomLevel());
+                custom_levels.back().load(level_list->get_item(i));
+            }
+        }
+
     }
 
     SaveObject* save()
@@ -254,17 +345,17 @@ public:
         {
             SaveObjectMap* player_map = new SaveObjectMap;
             player_map->add_num("id", player_pair.first);
-            player_map->add_num("priv", player_pair.second.priv);
+//            player_map->add_num("priv", player_pair.second.priv);
             player_map->add_string("steam_username", player_pair.second.steam_username);
-            SaveObjectList* chat_list = new SaveObjectList;
-            for (ChatMessage& msg : player_pair.second.messages)
-            {
-                SaveObjectMap* message_map = new SaveObjectMap;
-                message_map->add_num("steam_id", msg.steam_id);
-                message_map->add_string("text", msg.text);
-                chat_list->add_item(message_map);
-            }
-            player_map->add_item("chat", chat_list);
+//             SaveObjectList* chat_list = new SaveObjectList;
+//             for (ChatMessage& msg : player_pair.second.messages)
+//             {
+//                 SaveObjectMap* message_map = new SaveObjectMap;
+//                 message_map->add_num("steam_id", msg.steam_id);
+//                 message_map->add_string("text", msg.text);
+//                 chat_list->add_item(message_map);
+//             }
+//             player_map->add_item("chat", chat_list);
 
             player_list->add_item(player_map);
         }
@@ -294,6 +385,13 @@ public:
         }
         omap->add_item("levels_steam", level_list);
 
+        level_list = new SaveObjectList;
+        for (CustomLevel &clevel :custom_levels)
+        {
+            level_list->add_item(clevel.save());
+        }
+        omap->add_item("custom_levels", level_list);
+
         return omap;
     }
 
@@ -317,6 +415,29 @@ public:
         return omap;
     }
 
+    SaveObject* get_scores(std::string name, uint64_t user_id, std::set<uint64_t>& friends, unsigned type = 0)
+    {
+        for (CustomLevel &clevel :custom_levels)
+        {
+            if (clevel.name == name)
+            {
+                ScoreTable* table = &clevel.accuracy_scores;
+                if (type == 1)
+                    table = &clevel.price_scores;
+                else if (type == 2)
+                    table = &clevel.steam_scores;
+
+                SaveObjectMap* omap = new SaveObjectMap;
+                omap->add_string("name", name);
+                omap->add_num("score", type ? (INT64_MAX - table->get_score(user_id)) : table->get_score(user_id));
+                omap->add_num("type", type);
+                table->fetch_scores(omap, user_id, friends, *this, type);
+                return omap;
+            }
+        }
+        return new SaveObjectMap;
+    }
+
     SaveObject* get_design(uint64_t level_steam_id, unsigned level_index, unsigned type = 0)
     {
         std::vector<ScoreTable> *level_ptr = &levels;
@@ -337,6 +458,65 @@ public:
         return omap;
     }
 
+    SaveObject* get_design(uint64_t level_steam_id, std::string name, unsigned type = 0)
+    {
+        for (CustomLevel &clevel :custom_levels)
+        {
+            if (clevel.name == name)
+            {
+                ScoreTable* table = &clevel.accuracy_scores;
+                if (type == 1)
+                    table = &clevel.price_scores;
+                else if (type == 2)
+                    table = &clevel.steam_scores;
+
+                SaveObjectMap* omap = new SaveObjectMap;
+
+                omap->add_num("level_index", clevel.level_index);
+                omap->add_item("levels", table->get_design(level_steam_id));
+                omap->add_num("steam_id", level_steam_id);
+                omap->add_string("steam_username", players[level_steam_id].steam_username);
+                return omap;
+            }
+        }
+        return new SaveObjectMap;
+    }
+
+    void add_custom_level(int level_index, SaveObject* sobj, std::string name)
+    {
+        for (CustomLevel &clevel :custom_levels)
+        {
+            if (clevel.name == name)
+            {
+                return;
+            }
+        }
+        custom_levels.push_back(CustomLevel(name, level_index, sobj));
+    }
+
+    void update_custom_score(std::string name, uint64_t steam_id, unsigned level, int64_t score, SaveObject* sobj)
+    {
+        for (CustomLevel &clevel :custom_levels)
+        {
+            if (clevel.name == name)
+            {
+                clevel.accuracy_scores.add_score(steam_id, score, sobj);
+            }
+        }
+    }
+
+    bool reinit_tests(Level* level)
+    {
+        for (CustomLevel &clevel :custom_levels)
+        {
+            if (clevel.name == level->name)
+            {
+                level->re_init_tests(clevel.sobj->get_list()->get_item(clevel.level_index)->get_map());
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 
@@ -361,6 +541,7 @@ public:
     SubmitScore(Database& db_, SaveObjectMap* omap):
         db(db_)
     {
+        int level_index = omap->get_num("level_index");
         level_set = new LevelSet(omap->get_item("levels"), true);
         omap->get_string("steam_username", steam_username);
         steam_id = omap->get_num("steam_id");
@@ -373,12 +554,27 @@ public:
     }
     void update_scores()
     {
-        for (unsigned level_index = 0; level_index < LEVEL_COUNT; level_index++)
+        for (unsigned level_index = 0; level_index < 10000; level_index++)
         {
             if (level_set->is_playable(level_index, LEVEL_COUNT))
             {
                 Pressure score = level_set->levels[level_index]->last_score;
-                if (score)
+                if (level_index >= LEVEL_COUNT)
+                {
+                    if (level_set->levels[level_index]->name.substr(0,7) == "Global:")
+                    {
+                        SaveObject* save_object = level_set->save_one(level_index);
+                        if (steam_id == 0)
+                            db.add_custom_level(level_index, save_object, level_set->levels[level_index]->name);
+                        if (score)
+                        {
+                            db.update_custom_score(level_set->levels[level_index]->name, steam_id, level_index, level_set->levels[level_index]->last_score, save_object);
+                            printf("New score:%s - %f\n", level_set->levels[level_index]->name.c_str(), (float)score/65536);
+                        }
+                        delete save_object;
+                    }
+                }
+                else if (score)
                 {
                     SaveObject* save_object = level_set->save_one(level_index);
                     db.update_score(steam_id, level_index, level_set->levels[level_index]->last_score, save_object);
@@ -397,7 +593,7 @@ public:
         while (!level_set->is_playable(current_level, LEVEL_COUNT))
         {
             current_level++;
-            if (current_level >= LEVEL_COUNT)
+            if (current_level >= 10000)
             {
                 update_scores();
                 return true;
@@ -405,6 +601,14 @@ public:
         }
         if (!init_level)
         {
+            if (current_level >= LEVEL_COUNT)
+            {
+                if (!db.reinit_tests(level_set->levels[current_level]))
+                {
+                    current_level++;
+                    return false;
+                }
+            }
             level_set->levels[current_level]->circuit->elaborate(level_set);
 
             level_set->reset(current_level);
@@ -556,7 +760,6 @@ public:
                         omap->get_string("steam_username", steam_username);
                         db.update_name(omap->get_num("steam_id"), steam_username);
                         printf("score_fetch: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
-                        unsigned level = omap->get_num("level_index");
                         std::set<uint64_t> friends;
                         unsigned type = omap->get_num("type");
                         if (omap->has_key("friends"))
@@ -568,7 +771,11 @@ public:
                             }
                             friends.insert(omap->get_num("steam_id"));
                         }
-                        SaveObject* scores = db.get_scores(level, omap->get_num("steam_id"), friends, type);
+                        SaveObject* scores;
+                        if (omap->has_key("level_index"))
+                            scores = db.get_scores(omap->get_num("level_index"), omap->get_num("steam_id"), friends, type);
+                        else
+                            scores = db.get_scores(omap->get_string("name"), omap->get_num("steam_id"), friends, type);
                         std::ostringstream stream;
                         scores->save(stream);
                         std::string comp = compress_string_zlib(stream.str());
@@ -583,10 +790,13 @@ public:
                         omap->get_string("steam_username", steam_username);
                         db.update_name(omap->get_num("steam_id"), steam_username);
                         uint64_t level_steam_id = omap->get_num("level_steam_id");
-                        unsigned level_index = omap->get_num("level_index");
                         unsigned type = omap->get_num("type");
-                        printf("design_fetch: %s %lld  req %lld %u\n", steam_username.c_str(), omap->get_num("steam_id"), level_steam_id, level_index);
-                        SaveObject* design = db.get_design(level_steam_id, level_index, type);
+                        printf("design_fetch: %s %lld  req %lld\n", steam_username.c_str(), omap->get_num("steam_id"), level_steam_id);
+                        SaveObject* design;
+                        if (omap->has_key("level_index"))
+                            design = db.get_design(level_steam_id, omap->get_num("level_index"), type);
+                        else
+                            design = db.get_design(level_steam_id, omap->get_string("name"), type);
                         std::ostringstream stream;
                         design->save(stream);
                         std::string comp = compress_string_zlib(stream.str());
@@ -686,15 +896,18 @@ int main(int argc, char *argv[])
     if(sockid==-1)
     {
         perror("socket");
+        return 1;
     }
     socklen_t len=sizeof(myaddr);
     if(bind(sockid,( struct sockaddr*)&myaddr,len)==-1)
     {
         perror("bind");
+        return 1;
     }
     if(listen(sockid,10)==-1)
     {
         perror("listen");
+        return 1;
     }
     
     

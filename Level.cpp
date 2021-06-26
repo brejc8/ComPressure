@@ -448,6 +448,22 @@ void Level::init_tests(SaveObjectMap* omap)
     }
 }
 
+void Level::re_init_tests(SaveObjectMap* desc)
+{
+        substep_count = desc->get_num("substep_count");
+        tests.clear();
+        SaveObjectList* testlist = desc->get_item("tests")->get_list();
+        for (unsigned i = 0; i < testlist->get_count(); i++)
+        {
+            tests.push_back({});
+            Test& t = tests.back();
+            SaveObjectMap* test_map = testlist->get_item(i)->get_map();
+            t.load(NULL, test_map);
+        }
+
+}
+
+
 void Level::reset()
 {
     test_index = 0;
