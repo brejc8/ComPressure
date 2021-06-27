@@ -482,15 +482,49 @@ public:
         return new SaveObjectMap;
     }
 
-    void add_custom_level(int level_index, SaveObject* sobj, std::string name)
+    SaveObject* get_server_level_design(std::string name)
     {
         for (CustomLevel &clevel :custom_levels)
         {
             if (clevel.name == name)
             {
-                return;
+                SaveObjectMap* omap = new SaveObjectMap;
+
+                omap->add_num("level_index", clevel.level_index);
+                omap->add_item("levels", clevel.sobj->dup());
+                return omap;
             }
         }
+        return new SaveObjectMap;
+    }
+
+    SaveObject* get_custom_levels(uint64_t user_id)
+    {
+        SaveObjectList* resp = new SaveObjectList;
+
+        for (CustomLevel &clevel :custom_levels)
+        {
+            SaveObjectMap* omap = new SaveObjectMap;
+            omap->add_string("name", clevel.name);
+            resp->add_item(omap);
+        }
+        return resp;
+    }
+
+    void remove_custom_level(std::string name)
+    {
+        for (auto it = custom_levels.begin(); it != custom_levels.end(); ++it)
+        {
+            if ((*it).name == name)
+            {
+                custom_levels.erase(it);
+                break;
+            }
+        }
+    }
+
+    void add_custom_level(int level_index, SaveObject* sobj, std::string name)
+    {
         custom_levels.push_back(CustomLevel(name, level_index, sobj));
     }
 
@@ -556,16 +590,14 @@ public:
     {
         for (unsigned level_index = 0; level_index < 10000; level_index++)
         {
-            if (level_set->is_playable(level_index, LEVEL_COUNT))
+            if (level_set->is_playable(level_index, LEVEL_COUNT) && level_set->levels[level_index]->global)
             {
                 Pressure score = level_set->levels[level_index]->last_score;
                 if (level_index >= LEVEL_COUNT)
                 {
-                    if (level_set->levels[level_index]->name.substr(0,7) == "Global:")
+                    if (level_set->levels[level_index]->global)
                     {
                         SaveObject* save_object = level_set->save_one(level_index);
-                        if (steam_id == 0)
-                            db.add_custom_level(level_index, save_object, level_set->levels[level_index]->name);
                         if (score)
                         {
                             db.update_custom_score(level_set->levels[level_index]->name, steam_id, level_index, level_set->levels[level_index]->last_score, save_object);
@@ -754,6 +786,22 @@ public:
                         printf("score_submit: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
                         resp = new SubmitScore(db, omap);
                     }
+                    else if (command == "global_design_submit" && omap->get_num("steam_id") == 0)
+                    {
+                        std::string steam_username;
+                        int level_index = omap->get_num("level_index");
+                        LevelSet* level_set = new LevelSet(omap->get_item("levels"), true);
+                        omap->get_string("steam_username", steam_username);
+                        db.update_name(omap->get_num("steam_id"), steam_username);
+                        SaveObject* save_object = level_set->save_one(level_index);
+                        db.remove_custom_level(level_set->levels[level_index]->name);
+                        if (level_set->levels[level_index]->global)
+                            db.add_custom_level(level_index, save_object, level_set->levels[level_index]->name);
+                        delete save_object;
+                        delete level_set;
+
+                        printf("global_design_submit: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
+                    }
                     else if (command == "score_fetch")
                     {
                         std::string steam_username;
@@ -797,6 +845,40 @@ public:
                             design = db.get_design(level_steam_id, omap->get_num("level_index"), type);
                         else
                             design = db.get_design(level_steam_id, omap->get_string("name"), type);
+                        std::ostringstream stream;
+                        design->save(stream);
+                        std::string comp = compress_string_zlib(stream.str());
+                        uint32_t length = comp.length();
+                        outbuf.append((char*)&length, 4);
+                        outbuf.append(comp);
+                        delete design;
+                    }
+                    else if (command == "server_levels_fetch")
+                    {
+                        std::string steam_username;
+                        omap->get_string("steam_username", steam_username);
+                        db.update_name(omap->get_num("steam_id"), steam_username);
+                        printf("server_levels_fetch: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
+
+                        SaveObject* custom_levels = db.get_custom_levels(omap->get_num("steam_id"));
+                        std::ostringstream stream;
+                        custom_levels->save(stream);
+                        std::string comp = compress_string_zlib(stream.str());
+                        uint32_t length = comp.length();
+                        outbuf.append((char*)&length, 4);
+                        outbuf.append(comp);
+                        delete custom_levels;
+                    }
+                    else if (command == "server_level_fetch")
+                    {
+                        std::string steam_username;
+                        omap->get_string("steam_username", steam_username);
+                        db.update_name(omap->get_num("steam_id"), steam_username);
+                        std::string name = omap->get_string("name");
+
+                        printf("server_level_design_fetch: %s %lld  req %sd\n", steam_username.c_str(), omap->get_num("steam_id"), name.c_str());
+                        SaveObject* design;
+                        design = db.get_server_level_design(name);
                         std::ostringstream stream;
                         design->save(stream);
                         std::string comp = compress_string_zlib(stream.str());

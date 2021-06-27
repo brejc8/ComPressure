@@ -109,6 +109,7 @@ public:
     const char* steam_username = "Charles Chavvington";
     std::set<uint64_t> friends;
 
+    ServerResp server_levels_from_server;
     ServerResp scores_from_server;
     ServerResp design_from_server;
 
@@ -184,6 +185,16 @@ public:
 
     bool number_high_precision = false;
 
+    bool show_server_levels = false;
+    unsigned server_levels_time = 0;
+    class ServerLevel
+    {
+    public:
+        std::string name;
+    };
+    std::vector<ServerLevel> server_levels;
+
+
     std::string tooltip_string;
 
 //    bool requesting_help = false;
@@ -244,10 +255,13 @@ public:
     void fetch_from_server(SaveObject* send, ServerResp* resp);
     void save_to_server(bool sync = false);
     void score_submit(int level_index, bool sync = false);
+    void global_design_submit(int level_index);
     void score_fetch(int level);
     void score_fetch(std::string name);
+    void server_levels_fetch();
     void design_fetch(uint64_t design_steam_id, int level_index);
     void design_fetch(uint64_t level_steam_id, std::string name);
+    void server_level_fetch(std::string name);
 
     ~GameState();
     SDL_Texture* loadTexture(const char* filename);
@@ -277,13 +291,14 @@ public:
     void click_scroll_bar(ScrollBar& sbar, XYPos mouse_click);
     void normalize_scroll_bar(ScrollBar& sbar);
     void mouse_click_in_grid(unsigned clicks);
-    void mouse_click_in_panel();
+    void mouse_click_in_panel(unsigned clicks);
     void mouse_motion();
     bool events();
     void watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_ = 0);
     void set_current_circuit_read_only();
     void check_clipboard();
     void deal_with_scores();
+    void deal_with_server_levels_from_server();
     void deal_with_design_fetch();
 
     void set_steam_user(uint64_t id, const char* name)

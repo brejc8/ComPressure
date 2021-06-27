@@ -363,6 +363,9 @@ void GameState::save_to_server(bool sync)
 
 void GameState::score_submit(int level, bool sync)
 {
+    if ((level >= LEVEL_COUNT) && !edited_level_set->levels[level]->global)
+        return;
+        
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "score_submit");
     omap->add_num("level_index", level);
@@ -371,6 +374,18 @@ void GameState::score_submit(int level, bool sync)
     omap->add_string("steam_username", steam_username);
     post_to_server(omap, sync);
 }
+
+void GameState::global_design_submit(int level)
+{
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "global_design_submit");
+    omap->add_num("level_index", level);
+    omap->add_item("levels", edited_level_set->save_one(level));
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    post_to_server(omap, true);
+}
+
 
 void GameState::score_fetch(int level_index)
 {
@@ -410,6 +425,29 @@ void GameState::score_fetch(std::string name)
     omap->add_item("friends", slist);
 
     fetch_from_server(omap, &scores_from_server);
+}
+
+void GameState::server_levels_fetch()
+{
+    if (server_levels_from_server.working)
+        return;
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "server_levels_fetch");
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    fetch_from_server(omap, &server_levels_from_server);
+}
+
+void GameState::server_level_fetch(std::string name)
+{
+    if (design_from_server.working)
+        return;
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "server_level_fetch");
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    omap->add_string("name", name);
+    fetch_from_server(omap, &design_from_server);
 }
 
 void GameState::design_fetch(uint64_t level_steam_id, int level_index)
@@ -990,6 +1028,7 @@ void GameState::render(bool saving)
 {
     check_clipboard();
     deal_with_scores();
+    deal_with_server_levels_from_server();
     current_circuit->render_prep();
 
     SDL_RenderClear(sdl_renderer);
@@ -1598,7 +1637,7 @@ void GameState::render(bool saving)
             render_button(XYPos(9 * 32 * scale, 0), XYPos(400, 160), 0, "Delete level");
             render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
         }
-        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > 24)
+        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > 24 && !current_level->global)
         {
             render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Level Editor");
         }
@@ -1684,7 +1723,7 @@ void GameState::render(bool saving)
 
             WrappedTexture* w_tex = level_set->levels[level_index]->getimage_fg_texture();
             SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
-            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : 0, level_set->levels[level_index]->name.c_str(), tex);
+            render_button(XYPos(pos.x * 32 * scale + panel_offset.x, pos.y * 32 * scale + panel_offset.y), level_set->levels[level_index]->getimage_fg(DIRECTION_N), level_index == current_level_index ? 1 : (level_set->levels[level_index]->global ? 2 : 0), level_set->levels[level_index]->name.c_str(), tex);
             
 
             switch (test_mode)
@@ -2265,7 +2304,7 @@ void GameState::render(bool saving)
             
         }
 
-    } else if (panel_state == PANEL_STATE_SCORES)
+    } else if (panel_state == PANEL_STATE_SCORES && !show_server_levels)
     {
         XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32));
         
@@ -2353,7 +2392,10 @@ void GameState::render(bool saving)
         {
             edited_level_set->levels[current_level_index]->global_score_graph_time = SDL_GetTicks();
             if (current_level_index >= LEVEL_COUNT)
-                score_fetch(edited_level_set->levels[current_level_index]->name);
+            {
+                if (edited_level_set->levels[current_level_index]->global)
+                    score_fetch(edited_level_set->levels[current_level_index]->name);
+            }
             else
                 score_fetch(current_level_index);
         }
@@ -2367,6 +2409,31 @@ void GameState::render(bool saving)
                 tooltip_string = std::to_string(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]);
         }
 
+    } else if (panel_state == PANEL_STATE_SCORES && show_server_levels)
+    {
+        XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32));
+        
+        friend_score_scroll.total_rows = server_levels.size();
+
+        render_scroll_bar(friend_score_scroll);
+
+        for (int i = 0; i < 11; i++)
+        {
+            if (i >= server_levels.size())
+                break;
+            ServerLevel& level = server_levels[friend_score_scroll.offset_rows + i];
+            render_text(table_pos+XYPos(16,0), level.name.c_str());
+            SDL_Rect src_rect = {336, 32, 16, 16};
+            SDL_Rect dst_rect = {(table_pos.x) * scale, table_pos.y * scale, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+            table_pos.y += 16;
+        }
+
+        if (SDL_TICKS_PASSED(SDL_GetTicks(), server_levels_time + 1000 * 10))
+        {
+            server_levels_time = SDL_GetTicks();
+            server_levels_fetch();
+        }
     }
 
 
@@ -2936,7 +3003,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 confirm_box_pos = XYPos(32*9 - 16, 32);
                 return;
             }
-            else if (i == 10 && (next_dialogue_level > 24) &&(current_level_index >= LEVEL_COUNT))
+            else if (i == 10 && (next_dialogue_level > 24 && !current_level->global) &&(current_level_index >= LEVEL_COUNT))
             {
                 editing_level = true;
                 current_level->current_simpoint = current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index];
@@ -3271,7 +3338,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
     }
 }
 
-void GameState::mouse_click_in_panel()
+void GameState::mouse_click_in_panel(unsigned clicks)
 {
     if (mouse_state == MOUSE_STATE_ANIMATING)
         return;
@@ -3306,6 +3373,7 @@ void GameState::mouse_click_in_panel()
                     break;
                 case 4:
                     panel_state = PANEL_STATE_SCORES;
+                    show_server_levels = (clicks > 1);
                     break;
                 case 5:
                 case 6:
@@ -3866,18 +3934,27 @@ void GameState::mouse_click_in_panel()
             click_scroll_bar(friend_score_scroll, panel_pos - XYPos(8*32, 0));
         }
 
-
         XYPos table_pos = mouse / scale - XYPos((8 + 32 * 11), (8 + 8 + 32));
         if (table_pos.inside(XYPos(16,11*16)))
         {
             int i = table_pos.y / 16;
-            if (i < edited_level_set->levels[current_level_index]->friend_scores.size())
+            if (show_server_levels)
             {
-                Level::FriendScore& score = edited_level_set->levels[current_level_index]->friend_scores[friend_score_scroll.offset_rows + i];
-                if (current_level_index <  LEVEL_COUNT)
-                    design_fetch(score.steam_id, current_level_index);
-                else
-                    design_fetch(score.steam_id, edited_level_set->levels[current_level_index]->name);
+                if ((friend_score_scroll.offset_rows + i) < server_levels.size())
+                {
+                    server_level_fetch(server_levels[friend_score_scroll.offset_rows + i].name);
+                }
+            }
+            else
+            {
+                if ((friend_score_scroll.offset_rows + i) < edited_level_set->levels[current_level_index]->friend_scores.size())
+                {
+                    Level::FriendScore& score = edited_level_set->levels[current_level_index]->friend_scores[friend_score_scroll.offset_rows + i];
+                    if (current_level_index <  LEVEL_COUNT)
+                        design_fetch(score.steam_id, current_level_index);
+                    else
+                        design_fetch(score.steam_id, edited_level_set->levels[current_level_index]->name);
+                }
             }
         }
         return;
@@ -4410,6 +4487,22 @@ bool GameState::events()
                         SDL_SetWindowResizable(sdl_window, full_screen ? SDL_FALSE : SDL_TRUE);
                         SDL_SetWindowInputFocus(sdl_window);
                         break;
+                    case SDL_SCANCODE_F12:
+                        if (keyboard_ctrl)
+                        {
+                            printf("12312\n");
+                            if (keyboard_shift)
+                            {
+                                printf("keyboard_shift\n");
+                                global_design_submit(current_level_index);
+                            }
+                            else
+                            {
+                                printf("not keyboard_shift\n");
+                                current_level->global = !current_level->global;
+                            }
+                        }
+                        break;
                     case SDL_SCANCODE_LSHIFT:
                         keyboard_shift = true;
                         break;
@@ -4720,7 +4813,7 @@ bool GameState::events()
                     }
                     else
                     {
-                        mouse_click_in_panel();
+                        mouse_click_in_panel(e.button.clicks);
                     }
                 }
                 else if (e.button.button == SDL_BUTTON_RIGHT)
@@ -4956,6 +5049,34 @@ void GameState::deal_with_scores()
             delete scores_from_server.resp;
         scores_from_server.resp = NULL;
         scores_from_server.done = false;
+    }
+}
+
+void GameState::deal_with_server_levels_from_server()
+{
+    if (server_levels_from_server.done && !server_levels_from_server.error)
+    {
+        try 
+        {
+            server_levels.clear();
+            SaveObjectList* glist = server_levels_from_server.resp->get_list();
+            for (unsigned i = 0; i < glist->get_count(); i++)
+            {
+                SaveObjectMap* fmap = glist->get_item(i)->get_map();
+                std::string name = fmap->get_string("name");
+                server_levels.push_back(ServerLevel());
+                server_levels.back().name = name;
+            }
+            
+        }
+        catch (const std::runtime_error& error)
+        {
+            std::cerr << error.what() << "\n";
+        }
+        if (server_levels_from_server.resp)
+            delete server_levels_from_server.resp;
+        server_levels_from_server.resp = NULL;
+        server_levels_from_server.done = false;
     }
 }
 

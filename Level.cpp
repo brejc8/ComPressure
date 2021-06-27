@@ -226,6 +226,8 @@ SaveObject* Level::save(bool lite)
 
     if (level_index >= LEVEL_COUNT)
     {
+        if (global)
+            omap->add_num("global", 1);
         omap->add_string("name", name);
         {
             SaveObjectList* slist = new SaveObjectList;
@@ -350,6 +352,8 @@ void Level::init_tests(SaveObjectMap* omap)
         }
         if (desc->has_key("help_design") && !inspected && !hidden)
             help_design = new LevelSet(desc->get_item("help_design"), true);
+        if (desc->has_key("global"))
+            global = true;
 
         if (desc->has_key("forced_signs"))
         {
@@ -851,6 +855,7 @@ unsigned LevelSet::import_level(LevelSet* other_set, int level_index)
     
     new_level->tests = old_level->tests;
     new_level->circuit->copy_in(old_level->circuit);
+    new_level->global = old_level->global;
 
     for (unsigned i = 0; i < 4; i++)
         new_level->pin_order[i] = old_level->pin_order[i];

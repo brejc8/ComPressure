@@ -111,6 +111,8 @@ public:
     WrappedTexture* texture = NULL;
 
     int level_index;
+    bool global = false;
+    bool global_template = false;
     bool hidden = false;
     bool inspected = false;
     Circuit* circuit;
