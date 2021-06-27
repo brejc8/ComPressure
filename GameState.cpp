@@ -4490,17 +4490,10 @@ bool GameState::events()
                     case SDL_SCANCODE_F12:
                         if (keyboard_ctrl)
                         {
-                            printf("12312\n");
                             if (keyboard_shift)
-                            {
-                                printf("keyboard_shift\n");
                                 global_design_submit(current_level_index);
-                            }
                             else
-                            {
-                                printf("not keyboard_shift\n");
                                 current_level->global = !current_level->global;
-                            }
                         }
                         break;
                     case SDL_SCANCODE_LSHIFT:
@@ -4520,7 +4513,7 @@ bool GameState::events()
                         }
                         break;
                     default:
-                        printf("Uncaught key: %d\n", e.key.keysym.scancode);
+//                        printf("Uncaught key: %d\n", e.key.keysym.scancode);
                         break;
                 }
                 break;
