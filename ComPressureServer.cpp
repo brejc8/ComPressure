@@ -541,6 +541,8 @@ public:
 
     bool reinit_tests(Level* level)
     {
+        if (!level->global)
+            return false;
         for (CustomLevel &clevel :custom_levels)
         {
             if (clevel.name == level->name)
@@ -590,7 +592,7 @@ public:
     {
         for (unsigned level_index = 0; level_index < 10000; level_index++)
         {
-            if (level_set->is_playable(level_index, LEVEL_COUNT) && level_set->levels[level_index]->global)
+            if (level_set->is_playable(level_index, LEVEL_COUNT))
             {
                 Pressure score = level_set->levels[level_index]->last_score;
                 if (level_index >= LEVEL_COUNT)
@@ -876,7 +878,7 @@ public:
                         db.update_name(omap->get_num("steam_id"), steam_username);
                         std::string name = omap->get_string("name");
 
-                        printf("server_level_design_fetch: %s %lld  req %sd\n", steam_username.c_str(), omap->get_num("steam_id"), name.c_str());
+                        printf("server_level_design_fetch: %s %lld  req %s\n", steam_username.c_str(), omap->get_num("steam_id"), name.c_str());
                         SaveObject* design;
                         design = db.get_server_level_design(name);
                         std::ostringstream stream;
