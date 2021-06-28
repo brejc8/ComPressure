@@ -4497,10 +4497,16 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_LSHIFT:
-                        keyboard_shift = true;
+                        keyboard_shift |= 1;
+                        break;
+                    case SDL_SCANCODE_RSHIFT:
+                        keyboard_shift |= 2;
                         break;
                     case SDL_SCANCODE_LCTRL:
-                        keyboard_ctrl = true;
+                        keyboard_ctrl |= 1;
+                        break;
+                    case SDL_SCANCODE_RCTRL:
+                        keyboard_ctrl |= 2;
                         break;
                     case SDL_SCANCODE_SPACE:
                         if (next_dialogue_level > 4)
@@ -4519,10 +4525,21 @@ bool GameState::events()
                 break;
             }
             case SDL_KEYUP:
-                    if (e.key.keysym.scancode == SDL_SCANCODE_LSHIFT)
-                        keyboard_shift = false;
-                    else if (e.key.keysym.scancode == SDL_SCANCODE_LCTRL)
-                        keyboard_ctrl = false;
+                switch (e.key.keysym.scancode)
+                {
+                    case SDL_SCANCODE_LSHIFT:
+                        keyboard_shift &= ~1;
+                        break;
+                    case SDL_SCANCODE_RSHIFT:
+                        keyboard_shift &= ~2;
+                        break;
+                    case SDL_SCANCODE_LCTRL:
+                        keyboard_ctrl &= ~1;
+                        break;
+                    case SDL_SCANCODE_RCTRL:
+                        keyboard_ctrl &= ~2;
+                        break;
+                }
                 break;
             case SDL_TEXTINPUT:
             {

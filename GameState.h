@@ -234,8 +234,8 @@ public:
     
     XYPos mouse;
     
-    bool keyboard_shift = false;
-    bool keyboard_ctrl = false;
+    uint8_t keyboard_shift = 0;
+    uint8_t keyboard_ctrl = 0;
     
     XYPos pipe_start_grid_pos;
     bool pipe_start_ns;
