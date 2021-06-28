@@ -124,6 +124,7 @@ public:
     Level* current_level;
 
     Circuit* current_circuit = NULL;
+    int last_edited_level_index = 0;
     int current_level_index = 0;
     int placing_subcircuit_level;
     

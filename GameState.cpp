@@ -2822,6 +2822,8 @@ void GameState::render(bool saving)
 void GameState::set_level(int level_index)
 {
     editing_level = false;
+    if (!level_set->is_playable(level_index, highest_level))
+        level_index = last_edited_level_index;
     while (!level_set->is_playable(level_index, highest_level))
     {
         if (level_index == 0)
@@ -2835,6 +2837,9 @@ void GameState::set_level(int level_index)
             level_index++;
         }
     }
+    if (level_set == edited_level_set)
+        last_edited_level_index = level_index;
+    
     current_circuit_is_inspected_subcircuit = false;
     current_circuit_is_read_only = current_level_set_is_inspected;
 
