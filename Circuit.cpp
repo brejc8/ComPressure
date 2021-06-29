@@ -737,6 +737,13 @@ void CircuitElementSubCircuit::sim_prep(PressureAdjacent adj_, FastSim& fast_sim
     assert(circuit);
     circuit->sim_prep(adj, fast_sim);
 }
+void CircuitElementSubCircuit::set_custom(bool recurse)
+{
+    custom = true;
+    if (recurse)
+        circuit->set_custom(true);
+}
+
 
 unsigned CircuitElementSubCircuit::get_cost()
 {
@@ -1635,6 +1642,16 @@ void Circuit::reindex_deleted_level(LevelSet* level_set, int level_index)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
         elements[pos.y][pos.x]->reindex_deleted_level(level_set, level_index);
+    }
+}
+
+void Circuit::set_custom(bool recurse)
+{
+    XYPos pos;
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        elements[pos.y][pos.x]->set_custom(recurse);
     }
 }
 

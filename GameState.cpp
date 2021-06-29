@@ -3024,7 +3024,18 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                     current_level_index = found;
                 }
                 edited_level_set->levels[current_level_index]->circuit->ammend();
-                edited_level_set->levels[current_level_index]->circuit->copy_elements(*current_circuit);
+
+                if (keyboard_shift)
+                {
+                    Circuit tmp_circuit(*current_circuit);
+                    tmp_circuit.elaborate(level_set);
+                    tmp_circuit.set_custom(true);
+                    edited_level_set->levels[current_level_index]->circuit->copy_elements(tmp_circuit);
+                }
+                else
+                {
+                    edited_level_set->levels[current_level_index]->circuit->copy_elements(*current_circuit);
+                }
                 edited_level_set->remove_circles(current_level_index);
                 edited_level_set->levels[current_level_index]->circuit->elaborate(edited_level_set);
                 edited_level_set->touch(current_level_index);

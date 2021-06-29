@@ -361,7 +361,7 @@ public:
     virtual void extend_pipe(Connections con){assert(0);}
     virtual Circuit* get_subcircuit(int *level_index_ = NULL) {return NULL;}
     virtual bool get_custom() {return false;}
-    virtual void set_custom() {}
+    virtual void set_custom(bool recurse = false) {}
     virtual bool get_read_only() {return true;}
     virtual void set_read_only(bool read_only_) {}
     virtual void rotate(bool clockwise) = 0;
@@ -513,7 +513,7 @@ public:
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
     Circuit* get_subcircuit(int *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}
     virtual bool get_custom() {return custom;}
-    virtual void set_custom() {custom = true;}
+    virtual void set_custom(bool recurse = false);
     virtual bool get_read_only() {return read_only;}
     virtual void set_read_only(bool read_only_) {read_only = read_only_;}
     void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
@@ -626,6 +626,7 @@ public:
     SaveObjectList* save_forced();
     void copy_in(Circuit* other);
     void reindex_deleted_level(LevelSet* level_set, int level_index);
+    void set_custom(bool recurse = false);
 
 };
 
