@@ -143,6 +143,7 @@ class Player
 {
 public:
     std::string steam_username;
+    int top_level = 0;
 //    bool priv;
 //    std::list<ChatMessage> messages;
 };
@@ -229,6 +230,7 @@ public:
         players[steam_id].steam_username = steam_username;
     }
 
+
 //     void update_priv(uint64_t steam_id, bool priv)
 //     {
 //         players[steam_id].priv = priv;
@@ -236,6 +238,11 @@ public:
 // 
     void update_score(uint64_t steam_id, unsigned level, int64_t score, SaveObject* sobj)
     {
+        if (level > players[steam_id].top_level)
+        {
+            players[steam_id].top_level = level;
+            printf("New level reached: %s %d\n", players[steam_id].steam_username.c_str(), level);
+        }
         if (level >= levels.size())
             levels.resize(level + 1);
         levels[level].add_score(steam_id, score, sobj);
@@ -265,9 +272,9 @@ public:
             std::string name;
             uint64_t id = omap->get_num("id");
             omap->get_string("steam_username", name);
-//            bool priv = omap->get_num("priv");
+            int top_level = omap->get_num("top_level");
             update_name(id, name);
-//             update_priv(id, priv);
+            players[id].top_level = top_level;
 //             if (omap->has_key("chat"))
 //             {
 //                 SaveObjectList* chat_list = omap->get_item("chat")->get_list();
@@ -347,6 +354,7 @@ public:
             player_map->add_num("id", player_pair.first);
 //            player_map->add_num("priv", player_pair.second.priv);
             player_map->add_string("steam_username", player_pair.second.steam_username);
+            player_map->add_num("top_level", player_pair.second.top_level);
 //             SaveObjectList* chat_list = new SaveObjectList;
 //             for (ChatMessage& msg : player_pair.second.messages)
 //             {
