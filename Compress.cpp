@@ -498,7 +498,7 @@ std::string compress_string_zstd(const std::string& str)
 std::string decompress_string_zstd(const std::string& str)
 {
     unsigned long long buf_size = ZSTD_getFrameContentSize(str.c_str(), str.size());
-    if (!buf_size)
+    if (!buf_size || buf_size > 10000000)
         throw(std::runtime_error("ZSTD failed"));
 
 
@@ -509,6 +509,8 @@ std::string decompress_string_zstd(const std::string& str)
     
     size_t got_size = ZSTD_decompress_usingDDict(dctx, buf, buf_size, str.c_str(), str.size(), ddict);
     if (!got_size)
+        throw(std::runtime_error("ZSTD failed"));
+    if (got_size > 10000000)
         throw(std::runtime_error("ZSTD failed"));
         
     
