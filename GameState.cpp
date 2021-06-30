@@ -4429,8 +4429,10 @@ bool GameState::events()
                     case SDL_SCANCODE_RETURN:
                         if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
                         {
-                            Sign& sign = current_circuit->signs.front();
-                            sign.text.append("\n");
+                            std::string& text = current_circuit->signs.front().text;
+                            std::string new_text(e.text.text);
+                            text.insert(text_entry_offset, new_text);
+                            text_entry_offset += new_text.size();
                         }
                         break;
                     case SDL_SCANCODE_LEFT:
