@@ -246,6 +246,8 @@ public:
     
     Sign dragged_sign;
     bool dragged_sign_motion;
+    unsigned text_entry_offset = 0;
+    
 
     void load_lang();
     GameState(const char* filename);

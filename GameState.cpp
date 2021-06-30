@@ -1544,7 +1544,7 @@ void GameState::render(bool saving)
         {
             std::string text = sign.text;
             if (frame_index % 60 < 30 && (&sign == &current_circuit->signs.front()) && (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN))
-                text.append(std::string((const char*)u8"\u258F"));
+                text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
             render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), text.c_str());
         }
     }
@@ -1788,7 +1788,7 @@ void GameState::render(bool saving)
 
         std::string text = current_level->name;
         if ((frame_index % 60 < 30) && (mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME))
-            text.append(std::string((const char*)u8"\u258F"));
+            text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
         render_text(panel_offset / scale + XYPos(4,4), text.c_str(), SDL_Color{0xff,0xff,0xff}, 2);
         
         render_box(XYPos((0) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(12*16+16, 12*16+16), 0);
@@ -3469,6 +3469,8 @@ void GameState::mouse_click_in_panel(unsigned clicks)
         if (panel_pos.y < 32)
         {
             mouse_state = MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME;
+            text_entry_offset = current_level->name.size();
+
             SDL_StartTextInput();
             return;
         }
@@ -4382,6 +4384,22 @@ bool GameState::events()
                             selected_elements.clear();
                             level_set->touch(current_level_index);
                         }
+                        else if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                        {
+                            std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                            if (text_entry_offset < text.size())
+                            {
+                                text.erase(text_entry_offset, 1);
+                                while (true)
+                                {
+                                    if (text_entry_offset >= text.size())
+                                        break;
+                                    if (is_leading_utf8_byte(text[text_entry_offset]))
+                                        break;
+                                    text.erase(text_entry_offset, 1);
+                                }
+                            }
+                        }
                         break;
                     case SDL_SCANCODE_BACKSPACE:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
@@ -4390,28 +4408,21 @@ bool GameState::events()
                             selected_elements.clear();
                             level_set->touch(current_level_index);
                         }
-                        else
+                        else if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
                         {
-                            if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+                            std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                            if (text_entry_offset)
                             {
-                                Sign& sign = current_circuit->signs.front();
-                                while (!sign.text.empty() && is_leading_utf8_byte(sign.text.back()))
+                                while (true)
                                 {
-                                    sign.text.pop_back();
+                                    text_entry_offset--;
+                                    if (!text_entry_offset)
+                                        break;
+                                    if (is_leading_utf8_byte(text[text_entry_offset]))
+                                        break;
+                                    text.erase(text_entry_offset, 1);
                                 }
-                                if (!sign.text.empty())
-                                    sign.text.pop_back();
-                                break;
-                            }
-                            if (mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
-                            {
-                                while (!current_level->name.empty() && is_leading_utf8_byte(current_level->name.back()))
-                                {
-                                    current_level->name.pop_back();
-                                }
-                                if (!current_level->name.empty())
-                                    current_level->name.pop_back();
-                                break;
+                                text.erase(text_entry_offset, 1);
                             }
                         }
                         break;
@@ -4420,6 +4431,131 @@ bool GameState::events()
                         {
                             Sign& sign = current_circuit->signs.front();
                             sign.text.append("\n");
+                        }
+                        break;
+                    case SDL_SCANCODE_LEFT:
+                        if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                        {
+                            std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                            if (text_entry_offset)
+                            {
+                                while (true)
+                                {
+                                    text_entry_offset--;
+                                    if (!text_entry_offset)
+                                        break;
+                                    if (is_leading_utf8_byte(text[text_entry_offset]))
+                                        break;
+                                }
+                            }
+                            
+                        }
+                        break;
+                    case SDL_SCANCODE_RIGHT:
+                        if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                        {
+                            std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                            if (text_entry_offset < text.size())
+                            {
+                                while (true)
+                                {
+                                    text_entry_offset++;
+                                    if (text_entry_offset >= text.size())
+                                        break;
+                                    if (is_leading_utf8_byte(text[text_entry_offset]))
+                                        break;
+                                }
+                            }
+
+                        }
+                        break;
+                    case SDL_SCANCODE_UP:
+                        if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                        {
+                            std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                            int char_count = 0;
+                            while (text_entry_offset)
+                            {
+                                char_count++;
+                                text_entry_offset--;
+                                while (text_entry_offset && !is_leading_utf8_byte(text[text_entry_offset]))
+                                    text_entry_offset--;
+                                if (text[text_entry_offset] == '\n')
+                                    break;
+                            }
+                            if (!text_entry_offset)
+                                break;
+                            text_entry_offset--;
+                            while (text_entry_offset && text[text_entry_offset] != '\n')
+                                text_entry_offset--;
+                            if (text[text_entry_offset] == '\n')
+                                text_entry_offset++;
+                            while (--char_count > 0)
+                            {
+                                if (text[text_entry_offset] == '\n')
+                                    break;
+                                text_entry_offset++;
+                                while (!is_leading_utf8_byte(text[text_entry_offset]))
+                                    text_entry_offset++;
+                            }
+                        }
+                        break;
+                    case SDL_SCANCODE_DOWN:
+                        if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                        {
+                            std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                            int char_count = 0;
+                            while (text_entry_offset)
+                            {
+                                char_count++;
+                                text_entry_offset--;
+                                if (text[text_entry_offset] == '\n')
+                                    break;
+                                while (text_entry_offset && !is_leading_utf8_byte(text[text_entry_offset]))
+                                    text_entry_offset--;
+                            }
+                            if (text_entry_offset)
+                                text_entry_offset++;
+                            else
+                                char_count++;
+
+                            while (text[text_entry_offset] != '\n' && text_entry_offset < text.size())
+                                text_entry_offset++;
+                            if (text_entry_offset < text.size())
+                                text_entry_offset++;
+                            while (--char_count > 0)
+                            {
+                                if (text_entry_offset >= text.size())
+                                    break;
+                                if (text[text_entry_offset] == '\n')
+                                    break;
+                                text_entry_offset++;
+                                while (!is_leading_utf8_byte(text[text_entry_offset]))
+                                    text_entry_offset++;
+                            }
+                        }
+                        break;
+                    case SDL_SCANCODE_HOME:
+                        if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                        {
+                            std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                            while (text_entry_offset)
+                            {
+                                if (text[text_entry_offset] == '\n')
+                                {
+                                    text_entry_offset++;
+                                    break;
+                                }
+                                text_entry_offset--;
+                            }
+                        }
+                        break;
+                    case SDL_SCANCODE_END:
+                        if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
+                        {
+                            std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                            while (text_entry_offset < text.size() && text[text_entry_offset] != '\n')
+                                text_entry_offset++;
                         }
                         break;
                     case SDL_SCANCODE_Z:
@@ -4559,17 +4695,14 @@ bool GameState::events()
                 break;
             case SDL_TEXTINPUT:
             {
-                if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
+                if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN || mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
                 {
-                    Sign& sign = current_circuit->signs.front();
-                    sign.text.append(e.text.text);
-                    break;
+                    std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
+                    std::string new_text(e.text.text);
+                    text.insert(text_entry_offset, new_text);
+                    text_entry_offset += new_text.size();
                 }
-                if (mouse_state == MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME)
-                {
-                    current_level->name.append(e.text.text);
-                    break;
-                }
+                break;
             }
             case SDL_MOUSEMOTION:
             {
@@ -4642,6 +4775,7 @@ bool GameState::events()
                         else
                         {
                             mouse_state = MOUSE_STATE_ENTERING_TEXT_INTO_SIGN;
+                            text_entry_offset = current_circuit->signs.front().text.size();
                             SDL_StartTextInput();
                         }
                     }

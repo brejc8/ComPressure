@@ -437,5 +437,5 @@ inline unsigned popcount(unsigned in)
 
 inline bool is_leading_utf8_byte(char c)
 {
-    return (c & 0xC0) == 0x80;
+    return (c & 0xC0) != 0x80;
 }
