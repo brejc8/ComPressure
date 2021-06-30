@@ -4543,12 +4543,12 @@ bool GameState::events()
                             std::string& text = (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN) ? current_circuit->signs.front().text : current_level->name;
                             while (text_entry_offset)
                             {
+                                text_entry_offset--;
                                 if (text[text_entry_offset] == '\n')
                                 {
                                     text_entry_offset++;
                                     break;
                                 }
-                                text_entry_offset--;
                             }
                         }
                         break;
