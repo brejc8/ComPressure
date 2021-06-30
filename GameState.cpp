@@ -4430,7 +4430,7 @@ bool GameState::events()
                         if (mouse_state == MOUSE_STATE_ENTERING_TEXT_INTO_SIGN)
                         {
                             std::string& text = current_circuit->signs.front().text;
-                            std::string new_text(e.text.text);
+                            std::string new_text("\n");
                             text.insert(text_entry_offset, new_text);
                             text_entry_offset += new_text.size();
                         }
