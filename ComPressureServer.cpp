@@ -188,8 +188,6 @@ public:
     {
         SaveObjectMap* omap = new SaveObjectMap;
         
-        SaveObjectList* player_list = new SaveObjectList;
-
         omap->add_item("accuracy_scores", accuracy_scores.save());
         omap->add_item("price_scores", price_scores.save());
         omap->add_item("steam_scores", steam_scores.save());
