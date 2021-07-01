@@ -2308,16 +2308,27 @@ void GameState::render(bool saving)
     {
         XYPos table_pos = XYPos((8 + 32 * 11), (8 + 8 + 32));
         
-        friend_score_scroll.total_rows = edited_level_set->levels[current_level_index]->friend_scores.size();
+        Level* level;
+        if (current_level_index < LEVEL_COUNT)
+            level = edited_level_set->levels[current_level_index];
+        else
+        {
+            int i = edited_level_set->find_custom_by_name(current_level->name);
+            if (i < 0)
+                level = current_level;
+            else
+                level = edited_level_set->levels[i];
+        }
+        friend_score_scroll.total_rows = level->friend_scores.size();
 
         render_scroll_bar(friend_score_scroll);
 
 
         for (int i = 0; i < 11; i++)
         {
-            if (i >= edited_level_set->levels[current_level_index]->friend_scores.size())
+            if (i >= level->friend_scores.size())
                 break;
-            Level::FriendScore& score = edited_level_set->levels[current_level_index]->friend_scores[friend_score_scroll.offset_rows + i];
+            Level::FriendScore& score = level->friend_scores[friend_score_scroll.offset_rows + i];
             render_text(table_pos+XYPos(16,0), score.steam_username.c_str());
             switch (test_mode)
             {
@@ -2352,9 +2363,9 @@ void GameState::render(bool saving)
             render_texture(src_rect, dst_rect);
         }
         
-        if (edited_level_set->levels[current_level_index]->global_score_graph_set)
+        if (level->global_score_graph_set)
         {
-            int64_t my_score = edited_level_set->levels[current_level_index]->global_fetched_score;
+            int64_t my_score = level->global_fetched_score;
             for (int i = 0; i < 200-1; i++)
             {
                 int top;
@@ -2362,20 +2373,20 @@ void GameState::render(bool saving)
                 unsigned colour = 6;
                 if (test_mode == TEST_MODE_ACCURACY)
                 {
-                    int v1 = pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[i]);
-                    int v2 = pressure_as_percent(edited_level_set->levels[current_level_index]->global_score_graph[i + 1]);
-                    if ((edited_level_set->levels[current_level_index]->global_score_graph[i] >= my_score) && (edited_level_set->levels[current_level_index]->global_score_graph[i + 1] <= my_score))
+                    int v1 = pressure_as_percent(level->global_score_graph[i]);
+                    int v2 = pressure_as_percent(level->global_score_graph[i + 1]);
+                    if ((level->global_score_graph[i] >= my_score) && (level->global_score_graph[i + 1] <= my_score))
                         colour = 3;
                     top = 100 - std::max(v1, v2);
                     size = abs(v1 - v2) + 1;
                 }
                 else
                 {
-                    int64_t v1 = edited_level_set->levels[current_level_index]->global_score_graph[i];
-                    int64_t v2 = edited_level_set->levels[current_level_index]->global_score_graph[i + 1];
+                    int64_t v1 = level->global_score_graph[i];
+                    int64_t v2 = level->global_score_graph[i + 1];
                     if ((v1 <= my_score) && (v2 >= my_score))
                         colour = 3;
-                    int64_t range = edited_level_set->levels[current_level_index]->global_score_graph[199];
+                    int64_t range = level->global_score_graph[199];
                     if (!range)
                         range = 1;
                     top = 100 - (std::max(v1, v2) * 100) / range;
@@ -2388,25 +2399,25 @@ void GameState::render(bool saving)
                 render_texture(src_rect, dst_rect);
             }
         }
-        if (!edited_level_set->levels[current_level_index]->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), edited_level_set->levels[current_level_index]->global_score_graph_time + 1000 * 10))
+        if (!level->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), level->global_score_graph_time + 1000 * 10))
         {
-            edited_level_set->levels[current_level_index]->global_score_graph_time = SDL_GetTicks();
+            level->global_score_graph_time = SDL_GetTicks();
             if (current_level_index >= LEVEL_COUNT)
             {
-                if (edited_level_set->levels[current_level_index]->global)
-                    score_fetch(edited_level_set->levels[current_level_index]->name);
+                if (level->global)
+                    score_fetch(level->name);
             }
             else
                 score_fetch(current_level_index);
         }
 
         XYPos pos = ((mouse - graph_pos) / scale);
-        if (edited_level_set->levels[current_level_index]->global_score_graph_set && pos.y >= 0 && pos.x >= 0 && pos.x < 200)
+        if (level->global_score_graph_set && pos.y >= 0 && pos.x >= 0 && pos.x < 200)
         {
             if (test_mode == TEST_MODE_ACCURACY)
-                tooltip_string = std::to_string(pressure_as_percent_float(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]));
+                tooltip_string = std::to_string(pressure_as_percent_float(level->global_score_graph[pos.x]));
             else
-                tooltip_string = std::to_string(edited_level_set->levels[current_level_index]->global_score_graph[pos.x]);
+                tooltip_string = std::to_string(level->global_score_graph[pos.x]);
         }
 
     } else if (panel_state == PANEL_STATE_SCORES && show_server_levels)
@@ -5170,36 +5181,50 @@ void GameState::deal_with_scores()
     {
         try 
         {
+            Level* level;
             SaveObjectMap* omap = scores_from_server.resp->get_map();
-            int level;
             if (omap->has_key("level"))
-                level = omap->get_num("level");
+                level = edited_level_set->levels[omap->get_num("level")];
             else
             {
                 std::string name = omap->get_string("name");
-                level = LEVEL_COUNT;
-                while (edited_level_set->levels[level]->name != name)
+                int level_i = LEVEL_COUNT;
+                while (true)
                 {
-                    level++;
-                    if (level >= edited_level_set->levels.size())
-                        throw(std::runtime_error("level name not found"));
+                    if (edited_level_set->levels[level_i]->name == name)
+                    {
+                        level = edited_level_set->levels[level_i];
+                        break;
+                    }
+                    level_i++;
+                    if (level_i >= edited_level_set->levels.size())
+                    {
+                        if (name == current_level->name)
+                        {
+                            level = current_level;
+                            break;
+                        }
+                        else
+                            throw(std::runtime_error("level name not found"));
+                    }
                 }
             }
             
-            edited_level_set->levels[level]->global_fetched_score = omap->get_num("score");
+            
+            level->global_fetched_score = omap->get_num("score");
             SaveObjectList* glist = omap->get_item("graph")->get_list();
             for (unsigned i = 0; i < 200; i++)
             {
-                edited_level_set->levels[level]->global_score_graph[i] = glist->get_num(i);
+                level->global_score_graph[i] = glist->get_num(i);
             }
-            edited_level_set->levels[level]->global_score_graph_set = true;
-            edited_level_set->levels[level]->friend_scores.clear();
+            level->global_score_graph_set = true;
+            level->friend_scores.clear();
             
             glist = omap->get_item("friend_scores")->get_list();
             for (unsigned i = 0; i < glist->get_count(); i++)
             {
                 SaveObjectMap* fmap = glist->get_item(i)->get_map();
-                edited_level_set->levels[level]->friend_scores.push_back(Level::FriendScore{fmap->get_string("steam_username"), uint64_t(fmap->get_num("steam_id")), Pressure(fmap->get_num("score"))});
+                level->friend_scores.push_back(Level::FriendScore{fmap->get_string("steam_username"), uint64_t(fmap->get_num("steam_id")), Pressure(fmap->get_num("score"))});
             }
             
         }
