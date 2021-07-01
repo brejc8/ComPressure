@@ -447,7 +447,7 @@
                 {"who":"nicola", "text":"This one is somewhat harder. Using a subtractor gives us too much wobble.\n\nComparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.\n\nClick the requirements for a diagram of this setup."}
             ],
             [
-                {"who":"annie", "text":"When the South input is high, we open our storage pipe. We can the use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the timing and output valves."}
+                {"who":"annie", "text":"When the South input is high, we open our storage pipe. We can use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the timing and output valves."}
             ],
             [
                 {"who":"nicola", "text":"The output is the value of a latch controlled by the South input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, a subtractor and a switch."}
@@ -2010,7 +2010,7 @@
                 {"who":"nicola", "text":"This one is somewhat harder. Using a subtractor gives us too much wobble.\n\nComparing the output minus one of the inputs to the other input fails if the second input is 0 and the valve is fully closed. But in that case we can use a second valve pair to do the same comparison and switching the inputs. We can then use an Amp50 to make sure the pressure between the four valves is 50 PSI.\n\nClick the requirements for a diagram of this setup."}
             ],
             [
-                {"who":"annie", "text":"When the South input is high, we open our storage pipe. We can the use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the timing and output valves."}
+                {"who":"annie", "text":"When the South input is high, we open our storage pipe. We the use a buffer to pressurize the output to the same level as we captured. We have to close off the output while the South input is high so as to not let the new pressure propagate through. The easiest way to guarantee this is to use threshold of 50 on the timing and output valves."}
             ],
             [
                 {"who":"nicola", "text":"The output is the value of a latch controlled by the South input. The input to the latch is either the latch output plus or minus the West input. The North input selects between them. We have an adder, a subtractor and a switch."}
