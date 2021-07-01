@@ -1820,7 +1820,7 @@ void GameState::render(bool saving)
                     XYPos npos = DirFlip(i).trans(pos, 24);
                     if (colour != level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24])
                     {
-                        colour = 8;
+                        colour = 9;
                         break;
                     }
                 }
@@ -1832,6 +1832,10 @@ void GameState::render(bool saving)
             if (colour == 8)
             {
                 src_rect = {488, 80, 8, 8};
+            }
+            else if (colour == 9)
+            {
+                src_rect = {480, 80, 8, 8};
             }
             render_texture(src_rect, dst_rect);
         }
