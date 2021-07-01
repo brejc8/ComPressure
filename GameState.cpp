@@ -183,6 +183,11 @@ GameState::GameState(const char* filename)
     music = Mix_LoadMUS("music.ogg");
     Mix_PlayMusic(music, -1);
     
+    {
+        SDL_Rect dst_rect = {0, 0, 600, 600};
+        SDL_SetTextInputRect(&dst_rect);
+    }
+    
     set_level_set(edited_level_set);
 }
     
@@ -4790,6 +4795,10 @@ bool GameState::events()
                             mouse_state = MOUSE_STATE_ENTERING_TEXT_INTO_SIGN;
                             text_entry_offset = current_circuit->signs.front().text.size();
                             SDL_StartTextInput();
+                            {
+                                SDL_Rect dst_rect = {0, 0, 600, 600};
+                                SDL_SetTextInputRect(&dst_rect);
+                            }
                         }
                     }
                 }
