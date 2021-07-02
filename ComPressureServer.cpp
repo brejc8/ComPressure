@@ -25,22 +25,29 @@ class Score
 {
 public:
     int64_t score = 0;
-    SaveObject* sobj = NULL;
+    std::string save;
     Score(){}
     Score(const Score& other)
     {
         score = other.score;
-        if (other.sobj)
-            sobj = other.sobj->dup();
+        save = other.save;
     }
     ~Score()
     {
-        delete sobj;
     }
-    void update_design(SaveObject* sobj_)
+    void update_design(SaveObject* sobj)
     {
-        delete sobj;
-        sobj = sobj_;
+        save = sobj->to_string();
+    }
+
+    void update_design(std::string& save_str)
+    {
+        save = save_str;
+    }
+
+    SaveObject* get_design()
+    {
+        return SaveObject::load(save);
     }
 };
     
@@ -65,7 +72,7 @@ public:
             uint64_t id = score.second;
             score_map->add_num("id", id);
             score_map->add_num("score", user_score[id].score);
-            score_map->add_item("design", user_score[id].sobj->dup());
+            score_map->add_string("design", user_score[id].save);
             score_list->add_item(score_map);
         }
         return score_list;
@@ -77,7 +84,8 @@ public:
         for (unsigned i = 0; i < score_list->get_count(); i++)
         {
             SaveObjectMap* omap = score_list->get_item(i)->get_map();
-            add_score(omap->get_num("id"), omap->get_num("score"), omap->get_item("design"));
+            std::string des = omap->get_string("design");
+            add_score(omap->get_num("id"), omap->get_num("score"), des);
         }
     }
 
@@ -88,14 +96,12 @@ public:
 
     void add_score(uint64_t steam_id, int64_t score, SaveObject* sobj)
     {
-//        if (!steam_id)
-//            return;
         if ((user_score.find(steam_id) != user_score.end()) && (score < user_score[steam_id].score))
             return;
 
         if (score == user_score[steam_id].score)
         {
-            user_score[steam_id].update_design(sobj->dup());
+            user_score[steam_id].update_design(sobj);
             return;
         }
 
@@ -113,15 +119,44 @@ public:
         }
         sorted_scores.insert({score, steam_id});
         user_score[steam_id].score = score;
-        user_score[steam_id].update_design(sobj->dup());
+        user_score[steam_id].update_design(sobj);
     }
-    void fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<uint64_t>& friends, Database& db, unsigned type);
+
+    void add_score(uint64_t steam_id, int64_t score, std::string& sobj)
+    {
+        if ((user_score.find(steam_id) != user_score.end()) && (score < user_score[steam_id].score))
+            return;
+
+        if (score == user_score[steam_id].score)
+        {
+            user_score[steam_id].update_design(sobj);
+            return;
+        }
+
+        for (auto it = sorted_scores.begin(); it != sorted_scores.end(); )
+        {
+           if (it->second == steam_id)
+           {
+                if (it->first >= score)
+                    return;
+                it = sorted_scores.erase(it);
+                break;
+           }
+           else
+               ++it;
+        }
+        sorted_scores.insert({score, steam_id});
+        user_score[steam_id].score = score;
+        user_score[steam_id].update_design(sobj);
+    }
+
+   void fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<uint64_t>& friends, Database& db, unsigned type);
 
     SaveObject* get_design(uint64_t steam_id)
     {
         if (!user_score.count(steam_id))
             throw(std::runtime_error("bad user id"));
-        return user_score[steam_id].sobj->dup();
+        return user_score[steam_id].get_design();
     }
     
     void clear()
