@@ -757,6 +757,7 @@ void CircuitElementSubCircuit::reindex_deleted_level(LevelSet* level_set, int de
     {
         if (!custom)
         {
+            elaborate(level_set);
             custom = true;
             if (circuit)
                 delete circuit;
