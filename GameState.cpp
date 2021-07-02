@@ -1806,6 +1806,10 @@ void GameState::render(bool saving)
             src_rect = {320, 144, 16, 16};
             dst_rect = {(12*16+16+8) * scale + panel_offset.x, (32 + 8 + pixel_colour * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
+
+            src_rect = {icon_rotate ? 416 : 368, 208, 16, 16};
+            dst_rect = {(12*16+16+8) * scale + panel_offset.x, (32 + 8 + 10 * 16)* scale + panel_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
         }
         
         for (pos.y = 0; pos.y < 24; pos.y++)
@@ -1817,7 +1821,7 @@ void GameState::render(bool saving)
                 colour = level_set->levels[current_level_index]->icon_pixels[pos.y][pos.x];
                 for (int i = 0; i < 8; i++)
                 {
-                    XYPos npos = DirFlip(i).trans(pos, 24);
+                    XYPos npos = icon_rotate ? DirFlip(i).trans(pos, 24) : pos;
                     if (colour != level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24])
                     {
                         colour = 9;
@@ -3031,6 +3035,9 @@ void GameState::mouse_click_in_grid(unsigned clicks)
             else if (i == 10 && (next_dialogue_level > 24 && !current_level->global) &&(current_level_index >= LEVEL_COUNT))
             {
                 editing_level = true;
+                pixel_colour = 0;
+                editing_icon_index = -1;
+                icon_rotate = true;
                 current_level->current_simpoint = current_level->tests[current_level->test_index].sim_points[current_level->sim_point_index];
                 return;
             }
@@ -3503,6 +3510,9 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             {
                 pixel_colour = index;
             }
+
+            if (index == 10)
+                icon_rotate = !icon_rotate;
             return;
         }
 
@@ -3526,7 +3536,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 bool changed = false;
                 for (int i = 0; i < 8; i++)
                 {
-                    XYPos npos = DirFlip(i).trans(pixel_pos, 24);
+                    XYPos npos = icon_rotate ? DirFlip(i).trans(pixel_pos, 24) : pixel_pos;
                     if (pixel_colour != level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24])
                     {
                         changed = true;
@@ -4053,7 +4063,7 @@ void GameState::mouse_motion()
                     bool changed = false;
                     for (int i = 0; i < 8; i++)
                     {
-                        XYPos npos = DirFlip(i).trans(pixel_pos, 24);
+                        XYPos npos = icon_rotate ? DirFlip(i).trans(pixel_pos, 24) : pixel_pos;
                         if (level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24] != 8)
                         {
                             changed = true;
@@ -4164,7 +4174,7 @@ void GameState::mouse_motion()
                 bool changed = false;
                 for (int i = 0; i < 8; i++)
                 {
-                    XYPos npos = DirFlip(i).trans(pixel_pos, 24);
+                    XYPos npos = icon_rotate ? DirFlip(i).trans(pixel_pos, 24) : pixel_pos;
                     if (pixel_colour != level_set->levels[current_level_index]->icon_pixels[npos.y][npos.x + i * 24])
                     {
                         changed = true;

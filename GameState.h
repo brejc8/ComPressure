@@ -136,6 +136,8 @@ public:
     bool editing_level = false;
     int pixel_colour = 0;
     int editing_icon_index = -1;
+    bool icon_rotate = true;
+
 
     char* last_clip = NULL;
     LevelSet* clipboard_level_set = NULL;
