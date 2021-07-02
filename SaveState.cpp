@@ -19,6 +19,18 @@ static void skip_whitespace(std::istream& f)
     }
 }
 
+std::string SaveObject::to_string()
+{
+    std::ostringstream stream;
+    save(stream);
+    return stream.str();
+}
+SaveObject* SaveObject::load(std::string& input)
+{
+    std::istringstream stream(input);
+    return SaveObject::load(stream);
+}
+
 SaveObject* SaveObject::load(std::istream& f)
 {
     skip_whitespace(f);    
@@ -54,7 +66,6 @@ static std::string parse_string(std::istream& f)
         str.push_back(c);
     }
     return str;
-    
 }
 SaveObjectString::SaveObjectString(std::istream& f)
 {
@@ -76,6 +87,8 @@ void SaveObjectString::save(std::ostream& f)
             f << "\\n";
         else if (c == '"')
             f << "\\\"";
+        else if (c == '\\')
+            f << "\\\\";
         else
             f << c;
     }

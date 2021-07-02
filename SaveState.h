@@ -4,6 +4,9 @@
 #include <cassert>
 #include <map>
 #include <vector>
+#include <string>
+#include <iostream>
+#include <sstream>
 
 class SaveObjectMap;
 class SaveObjectList;
@@ -15,6 +18,8 @@ public:
     SaveObject(){};
     virtual ~SaveObject(){};
     virtual void save(std::ostream& f)=0;
+    std::string to_string();
+    static SaveObject* load(std::string& input);
     static SaveObject* load(std::istream& f);
     virtual int64_t get_num(){throw(std::runtime_error("Not a num"));};
     virtual std::string get_string(){throw(std::runtime_error("Not a string"));};
@@ -25,7 +30,6 @@ public:
     virtual bool is_num(){return false;};
     virtual bool is_string(){return false;};
     virtual bool is_list(){return false;};
-    
     virtual SaveObject* dup() = 0;
 };
 
