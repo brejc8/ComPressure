@@ -1613,7 +1613,7 @@ void GameState::render(bool saving)
             }
         }
 
-        if (current_circuit_is_inspected_subcircuit)
+        if (current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
         {
             for (auto &sub : inspection_stack)
             {
@@ -1642,9 +1642,12 @@ void GameState::render(bool saving)
             render_button(XYPos(9 * 32 * scale, 0), XYPos(400, 160), 0, "Delete level");
             render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
         }
-        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > 24 && !current_level->global)
+        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > 24)
         {
-            render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Level Editor");
+            if (current_level->global)
+                render_button(XYPos(10 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
+            else
+                render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Level Editor");
         }
 
     }
@@ -3032,7 +3035,14 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 confirm_box_pos = XYPos(32*9 - 16, 32);
                 return;
             }
-            else if (i == 10 && (next_dialogue_level > 24 && !current_level->global) &&(current_level_index >= LEVEL_COUNT))
+            else if (i == 10 && (current_level->global) && !current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected && (current_level_index >= LEVEL_COUNT))
+            {
+                show_confirm = true;
+                confirm_what = CONFIRM_DELETE_LEVEL;
+                confirm_box_pos = XYPos(32*10 - 16, 32);
+                return;
+            }
+            else if (i == 10 && (next_dialogue_level > 24 && !current_level->global) && (current_level_index >= LEVEL_COUNT))
             {
                 editing_level = true;
                 pixel_colour = 0;
