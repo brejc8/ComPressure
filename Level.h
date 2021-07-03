@@ -168,6 +168,7 @@ public:
         std::string steam_username;
         uint64_t steam_id;
         Pressure score;
+        bool visible;
     };
     std::vector<FriendScore> friend_scores;
 

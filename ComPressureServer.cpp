@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <codecvt>
 #include <locale>
+#include <time.h>
 
 #include <unistd.h>
 #include <sys/socket.h>
@@ -150,7 +151,7 @@ public:
         user_score[steam_id].update_design(sobj);
     }
 
-   void fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<uint64_t>& friends, Database& db, unsigned type);
+   void fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<uint64_t>& friends, Database& db, unsigned type, int visible);
 
     SaveObject* get_design(uint64_t steam_id)
     {
@@ -192,6 +193,7 @@ public:
     ScoreTable accuracy_scores;
     ScoreTable price_scores;
     ScoreTable steam_scores;
+    time_t release_time;
     
     CustomLevel()
     {
@@ -201,6 +203,7 @@ public:
         name = name_;
         level_index = level_index_;
         sobj = sobj_->dup();
+        release_time = time(NULL) + 60*60*24*7;
     }
 
     CustomLevel(const CustomLevel& other)
@@ -230,6 +233,7 @@ public:
         omap->add_item("design", sobj->dup());
         omap->add_string("name", name);
         omap->add_num("level_index", level_index);
+        omap->add_num("release_time", release_time);
 
         return omap;
     }
@@ -239,11 +243,12 @@ public:
         SaveObjectMap* omap = sobjin->get_map();
         name = omap->get_string("name");
         level_index = omap->get_num("level_index");
+        release_time = omap->get_num("release_time");
         sobj = omap->get_item("design")->dup();
         accuracy_scores.load(omap->get_item("accuracy_scores"));
         price_scores.load(omap->get_item("price_scores"));
         steam_scores.load(omap->get_item("steam_scores"));
-    }
+   }
         
 
 };
@@ -452,7 +457,7 @@ public:
         omap->add_num("level", level);
         omap->add_num("score", type ? (INT64_MAX - (*level_ptr)[level].get_score(user_id)) : (*level_ptr)[level].get_score(user_id));
         omap->add_num("type", type);
-        (*level_ptr)[level].fetch_scores(omap, user_id, friends, *this, type);
+        (*level_ptr)[level].fetch_scores(omap, user_id, friends, *this, type, 0);
         return omap;
     }
 
@@ -472,7 +477,9 @@ public:
                 omap->add_string("name", name);
                 omap->add_num("score", type ? (INT64_MAX - table->get_score(user_id)) : table->get_score(user_id));
                 omap->add_num("type", type);
-                table->fetch_scores(omap, user_id, friends, *this, type);
+                if (clevel.release_time > time(NULL))
+                    friends.clear();
+                table->fetch_scores(omap, user_id, friends, *this, type, 100);
                 return omap;
             }
         }
@@ -580,6 +587,28 @@ public:
         }
     }
 
+    void update_custom_price(std::string name, uint64_t steam_id, unsigned level, int64_t score, SaveObject* sobj)
+    {
+        for (CustomLevel &clevel :custom_levels)
+        {
+            if (clevel.name == name)
+            {
+                clevel.price_scores.add_score(steam_id, INT64_MAX - score, sobj);
+            }
+        }
+    }
+
+    void update_custom_steam(std::string name, uint64_t steam_id, unsigned level, int64_t score, SaveObject* sobj)
+    {
+        for (CustomLevel &clevel :custom_levels)
+        {
+            if (clevel.name == name)
+            {
+                clevel.steam_scores.add_score(steam_id, INT64_MAX - score, sobj);
+            }
+        }
+    }
+
     bool reinit_tests(Level* level)
     {
         if (!level->global)
@@ -644,6 +673,8 @@ public:
                         if (score)
                         {
                             db.update_custom_score(level_set->levels[level_index]->name, steam_id, level_index, level_set->levels[level_index]->last_score, save_object);
+                            db.update_custom_price(level_set->levels[level_index]->name, steam_id, level_index, level_set->levels[level_index]->last_price, save_object);
+                            db.update_custom_steam(level_set->levels[level_index]->name, steam_id, level_index, level_set->levels[level_index]->last_steam, save_object);
                             printf("New score:%s - %f\n", level_set->levels[level_index]->name.c_str(), (float)score/65536);
                         }
                         delete save_object;
@@ -1128,24 +1159,29 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void ScoreTable::fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<uint64_t>& friends, Database& db, unsigned type)
+void ScoreTable::fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<uint64_t>& friends, Database& db, unsigned type, int visible)
 {
     SaveObjectList* friend_scores = new SaveObjectList;
 
     std::vector<int64_t> scores;
+
+    int i = 0;
     for(auto const &score : sorted_scores)
     {
         int64_t s = type ? (INT64_MAX - score.first) : score.first;
-        
+
         scores.push_back(s);
-        if (!user_id || friends.find(score.second) != friends.end())
+        bool fri = (friends.find(score.second) != friends.end()) || (score.second == user_id);
+        if (!user_id || fri || (i < visible))
         {
             SaveObjectMap* omap = new SaveObjectMap;
             omap->add_num("steam_id", score.second);
             omap->add_string("steam_username", db.players[score.second].steam_username);
             omap->add_num("score", s);
+            omap->add_num("visible", fri || !user_id);
             friend_scores->add_item(omap);
         }
+        i++;
     }
 
     SaveObjectList* score_list = new SaveObjectList;

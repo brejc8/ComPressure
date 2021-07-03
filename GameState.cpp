@@ -2316,8 +2316,6 @@ void GameState::render(bool saving)
                     render_texture(src_rect, dst_rect);
                 }
             }
-
-            
         }
 
     } else if (panel_state == PANEL_STATE_SCORES && !show_server_levels)
@@ -2363,10 +2361,12 @@ void GameState::render(bool saving)
                     render_number_long((table_pos + XYPos(190,3)) * scale, score.score, 2);
                     break;
             }
-
-            SDL_Rect src_rect = {336, 32, 16, 16};
-            SDL_Rect dst_rect = {(table_pos.x) * scale, table_pos.y * scale, 16 * scale, 16 * scale};
-            render_texture(src_rect, dst_rect);
+            if (score.visible)
+            {
+                SDL_Rect src_rect = {336, 32, 16, 16};
+                SDL_Rect dst_rect = {(table_pos.x) * scale, table_pos.y * scale, 16 * scale, 16 * scale};
+                render_texture(src_rect, dst_rect);
+            }
 
             table_pos.y += 16;
         }
@@ -4007,10 +4007,13 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 if ((friend_score_scroll.offset_rows + i) < edited_level_set->levels[current_level_index]->friend_scores.size())
                 {
                     Level::FriendScore& score = edited_level_set->levels[current_level_index]->friend_scores[friend_score_scroll.offset_rows + i];
-                    if (current_level_index <  LEVEL_COUNT)
-                        design_fetch(score.steam_id, current_level_index);
-                    else
-                        design_fetch(score.steam_id, edited_level_set->levels[current_level_index]->name);
+                    if (score.visible)
+                    {
+                        if (current_level_index <  LEVEL_COUNT)
+                            design_fetch(score.steam_id, current_level_index);
+                        else
+                            design_fetch(score.steam_id, edited_level_set->levels[current_level_index]->name);
+                    }
                 }
             }
         }
@@ -5223,12 +5226,6 @@ void GameState::deal_with_scores()
                 int level_i = LEVEL_COUNT;
                 while (true)
                 {
-                    if (edited_level_set->levels[level_i]->name == name)
-                    {
-                        level = edited_level_set->levels[level_i];
-                        break;
-                    }
-                    level_i++;
                     if (level_i >= edited_level_set->levels.size())
                     {
                         if (name == current_level->name)
@@ -5239,6 +5236,12 @@ void GameState::deal_with_scores()
                         else
                             throw(std::runtime_error("level name not found"));
                     }
+                    if (edited_level_set->levels[level_i]->name == name)
+                    {
+                        level = edited_level_set->levels[level_i];
+                        break;
+                    }
+                    level_i++;
                 }
             }
             
@@ -5256,7 +5259,7 @@ void GameState::deal_with_scores()
             for (unsigned i = 0; i < glist->get_count(); i++)
             {
                 SaveObjectMap* fmap = glist->get_item(i)->get_map();
-                level->friend_scores.push_back(Level::FriendScore{fmap->get_string("steam_username"), uint64_t(fmap->get_num("steam_id")), Pressure(fmap->get_num("score"))});
+                level->friend_scores.push_back(Level::FriendScore{fmap->get_string("steam_username"), uint64_t(fmap->get_num("steam_id")), Pressure(fmap->get_num("score")), bool(Pressure(fmap->get_num("visible")))});
             }
             
         }
