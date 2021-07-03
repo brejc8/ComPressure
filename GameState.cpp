@@ -3797,7 +3797,10 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 current_level->tests.erase(current_level->tests.begin() + current_level->test_index);
 
                 if (current_level->test_index >= current_level->tests.size())
+                {
                     current_level->test_index = current_level->tests.size() - 1;
+                    current_level->sim_point_index = 0;
+                }
             }
         }
         if (panel_grid_pos == XYPos(0, 3) && current_level->best_design)
@@ -3830,10 +3833,6 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     if (s_index)
                         s_index--;
                 }
-                
-                
-                    
-
                 current_level->substep_count = s_steps[s_index];
             }
             if (panel_pos.x >= 132 && panel_pos.x < 148)
