@@ -2,7 +2,6 @@
 #include "Misc.h"
 #include "SaveState.h"
 #include "Circuit.h"
-#include "Demo.h"
 #include <stdlib.h>
 
 

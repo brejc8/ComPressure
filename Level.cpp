@@ -755,10 +755,6 @@ SaveObject* LevelSet::save_one(int level_index)
 
 bool LevelSet::is_playable(unsigned level, unsigned highest_level)
 {
-#ifdef COMPRESSURE_DEMO
-    if (level >= 14)
-        return false;
-#endif
     if (level >= levels.size())
         return false;
     if (read_only)

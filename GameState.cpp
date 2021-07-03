@@ -4,7 +4,6 @@
 #include "GameState.h"
 #include "SaveState.h"
 #include "Misc.h"
-#include "Demo.h"
 
 #include <cassert>
 #include <SDL.h>
@@ -2480,11 +2479,6 @@ void GameState::render(bool saving)
     if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT && !display_language_dialogue)
     {
     
-#ifdef COMPRESSURE_DEMO
-        if (current_level_index == (14 - 1) && dialogue_index)
-            show_dialogue = false;
-#endif
-
         enum 
         {
             DIALOGUE_CHARLES,
@@ -2500,13 +2494,6 @@ void GameState::render(bool saving)
             character = DIALOGUE_CHARLES;
             text = "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button.";
         }
-#ifdef COMPRESSURE_DEMO
-        else if (current_level_index == (14 - 1))
-        {
-            text = "Alas our journey must stop somewhere. The adventure continues\nin the full game.\n\nTo be continued...";
-            character = DIALOGUE_ADA;
-        }
-#endif
         else
         {
             SaveObjectList* lis = current_language->get_item(show_dialogue_hint ? "hints" : "dialogue")->get_list()->get_item(current_level_index)->get_list();
