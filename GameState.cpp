@@ -4217,26 +4217,26 @@ bool GameState::events()
                         mouse_state = MOUSE_STATE_NONE;
                         break;
                     case SDL_SCANCODE_1:
-                        if (next_dialogue_level > 4)
+                        if (!SDL_IsTextInputActive() && next_dialogue_level > 4)
                         {
                             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
                             level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_2:
-                        if (next_dialogue_level > 4)
+                        if (!SDL_IsTextInputActive() && next_dialogue_level > 4)
                         {
                             current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
                             level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_3:
-                        if (next_dialogue_level > 4)
+                        if (!SDL_IsTextInputActive() && next_dialogue_level > 4)
                             current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
                         break;
                     case SDL_SCANCODE_TAB:
                     {
-                        if (!current_circuit_is_read_only)
+                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (mouse_state == MOUSE_STATE_PLACING_VALVE)
                                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
@@ -4300,7 +4300,9 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_A:
-                        if (keyboard_ctrl)
+                        if (next_dialogue_level <= 3)
+                            break;
+                        if (!SDL_IsTextInputActive() && keyboard_ctrl)
                         {
                             XYPos pos;
                             for (pos.y = 0; pos.y < 9; pos.y++)
@@ -4311,8 +4313,6 @@ bool GameState::events()
                             }
                             break;
                         }
-                        if (next_dialogue_level <= 3)
-                            break;
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
