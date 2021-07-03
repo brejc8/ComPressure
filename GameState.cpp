@@ -2499,6 +2499,7 @@ void GameState::render(bool saving)
             SaveObjectList* lis = current_language->get_item(show_dialogue_hint ? "hints" : "dialogue")->get_list()->get_item(current_level_index)->get_list();
             if (dialogue_index >= lis->get_count())
             {
+                dialogue_index = 0;
                 show_dialogue_hint = false;
                 show_dialogue = false;
             }
@@ -2524,49 +2525,52 @@ void GameState::render(bool saving)
                 else assert(0);
             }
         }
-        if (current_language->get_item("tooltips")->get_map()->has_key(text))
-            text = current_language->get_item("tooltips")->get_map()->get_string(text);
-
-        if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
+        if (show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt)
         {
-            bool pic_on_left = true;
-            XYPos pic_src;
-            switch (character)
+        
+            if (current_language->get_item("tooltips")->get_map()->has_key(text))
+                text = current_language->get_item("tooltips")->get_map()->get_string(text);
+
+            if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
             {
-                case DIALOGUE_CHARLES:
-                    pic_on_left = true;
-                    pic_src = XYPos(0,0);
-                    break;
-                case DIALOGUE_NICOLA:
-                    pic_on_left = false;
-                    pic_src = XYPos(1,0);
-                    break;
-                case DIALOGUE_ADA:
-                    pic_on_left = true;
-                    pic_src = XYPos(1,1);
-                    break;
-                case DIALOGUE_ANNIE:
-                    pic_on_left = true;
-                    pic_src = XYPos(0,1);
-                    break;
-                 case DIALOGUE_GEORGE:
-                    pic_on_left = true;
-                    pic_src = XYPos(1,2);
-                    break;
-                 case DIALOGUE_JOSEPH:
-                    pic_on_left = true;
-                    pic_src = XYPos(0,2);
-                    break;
-           }
-            render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
+                bool pic_on_left = true;
+                XYPos pic_src;
+                switch (character)
+                {
+                    case DIALOGUE_CHARLES:
+                        pic_on_left = true;
+                        pic_src = XYPos(0,0);
+                        break;
+                    case DIALOGUE_NICOLA:
+                        pic_on_left = false;
+                        pic_src = XYPos(1,0);
+                        break;
+                    case DIALOGUE_ADA:
+                        pic_on_left = true;
+                        pic_src = XYPos(1,1);
+                        break;
+                    case DIALOGUE_ANNIE:
+                        pic_on_left = true;
+                        pic_src = XYPos(0,1);
+                        break;
+                     case DIALOGUE_GEORGE:
+                        pic_on_left = true;
+                        pic_src = XYPos(1,2);
+                        break;
+                     case DIALOGUE_JOSEPH:
+                        pic_on_left = true;
+                        pic_src = XYPos(0,2);
+                        break;
+               }
+                render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
 
-            render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
-            SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
-            SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
-            render_texture(src_rect, dst_rect);
-            render_text_wrapped(XYPos(pic_on_left ? 48 + 120 : 24, 180 + 24), text.c_str(), 640 - 80 - 110);
+                render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
+                SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
+                SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
+                render_texture(src_rect, dst_rect);
+                render_text_wrapped(XYPos(pic_on_left ? 48 + 120 : 24, 180 + 24), text.c_str(), 640 - 80 - 110);
+            }
         }
-
     }
     
     if (push_in_animation)
@@ -2835,6 +2839,7 @@ void GameState::render(bool saving)
 
 void GameState::set_level(int level_index)
 {
+    dialogue_index = 0;
     editing_level = false;
     if (!level_set->is_playable(level_index, highest_level))
         level_index = last_edited_level_index;
@@ -2873,7 +2878,6 @@ void GameState::set_level(int level_index)
     if (level_index == next_dialogue_level && !current_level_set_is_inspected &&  (current_level_index < LEVEL_COUNT))
     {
         show_dialogue = true;
-        dialogue_index = 0;
         next_dialogue_level++;
     }
 }
@@ -3456,7 +3460,6 @@ void GameState::mouse_click_in_panel(unsigned clicks)
         else if ((panel_pos - XYPos(0,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Blah
         {
             show_dialogue = true;
-            dialogue_index = 0;
             
         }
         else if ((panel_pos - XYPos(32,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Hint
@@ -4609,7 +4612,11 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_PAGEDOWN:
-                        if (!SDL_IsTextInputActive())
+                        if (show_dialogue || show_dialogue_hint)
+                        {
+                            dialogue_index++;
+                        }
+                        else if (!SDL_IsTextInputActive())
                         {
                             while (true)
                             {
@@ -4623,7 +4630,12 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_PAGEUP:
-                        if (!SDL_IsTextInputActive())
+                        if (show_dialogue || show_dialogue_hint)
+                        {
+                            if (dialogue_index)
+                                dialogue_index--;
+                        }
+                        else if (!SDL_IsTextInputActive())
                         {
                             while (true)
                             {
@@ -4992,12 +5004,7 @@ bool GameState::events()
                         scoring_mode_dialogue = false;
                         break;
                     }
-                    else if (show_dialogue)
-                    {
-                        dialogue_index++;
-                        break;
-                    }
-                    else if (show_dialogue_hint)
+                    else if (show_dialogue || show_dialogue_hint)
                     {
                         dialogue_index++;
                         break;
