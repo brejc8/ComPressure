@@ -3994,15 +3994,26 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             }
             else
             {
-                if ((friend_score_scroll.offset_rows + i) < edited_level_set->levels[current_level_index]->friend_scores.size())
+                Level* level;
+                if (current_level_index < LEVEL_COUNT)
+                    level = edited_level_set->levels[current_level_index];
+                else
                 {
-                    Level::FriendScore& score = edited_level_set->levels[current_level_index]->friend_scores[friend_score_scroll.offset_rows + i];
+                    int i = edited_level_set->find_custom_by_name(current_level->name);
+                    if (i < 0)
+                        level = current_level;
+                    else
+                        level = edited_level_set->levels[i];
+                }
+                if ((friend_score_scroll.offset_rows + i) < level->friend_scores.size())
+                {
+                    Level::FriendScore& score = level->friend_scores[friend_score_scroll.offset_rows + i];
                     if (score.visible)
                     {
                         if (current_level_index <  LEVEL_COUNT)
                             design_fetch(score.steam_id, current_level_index);
                         else
-                            design_fetch(score.steam_id, edited_level_set->levels[current_level_index]->name);
+                            design_fetch(score.steam_id, level->name);
                     }
                 }
             }
