@@ -46,10 +46,9 @@ public:
         MOUSE_STATE_SCROLL_BAR_DRAG,
         MOUSE_STATE_AREA_SELECT,
         MOUSE_STATE_DRAGGING_SIGN,
-        MOUSE_STATE_ENTERING_TEXT_INTO_SIGN,
+        MOUSE_STATE_ENTERING_TEXT,
         MOUSE_STATE_PASTING_CLIPBOARD,
         MOUSE_STATE_ANIMATING,
-        MOUSE_STATE_ENTERING_TEXT_LEVEL_NAME,
         MOUSE_STATE_LOCKING_BLOCKS,
     } mouse_state = MOUSE_STATE_NONE;
 
@@ -249,6 +248,14 @@ public:
     Sign dragged_sign;
     bool dragged_sign_motion;
     unsigned text_entry_offset = 0;
+    std::string* text_entry_string = NULL;
+    enum TextEntryTarget
+    {
+        TEXT_TARGET_SIGN,
+        TEXT_TARGET_LEVEL_NAME,
+
+    } text_entry_target;
+ 
     
 
     void load_lang();
