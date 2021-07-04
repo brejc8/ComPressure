@@ -108,6 +108,7 @@ public:
     SimPoint current_simpoint;
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
     WrappedTexture* texture = NULL;
+    std::string description;
 
     int level_index;
     bool global = false;

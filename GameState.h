@@ -253,6 +253,7 @@ public:
     {
         TEXT_TARGET_SIGN,
         TEXT_TARGET_LEVEL_NAME,
+        TEXT_TARGET_LEVEL_DESCRIPTION,
 
     } text_entry_target;
  

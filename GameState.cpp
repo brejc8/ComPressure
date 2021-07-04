@@ -1776,6 +1776,8 @@ void GameState::render(bool saving)
 
         if (next_dialogue_level > 24 && !current_circuit_is_read_only)
             render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
+
+        if (current_level_index < LEVEL_COUNT)
         {
             SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};                    // Requirements
             SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
@@ -1857,9 +1859,20 @@ void GameState::render(bool saving)
             SDL_Rect dst_rect = {(4)* scale + panel_offset.x, (32 + 12*16+16 + 4)* scale + panel_offset.y, 24*8 * scale, 24 * scale};
             render_texture_custom(tex, src_rect, dst_rect);
         }
-
-
+        render_button(XYPos(panel_offset.x, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(280, 256), 0, "Requirements");
     }
+        if (panel_state == PANEL_STATE_LEVEL_SELECT &&
+           ((editing_level && mouse_state == MOUSE_STATE_ENTERING_TEXT && text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION) ||
+            (!editing_level && current_level_index >= LEVEL_COUNT)))
+        {
+            render_box(XYPos((0) * scale + panel_offset.x, 176 * scale + panel_offset.y), XYPos(256, 128), 0);
+            std::string text = level_set->levels[current_level_index]->description;
+            if (frame_index % 60 < 30 && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION))
+                text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
+            render_text_wrapped(XYPos(panel_offset.x / scale + 4, panel_offset.y / scale + 176 + 4), text.c_str(), 256-8);
+
+        }
+
     else if (panel_state == PANEL_STATE_EDITOR)
     {
         pos = XYPos(0,0);
@@ -3568,7 +3581,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             }
             return;
         }
-        XYPos direction_pos = panel_pos - XYPos(4, 32 + 12*16+16);
+        XYPos direction_pos = panel_pos - XYPos(4, 4 + 32 + 12*16+16);
         if (direction_pos.inside(XYPos(8*24, 24)))
         {
             int new_dir = direction_pos.x / 24;
@@ -3577,6 +3590,15 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             else
                 editing_icon_index = new_dir;
             return;
+        }
+        if ((panel_pos - XYPos(0, 32 + 32 + 12*16+16)).inside(XYPos(32,32)))
+        {
+            mouse_state = MOUSE_STATE_ENTERING_TEXT;
+            text_entry_string = &level_set->levels[current_level_index]->description;
+            text_entry_offset = text_entry_string->size();
+            text_entry_target = TEXT_TARGET_LEVEL_DESCRIPTION;
+            SDL_StartTextInput();
+
         }
 
 

@@ -226,6 +226,8 @@ SaveObject* Level::save(bool lite)
 
     if (level_index >= LEVEL_COUNT)
     {
+        if (description != "")
+            omap->add_string("description", description);
         if (global)
             omap->add_num("global", 1);
         omap->add_string("name", name);
@@ -354,6 +356,8 @@ void Level::init_tests(SaveObjectMap* omap)
             help_design = new LevelSet(desc->get_item("help_design"), true);
         if (desc->has_key("global"))
             global = true;
+        if (desc->has_key("description"))
+            description = desc->get_string("description");
 
         if (desc->has_key("forced_signs"))
         {
