@@ -521,6 +521,7 @@ public:
                 SaveObjectMap* omap = new SaveObjectMap;
 
                 omap->add_num("level_index", clevel.level_index);
+                omap->add_string("level_name", clevel.name);
                 omap->add_item("levels", table->get_design(level_steam_id));
                 omap->add_num("steam_id", level_steam_id);
                 omap->add_string("steam_username", players[level_steam_id].steam_username);

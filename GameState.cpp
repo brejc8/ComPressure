@@ -1630,7 +1630,7 @@ void GameState::render(bool saving)
         {
             if (current_level_index >= LEVEL_COUNT && !current_circuit_is_inspected_subcircuit)
                 render_button(XYPos(7 * 32 * scale, 0), XYPos(376, 136), 0, "Import level");
-            if (deletable_level_set)
+            if (deletable_level_set && !current_circuit_is_inspected_subcircuit)
                 render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
             if (!current_circuit_is_inspected_subcircuit && ((current_level_index <  LEVEL_COUNT) || ((edited_level_set->find_custom_by_name(current_level->name)) > 0) ))
                 render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0, "Copy design\nto current");
@@ -2882,6 +2882,15 @@ void GameState::set_level(int level_index)
     }
 }
 
+void GameState::set_level(std::string name)
+{
+    int found = level_set->find_custom_by_name(name);
+    if (found < 0)
+        set_level(current_level_index);
+    else
+        set_level(found);
+}
+
 void GameState::click_scroll_bar(ScrollBar& sbar, XYPos mouse_click)
 {
     int total_size = sbar.height - 32;
@@ -3004,6 +3013,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
             else if (i == 10 && current_level_set_is_inspected)
             {
                 current_level_set_is_inspected = false;
+                std::string level_name = current_level->name;
                 if (free_level_set_on_return)
                 {
                     delete level_set;
@@ -3011,7 +3021,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 }
                 deletable_level_set = NULL;
                 set_level_set(edited_level_set);
-                set_level(current_level_index);
+                set_level(level_name);
                 return;
             }
             else if (i == 10 && (editing_level))
@@ -3745,11 +3755,12 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     {
                         if (current_level->saved_designs[index])
                         {
+                            std::string level_name = current_level->name;
                             deletable_level_set = &current_level->saved_designs[index];
                             set_level_set(current_level->saved_designs[index]);
                             set_current_circuit_read_only();
                             current_level_set_is_inspected = true;
-                            set_level(current_level_index);
+                            set_level(level_name);
                         }
                     }
                 }
@@ -3805,11 +3816,12 @@ void GameState::mouse_click_in_panel(unsigned clicks)
         }
         if (panel_grid_pos == XYPos(0, 3) && current_level->best_design)
         {
+            std::string level_name = current_level->name;
             deletable_level_set = &current_level->best_design;
             set_level_set(current_level->best_design);
             set_current_circuit_read_only();
             current_level_set_is_inspected = true;
-            set_level(current_level_index);
+            set_level(level_name);
         }
         XYPos subtest_pos = panel_pos - XYPos(8 + 16, 32 + 32 + 16);
         if (editing_level && (subtest_pos.y >= 0) && (subtest_pos.y < 16))
@@ -4632,7 +4644,7 @@ bool GameState::events()
                             while (true)
                             {
                                 current_level_index++;
-                                if (current_level_index >= LEVEL_COUNT)
+                                if (current_level_index >= 1000)
                                     current_level_index = 0;
                                 if (level_set->is_playable(current_level_index, highest_level))
                                     break;
@@ -4651,7 +4663,7 @@ bool GameState::events()
                             while (true)
                             {
                                 if (!current_level_index)
-                                    current_level_index = LEVEL_COUNT;
+                                    current_level_index = 1000;
                                 current_level_index--;
                                 if (level_set->is_playable(current_level_index, highest_level))
                                     break;
@@ -5323,7 +5335,10 @@ void GameState::deal_with_design_fetch()
 
             set_current_circuit_read_only();
             current_level_set_is_inspected = true;
-            set_level(omap->get_num("level_index"));
+            if (omap->has_key("level_name"))
+                set_level(omap->get_string("level_name"));
+            else
+                set_level(omap->get_num("level_index"));
         }
         catch (const std::runtime_error& error)
         {

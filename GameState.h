@@ -293,6 +293,7 @@ public:
     void render(bool saving = false);
     void advance();
     void set_level(int level_index);
+    void set_level(std::string name);
     void click_scroll_bar(ScrollBar& sbar, XYPos mouse_click);
     void normalize_scroll_bar(ScrollBar& sbar);
     void mouse_click_in_grid(unsigned clicks);
