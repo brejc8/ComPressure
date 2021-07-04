@@ -18,6 +18,7 @@ public:
     SaveObject(){};
     virtual ~SaveObject(){};
     virtual void save(std::ostream& f)=0;
+    virtual void pretty_print(std::ostream& f, int indent = 0)=0;
     std::string to_string();
     static SaveObject* load(std::string& input);
     static SaveObject* load(std::istream& f);
@@ -42,6 +43,7 @@ public:
     SaveObjectNumber(std::istream& stream) {stream >> number;};
     int64_t get_num(){return number;};
     void save(std::ostream& f){f << number;};
+    void pretty_print(std::ostream& f, int indent){save(f);};
     SaveObject* dup() {return new SaveObjectNumber(number);};
     virtual bool is_num(){return true;};
 };
@@ -55,6 +57,7 @@ public:
     SaveObjectString(std::istream& stream);
     std::string get_string();
     void save(std::ostream& f);
+    void pretty_print(std::ostream& f, int indent){save(f);};
     SaveObject* dup() {return new SaveObjectString(str);};
     virtual bool is_string(){return true;};
 };
@@ -69,6 +72,7 @@ public:
     virtual ~SaveObjectMap();
     SaveObjectMap(std::istream& f);
     void save(std::ostream& f);
+    void pretty_print(std::ostream& f, int indent);
     SaveObjectMap* get_map(){return this;};
     
     void add_item(std::string key, SaveObject* value);
@@ -96,6 +100,7 @@ public:
     SaveObjectList(std::istream& f);
     ~SaveObjectList();
     void save(std::ostream& f);
+    void pretty_print(std::ostream& f, int indent);
     SaveObjectList* get_list(){return this;};
     
     void add_item(SaveObject* value);
@@ -119,6 +124,7 @@ public:
     SaveObjectNull(){};
     SaveObjectNull(std::istream& f);
     void save(std::ostream& f);
+    void pretty_print(std::ostream& f, int indent){save(f);};
     virtual bool is_null(){return true;};
     SaveObject* dup() {return new SaveObjectNull();};
 };

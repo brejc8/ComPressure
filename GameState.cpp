@@ -3682,7 +3682,10 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 omap->add_num("level_index", current_level_index);
                 omap->add_item("levels", edited_level_set->save_one(current_level_index));
                 std::ostringstream stream;
-                omap->save(stream);
+                if (keyboard_shift)
+                    omap->pretty_print(stream, 0);
+                else
+                    omap->save(stream);
                 delete omap;
                 std::string reply;
                 reply = "ComPressure Level ";

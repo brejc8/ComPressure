@@ -197,6 +197,31 @@ void SaveObjectMap::save(std::ostream& f)
     f.put('}');
 };
 
+void SaveObjectMap::pretty_print(std::ostream& f, int indent)
+{
+    f.put('\n');
+    f << std::string(indent, ' ');
+    f.put('{');
+    bool first = true;
+    for (std::map<std::string, SaveObject*>::iterator it=omap.begin(); it!=omap.end(); ++it)
+    {
+        if (!first)
+            f << ',';
+        f.put('\n');
+        f << std::string(indent + 2, ' ');
+        first = false;
+        f << '"';
+        f << it->first;
+        f << '"';
+
+        f << ':';
+        it->second->pretty_print(f, indent + 4);
+    }
+    f.put('\n');
+    f << std::string(indent, ' ');
+    f.put('}');
+}
+
 SaveObject* SaveObjectMap::dup()
 {
     SaveObjectMap* rep = new SaveObjectMap;
@@ -269,6 +294,20 @@ void SaveObjectList::save(std::ostream& f)
             f << ',';
         first = false;
         (*it)->save(f);
+    }
+    f.put(']');
+}
+
+void SaveObjectList::pretty_print(std::ostream& f, int indent)
+{
+    f.put('[');
+    bool first = true;
+    for (std::vector<SaveObject*>::iterator it=olist.begin(); it!=olist.end(); ++it)
+    {
+        if (!first)
+            f << ',';
+        first = false;
+        (*it)->pretty_print(f, indent);
     }
     f.put(']');
 }
