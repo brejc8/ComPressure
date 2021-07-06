@@ -856,6 +856,7 @@ unsigned LevelSet::import_level(LevelSet* other_set, int level_index)
     new_level->tests = old_level->tests;
     new_level->circuit->copy_in(old_level->circuit);
     new_level->global = old_level->global;
+    new_level->description = old_level->description;
 
     for (unsigned i = 0; i < 4; i++)
         new_level->pin_order[i] = old_level->pin_order[i];
