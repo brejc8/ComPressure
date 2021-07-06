@@ -4858,6 +4858,7 @@ bool GameState::events()
                         else
                         {
                             mouse_state = MOUSE_STATE_ENTERING_TEXT;
+                            text_entry_target = TEXT_TARGET_SIGN;
                             text_entry_string = &current_circuit->signs.front().text;
                             text_entry_offset = current_circuit->signs.front().text.size();
 
