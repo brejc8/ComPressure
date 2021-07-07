@@ -1860,6 +1860,7 @@ void GameState::render(bool saving)
             render_texture_custom(tex, src_rect, dst_rect);
         }
         render_button(XYPos(panel_offset.x, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(280, 256), 0, "Requirements");
+        render_button(XYPos(panel_offset.x + 32 * scale, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(304, 256), 0, "Dialogue");
     }
         if (panel_state == PANEL_STATE_LEVEL_SELECT &&
            ((editing_level && mouse_state == MOUSE_STATE_ENTERING_TEXT && text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION) ||
@@ -2489,10 +2490,9 @@ void GameState::render(bool saving)
         render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
         render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
     }
-    if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT && !display_language_dialogue)
+    if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && !display_language_dialogue)
     {
-    
-        enum 
+        enum
         {
             DIALOGUE_CHARLES,
             DIALOGUE_NICOLA,
@@ -2500,8 +2500,9 @@ void GameState::render(bool saving)
             DIALOGUE_ANNIE,
             DIALOGUE_GEORGE,
             DIALOGUE_JOSEPH
-        } character;
+        } character = DIALOGUE_CHARLES;
         std::string text;
+        int dialogue_index_max = 1;
         if (show_dialogue_discord_prompt)
         {
             character = DIALOGUE_CHARLES;
@@ -2509,8 +2510,38 @@ void GameState::render(bool saving)
         }
         else
         {
-            SaveObjectList* lis = current_language->get_item(show_dialogue_hint ? "hints" : "dialogue")->get_list()->get_item(current_level_index)->get_list();
-            if (dialogue_index >= lis->get_count())
+            bool fail = true;
+            std::string who = "charles";
+            if (current_level_index < LEVEL_COUNT)
+            {
+                const char* key = show_dialogue_hint ? "hints" : "dialogue";
+                if (current_language->has_key(key) && current_language->get_item(key)->is_list())
+                {
+                    SaveObjectList* lis = current_language->get_item(key)->get_list()->get_item(current_level_index)->get_list();
+                    dialogue_index_max = lis->get_count();
+                    if (dialogue_index < dialogue_index_max)
+                    {
+                        SaveObjectMap* dia = lis->get_item(dialogue_index)->get_map();
+                        text = dia->get_string("text");
+                        who = dia->get_string("who");
+                        fail = false;
+                    }
+                }
+            }
+            else
+            {
+                dialogue_index_max = current_level->dialogue.size();
+                if (dialogue_index >= dialogue_index_max)
+                {
+                    std::list<Level::DialogueScreen>::iterator it = current_level->dialogue.begin();
+                    std::advance(it, dialogue_index);
+                    who = it->who;
+                    text = it->text;
+                    fail = false;
+                }
+            }
+            
+            if (fail)
             {
                 dialogue_index = 0;
                 show_dialogue_hint = false;
@@ -2518,10 +2549,6 @@ void GameState::render(bool saving)
             }
             else
             {
-                SaveObjectMap* dia = lis->get_item(dialogue_index)->get_map();
-                text = dia->get_string("text");
-                std::string who = dia->get_string("who");
-
                 character = DIALOGUE_CHARLES;
                 if (who == "charles")
                     character = DIALOGUE_CHARLES;
@@ -2535,7 +2562,6 @@ void GameState::render(bool saving)
                     character = DIALOGUE_GEORGE;
                 else if (who == "joseph")
                     character = DIALOGUE_JOSEPH;
-                else assert(0);
             }
         }
         if (show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt)
@@ -2575,6 +2601,11 @@ void GameState::render(bool saving)
                         pic_src = XYPos(0,2);
                         break;
                }
+                render_box(XYPos(16 * scale, (180) * scale), XYPos(32, 32), 4);
+                render_number_2digit(XYPos((16 + 8) * scale, (180 + 4) * scale), dialogue_index + 1, 2);
+                render_box(XYPos((16 + 32) * scale, (180) * scale), XYPos(32, 32), 4);
+                render_number_2digit(XYPos((16 + 32 + 8) * scale, (180 + 4) * scale), dialogue_index_max, 2);
+
                 render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
 
                 render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
@@ -2582,6 +2613,7 @@ void GameState::render(bool saving)
                 SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
                 render_texture(src_rect, dst_rect);
                 render_text_wrapped(XYPos(pic_on_left ? 48 + 120 : 24, 180 + 24), text.c_str(), 640 - 80 - 110);
+
             }
         }
     }
@@ -3598,7 +3630,15 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             text_entry_offset = text_entry_string->size();
             text_entry_target = TEXT_TARGET_LEVEL_DESCRIPTION;
             SDL_StartTextInput();
+        }
 
+        if ((panel_pos - XYPos(32, 32 + 32 + 12*16+16)).inside(XYPos(32,32)))
+        {
+            mouse_state = MOUSE_STATE_ENTERING_TEXT;
+            text_entry_string = &level_set->levels[current_level_index]->description;
+            text_entry_offset = text_entry_string->size();
+            text_entry_target = TEXT_TARGET_LEVEL_DIALOGUE;
+            SDL_StartTextInput();
         }
 
 

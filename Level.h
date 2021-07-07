@@ -109,7 +109,15 @@ public:
     TestExecType monitor_state = MONITOR_STATE_PLAY_ALL;
     WrappedTexture* texture = NULL;
     std::string description;
-
+    
+    class DialogueScreen
+    {
+    public:
+        std::string who;
+        std::string text;
+    };
+    std::list<DialogueScreen> dialogue;
+    
     int level_index;
     bool global = false;
     bool global_template = false;

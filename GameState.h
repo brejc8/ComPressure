@@ -254,6 +254,7 @@ public:
         TEXT_TARGET_SIGN,
         TEXT_TARGET_LEVEL_NAME,
         TEXT_TARGET_LEVEL_DESCRIPTION,
+        TEXT_TARGET_LEVEL_DIALOGUE,
 
     } text_entry_target;
  
