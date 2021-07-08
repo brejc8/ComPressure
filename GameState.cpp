@@ -1717,10 +1717,15 @@ void GameState::render(bool saving)
 
     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
+        int visible_rows = level_select_requirements_visible ? 4 : 8;
+        
+        level_select_scroll.visible_rows = visible_rows;
+        level_select_scroll.height = visible_rows * 32;
+
         level_select_scroll.total_rows = (level_set->top_playable(highest_level) + 8) / 8;
         normalize_scroll_bar(level_select_scroll);
 
-        for (pos.y = 0; pos.y < 4; pos.y++)
+        for (pos.y = 0; pos.y < visible_rows; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
             unsigned index =  pos.y * 8 + pos.x;
@@ -1756,42 +1761,40 @@ void GameState::render(bool saving)
         }
         render_scroll_bar(level_select_scroll);
 
+        XYPos buttons_offset = panel_offset + XYPos(0, 144 * scale);
+        if (!level_select_requirements_visible)
+            buttons_offset.y += 128 * scale;
         
-        render_button(XYPos(panel_offset.x, panel_offset.y + 144 * scale), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
-        render_button(XYPos(panel_offset.x + 32 * scale, panel_offset.y + 144 * scale), XYPos(328, 256), 0, "Hint");                  // Hint
+        render_button(XYPos(buttons_offset.x, buttons_offset.y), XYPos(304, 256), 0, "Repeat\ndialogue");                   // Blah
+        render_button(XYPos(buttons_offset.x + 32 * scale, buttons_offset.y), XYPos(328, 256), 0, "Hint");                  // Hint
         if (tip_revealed >= current_level_index && edited_level_set->levels[current_level_index]->help_design)
-            render_button(XYPos(panel_offset.x + 64 * scale, panel_offset.y + 144 * scale), XYPos(352, 160), 0, "Reveal a solution");   // Help
+            render_button(XYPos(buttons_offset.x + 64 * scale, buttons_offset.y), XYPos(352, 160), 0, "Reveal a solution");   // Help
+        render_button(XYPos(buttons_offset.x + 96 * scale, buttons_offset.y), XYPos(280, 376), level_select_requirements_visible, "Requirements");                  // Requirements
         if (next_dialogue_level > 32)
         {
             switch (test_mode)
             {
                 case TEST_MODE_ACCURACY:
-                    render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 352), 0, "Accuracy mode");
+                    render_button(XYPos(buttons_offset.x + 6*32 * scale, buttons_offset.y), XYPos(256, 352), 0, "Accuracy mode");
                     break;
                 case TEST_MODE_PRICE:
-                    render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(280, 352), 0, "Price mode");
+                    render_button(XYPos(buttons_offset.x + 6*32 * scale, buttons_offset.y), XYPos(280, 352), 0, "Price mode");
                     break;
                 case TEST_MODE_STEAM:
-                    render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 376), 0, "Steam mode");
+                    render_button(XYPos(buttons_offset.x + 6*32 * scale, buttons_offset.y), XYPos(256, 376), 0, "Steam mode");
                     break;
             }
         }
 
         if (next_dialogue_level > 24 && !current_circuit_is_read_only)
-            render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(376, 160), 0, "New design");          // New
+            render_button(XYPos(buttons_offset.x + 7*32 * scale, buttons_offset.y), XYPos(376, 160), 0, "New design");          // New
 
-        if (current_level_index < LEVEL_COUNT)
-        {
-            SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};                    // Requirements
-            SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
-            render_texture_custom(sdl_levels_texture, src_rect, dst_rect);
-        }
         if (scoring_mode_dialogue)
         {
-            render_box(XYPos(panel_offset.x + (160-8) * scale, panel_offset.y + (144-8) * scale), XYPos(32*3+16, 32+16), 4);
-            render_button(XYPos(panel_offset.x + 5*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 352), test_mode == TEST_MODE_ACCURACY, "Accuracy mode");
-            render_button(XYPos(panel_offset.x + 6*32 * scale, panel_offset.y + 144 * scale), XYPos(280, 352), test_mode == TEST_MODE_PRICE, "Price mode");
-            render_button(XYPos(panel_offset.x + 7*32 * scale, panel_offset.y + 144 * scale), XYPos(256, 376), test_mode == TEST_MODE_STEAM, "Steam mode");
+            render_box(XYPos(buttons_offset.x + (160-8) * scale, buttons_offset.y - 8 * scale), XYPos(32*3+16, 32+16), 4);
+            render_button(XYPos(buttons_offset.x + 5*32 * scale, buttons_offset.y), XYPos(256, 352), test_mode == TEST_MODE_ACCURACY, "Accuracy mode");
+            render_button(XYPos(buttons_offset.x + 6*32 * scale, buttons_offset.y), XYPos(280, 352), test_mode == TEST_MODE_PRICE, "Price mode");
+            render_button(XYPos(buttons_offset.x + 7*32 * scale, buttons_offset.y), XYPos(256, 376), test_mode == TEST_MODE_STEAM, "Steam mode");
         }
     }
     else if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level)
@@ -1862,23 +1865,21 @@ void GameState::render(bool saving)
             SDL_Rect dst_rect = {(4)* scale + panel_offset.x, (32 + 12*16+16 + 4)* scale + panel_offset.y, 24*8 * scale, 24 * scale};
             render_texture_custom(tex, src_rect, dst_rect);
         }
-        render_button(XYPos(panel_offset.x, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(280, 256), 0, "Requirements");
-        render_button(XYPos(panel_offset.x + 32 * scale, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(304, 256), 0, "Dialogue");
+        render_button(XYPos(panel_offset.x, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(280, 376), 0, "Requirements");
+//        render_button(XYPos(panel_offset.x + 32 * scale, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(304, 256), 0, "Dialogue");
     }
-        if (panel_state == PANEL_STATE_LEVEL_SELECT &&
-           ((editing_level && mouse_state == MOUSE_STATE_ENTERING_TEXT && text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION) ||
-            (!editing_level && current_level_index >= LEVEL_COUNT)))
-        {
-            render_box(XYPos((0) * scale + panel_offset.x, 176 * scale + panel_offset.y), XYPos(256, 128), 0);
-            std::string text = level_set->levels[current_level_index]->description;
-            if (frame_index % 60 < 30 && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION))
-                text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
-            render_text_wrapped(XYPos(panel_offset.x / scale + 4, panel_offset.y / scale + 176 + 4), text.c_str(), 256-8);
 
-        }
-
-    else if (panel_state == PANEL_STATE_EDITOR)
+    if (panel_state == PANEL_STATE_EDITOR)
     {
+        int visible_rows = editor_requirements_visible ? 4 : 8;
+
+        editor_scroll.visible_rows = visible_rows;
+        editor_scroll.height = visible_rows * 32;
+
+        editor_scroll.total_rows = (level_set->top_playable(highest_level) + 8) / 8;
+        normalize_scroll_bar(editor_scroll);
+
+    
         pos = XYPos(0,0);
         bool flasher = (frame_index % 50) < 25;
 
@@ -1904,6 +1905,8 @@ void GameState::render(bool saving)
 
         if (editing_level)
             render_button(XYPos(panel_offset.x + 6 * 32 * scale, panel_offset.y), XYPos(400+24, 160), mouse_state == MOUSE_STATE_LOCKING_BLOCKS, "Lock blocks");
+        else
+            render_button(XYPos(panel_offset.x + 6 * 32 * scale, panel_offset.y), XYPos(280, 376), editor_requirements_visible, "Requirements");
 
         if (next_dialogue_level > 8)
             render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
@@ -1912,10 +1915,10 @@ void GameState::render(bool saving)
         int level_index = 0;
 
         if (next_dialogue_level > 8)
-        for (pos.y = 0; pos.y < 8; pos.y++)
+        for (pos.y = 0; pos.y < visible_rows; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
-            int level_index =  pos.y * 8 + pos.x;
+            int level_index =  pos.y * 8 + pos.x + editor_scroll.offset_rows * 8;
             if (level_index >= edited_level_set->levels.size())
                 break;
             if (level_index != current_level_index && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set) && edited_level_set->is_playable(level_index, highest_level))
@@ -1925,6 +1928,7 @@ void GameState::render(bool saving)
                 render_button((pos * 32 + XYPos(0, 32 + 8)) * scale + panel_offset, edited_level_set->levels[level_index]->getimage_fg(dir_flip), mouse_state == MOUSE_STATE_PLACING_SUBCIRCUIT && level_index == placing_subcircuit_level, edited_level_set->levels[level_index]->name.c_str(), tex);
             }
         }
+        render_scroll_bar(editor_scroll);
 
 
 //         XYPos panel_pos = ((mouse - panel_offset) / scale);                 // Tooltip
@@ -1940,7 +1944,41 @@ void GameState::render(bool saving)
 //         }
 
     }
-    else if (panel_state == PANEL_STATE_TEST)
+    {
+        bool visible = false;
+        if (panel_state == PANEL_STATE_LEVEL_SELECT)
+        {
+            if (!editing_level)
+                visible = level_select_requirements_visible;
+            else
+                if ((mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION))
+                    visible = true;
+        }
+        if (panel_state == PANEL_STATE_EDITOR)
+            visible = editor_requirements_visible;
+            
+        if (visible)
+        {
+            if (current_level_index < LEVEL_COUNT)
+            {
+                SDL_Rect src_rect = {show_hint * 256, int(current_level_index) * 128, 256, 128};                    // Requirements
+                SDL_Rect dst_rect = {panel_offset.x, panel_offset.y + 176 * scale, 256 * scale, 128 * scale};
+                render_texture_custom(sdl_levels_texture, src_rect, dst_rect);
+            }
+            else
+            {
+                render_box(XYPos((0) * scale + panel_offset.x, 176 * scale + panel_offset.y), XYPos(256, 128), 4);
+                std::string text = level_set->levels[current_level_index]->description;
+                if (frame_index % 60 < 30 && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION))
+                    text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
+                render_text_wrapped(XYPos(panel_offset.x / scale + 4, panel_offset.y / scale + 176 + 4), text.c_str(), 256-8);
+            }
+        }
+    }
+
+    
+
+    if (panel_state == PANEL_STATE_TEST)
     {
         for (int port_index = 0; port_index < 4; port_index++)
         {
@@ -3501,32 +3539,36 @@ void GameState::mouse_click_in_panel(unsigned clicks)
     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
     {
         XYPos panel_grid_pos = panel_pos / 32;
+        XYPos button_pos = panel_pos - XYPos(0,144);
+        if (!level_select_requirements_visible)
+            button_pos.y -= 128;
+        
         int level_index = panel_grid_pos.x + panel_grid_pos.y * 8 + level_select_scroll.offset_rows * 8;
 
         if (panel_grid_pos.x >= 8)
         {
             click_scroll_bar(level_select_scroll, panel_pos - XYPos(8*32, 0));
         }
-        else if ((panel_grid_pos.y < 4) && level_set->is_playable(level_index, highest_level))
+        else if ((panel_grid_pos.y < (level_select_requirements_visible ? 4 : 8)) && level_set->is_playable(level_index, highest_level))
         {
             set_level(level_index);
         }
-        else if (panel_pos.y > 176)
+        else if (button_pos.y > 176)
         {
             show_hint = true;
         }
-        else if ((panel_pos - XYPos(0,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Blah
+        else if ((button_pos).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Blah
         {
             show_dialogue = true;
             
         }
-        else if ((panel_pos - XYPos(32,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Hint
+        else if ((button_pos - XYPos(32,0)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Hint
         {
             show_dialogue_hint = true;
             dialogue_index = 0;
             
         }
-        else if ((panel_pos - XYPos(64,144)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT)
+        else if ((button_pos - XYPos(64,0)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT)
                  && tip_revealed >= current_level_index
                  && edited_level_set->levels[current_level_index]->help_design)   // Help
         {
@@ -3539,11 +3581,15 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             current_level_set_is_inspected = true;
             set_level(current_level_index);
         }
-        else if ((panel_pos - XYPos(6*32,144)).inside(XYPos(32,32)) && next_dialogue_level > 32)  // Scoring mode
+        else if ((button_pos - XYPos(96,0)).inside(XYPos(32,32)))   // Requirements
+        {
+            level_select_requirements_visible = !level_select_requirements_visible;
+        }
+        else if ((button_pos - XYPos(6*32,0)).inside(XYPos(32,32)) && next_dialogue_level > 32)  // Scoring mode
         {
             scoring_mode_dialogue = true;
         }
-        else if ((panel_pos - XYPos(7*32,144)).inside(XYPos(32,32)) && next_dialogue_level > 24 && !current_circuit_is_read_only)  // New
+        else if ((button_pos - XYPos(7*32,0)).inside(XYPos(32,32)) && next_dialogue_level > 24 && !current_circuit_is_read_only)  // New
         {
             set_level(edited_level_set->new_user_level());
             set_level_set(edited_level_set);
@@ -3708,17 +3754,26 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             }
             else if (panel_grid_pos.x == 6 && editing_level)
                 mouse_state = MOUSE_STATE_LOCKING_BLOCKS;
+            else if (panel_grid_pos.x == 6 && !editing_level)
+                editor_requirements_visible = !editor_requirements_visible;
             else if (panel_grid_pos.x == 7 && next_dialogue_level > 8)
                 mouse_state = MOUSE_STATE_PLACING_SIGN;
             return;
         }
         panel_grid_pos = (panel_pos - XYPos(0, 32 + 8)) / 32;
-        int level_index = panel_grid_pos.x + panel_grid_pos.y * 8;
-
-        if ((level_index != current_level_index) && edited_level_set->is_playable(level_index, highest_level) && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
+        if (panel_grid_pos.x >= 8)
         {
-            mouse_state = MOUSE_STATE_PLACING_SUBCIRCUIT;
-            placing_subcircuit_level = level_index;
+            click_scroll_bar(editor_scroll, panel_pos - XYPos(8 * 32, 32 + 8));
+        }
+        else if (panel_grid_pos.y < (editor_requirements_visible ? 4 : 8))
+        {
+            int level_index = panel_grid_pos.x + panel_grid_pos.y * 8 + editor_scroll.offset_rows * 8;
+
+            if ((level_index != current_level_index) && edited_level_set->is_playable(level_index, highest_level) && !edited_level_set->levels[level_index]->circuit->contains_subcircuit_level(current_level_index, edited_level_set))
+            {
+                mouse_state = MOUSE_STATE_PLACING_SUBCIRCUIT;
+                placing_subcircuit_level = level_index;
+            }
         }
         return;
     } else if (panel_state == PANEL_STATE_MONITOR)
@@ -5189,6 +5244,8 @@ bool GameState::events()
                     ScrollBar* selected_scroll = NULL;
                     if (panel_state == PANEL_STATE_LEVEL_SELECT && !editing_level)
                         selected_scroll = &level_select_scroll;
+                    if (panel_state == PANEL_STATE_EDITOR)
+                        selected_scroll = &editor_scroll;
                     if (panel_state == PANEL_STATE_SCORES)
                         selected_scroll = &friend_score_scroll;
 

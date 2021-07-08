@@ -92,6 +92,7 @@ public:
 
     ScrollBar level_select_scroll = ScrollBar(4, XYPos(640 - 22, 48), 4 * 32);
     ScrollBar friend_score_scroll = ScrollBar(11, XYPos(640 - 22, 48), 11 * 16);
+    ScrollBar editor_scroll = ScrollBar(8, XYPos(640 - 22, 48 + 32 + 8), 8 * 32);
     int scroll_drag_y;
     ScrollBar *dragged_scroll_bar;
     
@@ -137,6 +138,8 @@ public:
     int editing_icon_index = -1;
     bool icon_rotate = true;
 
+    bool level_select_requirements_visible = true;
+    bool editor_requirements_visible = false;
 
     char* last_clip = NULL;
     LevelSet* clipboard_level_set = NULL;
