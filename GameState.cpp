@@ -528,8 +528,11 @@ void GameState::advance()
 
     if (SDL_TICKS_PASSED(SDL_GetTicks(), time_last_progress + (1000 * 60 * 30)))
     {
-        if (!discord_joined)
+        if (!discord_joined && !discord_prompt_shown)
+        {
+            discord_prompt_shown = true;
             show_dialogue_discord_prompt = true;
+        }
         time_last_progress = SDL_GetTicks();
     }
 
