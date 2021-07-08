@@ -5152,7 +5152,19 @@ bool GameState::events()
             }
             case SDL_MOUSEWHEEL:
             {
-                if (mouse.x < panel_offset.x)
+                if (show_dialogue || show_dialogue_hint)
+                {
+                    if(e.wheel.y > 0)
+                    {
+                        if (dialogue_index)
+                            dialogue_index--;
+                    }
+                    else
+                    {
+                        dialogue_index++;
+                    }
+                }
+                else if (mouse.x < panel_offset.x)
                 {
                     if(e.wheel.y > 0)
                     {
