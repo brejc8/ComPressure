@@ -4559,12 +4559,27 @@ bool GameState::events()
                         break;
                     case SDL_SCANCODE_C:
                         if (!SDL_IsTextInputActive())
+                        {
                             clipboard.copy(selected_elements, *current_circuit);
-                        if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
-                            mouse_state = MOUSE_STATE_NONE;
+                            if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
+                                mouse_state = MOUSE_STATE_NONE;
+                        }
                         break;
                     case SDL_SCANCODE_V:
-                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        if (SDL_IsTextInputActive())
+                        {
+                            if (keyboard_ctrl)
+                            {
+                                char* new_clip = SDL_GetClipboardText();
+                                if (!new_clip)
+                                    break;
+                                std::string new_text(new_clip);
+                                SDL_free(new_clip);
+                                text_entry_string->insert(text_entry_offset, new_text);
+                                text_entry_offset += new_text.size();
+                            }
+                        }
+                        else if (!current_circuit_is_read_only)
                         {
                             if (!clipboard.elements.empty())
                                 mouse_state = MOUSE_STATE_PASTING_CLIPBOARD;
