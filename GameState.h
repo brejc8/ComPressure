@@ -225,6 +225,7 @@ public:
     bool discord_prompt_shown = false;
 
     int dialogue_index = 0;
+    bool dialogue_sat_inc = false;
     int next_dialogue_level = 0;
     int highest_level = 0;
 

@@ -2561,6 +2561,12 @@ void GameState::render(bool saving)
                 {
                     SaveObjectList* lis = current_language->get_item(key)->get_list()->get_item(current_level_index)->get_list();
                     dialogue_index_max = lis->get_count();
+                    if (dialogue_sat_inc && ((dialogue_index + 1) < dialogue_index_max))
+                    {
+                        dialogue_index++;
+                        dialogue_sat_inc = false;
+                    }
+                        
                     if (dialogue_index < dialogue_index_max)
                     {
                         SaveObjectMap* dia = lis->get_item(dialogue_index)->get_map();
@@ -2573,6 +2579,11 @@ void GameState::render(bool saving)
             else
             {
                 dialogue_index_max = current_level->dialogue.size();
+                if (dialogue_sat_inc && ((dialogue_index + 1) < dialogue_index_max))
+                {
+                    dialogue_index++;
+                    dialogue_sat_inc = false;
+                }
                 if (dialogue_index >= dialogue_index_max)
                 {
                     std::list<Level::DialogueScreen>::iterator it = current_level->dialogue.begin();
@@ -4754,7 +4765,7 @@ bool GameState::events()
                     case SDL_SCANCODE_PAGEDOWN:
                         if (show_dialogue || show_dialogue_hint)
                         {
-                            dialogue_index++;
+                            dialogue_sat_inc = true;
                         }
                         else if (!SDL_IsTextInputActive())
                         {
@@ -5217,7 +5228,7 @@ bool GameState::events()
                     }
                     else
                     {
-                        dialogue_index++;
+                        dialogue_sat_inc = true;
                     }
                 }
                 else if (mouse.x < panel_offset.x)
