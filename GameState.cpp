@@ -494,6 +494,7 @@ GameState::~GameState()
     delete level_set_price;
     delete level_set_steam;
     delete clipboard_level_set;
+    delete languages;
 
     if (last_clip)
         SDL_free(last_clip);

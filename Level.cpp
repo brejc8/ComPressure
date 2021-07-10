@@ -181,6 +181,7 @@ Level::~Level()
 {
     delete circuit;
     delete best_design;
+    delete help_design;
     for (unsigned i = 0; i < 4; i++)
         delete saved_designs[i];
     delete texture;
