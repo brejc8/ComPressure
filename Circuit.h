@@ -343,7 +343,7 @@ public:
 
 
     virtual uint16_t get_desc() = 0;
-    virtual void elaborate(LevelSet* level_set) {}
+    virtual void elaborate(LevelSet* level_set, std::set<unsigned> seen = {}) {}
     virtual void reset() {}
     virtual void retire() {}
     virtual bool contains_subcircuit_level(int level_index, LevelSet* level_set) {return false;}
@@ -501,7 +501,7 @@ public:
     virtual uint16_t get_desc();
     virtual CircuitElement* copy();
     void reset();
-    void elaborate(LevelSet* level_set);
+    void elaborate(LevelSet* level_set, std::set<unsigned> seen = {});
     void retire();
     bool contains_subcircuit_level(int level_index, LevelSet* level_set);
     unsigned getconnections(void);
@@ -601,7 +601,7 @@ public:
     void add_pipe_drag_list(std::list<XYPos> &pipe_drag_list);
 
     void reset();
-    void elaborate(LevelSet* level_set);
+    void elaborate(LevelSet* level_set, std::set<unsigned> seen = {});
     void retire();
 
     void render_prep();

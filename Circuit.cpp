@@ -643,13 +643,15 @@ void CircuitElementSubCircuit::reset()
     circuit->reset();
 };
 
-void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
+void CircuitElementSubCircuit::elaborate(LevelSet* level_set, std::set<unsigned> seen)
 {
     level_index = level_set->find_level(level_index, name);
-    if (level_index >= 0)
+
+    if (level_index >= 0 && seen.find(level_index) == seen.end())
         level = level_set->levels[level_index];
     else
     {
+        level_index = -1;
         custom = true;
         level = NULL;
     }
@@ -665,7 +667,10 @@ void CircuitElementSubCircuit::elaborate(LevelSet* level_set)
         circuit = new Circuit(*level->circuit);
     }
     assert(circuit);
-    circuit->elaborate(level_set);
+    
+    std::set<unsigned> sub_seen(seen);
+    sub_seen.insert(level_index);
+    circuit->elaborate(level_set, sub_seen);
 };
 
 void CircuitElementSubCircuit::retire()
@@ -1005,14 +1010,14 @@ void Circuit::reset()
     fast_prepped = false;
 }
 
-void Circuit::elaborate(LevelSet* level_set)
+void Circuit::elaborate(LevelSet* level_set, std::set<unsigned> seen)
 {
     XYPos pos;
     fast_prepped = false;
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        elements[pos.y][pos.x]->elaborate(level_set);
+        elements[pos.y][pos.x]->elaborate(level_set, seen);
     }
 }
 

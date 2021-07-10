@@ -2953,7 +2953,7 @@ void GameState::set_level(int level_index)
     current_level_index = level_index;
     current_level = level_set->levels[current_level_index];
     current_circuit = current_level->circuit;
-    current_circuit->elaborate(level_set);
+    current_circuit->elaborate(level_set, {unsigned(level_index)});
     level_set->remove_circles(current_level_index);
     inspection_stack.clear();
     level_set->reset(current_level_index);
