@@ -1306,7 +1306,7 @@
     "name":"Latch",
     "connections": [3, 2, 1],
     "substep_count" : 10000,
-    "level_version" : 32,
+    "level_version" : 33,
     "help_design" : [null,{"best_score":6553580,"circuit":{"elements":[[],[],[],[],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"connections":8,"type":0}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2}],[],[],[]],"signs":[]},"level_version":32},null,null,null,{"best_score":0,"circuit":{"elements":[[],[],[],[{"type":4},{"type":4},{"type":4},{"connections":5,"type":0},{"connections":4,"type":0},{"type":4},{"direction":3,"type":2}],[{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":9,"type":0},{"type":4},{"connections":8,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0}],[{"type":4},{"type":4},{"type":4},{"connections":2,"type":0},{"connections":4,"type":0}],[{"type":4},{"type":4},{"type":4},{"type":4},{"type":4},{"direction":0,"type":2}],[],[]],"signs":[]},"level_version":32},null,null,null,null,null,null,null,null,null,null,{"best_score":0,"circuit":{"elements":[[],[],[],[{"type":4},{"type":4},{"type":4},{"direction":1,"level_index":1,"type":3},{"type":4},{"direction":1,"level_index":1,"type":3}],[{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0},{"direction":2,"type":1},{"direction":0,"level_index":5,"type":3},{"direction":0,"type":1},{"connections":4,"type":0},{"connections":4,"type":0},{"connections":4,"type":0}],[{"type":4},{"type":4},{"type":4},{"connections":3,"type":0},{"type":4},{"connections":3,"type":0}],[{"type":4},{"type":4},{"type":4},{"connections":2,"type":0},{"connections":10,"type":0},{"connections":1,"type":0}],[{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0}],[{"type":4},{"type":4},{"type":4},{"type":4},{"connections":3,"type":0}]],"signs":[]},"level_version":32}],
     "tests" :
     [
@@ -1420,6 +1420,15 @@
                 {"N":0, "E":0,"S":100,"W":0},
                 {"N":0, "E":0,"S":0,"W":0},
 
+            ]
+        },
+        {
+            "points":
+            [
+                {"N":0, "E":0,"S":100,"W":0},
+                {"N":0, "E":0,"S":0,"W":0, "PRESET":1},
+                {"N":0, "E":100,"S":100,"W":0, "EF":10},
+                {"N":0, "E":0,"S":100,"W":0},
             ]
         },
     ]
