@@ -2654,10 +2654,14 @@ void GameState::render(bool saving)
                         pic_src = XYPos(0,2);
                         break;
                }
-                render_box(XYPos(16 * scale, (180) * scale), XYPos(32, 32), 4);
-                render_number_2digit(XYPos((16 + 8) * scale, (180 + 4) * scale), dialogue_index + 1, 2);
-                render_box(XYPos((16 + 32) * scale, (180) * scale), XYPos(32, 32), 4);
-                render_number_2digit(XYPos((16 + 32 + 8) * scale, (180 + 4) * scale), dialogue_index_max, 2);
+                render_box(XYPos(16 * scale, (180) * scale), XYPos(64, 32), 4);
+                render_number_2digit(XYPos((16 + 8) * scale, (180 + 5) * scale), dialogue_index + 1, 2);
+                {
+                    SDL_Rect src_rect = {168, 160, 5, 5};
+                    SDL_Rect dst_rect = {(16 + 20 + 8) * scale, (180 + 5) * scale, 10 * scale, 10 * scale};
+                    render_texture(src_rect, dst_rect);
+                }
+                render_number_2digit(XYPos((16 + 32 + 8) * scale, (180 + 5) * scale), dialogue_index_max, 2);
 
                 render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
 
