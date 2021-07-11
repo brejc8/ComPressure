@@ -648,7 +648,10 @@ void CircuitElementSubCircuit::elaborate(LevelSet* level_set, std::set<unsigned>
     level_index = level_set->find_level(level_index, name);
 
     if (custom || (level_index >= 0 && seen.find(level_index) == seen.end()))
-        level = level_set->levels[level_index];
+    {
+        if (level_index >= 0)
+            level = level_set->levels[level_index];
+    }
     else
     {
         level_index = -1;
