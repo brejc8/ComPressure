@@ -3569,7 +3569,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
         {
             set_level(level_index);
         }
-        else if (button_pos.y > 176)
+        else if (button_pos.y > 32)
         {
             show_hint = true;
         }
@@ -3791,6 +3791,11 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 placing_subcircuit_level = level_index;
             }
         }
+        else if (editor_requirements_visible && (panel_pos.y > 176))
+        {
+            show_hint = true;
+        }
+
         return;
     } else if (panel_state == PANEL_STATE_MONITOR)
     {
