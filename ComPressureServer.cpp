@@ -1170,6 +1170,8 @@ void ScoreTable::fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<ui
     int i = 0;
     for(auto const &score : sorted_scores)
     {
+        if (user_id && !score.second)
+            continue;
         int64_t s = type ? (INT64_MAX - score.first) : score.first;
 
         scores.push_back(s);
