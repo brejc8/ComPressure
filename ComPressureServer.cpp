@@ -215,6 +215,7 @@ public:
         accuracy_scores = other.accuracy_scores;
         price_scores = other.price_scores;
         steam_scores = other.steam_scores;
+        release_time = other.release_time;
     }
 
     ~CustomLevel()
