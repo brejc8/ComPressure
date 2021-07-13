@@ -589,7 +589,7 @@ void Level::select_test(unsigned t)
     touched = true;
     substep_index = 0;
     set_monitor_state(MONITOR_STATE_PLAY_1);
-    if (tests[test_index].reset == RESET_1 || test_index == 0)
+    if (tests[test_index].reset || test_index == 0)
     {
         circuit->reset();
         for (int i = 0; i < 4; i++)
