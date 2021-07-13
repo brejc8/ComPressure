@@ -184,6 +184,7 @@ void mainloop()
         if ((newtime - oldtime) < 10)
             SDL_Delay(10 - (newtime - oldtime));
 	}
+    SDL_HideWindow(game_state->sdl_window);
     SDL_WaitThread(save_thread, NULL);
     game_state->save(save_filename.c_str());
     game_state->save_to_server(true);
