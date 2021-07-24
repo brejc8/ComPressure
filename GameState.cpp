@@ -666,7 +666,7 @@ void GameState::render_texture(SDL_Rect& src_rect, SDL_Rect& dst_rect)
 
 void GameState::render_number_2digit(XYPos pos, unsigned value, unsigned scale_mul, unsigned bg_colour, unsigned fg_colour)
 {
-    int myscale = scale * scale_mul;
+    int myscale = scale_mul;
     {
         SDL_Rect src_rect = {503, 80 + int(bg_colour), 1, 1};
         SDL_Rect dst_rect = {pos.x, pos.y-myscale, 9 * myscale, 7 * myscale};
@@ -701,7 +701,7 @@ void GameState::render_score_2digit_err(XYPos pos, Pressure value, unsigned scal
     }
     else
     {
-        int myscale = scale * scale_mul;
+        int myscale = scale_mul;
         SDL_Rect src_rect = {503, 80 + int(bg_colour), 1, 1};
         SDL_Rect dst_rect = {pos.x, pos.y-myscale, 9 * myscale, 7 * myscale};
         render_texture(src_rect, dst_rect);
@@ -716,7 +716,7 @@ void GameState::render_score_2digit_err(XYPos pos, Pressure value, unsigned scal
 
 void GameState::render_number_pressure(XYPos pos, Pressure value, unsigned scale_mul, unsigned bg_colour, unsigned fg_colour)
 {
-    int myscale = scale * scale_mul;
+    int myscale = scale_mul;
     int64_t p = (int64_t(value) * 10000 + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR;
     render_number_2digit(pos, (p / 10000), scale_mul, bg_colour, fg_colour);
     pos.x += 9 * myscale;
@@ -737,7 +737,7 @@ void GameState::render_number_pressure(XYPos pos, Pressure value, unsigned scale
 
 void GameState::render_number_long(XYPos pos, unsigned value, unsigned scale_mul)
 {
-    int myscale = scale * scale_mul;
+    int myscale = scale_mul;
     unsigned digits[10];
     
     int i = 10;
@@ -780,7 +780,7 @@ void GameState::render_number_compact(XYPos pos, int64_t value, unsigned scale_m
 {
     if (value == 0)
         return;
-    int myscale = scale * scale_mul;
+    int myscale = scale_mul;
     int64_t scalar = 0;
     if (value < 1000)
     {
@@ -841,7 +841,7 @@ void GameState::render_number_compact(XYPos pos, int64_t value, unsigned scale_m
     }
 }
 
-void GameState::render_box(XYPos pos, XYPos size, unsigned colour)
+void GameState::render_box(XYPos pos, XYPos size, unsigned colour, int scale)
 {
     int color_table = 256 + colour * 32;
     SDL_Rect src_rect = {color_table, 80, 16, 16};
@@ -881,11 +881,13 @@ void GameState::render_box(XYPos pos, XYPos size, unsigned colour)
     render_texture(src_rect, dst_rect);     //  Bottom Right
 }
 
-void GameState::render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip, SDL_Texture* texture)
+void GameState::render_button(XYPos pos, XYPos content, unsigned colour, const char* tooltip, SDL_Texture* texture, int myscale)
 {
-    render_box(pos, XYPos(32,32), colour);
+    if (!myscale)
+        myscale = scale;
+    render_box(pos, XYPos(32,32), colour, myscale);
     SDL_Rect src_rect = {content.x , content.y , 24, 24};
-    SDL_Rect dst_rect = {pos.x + 4 * scale, pos.y + 4 * scale, 24 * scale, 24 * scale};
+    SDL_Rect dst_rect = {pos.x + 4 * myscale, pos.y + 4 * myscale, 24 * myscale, 24 * myscale};
     if (!texture)
         texture = sdl_texture;
     render_texture_custom(texture, src_rect, dst_rect);
@@ -909,7 +911,7 @@ void GameState::render_tooltip()
             render_texture(src_rect, dst_rect);
         }
 
-        render_text(tip_pos + XYPos(1,0), tooltip_string.c_str(), SDL_Color{0x0,0x0,0x0});
+        render_text((tip_pos + XYPos(1,0)) * scale, tooltip_string.c_str(), SDL_Color{0x0,0x0,0x0});
         tooltip_string = "";
     }
 }
@@ -969,8 +971,10 @@ void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
 	SDL_FreeSurface(text_surface);
 }
 
-void GameState::render_text(XYPos tl, const char* string, SDL_Color color, unsigned scale_mul)
+void GameState::render_text(XYPos tl, const char* string, SDL_Color color, int myscale)
 {
+    if (!myscale)
+        myscale = scale;
     std::string text = string;
 
     XYPos rep = XYPos(0,0);
@@ -988,16 +992,16 @@ void GameState::render_text(XYPos tl, const char* string, SDL_Color color, unsig
         SDL_Rect src_rect;
         SDL_GetClipRect(text_surface, &src_rect);
         SDL_Rect dst_rect = src_rect;
-        dst_rect.x = tl.x * scale;
-        dst_rect.y = tl.y * scale;
-        dst_rect.w = src_rect.w * scale * scale_mul;
-        dst_rect.h = src_rect.h * scale * scale_mul;
+        dst_rect.x = tl.x;
+        dst_rect.y = tl.y;
+        dst_rect.w = src_rect.w * myscale;
+        dst_rect.h = src_rect.h * myscale;
 
         render_texture_custom(new_texture, src_rect, dst_rect);
 	    SDL_DestroyTexture(new_texture);
     	SDL_FreeSurface(text_surface);
 
-        tl.y += TTF_FontLineSkip(font);
+        tl.y += TTF_FontLineSkip(font) * myscale;
         if (pos == std::string::npos)
             break;
     }
@@ -1032,55 +1036,15 @@ static int max_help_page(int next_dialogue_level)
     return 12;
 }
 
-void GameState::render(bool saving)
-{
-    check_clipboard();
-    deal_with_scores();
-    deal_with_server_levels_from_server();
-    current_circuit->render_prep();
 
-    SDL_RenderClear(sdl_renderer);
-    XYPos window_size;
-    SDL_GetWindowSize(sdl_window, &window_size.x, &window_size.y);
-    {
-        int sx = window_size.x / 640;
-        int sy = window_size.y / 360;
-        int newscale = std::min(sy, sx);
-        if (newscale < 1)
-            newscale = 1;
-        update_scale(newscale);
-        screen_offset.x = (window_size.x - (newscale * 640)) / 2;
-        screen_offset.y = (window_size.y - (newscale * 360)) / 2;
-    }
-    
+void GameState::render_grid(int scale, XYPos grid_offset)
+{
     XYPos pos;
-    frame_index++;
-    debug_frames++;
-    
-    if (edited_level_set->levels[highest_level]->best_score && (highest_level + 1) < LEVEL_COUNT)
-    {
-        highest_level++;
-        level_win_animation = 100;
-        if (highest_level == 20)
-            number_high_precision = true;
-    }
-    
-    {
-        SDL_Rect src_rect = {320, 300, 320, 180};       // Background
-        SDL_Rect dst_rect = {0, 0, 640*scale, 360*scale};
-        for (int x = -1; x <= 1; x++)
-        for (int y = -1; y <= 1; y++)
-        {
-            dst_rect.x = 640*x;
-            dst_rect.y = 360*y;
-            render_texture(src_rect, dst_rect);
-        }
-    }
     {                                               // Input pipe background
-        render_box(XYPos((4 * 32 - 8) * scale + grid_offset.x, (-32 - 16) * scale + grid_offset.y), XYPos(48, 48), 0);
-        render_box(XYPos((9 * 32 - 0) * scale + grid_offset.x, (4 * 32 - 8) * scale + grid_offset.y), XYPos(48, 48), 1);
-        render_box(XYPos((4 * 32 - 8) * scale + grid_offset.x, (9 * 32 - 0) * scale + grid_offset.y), XYPos(48, 48), 2);
-        render_box(XYPos((-32 - 16) * scale + grid_offset.x, (4 * 32 - 8) * scale + grid_offset.y), XYPos(48, 48), 3);
+        render_box(XYPos((4 * 32 - 8) * scale + grid_offset.x, (-32 - 16) * scale + grid_offset.y), XYPos(48, 48), 0, scale);
+        render_box(XYPos((9 * 32 - 0) * scale + grid_offset.x, (4 * 32 - 8) * scale + grid_offset.y), XYPos(48, 48), 1, scale);
+        render_box(XYPos((4 * 32 - 8) * scale + grid_offset.x, (9 * 32 - 0) * scale + grid_offset.y), XYPos(48, 48), 2, scale);
+        render_box(XYPos((-32 - 16) * scale + grid_offset.x, (4 * 32 - 8) * scale + grid_offset.y), XYPos(48, 48), 3, scale);
     }
 
     {                                               // Input pipes
@@ -1124,7 +1088,7 @@ void GameState::render(bool saving)
         num_pos += XYPos(6, 11);
         num_pos *= scale;
         num_pos += grid_offset;
-        render_number_2digit(num_pos, value, 2, 6, 0);                  // Values on input pipes
+        render_number_2digit(num_pos, value, 2 * scale, 6, 0);                  // Values on input pipes
     }
 
     for (pos.y = 0; pos.y < 9; pos.y++)
@@ -1226,6 +1190,176 @@ void GameState::render(bool saving)
             SDL_Rect src_rect =  {256, 176, 32, 32};
             SDL_Rect dst_rect = {(pos.x * 32) * scale + grid_offset.x, (pos.y * 32) * scale + grid_offset.y, 32 * scale, 32 * scale};
             render_texture(src_rect, dst_rect);
+        }
+
+    }
+
+    for (pos.y = 0; pos.y < 10; pos.y++)                        // Print pressure numbers
+    for (pos.x = 0; pos.x < 9; pos.x++)
+    {
+        if (current_circuit->touched_ns[pos.y][pos.x] == 0)
+            continue;
+        Pressure vented = (current_circuit->touched_ns[pos.y][pos.x] == 1) ? (current_circuit->connections_ns[pos.y][pos.x].value) : 0;
+        unsigned value = pressure_as_percent(current_circuit->connections_ns[pos.y][pos.x].value);
+        
+        if (vented > 20)
+        {
+            SDL_Rect src_rect = {16*int(rand & 3) + 256, 160, 16, 16};
+            SDL_Rect dst_rect = {(pos.x * 32  + 7 + int(rand % 3)) * scale + grid_offset.x, (pos.y * 32 - 9  + int(rand % 3)) * scale + grid_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        render_number_2digit(XYPos((pos.x * 32  + 11) * scale + grid_offset.x, (pos.y * 32 - 3) * scale + grid_offset.y), value, scale, 6);
+    }
+    for (pos.y = 0; pos.y < 9; pos.y++)
+    for (pos.x = 0; pos.x < 10; pos.x++)
+    {
+        if (current_circuit->touched_ew[pos.y][pos.x] == 0)
+            continue;
+        Pressure vented = (current_circuit->touched_ew[pos.y][pos.x] == 1) ? (current_circuit->connections_ew[pos.y][pos.x].value) : 0;
+        unsigned value = pressure_as_percent(current_circuit->connections_ew[pos.y][pos.x].value);
+        if (vented > 20)
+        {
+            SDL_Rect src_rect = {16*int(rand & 3) + 256, 160, 16, 16};
+            SDL_Rect dst_rect = {(pos.x * 32  - 9) * scale + int(rand % 3 * scale) + grid_offset.x, (pos.y * 32 + 7 ) * scale + int(rand % 3 * scale) + grid_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+        render_number_2digit(XYPos((pos.x * 32  - 5) * scale + grid_offset.x, (pos.y * 32 + 13) * scale + grid_offset.y), value, scale, 6);
+    }
+    
+    for (auto i = current_circuit->signs.rbegin(); i != current_circuit->signs.rend(); ++i)     // show notes
+    {
+        Sign& sign = *i;
+        sign.set_size(get_text_size(sign.text));
+        render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4, scale);
+        {
+            SDL_Rect src_rect = {288 + (int)sign.direction * 16, 176, 16, 16};
+            SDL_Rect dst_rect = {(sign.pos.x - 8) * scale + grid_offset.x, (sign.pos.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
+            render_texture(src_rect, dst_rect);
+        }
+
+        {
+            std::string text = sign.text;
+            if (frame_index % 60 < 30 && (&sign == &current_circuit->signs.front()) && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_SIGN))
+                text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
+            render_text((sign.get_pos() + XYPos(4,4)) * scale + grid_offset, text.c_str(), SDL_Color{0xff,0xff,0xff}, scale);
+        }
+    }
+
+    {
+        {
+            WrappedTexture* w_tex = current_level->getimage_fg_texture();
+            SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
+            render_button(XYPos(0 * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), 0, current_level->name.c_str(), tex, scale);
+        }
+    }
+}
+
+void GameState::render(bool saving)
+{
+    check_clipboard();
+    deal_with_scores();
+    deal_with_server_levels_from_server();
+    current_circuit->render_prep();
+
+    SDL_RenderClear(sdl_renderer);
+    XYPos window_size;
+    SDL_GetWindowSize(sdl_window, &window_size.x, &window_size.y);
+    {
+        int sx = window_size.x / 640;
+        int sy = window_size.y / 360;
+        int newscale = std::min(sy, sx);
+        if (newscale < 1)
+            newscale = 1;
+        update_scale(newscale);
+        screen_offset.x = (window_size.x - (newscale * 640)) / 2;
+        screen_offset.y = (window_size.y - (newscale * 360)) / 2;
+    }
+    
+    XYPos pos;
+    frame_index++;
+    debug_frames++;
+    
+    if (edited_level_set->levels[highest_level]->best_score && (highest_level + 1) < LEVEL_COUNT)
+    {
+        highest_level++;
+        level_win_animation = 100;
+        if (highest_level == 20)
+            number_high_precision = true;
+    }
+    
+    {
+        SDL_Rect src_rect = {320, 300, 320, 180};       // Background
+        SDL_Rect dst_rect = {0, 0, 640*scale, 360*scale};
+        for (int x = -1; x <= 1; x++)
+        for (int y = -1; y <= 1; y++)
+        {
+            dst_rect.x = 640*x;
+            dst_rect.y = 360*y;
+            render_texture(src_rect, dst_rect);
+        }
+    }
+
+    render_grid(scale, grid_offset);
+
+    {
+        int x = 32;
+        if (current_circuit_is_inspected_subcircuit)
+        {
+            bool editable = true;
+            for (auto &sub : inspection_stack)
+            {
+                if (x == 32*5)
+                    x += 32;
+                int l_index;
+                sub->get_subcircuit(&l_index);
+                if (!sub->get_custom() || sub->get_read_only())
+                    editable = false;
+                
+                unsigned color = editable ? 1 : 4;
+                
+                WrappedTexture* w_tex = sub->getimage_fg_texture();
+                SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
+                const char* l_name = l_index < 0 ? "Lost level" : level_set->levels[l_index]->name.c_str();
+                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, l_name, tex);
+                x += 32;
+            }
+        }
+
+        if (current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
+        {
+            for (auto &sub : inspection_stack)
+            {
+                if (sub->get_read_only())
+                    break;
+                if (!sub->get_custom())
+                {
+                    if (sub == inspection_stack.back())
+                        render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Customize");
+                    break;
+                }
+            }
+        }
+        else if (current_level_set_is_inspected)
+        {
+            if (current_level_index >= LEVEL_COUNT && !current_circuit_is_inspected_subcircuit)
+                render_button(XYPos(7 * 32 * scale, 0), XYPos(376, 136), 0, "Import level");
+            if (deletable_level_set && !current_circuit_is_inspected_subcircuit)
+                render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
+            if (!current_circuit_is_inspected_subcircuit && ((current_level_index <  LEVEL_COUNT) || ((edited_level_set->find_custom_by_name(current_level->name)) > 0) ))
+                render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0, "Copy design\nto current");
+            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
+        }
+        else if (editing_level)
+        {
+            render_button(XYPos(9 * 32 * scale, 0), XYPos(400, 160), 0, "Delete level");
+            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
+        }
+        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > 24)
+        {
+            if (current_level->global)
+                render_button(XYPos(10 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
+            else
+                render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Level Editor");
         }
 
     }
@@ -1505,155 +1639,34 @@ void GameState::render(bool saving)
             }
         }
     }
-
-    for (pos.y = 0; pos.y < 10; pos.y++)                        // Print pressure numbers
-    for (pos.x = 0; pos.x < 9; pos.x++)
-    {
-        if (current_circuit->touched_ns[pos.y][pos.x] == 0)
-            continue;
-        Pressure vented = (current_circuit->touched_ns[pos.y][pos.x] == 1) ? (current_circuit->connections_ns[pos.y][pos.x].value) : 0;
-        unsigned value = pressure_as_percent(current_circuit->connections_ns[pos.y][pos.x].value);
-        
-        if (vented > 20)
-        {
-            SDL_Rect src_rect = {16*int(rand & 3) + 256, 160, 16, 16};
-            SDL_Rect dst_rect = {(pos.x * 32  + 7 + int(rand % 3)) * scale + grid_offset.x, (pos.y * 32 - 9  + int(rand % 3)) * scale + grid_offset.y, 16 * scale, 16 * scale};
-            render_texture(src_rect, dst_rect);
-        }
-        render_number_2digit(XYPos((pos.x * 32  + 11) * scale + grid_offset.x, (pos.y * 32 - 3) * scale + grid_offset.y), value, 1, 6);
-    }
-    for (pos.y = 0; pos.y < 9; pos.y++)
-    for (pos.x = 0; pos.x < 10; pos.x++)
-    {
-        if (current_circuit->touched_ew[pos.y][pos.x] == 0)
-            continue;
-        Pressure vented = (current_circuit->touched_ew[pos.y][pos.x] == 1) ? (current_circuit->connections_ew[pos.y][pos.x].value) : 0;
-        unsigned value = pressure_as_percent(current_circuit->connections_ew[pos.y][pos.x].value);
-        if (vented > 20)
-        {
-            SDL_Rect src_rect = {16*int(rand & 3) + 256, 160, 16, 16};
-            SDL_Rect dst_rect = {(pos.x * 32  - 9) * scale + int(rand % 3 * scale) + grid_offset.x, (pos.y * 32 + 7 ) * scale + int(rand % 3 * scale) + grid_offset.y, 16 * scale, 16 * scale};
-            render_texture(src_rect, dst_rect);
-        }
-        render_number_2digit(XYPos((pos.x * 32  - 5) * scale + grid_offset.x, (pos.y * 32 + 13) * scale + grid_offset.y), value, 1, 6);
-    }
-    
-    for (auto i = current_circuit->signs.rbegin(); i != current_circuit->signs.rend(); ++i)     // show notes
-    {
-        Sign& sign = *i;
-        sign.set_size(get_text_size(sign.text));
-        render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4);
-        {
-            SDL_Rect src_rect = {288 + (int)sign.direction * 16, 176, 16, 16};
-            SDL_Rect dst_rect = {(sign.pos.x - 8) * scale + grid_offset.x, (sign.pos.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
-            render_texture(src_rect, dst_rect);
-        }
-
-        {
-            std::string text = sign.text;
-            if (frame_index % 60 < 30 && (&sign == &current_circuit->signs.front()) && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_SIGN))
-                text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
-            render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), text.c_str());
-        }
-    }
-
     
     if (mouse_state == MOUSE_STATE_PLACING_SIGN)
     {
         XYPos mouse_grid = (mouse - grid_offset) / scale;
         Sign sign(mouse_grid, dir_flip.get_n(), "");
         sign.set_size(get_text_size(sign.text));
-        render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4);
+        render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4, scale);
         {
             SDL_Rect src_rect = {288 + (int)sign.direction * 16, 176, 16, 16};
             SDL_Rect dst_rect = {(sign.pos.x - 8) * scale + grid_offset.x, (sign.pos.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
         }
-        render_text(sign.get_pos() + XYPos(32,32) + XYPos(4,4), sign.text.c_str());
+        render_text((sign.get_pos() + XYPos(32,32) + XYPos(4,4)) * scale, sign.text.c_str());
     }
 
     if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
     {
         XYPos mouse_grid = (mouse - grid_offset) / scale;
         dragged_sign.set_size(get_text_size(dragged_sign.text));
-        render_box((dragged_sign.get_pos() + mouse_grid) * scale + grid_offset , dragged_sign.get_size(), 4);
+        render_box((dragged_sign.get_pos() + mouse_grid) * scale + grid_offset , dragged_sign.get_size(), 4, scale);
         {
             SDL_Rect src_rect = {288 + (int)dragged_sign.direction * 16, 176, 16, 16};
             SDL_Rect dst_rect = {(dragged_sign.pos.x + mouse_grid.x - 8) * scale + grid_offset.x, (dragged_sign.pos.y + mouse_grid.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
         }
-        render_text(dragged_sign.get_pos() + mouse_grid + XYPos(32,32) + XYPos(4,4), dragged_sign.text.c_str());
+        render_text((dragged_sign.get_pos() + mouse_grid + XYPos(32,32) + XYPos(4,4)) * scale, dragged_sign.text.c_str());
     }
 
-    {
-        int x = 0;
-        {
-            WrappedTexture* w_tex = current_level->getimage_fg_texture();
-            SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
-            render_button(XYPos(x * scale, 0 * scale), current_level->getimage_fg(DIRECTION_N), 0, current_level->name.c_str(), tex);
-        }
-        x += 32;
-
-        if (current_circuit_is_inspected_subcircuit)
-        {
-            bool editable = true;
-            for (auto &sub : inspection_stack)
-            {
-                if (x == 32*5)
-                    x += 32;
-                int l_index;
-                sub->get_subcircuit(&l_index);
-                if (!sub->get_custom() || sub->get_read_only())
-                    editable = false;
-                
-                unsigned color = editable ? 1 : 4;
-                
-                WrappedTexture* w_tex = sub->getimage_fg_texture();
-                SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
-                const char* l_name = l_index < 0 ? "Lost level" : level_set->levels[l_index]->name.c_str();
-                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, l_name, tex);
-                x += 32;
-            }
-        }
-
-        if (current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
-        {
-            for (auto &sub : inspection_stack)
-            {
-                if (sub->get_read_only())
-                    break;
-                if (!sub->get_custom())
-                {
-                    if (sub == inspection_stack.back())
-                        render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Customize");
-                    break;
-                }
-            }
-        }
-        else if (current_level_set_is_inspected)
-        {
-            if (current_level_index >= LEVEL_COUNT && !current_circuit_is_inspected_subcircuit)
-                render_button(XYPos(7 * 32 * scale, 0), XYPos(376, 136), 0, "Import level");
-            if (deletable_level_set && !current_circuit_is_inspected_subcircuit)
-                render_button(XYPos(8 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
-            if (!current_circuit_is_inspected_subcircuit && ((current_level_index <  LEVEL_COUNT) || ((edited_level_set->find_custom_by_name(current_level->name)) > 0) ))
-                render_button(XYPos(9 * 32 * scale, 0), XYPos(376, 136), 0, "Copy design\nto current");
-            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
-        }
-        else if (editing_level)
-        {
-            render_button(XYPos(9 * 32 * scale, 0), XYPos(400, 160), 0, "Delete level");
-            render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
-        }
-        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > 24)
-        {
-            if (current_level->global)
-                render_button(XYPos(10 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
-            else
-                render_button(XYPos(10 * 32 * scale, 0), XYPos(304, 112), 0, "Level Editor");
-        }
-
-    }
 
 
     {                                               // Panel background
@@ -1680,7 +1693,7 @@ void GameState::render(bool saving)
                     assert(0);
             }
             
-            render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 32, 11*32 + 8), panel_colour);
+            render_box(XYPos((32 * 11) * scale, 0), XYPos(8*32 + 32, 11*32 + 8), panel_colour, scale);
         }
         {                                                                                               // Top Menu
             bool flash_next_level = (next_dialogue_level == highest_level) && (frame_index % 60 < 30) && (highest_level < LEVEL_COUNT);
@@ -1695,7 +1708,7 @@ void GameState::render(bool saving)
         }
         if (next_dialogue_level > 4)
         {                                                                                               // Speed arrows
-            render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3);
+            render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3, scale);
             SDL_Rect src_rect = {256, 136, 53, 5};
             SDL_Rect dst_rect = {(8 + 32 * 16 + 6) * scale, (8 + 6) * scale, 53 * scale, 5 * scale};
             render_texture(src_rect, dst_rect);
@@ -1705,7 +1718,7 @@ void GameState::render(bool saving)
             render_texture(src_rect, dst_rect);
         }
         {                                                                                               // Current Score
-            render_number_2digit(XYPos((8 + 32 * 11 + 32 * 4 + 3) * scale, (8 + 8) * scale), pressure_as_percent(current_level->best_score), 3);
+            render_number_2digit(XYPos((8 + 32 * 11 + 32 * 4 + 3) * scale, (8 + 8) * scale), pressure_as_percent(current_level->best_score), 3*scale);
         }
         {                                                                                               // Help Button
             unsigned highlight = show_help;
@@ -1745,18 +1758,18 @@ void GameState::render(bool saving)
             switch (test_mode)
             {
                 case TEST_MODE_ACCURACY:
-                    render_score_2digit_err(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_score);
+                    render_score_2digit_err(XYPos((pos.x * 32 + 32 - 9 - 4) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_score, scale);
                     break;
                 case TEST_MODE_PRICE:
                 {
                     SDL_Rect src_rect = {144, 160, 5, 5};
                     SDL_Rect dst_rect = {(pos.x * 32 + 32 - 8 - render_number_long_get_width(level_set->levels[level_index]->best_price)) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y, 5 * scale, 5 * scale};
                     render_texture(src_rect, dst_rect);
-                    render_number_long(XYPos((pos.x * 32 + 32 - 4 - render_number_long_get_width(level_set->levels[level_index]->best_price)) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_price);
+                    render_number_long(XYPos((pos.x * 32 + 32 - 4 - render_number_long_get_width(level_set->levels[level_index]->best_price)) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_price, scale);
                     break;
                 }
                 case TEST_MODE_STEAM:
-                    render_number_compact(XYPos((pos.x * 32 + 32 - 4 - render_number_compact_get_width(level_set->levels[level_index]->best_steam)) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_steam);
+                    render_number_compact(XYPos((pos.x * 32 + 32 - 4 - render_number_compact_get_width(level_set->levels[level_index]->best_steam)) * scale + panel_offset.x, (pos.y * 32 + 4) * scale + panel_offset.y), level_set->levels[level_index]->best_steam, scale);
                     break;
             }
         }
@@ -1792,7 +1805,7 @@ void GameState::render(bool saving)
 
         if (scoring_mode_dialogue)
         {
-            render_box(XYPos(buttons_offset.x + (160-8) * scale, buttons_offset.y - 8 * scale), XYPos(32*3+16, 32+16), 4);
+            render_box(XYPos(buttons_offset.x + (160-8) * scale, buttons_offset.y - 8 * scale), XYPos(32*3+16, 32+16), 4, scale);
             render_button(XYPos(buttons_offset.x + 5*32 * scale, buttons_offset.y), XYPos(256, 352), test_mode == TEST_MODE_ACCURACY, "Accuracy mode");
             render_button(XYPos(buttons_offset.x + 6*32 * scale, buttons_offset.y), XYPos(280, 352), test_mode == TEST_MODE_PRICE, "Price mode");
             render_button(XYPos(buttons_offset.x + 7*32 * scale, buttons_offset.y), XYPos(256, 376), test_mode == TEST_MODE_STEAM, "Steam mode");
@@ -1800,16 +1813,16 @@ void GameState::render(bool saving)
     }
     else if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level)
     {
-        render_box(panel_offset, XYPos(256, 32), 4);
+        render_box(panel_offset, XYPos(256, 32), 4, scale);
 
         std::string text = current_level->name;
         if ((frame_index % 60 < 30) && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_LEVEL_NAME))
             text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
-        render_text(panel_offset / scale + XYPos(4,4), text.c_str(), SDL_Color{0xff,0xff,0xff}, 2);
+        render_text(panel_offset + XYPos(4,4) * scale, text.c_str(), SDL_Color{0xff,0xff,0xff}, 2*scale);
         
-        render_box(XYPos((0) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(12*16+16, 12*16+16), 0);
-        render_box(XYPos((12*16+16) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(32, 12*16+16), 0);
-        render_box(XYPos((0) * scale + panel_offset.x, (32 + 12*16+16)* scale + panel_offset.y), XYPos(24*8+8, 32), 0);
+        render_box(XYPos((0) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(12*16+16, 12*16+16), 0, scale);
+        render_box(XYPos((12*16+16) * scale + panel_offset.x, (32)* scale + panel_offset.y), XYPos(32, 12*16+16), 0, scale);
+        render_box(XYPos((0) * scale + panel_offset.x, (32 + 12*16+16)* scale + panel_offset.y), XYPos(24*8+8, 32), 0, scale);
         {
             SDL_Rect src_rect = {503, 80, 1, 8};
             SDL_Rect dst_rect = {(12*16+16+8) * scale + panel_offset.x, (32 + 8)* scale + panel_offset.y, 16 * scale, 16 * 8 * scale};
@@ -1968,7 +1981,7 @@ void GameState::render(bool saving)
             }
             else
             {
-                render_box(XYPos((0) * scale + panel_offset.x, 176 * scale + panel_offset.y), XYPos(256, 128), 4);
+                render_box(XYPos((0) * scale + panel_offset.x, 176 * scale + panel_offset.y), XYPos(256, 128), 4, scale);
                 std::string text = level_set->levels[current_level_index]->description;
                 if (frame_index % 60 < 30 && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION))
                     text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
@@ -1983,7 +1996,7 @@ void GameState::render(bool saving)
     {
         for (int port_index = 0; port_index < 4; port_index++)
         {
-            render_box(XYPos((port_index * (48)) * scale + panel_offset.x, panel_offset.y), XYPos(48, 128 + 32), port_index);
+            render_box(XYPos((port_index * (48)) * scale + panel_offset.x, panel_offset.y), XYPos(48, 128 + 32), port_index, scale);
             {
                 SDL_Rect src_rect = {524, 80, 13, 101};
                 SDL_Rect dst_rect = {(port_index * 48 + 8 + 13) * scale + panel_offset.x, (8) * scale + panel_offset.y, 13 * scale, 101 * scale};
@@ -2001,7 +2014,7 @@ void GameState::render(bool saving)
                 SDL_Rect dst_rect = {(port_index * 48 + 8) * scale + panel_offset.x, (101 - int(current_level->current_simpoint.values[port_index])) * scale + panel_offset.y, 16 * scale, 16 * scale};
                 render_texture(src_rect, dst_rect);
             }
-            render_number_2digit(XYPos((port_index * 48 + 8 + 3 ) * scale + panel_offset.x, ((101 - current_level->current_simpoint.values[port_index]) + 5) * scale + panel_offset.y), current_level->current_simpoint.values[port_index]);
+            render_number_2digit(XYPos((port_index * 48 + 8 + 3 ) * scale + panel_offset.x, ((101 - current_level->current_simpoint.values[port_index]) + 5) * scale + panel_offset.y), current_level->current_simpoint.values[port_index], scale);
             
             {
                 SDL_Rect src_rect = {256 + 80 + (port_index * 6 * 16) , 16, 16, 16};
@@ -2010,13 +2023,13 @@ void GameState::render(bool saving)
             }
             //render_number_2digit(XYPos((port_index * 48 + current_level->current_simpoint.force[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), current_level->current_simpoint.force[port_index]*3);
             
-            render_number_pressure(XYPos((port_index * 48 + 8 + (number_high_precision ? 2 : 6)) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), current_level->ports[port_index].value);
+            render_number_pressure(XYPos((port_index * 48 + 8 + (number_high_precision ? 2 : 6)) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), current_level->ports[port_index].value, scale);
 
             
         }
 
-        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256-32-16, 120), 5);
-        render_box(XYPos(panel_offset.x + (256-32-16) * scale, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(48, 120), 0);
+        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256-32-16, 120), 5, scale);
+        render_box(XYPos(panel_offset.x + (256-32-16) * scale, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(48, 120), 0, scale);
         {
             XYPos graph_pos(8 * scale + panel_offset.x, (32 + 32 + 8 + 112 + 9) * scale + panel_offset.y);
             {
@@ -2136,8 +2149,8 @@ void GameState::render(bool saving)
                 src_rect.x = 368;
             SDL_Rect dst_rect = {panel_offset.x + (16 + i * 16) * scale, panel_offset.y + (32 + 8) * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
-            render_score_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->tests[i].last_score);
-            render_score_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->tests[i].best_score);
+            render_score_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->tests[i].last_score, scale);
+            render_score_2digit_err(XYPos(panel_offset.x + (16 + i * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->tests[i].best_score, scale);
         }
 
         if (editing_level)
@@ -2151,8 +2164,8 @@ void GameState::render(bool saving)
             switch (test_mode)
             {
                 case TEST_MODE_ACCURACY:
-                    render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_score);
-                    render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_score);
+                    render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_score, scale);
+                    render_number_pressure(XYPos(panel_offset.x + (16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_score, scale);
                     break;
                 case TEST_MODE_PRICE:
                     {
@@ -2160,17 +2173,17 @@ void GameState::render(bool saving)
                         SDL_Rect dst_rect = {panel_offset.x + int(16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 5) * scale, 5 * scale, 5 * scale};
                         render_texture(src_rect, dst_rect);
 
-                        render_number_long(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_price);
+                        render_number_long(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_price, scale);
 
                         dst_rect = {panel_offset.x + int(16 + test_count * 16 + 3) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale, 5 * scale, 5 * scale};
                         render_texture(src_rect, dst_rect);
-                        render_number_long(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_price);
+                        render_number_long(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_price, scale);
                     }
                     break;
                 case TEST_MODE_STEAM:
                     {
-                        render_number_compact(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_steam);
-                        render_number_compact(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_steam);
+                        render_number_compact(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 5) * scale), current_level->last_steam, scale);
+                        render_number_compact(XYPos(panel_offset.x + (16 + test_count * 16 + 3 + 5) * scale, panel_offset.y + (32 + 8 + 16 + 5) * scale), current_level->best_steam, scale);
                     }
                     break;
             }
@@ -2180,7 +2193,7 @@ void GameState::render(bool saving)
         int sim_point_index = current_level->sim_point_index;
         int sim_point_offset = std::max(std::min(sim_point_count - 12, sim_point_index - 6), 0);
 
-        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8) * scale), XYPos(8*32, 112), 4);
+        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8) * scale), XYPos(8*32, 112), 4, scale);
         int y_pos = panel_offset.y + (32 + 32 + 16) * scale;
         
         {
@@ -2212,7 +2225,7 @@ void GameState::render(bool saving)
                 for (int i2 = sim_point_offset; (i2 < sim_point_count) && (i2 < (sim_point_offset + 12)); i2++)
                 {
                     unsigned value = current_level->tests[test_index].sim_points[i2].values[pin_index];
-                    render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (i2 - sim_point_offset) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == i2 ? 4 : 0);
+                    render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (i2 - sim_point_offset) * 16) * scale, y_pos + (5) * scale), value, scale, 9, current_level->sim_point_index == i2 ? 4 : 0);
                 }
                 y_pos += 16 * scale;
             }
@@ -2249,7 +2262,7 @@ void GameState::render(bool saving)
                 unsigned value = current_level->tests[test_index].sim_points[i2].values[pin_index];
                 if (force || (i2 == sim_point_count-1))
                 {
-                    render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (i2 - sim_point_offset) * 16) * scale, y_pos + (5) * scale), value, 1, 9, current_level->sim_point_index == i2 ? 4 : (force ? 3: 0));
+                    render_number_2digit(XYPos(panel_offset.x + (8 + 16 + 3 + (i2 - sim_point_offset) * 16) * scale, y_pos + (5) * scale), value, scale, 9, current_level->sim_point_index == i2 ? 4 : (force ? 3: 0));
                 }
             }
             if ((sim_point_count  - sim_point_offset) <= 12)
@@ -2264,7 +2277,7 @@ void GameState::render(bool saving)
                 }
                 else
                 {
-                    render_number_pressure(XYPos(panel_offset.x + (8 + 16 + 3 + 16 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), current_level->tests[test_index].last_pressure_log[HISTORY_POINT_COUNT - 1] , 1, 9, 1);
+                    render_number_pressure(XYPos(panel_offset.x + (8 + 16 + 3 + 16 + (sim_point_count - sim_point_offset - 1) * 16) * scale, y_pos + (5) * scale), current_level->tests[test_index].last_pressure_log[HISTORY_POINT_COUNT - 1] , scale, 9, 1);
                 }
             }
             y_pos += 16 * scale;
@@ -2294,7 +2307,7 @@ void GameState::render(bool saving)
             
             int c = int64_t(int64_t(current_level->substep_count) * PRESSURE_SCALAR) / 10000;
             
-            render_number_pressure(XYPos(panel_offset.x + (number_high_precision ? 54 : 71) * scale, panel_offset.y + (32 + 32 + 16 + 3) * scale), c, 2, 9, 1);
+            render_number_pressure(XYPos(panel_offset.x + (number_high_precision ? 54 : 71) * scale, panel_offset.y + (32 + 32 + 16 + 3) * scale), c, 2 * scale, 9, 1);
 
 
         }
@@ -2330,7 +2343,7 @@ void GameState::render(bool saving)
         }
 
 
-        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256, 120), 5);
+        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256, 120), 5, scale);
         {
             XYPos graph_pos(8 * scale + panel_offset.x, (32 + 32 + 8 + 112 + 9) * scale + panel_offset.y);
             {
@@ -2398,7 +2411,7 @@ void GameState::render(bool saving)
             if (i >= level->friend_scores.size())
                 break;
             Level::FriendScore& score = level->friend_scores[friend_score_scroll.offset_rows + i];
-            render_text(table_pos+XYPos(16,0), score.steam_username.c_str());
+            render_text((table_pos + XYPos(16,0)) * scale, score.steam_username.c_str());
             switch (test_mode)
             {
                 case TEST_MODE_ACCURACY:
@@ -2426,7 +2439,7 @@ void GameState::render(bool saving)
             table_pos.y += 16;
         }
 
-        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256, 120), 5);
+        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256, 120), 5, scale);
         XYPos graph_pos(8 * scale + panel_offset.x, (32 + 32 + 8 + 112 + 9) * scale + panel_offset.y);
         {
             SDL_Rect src_rect = {524, 80, 13, 101};
@@ -2504,7 +2517,7 @@ void GameState::render(bool saving)
             if (i >= server_levels.size())
                 break;
             ServerLevel& level = server_levels[friend_score_scroll.offset_rows + i];
-            render_text(table_pos+XYPos(16,0), level.name.c_str());
+            render_text((table_pos+XYPos(16,0)) * scale, level.name.c_str());
             SDL_Rect src_rect = {336, 32, 16, 16};
             SDL_Rect dst_rect = {(table_pos.x) * scale, table_pos.y * scale, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
@@ -2529,8 +2542,8 @@ void GameState::render(bool saving)
 
     if (show_debug)
     {
-        render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3);
-        render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3);
+        render_number_2digit(XYPos(0, 0), debug_last_second_frames, 3*scale);
+        render_number_long(XYPos(0, 3 * 7 * scale), debug_last_second_simticks, 3*scale);
     }
     if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && !display_language_dialogue)
     {
@@ -2654,18 +2667,18 @@ void GameState::render(bool saving)
                         pic_src = XYPos(0,2);
                         break;
                }
-                render_box(XYPos(16 * scale, (180) * scale), XYPos(64, 32), 4);
-                render_number_2digit(XYPos((16 + 8) * scale, (180 + 5) * scale), dialogue_index + 1, 2);
+                render_box(XYPos(16 * scale, (180) * scale), XYPos(64, 32), 4, scale);
+                render_number_2digit(XYPos((16 + 8) * scale, (180 + 5) * scale), dialogue_index + 1, 2 * scale);
                 {
                     SDL_Rect src_rect = {168, 160, 5, 5};
                     SDL_Rect dst_rect = {(16 + 20 + 8) * scale, (180 + 5) * scale, 10 * scale, 10 * scale};
                     render_texture(src_rect, dst_rect);
                 }
-                render_number_2digit(XYPos((16 + 32 + 8) * scale, (180 + 5) * scale), dialogue_index_max, 2);
+                render_number_2digit(XYPos((16 + 32 + 8) * scale, (180 + 5) * scale), dialogue_index_max, 2 * scale);
 
-                render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4);
+                render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4, scale);
 
-                render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0);
+                render_box(XYPos((pic_on_left ? 16 : 640 - 180 + 16) * scale, (180 + 16) * scale), XYPos(180-32, 180-32), 0, scale);
                 SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
                 SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
                 render_texture(src_rect, dst_rect);
@@ -2762,9 +2775,9 @@ void GameState::render(bool saving)
 
     if (show_help)
     {
-        render_box(XYPos(16 * scale, 0 * scale), XYPos(592, 360), 0);
+        render_box(XYPos(16 * scale, 0 * scale), XYPos(592, 360), 0, scale);
 
-        render_box(XYPos(16 * scale, 0 * scale), XYPos(592, (128+16)*2+20), 1);
+        render_box(XYPos(16 * scale, 0 * scale), XYPos(592, (128+16)*2+20), 1, scale);
         if (show_help_page >= next_help_highlight)
             next_help_highlight = show_help_page + 1;
 
@@ -2773,9 +2786,9 @@ void GameState::render(bool saving)
             if (i >= max_help_page(next_dialogue_level))
                 break;
             if (i == show_help_page)
-                render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 0) * scale), XYPos(32, 32+28), 1);
+                render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 0) * scale), XYPos(32, 32+28), 1, scale);
             else
-                render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale), XYPos(32, 32), (i >= next_help_highlight) && (frame_index % 60 < 30));
+                render_box(XYPos((32 + 48 + i * 32) * scale, (2 * (128 + 16) + 28) * scale), XYPos(32, 32), (i >= next_help_highlight) && (frame_index % 60 < 30), scale);
             SDL_Rect src_rect = {352 + (i % 5) * 24, 224 + (i / 5) * 24, 24, 24};
             SDL_Rect dst_rect = {(32 + 48 + 4 + i * 32) * scale, (2 * (128 + 16) + 4 + 28) * scale, 24 * scale, 24 * scale};
             render_texture(src_rect, dst_rect);
@@ -2791,8 +2804,8 @@ void GameState::render(bool saving)
 
         for (int i = 0; i < 2; i++)
         {
-            render_box(XYPos((16 + 8 + i * 48) * scale, (i * (128 +16) + 8) * scale), XYPos(128+16, 128+16), 4);
-            render_box(XYPos((128 + 16 + 16 + 8 + i * 48) * scale, (i * (128 +16) + 8) * scale), XYPos(384, 128+16), 4);
+            render_box(XYPos((16 + 8 + i * 48) * scale, (i * (128 +16) + 8) * scale), XYPos(128+16, 128+16), 4, scale);
+            render_box(XYPos((128 + 16 + 16 + 8 + i * 48) * scale, (i * (128 +16) + 8) * scale), XYPos(384, 128+16), 4, scale);
             unsigned anim_frames = 5;
             
             struct HelpPage
@@ -2852,13 +2865,13 @@ void GameState::render(bool saving)
 
     if (display_language_dialogue)
     {
-        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0);
+        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0, scale);
         int i = 0;
         int col = 0;
         for (std::map<std::string, SaveObject*>::iterator it = languages->omap.begin(); it != languages->omap.end(); ++it)
         {
-            render_box(XYPos((160 + 32 + col * 160) * scale, (90 + 16 + i * 24) * scale), XYPos(160 - 64, 24), 0);
-            render_text(XYPos((160 + 32 + 4 + col * 160), (90 + 16 + i * 24 + 5)), it->first.c_str());
+            render_box(XYPos((160 + 32 + col * 160) * scale, (90 + 16 + i * 24) * scale), XYPos(160 - 64, 24), 0, scale);
+            render_text(XYPos((160 + 32 + 4 + col * 160), (90 + 16 + i * 24 + 5)) * scale, it->first.c_str());
             i++;
             if (i >= 7)
             {
@@ -2869,7 +2882,7 @@ void GameState::render(bool saving)
     }
     else if (show_main_menu)
     {
-        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0);
+        render_box(XYPos(160 * scale, 90 * scale), XYPos(320, 200), 0, scale);
         if (!display_about)
         {
             render_button(XYPos((160 + 32) * scale, (90 + 32)  * scale), XYPos(448, 200), 0, "Exit");
@@ -2882,7 +2895,7 @@ void GameState::render(bool saving)
             if (highest_level >= 20)
                 render_button(XYPos((160 + 32 + 64) * scale, (90 + 96 + 32)  * scale), XYPos(number_high_precision ? 280 : 256, 400), 0, "Number resolution");
 
-            render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1);
+            render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1, scale);
             {
                 SDL_Rect src_rect = {496, 200, 24, 24};
                 SDL_Rect dst_rect = {(160 + 32 + 128 + 4) * scale, (90 + 4)  * scale, 24 * scale, 24 * scale};
@@ -2901,7 +2914,7 @@ void GameState::render(bool saving)
                 render_texture(src_rect, dst_rect);
             }
 
-            render_box(XYPos((160 + 32 + 192) * scale, (90 + 32)  * scale), XYPos(32, 128), 2);
+            render_box(XYPos((160 + 32 + 192) * scale, (90 + 32)  * scale), XYPos(32, 128), 2, scale);
             {
                 SDL_Rect src_rect = {520, 200, 24, 24};
                 SDL_Rect dst_rect = {(160 + 32 + 192 + 4) * scale, (90 + 4)  * scale, 24 * scale, 24 * scale};
@@ -3821,59 +3834,72 @@ void GameState::mouse_click_in_panel(unsigned clicks)
 
             else if ((next_dialogue_level > 8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
             {
-                SaveObjectMap* omap = new SaveObjectMap;
-                omap->add_num("level_index", current_level_index);
-                omap->add_item("levels", edited_level_set->save_one(current_level_index));
-                std::ostringstream stream;
-                if (keyboard_shift)
-                    omap->pretty_print(stream, 0);
-                else
-                    omap->save(stream);
-                delete omap;
-                std::string reply;
-                reply = "ComPressure Level ";
-                reply += std::to_string(current_level_index + 1);
-                reply += ": \"";
-                reply += level_set->levels[current_level_index]->name;
-                reply += "\" (";
-                reply += level_set->levels[current_level_index]->score_set ? std::to_string(pressure_as_percent(level_set->levels[current_level_index]->last_score)) : "Err";
-                reply += "%)\n";
-                
-                if (keyboard_shift)
+                if (keyboard_ctrl)
                 {
-                    reply += stream.str();
-                    reply += "\n";
+                    SDL_Texture* my_canvas = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 320, 320);
+                    SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_BLEND);
+                    SDL_SetRenderTarget(sdl_renderer, my_canvas);
+                    SDL_Rect src_rect = {320, 300, 180, 180};       // Background
+                    SDL_Rect dst_rect = {0, 0, 360, 360};
+                    render_texture(src_rect, dst_rect);
+                    render_grid(1, XYPos(32,32));
+                    SDL_DestroyTexture(my_canvas);
+                    SDL_SetRenderTarget(sdl_renderer, NULL);
+
                 }
                 else
                 {
-                    std::string comp;
-                    if (keyboard_ctrl)
-                        comp = compress_string_zlib(stream.str());
+                    SaveObjectMap* omap = new SaveObjectMap;
+                    omap->add_num("level_index", current_level_index);
+                    omap->add_item("levels", edited_level_set->save_one(current_level_index));
+                    std::ostringstream stream;
+                    if (keyboard_shift)
+                        omap->pretty_print(stream, 0);
                     else
-                        comp = compress_string_zstd(stream.str());
-                    std::u32string s32;
+                        omap->save(stream);
+                    delete omap;
+                    std::string reply;
+                    reply = "ComPressure Level ";
+                    reply += std::to_string(current_level_index + 1);
+                    reply += ": \"";
+                    reply += level_set->levels[current_level_index]->name;
+                    reply += "\" (";
+                    reply += level_set->levels[current_level_index]->score_set ? std::to_string(pressure_as_percent(level_set->levels[current_level_index]->last_score)) : "Err";
+                    reply += "%)\n";
 
-                    s32 += 0x1F682;                 // steam engine
-                    unsigned spaces = 2;
-                    for(char& c : comp)
+                    if (keyboard_shift)
                     {
-                        if (spaces >= 80)
+                        reply += stream.str();
+                        reply += "\n";
+                    }
+                    else
+                    {
+                        std::string comp;
+                        comp = compress_string_zstd(stream.str());
+                        std::u32string s32;
+
+                        s32 += 0x1F682;                 // steam engine
+                        unsigned spaces = 2;
+                        for(char& c : comp)
                         {
-                            s32 += '\n';
-                            spaces = 0;
-                        }
-                        spaces++;
-                        s32 += uint32_t(0x2800 + (unsigned char)(c));
+                            if (spaces >= 80)
+                            {
+                                s32 += '\n';
+                                spaces = 0;
+                            }
+                            spaces++;
+                            s32 += uint32_t(0x2800 + (unsigned char)(c));
 
-                    } 
-                    s32 += 0x1F6D1;                 // stop sign
+                        } 
+                        s32 += 0x1F6D1;                 // stop sign
 
-                    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-                    reply += conv.to_bytes(s32);
-                    reply += "\n";
+                        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+                        reply += conv.to_bytes(s32);
+                        reply += "\n";
+                    }
+
+                    SDL_SetClipboardText(reply.c_str());
                 }
-
-                SDL_SetClipboardText(reply.c_str());
             }
             else if ((next_dialogue_level > 8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
             {
