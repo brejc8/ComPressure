@@ -5523,13 +5523,13 @@ void GameState::set_level_set(LevelSet* new_level_set)
     level_set = new_level_set;
     for (int i = LEVEL_COUNT; i < level_set->levels.size(); i++)
     {
-        SDL_Texture* my_canvas = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 192, 24);
-        SDL_SetRenderTarget(sdl_renderer, my_canvas);
-
-        SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_NONE);
-        SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0x00, 0x00);
-        SDL_RenderClear(sdl_renderer);
+        SDL_Texture* my_canvas = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 192, 24);
         SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_BLEND);
+//        SDL_SetRenderTarget(sdl_renderer, my_canvas);
+
+//        SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_NONE);
+//        SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0x00, 0x00);
+//        SDL_RenderClear(sdl_renderer);
         
 //         {
 //             SDL_Rect src_rect = {192, 800 + 4 * 24, 192, 24};
@@ -5550,21 +5550,23 @@ void GameState::set_level_set(LevelSet* new_level_set)
 //             SDL_Rect dst_rect = {0, 0, 192, 24};
 //             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 //         }
-
+        
+        uint8_t* pixels;
+        int pitch;
+        SDL_LockTexture(my_canvas, NULL, (void**)&pixels, &pitch);
+        
+        uint32_t colours[9] = {0xFFFFFFFF, 0x8595a1FF, 0x75725fFF, 0xd2aa9aFF, 0x844c30FF, 0x422536FF, 0x000000FF, 0x4c4a4eFF, 0xFF00};
+        
         for (int y = 0; y < 24; y++)
         for (int x = 0; x < 24*8; x++)
         {
-            for (int r = 0; r < 8; r++)
+            int colour = level_set->levels[i]->icon_pixels[y][x];
             {
-                int colour = level_set->levels[i]->icon_pixels[y][x];
-                if (colour != 8)
-                {
-                    SDL_Rect src_rect = {503, 80 + colour, 1, 1};
-                    SDL_Rect dst_rect = {x, y, 1, 1};
-                    SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-                }
+                uint32_t *line = (uint32_t*)&pixels[y * pitch];
+                line[x] = colours[colour];
             }
         }
+        SDL_UnlockTexture(my_canvas);
 //         for (int y = 0; y < 24; y++)
 //         for (int x = 0; x < 24; x++)
 //         {
@@ -5576,9 +5578,9 @@ void GameState::set_level_set(LevelSet* new_level_set)
 //                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
 //             }
 //         }
-        SDL_SetRenderTarget(sdl_renderer, NULL);
         level_set->levels[i]->setimage_fg_texture(new GameStateWrappedTexture(my_canvas));
     }
+//    SDL_SetRenderTarget(sdl_renderer, NULL);
 }
 
 GameStateWrappedTexture::~GameStateWrappedTexture()
