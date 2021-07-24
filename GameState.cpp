@@ -4,6 +4,7 @@
 #include "GameState.h"
 #include "SaveState.h"
 #include "Misc.h"
+#include "clip/clip.h"
 
 #include <cassert>
 #include <SDL.h>
@@ -496,9 +497,6 @@ GameState::~GameState()
     delete clipboard_level_set;
     delete languages;
 
-    if (last_clip)
-        SDL_free(last_clip);
-
 	SDL_DestroyTexture(sdl_texture);
 	SDL_DestroyTexture(sdl_tutorial_texture);
 	SDL_DestroyTexture(sdl_levels_texture);
@@ -546,7 +544,7 @@ void GameState::advance()
     if (SDL_TICKS_PASSED(time, debug_last_time + period))
     {
         float mul = 1000 / float(time - debug_last_time);
-        debug_last_second_simticks = round(debug_simticks * mul);
+//        debug_last_second_simticks = round(debug_simticks * mul);
         debug_last_second_frames = round(debug_frames * mul);
         debug_simticks = 0;
         debug_frames = 0;
@@ -2415,18 +2413,18 @@ void GameState::render(bool saving)
             switch (test_mode)
             {
                 case TEST_MODE_ACCURACY:
-                    render_number_pressure((table_pos + XYPos(190,3)) * scale, score.score, 2);
+                    render_number_pressure((table_pos + XYPos(190,3)) * scale, score.score, 2 * scale);
                     break;
                 case TEST_MODE_PRICE:
                 {
                     SDL_Rect src_rect = {144, 160, 5, 5};
                     SDL_Rect dst_rect = {(table_pos.x + 190) * scale, (table_pos.y + 3) * scale, 10 * scale, 10 * scale};
                     render_texture(src_rect, dst_rect);
-                    render_number_long((table_pos + XYPos(200,3)) * scale, score.score, 2);
+                    render_number_long((table_pos + XYPos(200,3)) * scale, score.score, 2 * scale);
                 }
                     break;
                 case TEST_MODE_STEAM:
-                    render_number_long((table_pos + XYPos(190,3)) * scale, score.score, 2);
+                    render_number_long((table_pos + XYPos(190,3)) * scale, score.score, 2 * scale);
                     break;
             }
             if (score.visible)
@@ -3836,13 +3834,68 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             {
                 if (keyboard_ctrl)
                 {
-                    SDL_Texture* my_canvas = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 320, 320);
+                    SaveObjectMap* omap = new SaveObjectMap;
+                    omap->add_num("level_index", current_level_index);
+                    omap->add_item("levels", edited_level_set->save_one(current_level_index));
+                    std::ostringstream stream;
+                    omap->save(stream);
+                    delete omap;
+                    std::string comp = compress_string_zstd(stream.str());
+
+                    SDL_Texture* my_canvas = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 360, 360);
                     SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_BLEND);
                     SDL_SetRenderTarget(sdl_renderer, my_canvas);
                     SDL_Rect src_rect = {320, 300, 180, 180};       // Background
                     SDL_Rect dst_rect = {0, 0, 360, 360};
+                    screen_offset = XYPos(0,0);
                     render_texture(src_rect, dst_rect);
                     render_grid(1, XYPos(32,32));
+                    
+                    uint32_t pixel_data[360 * 360];
+
+                    SDL_RenderReadPixels(sdl_renderer, &dst_rect, SDL_PIXELFORMAT_BGRA8888, (void*)pixel_data, 360 * 4);
+                    
+                    
+                    uint32_t comp_size = comp.size();
+                    
+                    std::string siz_str = std::string(1, char(comp_size)) + std::string(1, char(comp_size>>8)) + std::string(1, char(comp_size>>16)) + std::string(1, char(comp_size>>24));
+                    comp = siz_str + comp;
+                    int offset = 32;
+                    comp_size = comp.size();
+                    for (int i = 0; i < comp_size; i++)
+                    {
+                        uint8_t c = comp[i];
+                        for (int j = 0; j < 3; j++)
+                        {
+                            for(int sub = 0; sub < 3; sub++)
+                            {
+                                pixel_data[offset] = pixel_data[offset] & ~(7 << ((sub + 1) * 8));
+                                if (c & 1)
+                                    pixel_data[offset] = pixel_data[offset] | (0x6 << ((sub + 1) * 8));
+                                else
+                                    pixel_data[offset] = pixel_data[offset] | (0x2 << ((sub + 1) * 8));
+                                c >>= 1;
+                            }
+                            offset++;
+                        }
+                    }
+
+                    clip::image_spec spec;
+                    spec.width = 360;
+                    spec.height = 360;
+                    spec.bits_per_pixel = 32;
+                    spec.bytes_per_row = spec.width*4;
+                    spec.red_mask = 0xff00;
+                    spec.green_mask = 0xff0000;
+                    spec.blue_mask = 0xff000000;
+                    spec.alpha_mask = 0xff;
+                    spec.red_shift = 8;
+                    spec.green_shift = 16;
+                    spec.blue_shift = 24;
+                    spec.alpha_shift = 0;
+                    clip::image img(pixel_data, spec);
+                    clip::set_image(img);
+
                     SDL_DestroyTexture(my_canvas);
                     SDL_SetRenderTarget(sdl_renderer, NULL);
 
@@ -3898,7 +3951,8 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                         reply += "\n";
                     }
 
-                    SDL_SetClipboardText(reply.c_str());
+//                    SDL_SetClipboardText(reply.c_str());
+                    clip::set_text(reply);
                 }
             }
             else if ((next_dialogue_level > 8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
@@ -3907,11 +3961,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 deletable_level_set = NULL;
                 free_level_set_on_return = true;
                 clipboard_level_set = NULL;
-                if (last_clip)
-                {
-                    SDL_free(last_clip);
-                    last_clip = NULL;
-                }
+                last_clip = "";
                 set_current_circuit_read_only();
                 current_level_set_is_inspected = true;
                 set_level(clipboard_level_index);
@@ -4864,7 +4914,7 @@ bool GameState::events()
                         omap->save(stream);
                         delete omap;
                         std::string reply = stream.str();
-                        SDL_SetClipboardText(reply.c_str());
+                        clip::set_text(reply);
                         break;
                     }
                     case SDL_SCANCODE_F8:
@@ -5363,28 +5413,66 @@ void GameState::set_current_circuit_read_only()
     mouse_state = MOUSE_STATE_NONE;
 }
 
+static uint32_t get_hidden_val(uint32_t** dat, unsigned roff, unsigned goff, unsigned boff)
+{
+    uint8_t bitpos = 1;
+    uint32_t val = 0;
+    for (int j = 0; j < 3; j++)
+    {
+        if ((**dat >> (roff + 2)) & 1) val |= bitpos;
+        bitpos <<= 1;
+        if ((**dat >> (goff + 2)) & 1) val |= bitpos;
+        bitpos <<= 1;
+        if ((**dat >> (boff + 2)) & 1) val |= bitpos;
+        bitpos <<= 1;
+        (*dat)++;
+    }
+    return val;
+}
+
 void GameState::check_clipboard()
 {
-    char* new_clip = SDL_GetClipboardText();
-    if (!new_clip)
-        return;
-    if (last_clip && (strcmp(new_clip, last_clip) == 0))
-    {
-        SDL_free(new_clip);
-        return;
-    }
-    if (last_clip)
-        SDL_free(last_clip);
-    last_clip = new_clip;
-    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-    std::u32string s32 = conv.from_bytes(std::string(new_clip));
+    clip::set_x11_wait_timeout(1);
+    std::string new_value;
     std::string comp;
-    for(uint32_t c : s32)
+    if (clip::has(clip::image_format()))
     {
-        if ((c & 0xFF00) == 0x2800)
+        clip::image img;
+        if (!clip::get_image(img))
+            return;
+        clip::image_spec spec = img.spec();
+        uint32_t* dat = (uint32_t*) img.data();
+        dat += 32;
+        uint32_t comp_size = get_hidden_val(&dat, spec.red_shift, spec.green_shift, spec.blue_shift);
+        comp_size += uint32_t(get_hidden_val(&dat, spec.red_shift, spec.green_shift, spec.blue_shift)) << 8;
+        comp_size += uint32_t(get_hidden_val(&dat, spec.red_shift, spec.green_shift, spec.blue_shift)) << 16;
+        comp_size += uint32_t(get_hidden_val(&dat, spec.red_shift, spec.green_shift, spec.blue_shift)) << 24;
+        debug_last_second_simticks = comp_size;
+        if (comp_size > (360*360/3))
+            return;
+        for (int i = 0; i < comp_size; i++)
         {
-            char asc = c & 0xFF;
-            comp += asc;
+            comp += get_hidden_val(&dat, spec.red_shift, spec.green_shift, spec.blue_shift);
+        }
+    }
+    else
+    {
+        char* new_clip = SDL_GetClipboardText();
+        new_value = new_clip;
+        SDL_free(new_clip);
+        if (new_value == last_clip)
+            return;
+        last_clip = new_value;
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+        std::u32string s32 = conv.from_bytes(std::string(last_clip));
+
+        for(uint32_t c : s32)
+        {
+            if ((c & 0xFF00) == 0x2800)
+            {
+                char asc = c & 0xFF;
+                comp += asc;
+            }
         }
     }
     
@@ -5394,22 +5482,21 @@ void GameState::check_clipboard()
     SaveObjectMap* omap = NULL;
     try 
     {
+        std::string decomp;
         if (!comp.empty())
         {
-            std::string decomp = decompress_string(comp);
-            std::istringstream decomp_stream(decomp);
-            omap = SaveObject::load(decomp_stream)->get_map();
+            decomp = decompress_string(comp);
         }
         else
         {
-            std::string decomp(new_clip);
+            decomp = new_value;
             while (!decomp.empty() && decomp[0] != '{')
                 decomp.erase(0, 1);
             if (decomp == "")
                 return;
-            std::istringstream decomp_stream(decomp);
-            omap = SaveObject::load(decomp_stream)->get_map();
         }
+        std::istringstream decomp_stream(decomp);
+        omap = SaveObject::load(decomp_stream)->get_map();
         clipboard_level_index = omap->get_num("level_index");
         LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
         clipboard_level_set = new_set;

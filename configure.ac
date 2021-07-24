@@ -3,6 +3,8 @@ AM_INIT_AUTOMAKE([foreign])
 AC_LANG(C++)
 AC_PROG_CXX
 AC_CONFIG_FILES([Makefile])
+AC_CANONICAL_HOST
+AC_PROG_OBJCXX
 
 PKG_CHECK_MODULES([SDL2], [sdl2])
 PKG_CHECK_MODULES([SDL2_image], [SDL2_image])
@@ -11,6 +13,23 @@ PKG_CHECK_MODULES([SDL2_net], [SDL2_net])
 PKG_CHECK_MODULES([SDL2_ttf], [SDL2_ttf])
 PKG_CHECK_MODULES([ZLIB], [zlib])
 PKG_CHECK_MODULES([ZSTD], [libzstd])
+
+build_linux=no
+build_mac=no
+
+# Detect the target system
+case "${host_os}" in
+    linux*)
+        build_linux=yes
+        PKG_CHECK_MODULES([XCB], [xcb])
+        ;;
+    darwin*)
+        build_mac=yes
+        ;;
+    *)
+        AC_MSG_ERROR(["OS $host_os is not supported"])
+        ;;
+esac
 
 AC_ARG_ENABLE([steam],
 [  --disable-steam    Turn off Steam],
@@ -21,5 +40,7 @@ AC_ARG_ENABLE([steam],
 esac],[steam=true])
 
 AM_CONDITIONAL([NO_STEAM], [test x$steam = xfalse])
+AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
+AM_CONDITIONAL([MACOS], [test "$build_mac" = "yes"])
 
 AC_OUTPUT

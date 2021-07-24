@@ -141,7 +141,7 @@ public:
     bool level_select_requirements_visible = true;
     bool editor_requirements_visible = false;
 
-    char* last_clip = NULL;
+    std::string last_clip;
     LevelSet* clipboard_level_set = NULL;
     int clipboard_level_index;
 
