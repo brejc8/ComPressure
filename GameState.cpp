@@ -2921,7 +2921,7 @@ void GameState::render(bool saving)
         }
         else
         {
-            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\nGraphic assets by Carl Olsson\nSilver font by Poppy Works\nTranslations\n    Chinese:    Leaving Leaves, csferng\n    Japaneese: ATALOSS(\xe3\x82\xa2\xe3\x83\x88)\n    Czech:      Detros\n    French:    Akiel & Lemnis\n\nBuild: " 
+            const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\nGraphic assets by Carl Olsson\nSilver font by Poppy Works\nTranslations\n    Chinese:    Leaving Leaves, csferng\n    Japanese: ATALOSS(\xe3\x82\xa2\xe3\x83\x88)\n    Czech:      Detros\n    French:    Akiel & Lemnis\n\nBuild: " 
 #include "date.string"
             ;
             render_text_wrapped(XYPos(160 + 32 + 4, 90 + 16 + 4), about_text, 320 - 64);
