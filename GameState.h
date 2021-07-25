@@ -105,7 +105,7 @@ public:
     XYPos grid_offset = XYPos(32 * scale, 32 * scale);
     XYPos panel_offset = XYPos((8 + 32 * 11) * scale, (8 + 8 + 32) * scale);
     
-    uint64_t steam_id = 0;
+    uint64_t steam_id = CHARLES_ID;
     const char* steam_username = "Charles Chavvington";
     std::set<uint64_t> friends;
 

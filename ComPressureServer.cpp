@@ -862,7 +862,7 @@ public:
                         printf("score_submit: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
                         resp = new SubmitScore(db, omap);
                     }
-                    else if (command == "global_design_submit" && omap->get_num("steam_id") == 0)
+                    else if (command == "global_design_submit" && omap->get_num("steam_id") == CHARLES_ID)
                     {
                         std::string steam_username;
                         int level_index = omap->get_num("level_index");
@@ -1176,13 +1176,13 @@ void ScoreTable::fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<ui
 
         scores.push_back(s);
         bool fri = (friends.find(score.second) != friends.end()) || (score.second == user_id);
-        if (!user_id || fri || (i < visible))
+        if ((user_id == CHARLES_ID )|| fri || (i < visible))
         {
             SaveObjectMap* omap = new SaveObjectMap;
             omap->add_num("steam_id", score.second);
             omap->add_string("steam_username", db.players[score.second].steam_username);
             omap->add_num("score", s);
-            omap->add_num("visible", fri || !user_id);
+            omap->add_num("visible", fri || (user_id == CHARLES_ID));
             friend_scores->add_item(omap);
         }
         i++;

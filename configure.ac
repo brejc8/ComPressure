@@ -39,8 +39,16 @@ AC_ARG_ENABLE([steam],
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-steam]) ;;
 esac],[steam=true])
 
+AC_ARG_WITH(charles-id,
+            AS_HELP_STRING([--with-charles-id=N],
+                           [Secret server ID (default=0)]),
+            , with_charles_id=0)
+
+
+
 AM_CONDITIONAL([NO_STEAM], [test x$steam = xfalse])
 AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
 AM_CONDITIONAL([MACOS], [test "$build_mac" = "yes"])
+AC_DEFINE_UNQUOTED([CHARLES_ID], [$with_charles_id])
 
 AC_OUTPUT
