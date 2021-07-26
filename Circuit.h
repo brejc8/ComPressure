@@ -328,7 +328,7 @@ public:
             con->post();
     }
     void reset_steam_used() {steam_used = 0;}
-    int64_t get_steam_used() {return (steam_used + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR;}
+    int64_t get_steam_used() {return std::min(int64_t(INT32_MAX), (steam_used + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR);}
 };
 
 
