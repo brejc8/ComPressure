@@ -544,7 +544,7 @@ void GameState::advance()
     if (SDL_TICKS_PASSED(time, debug_last_time + period))
     {
         float mul = 1000 / float(time - debug_last_time);
-//        debug_last_second_simticks = round(debug_simticks * mul);
+        debug_last_second_simticks = round(debug_simticks * mul);
         debug_last_second_frames = round(debug_frames * mul);
         debug_simticks = 0;
         debug_frames = 0;
@@ -5447,7 +5447,6 @@ void GameState::check_clipboard()
         comp_size += uint32_t(get_hidden_val(&dat, spec.red_shift, spec.green_shift, spec.blue_shift)) << 8;
         comp_size += uint32_t(get_hidden_val(&dat, spec.red_shift, spec.green_shift, spec.blue_shift)) << 16;
         comp_size += uint32_t(get_hidden_val(&dat, spec.red_shift, spec.green_shift, spec.blue_shift)) << 24;
-        debug_last_second_simticks = comp_size;
         if (comp_size > (360*360/3))
             return;
         for (int i = 0; i < comp_size; i++)
