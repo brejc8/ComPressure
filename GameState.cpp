@@ -628,26 +628,221 @@ void GameState::audio()
     Mix_VolumeMusic(music_volume);
 }
 
+static const struct
+{
+    const char* text;
+    XYPos pos;
+    int width;
+} text_replacements[] =
+    {
+        {"\n", XYPos(0,0), 0},
+        {"\xf0\x9f\xa1\x85", XYPos(256,424), 14},
+        {"\xf0\x9f\xa1\x86", XYPos(272,424), 14},
+        {"\xf0\x9f\xa1\x87", XYPos(288,424), 14},
+        {"\xf0\x9f\xa1\x84", XYPos(304,424), 14},
+        {(const char*)u8"\u258F", XYPos(257,180), 1},
+        {NULL, XYPos(-1,-1)}
+    };
+
+
 XYPos GameState::get_text_size(std::string& text)
 {
     XYPos rep = XYPos(0,0);
     std::string::size_type pos = 0;
     std::string::size_type prev = 0;
+
+    int c_pos_x = 0;
     while (true)
     {
-        pos = text.find("\n", prev);
-        std::string sub = text.substr(prev, pos - prev);
-        prev = pos + 1;
-        XYPos sub_size;
-        TTF_SizeUTF8(font, sub.c_str(), &sub_size.x, &sub_size.y);
-        if (sub_size.x > rep.x)
-            rep.x = sub_size.x;
-        rep.y += TTF_FontLineSkip(font);
+        int found_elem = -1;
+        pos = std::string::npos;
+        for (int i = 0 ; text_replacements[i].text; i++)
+        {
+            std::string::size_type new_pos = text.find(text_replacements[i].text, prev);
+            if (new_pos != std::string::npos)
+            {
+                if ((pos == std::string::npos && pos != std::string::npos) || new_pos < pos)
+                {
+                    pos = new_pos;
+                    found_elem = i;
+                }
+            }
+        }
+        
+        if (pos != prev)
+        {
+            std::string sub = text.substr(prev, pos - prev);
+            XYPos sub_size;
+            TTF_SizeUTF8(font, sub.c_str(), &sub_size.x, &sub_size.y);
+            c_pos_x += sub_size.x;
+        }
+
+        if (found_elem >= 1)
+            c_pos_x += text_replacements[found_elem].width;
+
+        if (c_pos_x > rep.x)
+            rep.x = c_pos_x;
+
         if (pos == std::string::npos)
             break;
+
+        if (found_elem == 0)
+        {
+            rep.y += TTF_FontLineSkip(font);
+            c_pos_x = 0;
+        }
+        prev = pos + strlen(text_replacements[found_elem].text);
+        if (pos == std::string::npos)
+            break;
+
     }
+    rep.y += TTF_FontLineSkip(font);
     return rep;
 }
+
+void GameState::render_text(XYPos tl, const char* string, SDL_Color color, int myscale)
+{
+    if (!myscale)
+        myscale = scale;
+    std::string text = string;
+
+    XYPos rep = XYPos(0,0);
+    std::string::size_type pos = 0;
+    std::string::size_type prev = 0;
+    int found_elem = -1;
+
+    XYPos c_pos = XYPos(tl.x, tl.y);
+    while (true)
+    {
+        pos = std::string::npos;
+        for (int i = 0 ; text_replacements[i].text; i++)
+        {
+            std::string::size_type new_pos = text.find(text_replacements[i].text, prev);
+            if (new_pos != std::string::npos)
+            {
+                if ((pos == std::string::npos && pos != std::string::npos) || new_pos < pos)
+                {
+                    pos = new_pos;
+                    found_elem = i;
+                }
+            }
+        }
+        if (pos != prev)
+        {
+            std::string sub = text.substr(prev, pos - prev);
+
+            SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, sub.c_str(), color);
+            SDL_Texture* new_texture = SDL_CreateTextureFromSurface(sdl_renderer, text_surface);
+
+            SDL_Rect src_rect;
+            SDL_GetClipRect(text_surface, &src_rect);
+            SDL_Rect dst_rect;
+            dst_rect.x = c_pos.x;
+            dst_rect.y = c_pos.y;
+            dst_rect.w = src_rect.w * myscale;
+            dst_rect.h = src_rect.h * myscale;
+
+            render_texture_custom(new_texture, src_rect, dst_rect);
+	        SDL_DestroyTexture(new_texture);
+    	    SDL_FreeSurface(text_surface);
+            c_pos.x += src_rect.w * myscale;
+        }
+        if (pos == std::string::npos)
+            break;
+
+        if (found_elem >= 1)
+        {
+            SDL_Rect src_rect;
+            SDL_Rect dst_rect;
+            src_rect.x = text_replacements[found_elem].pos.x;
+            src_rect.y = text_replacements[found_elem].pos.y;
+            src_rect.w = text_replacements[found_elem].width;
+            src_rect.h = 14;
+            
+            dst_rect.x = c_pos.x;
+            dst_rect.y = c_pos.y;
+            dst_rect.w = text_replacements[found_elem].width * myscale;
+            dst_rect.h = 14 * myscale;
+            render_texture(src_rect, dst_rect);
+            c_pos.x += text_replacements[found_elem].width * myscale;
+        }
+        else
+        {
+            c_pos.y += TTF_FontLineSkip(font) * myscale;
+            c_pos.x = tl.x;
+        }
+        prev = pos + strlen(text_replacements[found_elem].text);
+    }
+}
+
+int GameState::render_line_wrapped(XYPos tl, std::string text, int width, int myscale)
+{
+    SDL_Color color = {0xff, 0xff, 0xff};
+    std::string::size_type start = 0;
+    XYPos cpos = tl;
+
+    std::string::size_type last_space = text.find(" ", 0);
+    while (true)
+    {
+        std::string::size_type next_space = text.find(" ", last_space + 1);
+        std::string sub = text.substr(start, next_space - start);
+        XYPos siz = get_text_size(sub);
+        if (siz.x > width || last_space == std::string::npos)
+        {
+            std::string sub = text.substr(start, last_space - start);
+            render_text(cpos, sub.c_str(), color, myscale);
+            cpos.y += TTF_FontLineSkip(font) * myscale;
+            if (last_space == std::string::npos)
+                return cpos.y - tl.y;
+            start = last_space + 1;
+        }
+        else
+        {
+            last_space = next_space;
+        }
+    }
+
+}
+
+void GameState::render_text_wrapped(XYPos tl, const char* string, int width, int myscale)
+{
+    std::string text = string;
+    std::string::size_type start = 0;
+    while (true)
+    {
+        std::string::size_type eol = text.find("\n", start);
+        std::string line = text.substr(start, eol - start);
+        
+        int h = render_line_wrapped(tl, line.c_str(), width, myscale);
+
+        tl.y += h;
+        if (eol == std::string::npos)
+            break;
+        start = eol + 1;
+    }
+}
+
+
+
+// void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
+// {
+//     SDL_Color color={0xff,0xff,0xff};
+//     SDL_Surface *text_surface = TTF_RenderUTF8_Blended_Wrapped(font, string, color, width);
+//     SDL_Texture* new_texture = SDL_CreateTextureFromSurface(sdl_renderer, text_surface);
+//     
+//     SDL_Rect src_rect;
+//     SDL_GetClipRect(text_surface, &src_rect);
+//     SDL_Rect dst_rect = src_rect;
+//     dst_rect.x = tl.x * scale;
+//     dst_rect.y = tl.y * scale;
+//     dst_rect.w = src_rect.w * scale;
+//     dst_rect.h = src_rect.h * scale;
+// 
+//     render_texture_custom(new_texture, src_rect, dst_rect);
+// 	SDL_DestroyTexture(new_texture);
+// 	SDL_FreeSurface(text_surface);
+// }
+
 
 void GameState::render_texture_custom(SDL_Texture* texture, SDL_Rect& src_rect, SDL_Rect& dst_rect)
 {
@@ -948,61 +1143,6 @@ void GameState::render_scroll_bar(ScrollBar& sbar)
         render_texture(src_rect, dst_rect);
     }
 
-}
-
-void GameState::render_text_wrapped(XYPos tl, const char* string, int width)
-{
-    SDL_Color color={0xff,0xff,0xff};
-    SDL_Surface *text_surface = TTF_RenderUTF8_Blended_Wrapped(font, string, color, width);
-    SDL_Texture* new_texture = SDL_CreateTextureFromSurface(sdl_renderer, text_surface);
-    
-    SDL_Rect src_rect;
-    SDL_GetClipRect(text_surface, &src_rect);
-    SDL_Rect dst_rect = src_rect;
-    dst_rect.x = tl.x * scale;
-    dst_rect.y = tl.y * scale;
-    dst_rect.w = src_rect.w * scale;
-    dst_rect.h = src_rect.h * scale;
-
-    render_texture_custom(new_texture, src_rect, dst_rect);
-	SDL_DestroyTexture(new_texture);
-	SDL_FreeSurface(text_surface);
-}
-
-void GameState::render_text(XYPos tl, const char* string, SDL_Color color, int myscale)
-{
-    if (!myscale)
-        myscale = scale;
-    std::string text = string;
-
-    XYPos rep = XYPos(0,0);
-    std::string::size_type pos = 0;
-    std::string::size_type prev = 0;
-    while (true)
-    {
-        pos = text.find("\n", prev);
-        std::string sub = text.substr(prev, pos - prev);
-        prev = pos + 1;
-
-        SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, sub.c_str(), color);
-        SDL_Texture* new_texture = SDL_CreateTextureFromSurface(sdl_renderer, text_surface);
-
-        SDL_Rect src_rect;
-        SDL_GetClipRect(text_surface, &src_rect);
-        SDL_Rect dst_rect = src_rect;
-        dst_rect.x = tl.x;
-        dst_rect.y = tl.y;
-        dst_rect.w = src_rect.w * myscale;
-        dst_rect.h = src_rect.h * myscale;
-
-        render_texture_custom(new_texture, src_rect, dst_rect);
-	    SDL_DestroyTexture(new_texture);
-    	SDL_FreeSurface(text_surface);
-
-        tl.y += TTF_FontLineSkip(font) * myscale;
-        if (pos == std::string::npos)
-            break;
-    }
 }
 
 void GameState::update_scale(int newscale)
@@ -1983,7 +2123,7 @@ void GameState::render(bool saving)
                 std::string text = level_set->levels[current_level_index]->description;
                 if (frame_index % 60 < 30 && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_LEVEL_DESCRIPTION))
                     text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
-                render_text_wrapped(XYPos(panel_offset.x / scale + 4, panel_offset.y / scale + 176 + 4), text.c_str(), 256-8);
+                render_text_wrapped(XYPos(panel_offset.x / scale + 4, panel_offset.y / scale + 176 + 4) * scale, text.c_str(), 256-8, scale);
             }
         }
     }
@@ -2680,7 +2820,7 @@ void GameState::render(bool saving)
                 SDL_Rect src_rect = {640-256 + pic_src.x * 128, 480 + pic_src.y * 128, 128, 128};
                 SDL_Rect dst_rect = {pic_on_left ? 24 * scale : (640 - 24 - 128) * scale, (180 + 24) * scale, 128 * scale, 128 * scale};
                 render_texture(src_rect, dst_rect);
-                render_text_wrapped(XYPos(pic_on_left ? 48 + 120 : 24, 180 + 24), text.c_str(), 640 - 80 - 110);
+                render_text_wrapped(XYPos(pic_on_left ? 48 + 120 : 24, 180 + 24) * scale, text.c_str(), 640 - 80 - 110, scale);
 
             }
         }
@@ -2857,7 +2997,7 @@ void GameState::render(bool saving)
             SDL_Rect dst_rect = {(32 + i * 48) * scale, (i * (128 +16) + 16) * scale, 128 * scale, 128 * scale};
             render_texture_custom(sdl_tutorial_texture, src_rect, dst_rect);
             
-            render_text_wrapped(XYPos(32 + 128 + 14 + i * 48, i * (128 +16) + 11), text.c_str(), 384 - 8);
+            render_text_wrapped(XYPos(32 + 128 + 14 + i * 48, i * (128 +16) + 11) * scale, text.c_str(), 384 - 8, scale);
         }
     }
 
@@ -2935,7 +3075,7 @@ void GameState::render(bool saving)
             const char* about_text = "Created by Charlie Brej\n\nMusic by stephenpalmermail\nGraphic assets by Carl Olsson\nSilver font by Poppy Works\nTranslations\n    Chinese:    Leaving Leaves, csferng\n    Japanese: ATALOSS(\xe3\x82\xa2\xe3\x83\x88)\n    Czech:      Detros\n    French:    Akiel & Lemnis\n\nBuild: " 
 #include "date.string"
             ;
-            render_text_wrapped(XYPos(160 + 32 + 4, 90 + 16 + 4), about_text, 320 - 64);
+            render_text_wrapped(XYPos(160 + 32 + 4, 90 + 16 + 4) * scale, about_text, 320 - 64, scale);
         }
         render_tooltip();
     }
@@ -4525,7 +4665,15 @@ bool GameState::events()
                     case SDL_SCANCODE_W:
                         if (next_dialogue_level <= 3)
                             break;
-                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        if (SDL_IsTextInputActive())
+                        {
+                            if (keyboard_ctrl)
+                            {
+                                text_entry_string->insert(text_entry_offset, "\xf0\x9f\xa1\x85");
+                                text_entry_offset += 4;
+                            }
+                        }
+                        else if (!current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
                             {
@@ -4560,7 +4708,15 @@ bool GameState::events()
                             }
                             break;
                         }
-                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        if (SDL_IsTextInputActive())
+                        {
+                            if (keyboard_ctrl)
+                            {
+                                text_entry_string->insert(text_entry_offset, "\xf0\x9f\xa1\x84");
+                                text_entry_offset += 4;
+                            }
+                        }
+                        else if (!current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
                             {
@@ -4583,7 +4739,15 @@ bool GameState::events()
                     case SDL_SCANCODE_S:
                         if (next_dialogue_level <= 3)
                             break;
-                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        if (SDL_IsTextInputActive())
+                        {
+                            if (keyboard_ctrl)
+                            {
+                                text_entry_string->insert(text_entry_offset, "\xf0\x9f\xa1\x87");
+                                text_entry_offset += 4;
+                            }
+                        }
+                        else if (!current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
                             {
@@ -4606,7 +4770,15 @@ bool GameState::events()
                     case SDL_SCANCODE_D:
                         if (next_dialogue_level <= 3)
                             break;
-                        if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
+                        if (SDL_IsTextInputActive())
+                        {
+                            if (keyboard_ctrl)
+                            {
+                                text_entry_string->insert(text_entry_offset, "\xf0\x9f\xa1\x86");
+                                text_entry_offset += 4;
+                            }
+                        }
+                        else if (!current_circuit_is_read_only)
                         {
                             if (selected_elements.empty())
                             {

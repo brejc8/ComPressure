@@ -301,7 +301,8 @@ public:
     void render_tooltip();
     void render_scroll_bar(ScrollBar& sbar);
 
-    void render_text_wrapped(XYPos tl, const char* string, int width);
+    int render_line_wrapped(XYPos tl, std::string text, int width, int myscale);
+    void render_text_wrapped(XYPos tl, const char* string, int width, int myscale);
     void render_text(XYPos tl, const char* string, SDL_Color color = {0xff,0xff,0xff}, int myscale = 0);
     void update_scale(int ewscale);
     void render_grid(int scale, XYPos grid_offset);

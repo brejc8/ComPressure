@@ -8,6 +8,10 @@
 #define LEVEL_COUNT 40
 #define HISTORY_POINT_COUNT 200
 
+#ifndef CHARLES_ID
+#define CHARLES_ID 0
+#endif
+
 extern SaveObjectList* level_desc;
 
 class WrappedTexture
