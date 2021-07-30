@@ -1394,7 +1394,8 @@ void GameState::render_grid(int scale, XYPos grid_offset)
 
 void GameState::render(bool saving)
 {
-    check_clipboard();
+    if ((frame_index % 100) == 0)
+        check_clipboard();
     deal_with_scores();
     deal_with_server_levels_from_server();
     current_circuit->render_prep();
@@ -5607,7 +5608,18 @@ void GameState::check_clipboard()
     clip::set_x11_wait_timeout(1);
     std::string new_value;
     std::string comp;
+    bool has_image = false;
     if (clip::has(clip::image_format()))
+    {
+        clip::image_spec spec;
+        if (clip::get_image_spec(spec))
+        {
+            if (spec.width == 360 && spec.height == 360)
+                has_image = true;
+        }
+    }
+
+    if (has_image)
     {
         clip::image img;
         if (!clip::get_image(img))
