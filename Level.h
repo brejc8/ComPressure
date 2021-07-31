@@ -117,10 +117,11 @@ public:
     class DialogueScreen
     {
     public:
-        std::string who;
+        std::string who = "charles";
         std::string text;
     };
     std::list<DialogueScreen> dialogue;
+    std::list<DialogueScreen> hints;
     
     int level_index;
     bool global = false;

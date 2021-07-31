@@ -289,6 +289,31 @@ SaveObject* Level::save(bool lite)
             y_list->add_item(x_list);
         }
         omap->add_item("icon", y_list);
+        if (!dialogue.empty())
+        {
+            SaveObjectList* dia_list = new SaveObjectList;
+            for (DialogueScreen& dia: dialogue)
+            {
+                SaveObjectMap* dia_entry = new SaveObjectMap;
+                dia_entry->add_string("text", dia.text);
+                dia_entry->add_string("who", dia.who);
+                dia_list->add_item(dia_entry);
+            }
+            omap->add_item("dialogue", dia_list);
+        }
+        if (!hints.empty())
+        {
+            SaveObjectList* dia_list = new SaveObjectList;
+            for (DialogueScreen& dia: hints)
+            {
+                SaveObjectMap* dia_entry = new SaveObjectMap;
+                dia_entry->add_string("text", dia.text);
+                dia_entry->add_string("who", dia.who);
+                dia_list->add_item(dia_entry);
+            }
+            omap->add_item("hints", dia_list);
+        }
+
     }
     return omap;
 }
@@ -418,6 +443,24 @@ void Level::init_tests(SaveObjectMap* omap)
                     if (colour != 8)
                         icon_pixels[y][x] = colour;
                 }
+            }
+        }
+        if (desc->has_key("dialogue"))
+        {
+            SaveObjectList* dialogue_list = desc->get_item("dialogue")->get_list();
+            for (unsigned i = 0; i < dialogue_list->get_count(); i++)
+            {
+                SaveObjectMap* entry = dialogue_list->get_item(i)->get_map();
+                dialogue.push_back(DialogueScreen{entry->get_string("who"), entry->get_string("text")});
+            }
+        }
+        if (desc->has_key("hints"))
+        {
+            SaveObjectList* dialogue_list = desc->get_item("hints")->get_list();
+            for (unsigned i = 0; i < dialogue_list->get_count(); i++)
+            {
+                SaveObjectMap* entry = dialogue_list->get_item(i)->get_map();
+                hints.push_back(DialogueScreen{entry->get_string("who"), entry->get_string("text")});
             }
         }
     }

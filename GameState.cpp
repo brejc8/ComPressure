@@ -2019,7 +2019,8 @@ void GameState::render(bool saving)
             render_texture_custom(tex, src_rect, dst_rect);
         }
         render_button(XYPos(panel_offset.x, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(280, 376), 0, "Requirements");
-//        render_button(XYPos(panel_offset.x + 32 * scale, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(304, 256), 0, "Dialogue");
+        render_button(XYPos(panel_offset.x + 32 * scale, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(304, 256), 0, "Dialogue");
+        render_button(XYPos(panel_offset.x + 64 * scale, (32 + 32 + 12*16+16)* scale + panel_offset.y), XYPos(328, 256), 0, "Hints");
     }
 
     if (panel_state == PANEL_STATE_EDITOR)
@@ -2730,18 +2731,20 @@ void GameState::render(bool saving)
             }
             else
             {
-                dialogue_index_max = current_level->dialogue.size();
+                dialogue_index_max = show_dialogue ? current_level->dialogue.size() : current_level->hints.size();
                 if (dialogue_sat_inc && ((dialogue_index + 1) < dialogue_index_max))
                 {
                     dialogue_index++;
                     dialogue_sat_inc = false;
                 }
-                if (dialogue_index >= dialogue_index_max)
+                if (dialogue_index < dialogue_index_max)
                 {
-                    std::list<Level::DialogueScreen>::iterator it = current_level->dialogue.begin();
+                    std::list<Level::DialogueScreen>::iterator it = show_dialogue ? current_level->dialogue.begin() : current_level->hints.begin();
                     std::advance(it, dialogue_index);
                     who = it->who;
                     text = it->text;
+                    if ((frame_index % 60 < 30) && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_LEVEL_DIALOGUE))
+                        text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
                     fail = false;
                 }
             }
@@ -2775,7 +2778,7 @@ void GameState::render(bool saving)
             if (current_language->get_item("tooltips")->get_map()->has_key(text))
                 text = current_language->get_item("tooltips")->get_map()->get_string(text);
 
-            if ((show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt) && current_level_index < LEVEL_COUNT)
+            if (show_dialogue || show_dialogue_hint || show_dialogue_discord_prompt)
             {
                 bool pic_on_left = true;
                 XYPos pic_src;
@@ -2814,6 +2817,12 @@ void GameState::render(bool saving)
                     render_texture(src_rect, dst_rect);
                 }
                 render_number_2digit(XYPos((16 + 32 + 8) * scale, (180 + 5) * scale), dialogue_index_max, 2 * scale);
+                if (editing_level)
+                {
+                    render_button(XYPos((16 + 64) * scale, (180 - 16)  * scale), XYPos(256, 440), 0, "Who");
+                    render_button(XYPos((16 + 96) * scale, (180 - 16)  * scale), XYPos(208, 184), 0, "Add entry");
+                    render_button(XYPos((16 + 128) * scale, (180 - 16)  * scale), XYPos(232, 184), 0, "Remove entry");
+                }
 
                 render_box(XYPos(16 * scale, (180 + 16) * scale), XYPos(640-32, 180-32), 4, scale);
 
@@ -3725,12 +3734,12 @@ void GameState::mouse_click_in_panel(unsigned clicks)
         {
             show_hint = true;
         }
-        else if ((button_pos).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Blah
+        else if (button_pos.inside(XYPos(32,32)))   // Blah
         {
             show_dialogue = true;
             
         }
-        else if ((button_pos - XYPos(32,0)).inside(XYPos(32,32)) && (current_level_index < LEVEL_COUNT))   // Hint
+        else if ((button_pos - XYPos(32,0)).inside(XYPos(32,32)))   // Hint
         {
             show_dialogue_hint = true;
             dialogue_index = 0;
@@ -3851,14 +3860,16 @@ void GameState::mouse_click_in_panel(unsigned clicks)
 
         if ((panel_pos - XYPos(32, 32 + 32 + 12*16+16)).inside(XYPos(32,32)))
         {
-            mouse_state = MOUSE_STATE_ENTERING_TEXT;
-            text_entry_string = &level_set->levels[current_level_index]->description;
-            text_entry_offset = text_entry_string->size();
-            text_entry_target = TEXT_TARGET_LEVEL_DIALOGUE;
-            SDL_StartTextInput();
+            show_dialogue = true;
+            if (current_level->dialogue.empty())
+                current_level->dialogue.push_back(Level::DialogueScreen());
         }
-
-
+        if ((panel_pos - XYPos(64, 32 + 32 + 12*16+16)).inside(XYPos(32,32)))
+        {
+            show_dialogue_hint = true;
+            if (current_level->hints.empty())
+                current_level->hints.push_back(Level::DialogueScreen());
+        }
     } else if (panel_state == PANEL_STATE_EDITOR && !current_circuit_is_read_only)
     {
         XYPos panel_grid_pos = panel_pos / 32;
@@ -5036,7 +5047,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_PAGEDOWN:
-                        if (show_dialogue || show_dialogue_hint)
+                        if ((show_dialogue || show_dialogue_hint) && !SDL_IsTextInputActive())
                         {
                             dialogue_sat_inc = true;
                         }
@@ -5054,7 +5065,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_PAGEUP:
-                        if (show_dialogue || show_dialogue_hint)
+                        if ((show_dialogue || show_dialogue_hint) && !SDL_IsTextInputActive())
                         {
                             if (dialogue_index)
                                 dialogue_index--;
@@ -5432,7 +5443,44 @@ bool GameState::events()
                     }
                     else if (show_dialogue || show_dialogue_hint)
                     {
-                        dialogue_index++;
+                        if (editing_level)
+                        {
+                            std::list<Level::DialogueScreen> &dia_list = show_dialogue ? current_level->dialogue : current_level->hints;
+                            std::list<Level::DialogueScreen>::iterator it = dia_list.begin();
+                            std::advance(it, dialogue_index);
+                            if ((mouse.y / scale) > 180 + 16)
+                            {
+                                mouse_state = MOUSE_STATE_ENTERING_TEXT;
+                                text_entry_target = TEXT_TARGET_LEVEL_DIALOGUE;
+                                text_entry_string = &it->text;
+                                text_entry_offset = it->text.size();
+                                SDL_StartTextInput();
+                            }
+                            if (((mouse / scale) - XYPos((16 + 64), (180 - 16))).inside(XYPos(32,32)))
+                            {
+                                std::string &who = it->who;
+                                if (who == "charles") who = "nicola";
+                                else if (who == "nicola") who = "ada";
+                                else if (who == "ada") who = "annie";
+                                else if (who == "annie") who = "george";
+                                else if (who == "george") who = "joseph";
+                                else if (who == "joseph") who = "charles";
+                                else who = "charles";
+                            }
+                            else if (((mouse / scale) - XYPos((16 + 96), (180 - 16))).inside(XYPos(32,32)))
+                            {
+                                dia_list.insert(it, *it);
+                                dialogue_index++;
+                            }
+                            else if (((mouse / scale) - XYPos((16 + 128), (180 - 16))).inside(XYPos(32,32)))
+                            {
+                                dia_list.erase(it);
+                                if (dialogue_index)
+                                    dialogue_index--;
+                            }
+                        }
+                        else
+                            dialogue_index++;
                         break;
                     }
                     else if (mouse.x < panel_offset.x)
@@ -5494,14 +5542,17 @@ bool GameState::events()
             {
                 if (show_dialogue || show_dialogue_hint)
                 {
-                    if(e.wheel.y > 0)
+                    if (!SDL_IsTextInputActive())
                     {
-                        if (dialogue_index)
-                            dialogue_index--;
-                    }
-                    else
-                    {
-                        dialogue_sat_inc = true;
+                        if(e.wheel.y > 0)
+                        {
+                            if (dialogue_index)
+                                dialogue_index--;
+                        }
+                        else
+                        {
+                            dialogue_sat_inc = true;
+                        }
                     }
                 }
                 else if (mouse.x < panel_offset.x)
