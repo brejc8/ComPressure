@@ -3696,7 +3696,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 case 6:
                 {
                     if (next_dialogue_level > 4)
-                        watch_slider(panel_offset.x + (5 * 32 + 8) * scale, DIRECTION_E, 49,  &game_speed);
+                        watch_slider(panel_offset.x + (5 * 32 + 8) * scale, DIRECTION_E, 49,  &game_speed, 0, 10);
                     break;
                 }
                 case 7:
@@ -4342,7 +4342,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
             level_set->touch(current_level_index);
 
-            watch_slider(panel_offset.y + (101 + 8) * scale, DIRECTION_N, 100, &current_level->current_simpoint.values[port_index]);
+            watch_slider(panel_offset.y + (101 + 8) * scale, DIRECTION_N, 100, &current_level->current_simpoint.values[port_index], 0, 10);
             return;
         }
         else if (panel_pos.y <= (101 + 16 + 7 + 16))
@@ -4352,12 +4352,12 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
             level_set->touch(current_level_index);
 
-            watch_slider(panel_offset.x + (port_index * 48 + 8) * scale, DIRECTION_E, 33, &current_level->current_simpoint.force[port_index], 100);
+            watch_slider(panel_offset.x + (port_index * 48 + 8) * scale, DIRECTION_E, 32, &current_level->current_simpoint.force[port_index], 100, 10);
             return;
         }
         else if ((panel_pos - XYPos(256-32-16, 32 + 32 + 8 + 112)).inside(XYPos(48, 120)))
         {
-            watch_slider(panel_offset.y + (32 + 32 + 16 + 112) * scale, DIRECTION_S, 100, &current_level->test_pressure_histroy_speed, 100);
+            watch_slider(panel_offset.y + (32 + 32 + 16 + 112) * scale, DIRECTION_S, 100, &current_level->test_pressure_histroy_speed, 0, 10);
         }
         return;
     } else if (panel_state == PANEL_STATE_SCORES)
@@ -4552,6 +4552,12 @@ void GameState::mouse_motion()
             vol = slider_max;
         if (slider_value_max)
             vol = (vol * slider_value_max) / slider_max;
+        if (slider_grain && keyboard_ctrl)
+        {
+            vol += slider_grain/2;
+            vol /= slider_grain;
+            vol *= slider_grain;
+        }
         *slider_value_tgt = vol;
 
         if (editing_level)
@@ -5344,12 +5350,12 @@ bool GameState::events()
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 128)))
                         {
-                            watch_slider((90 + 32 + 100 + 8) * scale, DIRECTION_N, 100, &sound_volume);
+                            watch_slider((90 + 32 + 100 + 8) * scale, DIRECTION_N, 100, &sound_volume, 0, 10);
                         }
                         pos.x -= 64;
                         if (pos.inside(XYPos(32, 128)))
                         {
-                            watch_slider((90 + 32 + 100 + 8) * scale, DIRECTION_N, 100, &music_volume);
+                            watch_slider((90 + 32 + 100 + 8) * scale, DIRECTION_N, 100, &music_volume, 0, 10);
                         }
                         break;
                     }
@@ -5617,7 +5623,7 @@ bool GameState::events()
     return false;
 }
 
-void GameState::watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_)
+void GameState::watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_, unsigned slider_grain_)
 {
     mouse_state = MOUSE_STATE_SPEED_SLIDER;
     slider_pos = slider_pos_;
@@ -5625,6 +5631,7 @@ void GameState::watch_slider(unsigned slider_pos_, Direction slider_direction_, 
     slider_max = slider_max_;
     slider_value_tgt = slider_value_tgt_;
     slider_value_max = slider_value_max_;
+    slider_grain = slider_grain_;
     mouse_motion();
 }
 

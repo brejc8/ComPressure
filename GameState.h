@@ -161,7 +161,8 @@ public:
     unsigned slider_max;
     unsigned* slider_value_tgt;
     unsigned slider_value_max;
-    
+    unsigned slider_grain;
+
     std::set<XYPos> selected_elements;
     XYPos select_area_pos;
     Clipboard clipboard;
@@ -316,7 +317,7 @@ public:
     void mouse_click_in_panel(unsigned clicks);
     void mouse_motion();
     bool events();
-    void watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_ = 0);
+    void watch_slider(unsigned slider_pos_, Direction slider_direction_, unsigned slider_max_, unsigned* slider_value_tgt_, unsigned slider_value_max_ = 0, unsigned slider_grain_ = 0);
     void set_current_circuit_read_only();
     void check_clipboard();
     void deal_with_scores();
