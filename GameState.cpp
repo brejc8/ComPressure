@@ -554,10 +554,19 @@ void GameState::advance()
 
     int count = pow(1.2, game_speed) * 2;
     if (game_speed == 0)
-        count = ((frame_index % 10) == 0);
-    
+        count = ((frame_index % 20) == 0);
     if (game_speed == 1)
+        count = ((frame_index % 10) == 0);
+    if (game_speed == 2)
+        count = ((frame_index % 2) == 0);
+    if (game_speed == 3)
         count = 1;
+    if (game_speed == 4)
+        count = 2;
+    if (game_speed == 5)
+        count = 3;
+
+
     {
         if (skip_to_next_subtest)
         {
