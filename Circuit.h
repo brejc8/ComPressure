@@ -594,10 +594,10 @@ public:
     void set_element_subcircuit(XYPos pos, DirFlip dir_flip, int level_index, LevelSet* level_set);
     void add_sign(Sign sign, bool no_undo = false);
 
-    void move_selected_elements(std::set<XYPos> &selected_elements, Direction direction);
-    void rotate_selected_elements(std::set<XYPos> &selected_elements, bool clockwise);
-    void flip_selected_elements(std::set<XYPos> &selected_elements, bool vertically);
-    void delete_selected_elements(std::set<XYPos> &selected_elements);
+    void move_selected_elements(std::set<XYPos> &selected_elements, std::set<int> selected_signs, Direction direction);
+    void rotate_selected_elements(std::set<XYPos> &selected_elements, std::set<int> selected_signs, bool clockwise);
+    void flip_selected_elements(std::set<XYPos> &selected_elements, std::set<int> selected_signs, bool vertically);
+    void delete_selected_elements(std::set<XYPos> &selected_elements, std::set<int> selected_signs);
     void add_pipe_drag_list(std::list<XYPos> &pipe_drag_list);
 
     void reset();
@@ -645,8 +645,9 @@ public:
 
     };
     std::list<ClipboardElement> elements;
+    std::list<Sign> signs;
 
-    void copy(std::set<XYPos> &selected_elements, Circuit &circuit);
+    void copy(Circuit &circuit, std::set<XYPos> &selected_elements, std::set<int> selected_signs);
     void repos();
     XYPos size();
     void rotate(bool clockwise);

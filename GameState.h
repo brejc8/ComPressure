@@ -164,6 +164,8 @@ public:
     unsigned slider_grain;
 
     std::set<XYPos> selected_elements;
+    std::set<int> selected_signs;
+
     XYPos select_area_pos;
     Clipboard clipboard;
 

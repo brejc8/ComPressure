@@ -1046,39 +1046,45 @@ void GameState::render_number_compact(XYPos pos, int64_t value, unsigned scale_m
 void GameState::render_box(XYPos pos, XYPos size, unsigned colour, int scale)
 {
     int color_table = 256 + colour * 32;
-    SDL_Rect src_rect = {color_table, 80, 16, 16};
+    int color_table_y = 80;
+    if (colour == 8)
+    {
+        color_table = 256;
+        color_table_y = 176;
+    }
+    SDL_Rect src_rect = {color_table, color_table_y, 16, 16};
     SDL_Rect dst_rect = {pos.x, pos.y, 16 * scale, 16 * scale};
     render_texture(src_rect, dst_rect);     //  Top Left
 
-    src_rect = {color_table + 16, 80, 1, 16};
+    src_rect = {color_table + 16, color_table_y, 1, 16};
     dst_rect = {pos.x + 16 * scale, pos.y, (size.x - 32) * scale, 16 * scale};
     render_texture(src_rect, dst_rect);     //  Top
 
-    src_rect = {color_table + 16, 80, 16, 16};
+    src_rect = {color_table + 16, color_table_y, 16, 16};
     dst_rect = {pos.x + (size.x - 16) * scale, pos.y, 16 * scale, 16 * scale};
     render_texture(src_rect, dst_rect);     //  Top Right
     
-    src_rect = {color_table, 80 + 16, 16, 1};
+    src_rect = {color_table, color_table_y + 16, 16, 1};
     dst_rect = {pos.x, pos.y + 16 * scale, 16 * scale, (size.y - 32) * scale};
     render_texture(src_rect, dst_rect);     //  Left
 
-    src_rect = {color_table + 16, 80 + 16, 1, 1};
+    src_rect = {color_table + 16, color_table_y + 16, 1, 1};
     dst_rect = {pos.x + 16 * scale, pos.y + 16 * scale, (size.x - 32) * scale, (size.y - 32) * scale};
     render_texture(src_rect, dst_rect);     //  Middle
 
-    src_rect = {color_table + 16, 80 + 16, 16, 1};
+    src_rect = {color_table + 16, color_table_y + 16, 16, 1};
     dst_rect = {pos.x + (size.x - 16) * scale, pos.y + 16 * scale, 16 * scale, (size.y - 32) * scale};
     render_texture(src_rect, dst_rect);     //  Right
 
-    src_rect = {color_table, 80 + 16, 16, 16};
+    src_rect = {color_table, color_table_y + 16, 16, 16};
     dst_rect = {pos.x, pos.y + (size.y - 16) * scale, 16 * scale, 16 * scale};
     render_texture(src_rect, dst_rect);     //  Bottom Left
 
-    src_rect = {color_table + 16, 80 + 16, 1, 16};
+    src_rect = {color_table + 16, color_table_y + 16, 1, 16};
     dst_rect = {pos.x + 16 * scale, pos.y + (size.y - 16) * scale, (size.x - 32) * scale, 16 * scale};
     render_texture(src_rect, dst_rect);     //  Bottom
 
-    src_rect = {color_table + 16, 80 + 16, 16, 16};
+    src_rect = {color_table + 16, color_table_y + 16, 16, 16};
     dst_rect = {pos.x + (size.x - 16) * scale, pos.y + (size.y - 16) * scale, 16 * scale, 16 * scale};
     render_texture(src_rect, dst_rect);     //  Bottom Right
 }
@@ -1309,7 +1315,7 @@ void GameState::render_grid(int scale, XYPos grid_offset)
             render_texture_custom(tex, src_rect, dst_rect);
         }
         bool selected = false;
-        selected = selected_elements.find(pos) != selected_elements.end();
+        selected = (selected_elements.find(pos) != selected_elements.end());
         
         if (mouse_state == MOUSE_STATE_AREA_SELECT)
         {
@@ -1373,13 +1379,43 @@ void GameState::render_grid(int scale, XYPos grid_offset)
         render_number_2digit(XYPos((pos.x * 32  - 5) * scale + grid_offset.x, (pos.y * 32 + 13) * scale + grid_offset.y), value, scale, 6);
     }
     
+    int index = current_circuit->signs.size();
+    
     for (auto i = current_circuit->signs.rbegin(); i != current_circuit->signs.rend(); ++i)     // show notes
     {
         Sign& sign = *i;
+        index--;
         sign.set_size(get_text_size(sign.text));
-        render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4, scale);
+        bool selected = (selected_signs.find(index) != selected_signs.end());
+
+        if (mouse_state == MOUSE_STATE_AREA_SELECT)
         {
-            SDL_Rect src_rect = {288 + (int)sign.direction * 16, 176, 16, 16};
+            XYPos tl = ((mouse - grid_offset) / scale);
+            XYPos br = select_area_pos;
+
+            if (tl.x > br.x)
+            {
+                int t = tl.x;
+                tl.x = br.x;
+                br.x = t;
+            }
+            if (tl.y > br.y)
+            {
+                int t = tl.y;
+                tl.y = br.y;
+                br.y = t;
+            }
+            if (sign.pos.x >= tl.x && sign.pos.x <= br.x && sign.pos.y >= tl.y && sign.pos.y <= br.y)
+                selected = true;
+        }
+
+
+
+        render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 4, scale);
+        if (selected)
+            render_box(sign.get_pos() * scale + grid_offset , sign.get_size(), 8, scale);
+        {
+            SDL_Rect src_rect = {288 + (int)sign.direction * 16, selected ? 192 : 176, 16, 16};
             SDL_Rect dst_rect = {(sign.pos.x - 8) * scale + grid_offset.x, (sign.pos.y - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
             render_texture(src_rect, dst_rect);
         }
@@ -1743,6 +1779,28 @@ void GameState::render(bool saving)
                 render_texture(src_rect, dst_rect);
             }
 
+        }
+        
+        int index = clipboard.signs.size();
+        for (auto i = clipboard.signs.rbegin(); i != clipboard.signs.rend(); ++i)     // show notes
+        {
+            Sign& sign = *i;
+            index--;
+            sign.set_size(get_text_size(sign.text));
+            render_box((sign.get_pos() + mouse_grid * 32) * scale + grid_offset , sign.get_size(), 4, scale);
+            render_box((sign.get_pos() + mouse_grid * 32) * scale + grid_offset , sign.get_size(), 8, scale);
+            {
+                SDL_Rect src_rect = {288 + (int)sign.direction * 16, 192, 16, 16};
+                SDL_Rect dst_rect = {(sign.pos.x + mouse_grid.x * 32 - 8) * scale + grid_offset.x, (sign.pos.y + mouse_grid.y * 32 - 8) * scale + grid_offset.y, 16 * scale, 16 * scale};
+                render_texture(src_rect, dst_rect);
+            }
+
+            {
+                std::string text = sign.text;
+                if (frame_index % 60 < 30 && (&sign == &current_circuit->signs.front()) && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_SIGN))
+                    text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
+                render_text(((sign.get_pos() + mouse_grid * 32) + XYPos(4,4)) * scale + grid_offset, text.c_str(), SDL_Color{0xff,0xff,0xff}, scale);
+            }
         }
 
     }
@@ -2914,6 +2972,7 @@ void GameState::render(bool saving)
             current_circuit = sub_circuit;
             current_circuit_is_inspected_subcircuit = true;
             selected_elements.clear();
+            selected_signs.clear();
             push_in_animation = 0;
             mouse_state = MOUSE_STATE_NONE;
 
@@ -3145,6 +3204,7 @@ void GameState::set_level(int level_index)
     level_set->reset(current_level_index);
     show_hint = false;
     selected_elements.clear();
+    selected_signs.clear();
     show_dialogue = false;
     show_dialogue_hint = false;
     if (level_index == next_dialogue_level && !current_level_set_is_inspected &&  (current_level_index < LEVEL_COUNT))
@@ -3246,6 +3306,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 current_circuit_is_inspected_subcircuit = false;
                 current_circuit = current_level->circuit;
                 selected_elements.clear();
+                selected_signs.clear();
                 return;
             }
             else if (inspection_stack.size() > i)
@@ -3259,6 +3320,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                     if (!sub->get_custom() || sub->get_read_only())
                         current_circuit_is_read_only = true;
                 selected_elements.clear();
+                selected_signs.clear();
                 return;
             }
             else if (i == 10 && current_circuit_is_inspected_subcircuit && !current_level_set_is_inspected)
@@ -3392,6 +3454,20 @@ void GameState::mouse_click_in_grid(unsigned clicks)
     }
     if (keyboard_ctrl)
     {
+        int index = 0;
+        for (std::list<Sign>::iterator it = current_circuit->signs.begin(); it != current_circuit->signs.end(); it++, index++)
+        {
+            Sign& sign = *it;
+            if ((pos - sign.get_pos()).inside(sign.get_size()))
+            {
+                if (selected_signs.find(index) == selected_signs.end())
+                    selected_signs.insert(index);
+                else
+                    selected_signs.erase(index);
+                return;
+            }
+        }
+
         if (pos.x < 0 || pos.y < 0)
             return;
         if (grid.x > 8 || grid.y > 8)
@@ -3405,9 +3481,10 @@ void GameState::mouse_click_in_grid(unsigned clicks)
         
         return;
     }
-    if (!selected_elements.empty())
+    if (!selected_elements.empty() || !selected_signs.empty())
     {
         selected_elements.clear();
+        selected_signs.clear();
         return;
     }
     
@@ -3645,6 +3722,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
     {
         current_circuit->undo(level_set);
         selected_elements.clear();
+        selected_signs.clear();
         first_deletion = true;
     }
     else if (mouse_state == MOUSE_STATE_LOCKING_BLOCKS)
@@ -3895,9 +3973,9 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     clipboard.rotate(false);
                 if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
                     dragged_sign.rotate(false);
-                if (!selected_elements.empty())
+                if (!selected_elements.empty() || !selected_signs.empty())
                 {
-                    current_circuit->rotate_selected_elements(selected_elements, false);
+                    current_circuit->rotate_selected_elements(selected_elements, selected_signs, false);
                     level_set->touch(current_level_index);
                 }
             }
@@ -3910,7 +3988,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     dragged_sign.rotate(true);
                 if (!selected_elements.empty())
                 {
-                    current_circuit->rotate_selected_elements(selected_elements, true);
+                    current_circuit->rotate_selected_elements(selected_elements, selected_signs, true);
                     level_set->touch(current_level_index);
                 }
             }
@@ -3923,7 +4001,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     dragged_sign.flip(true);
                 if (!selected_elements.empty())
                 {
-                    current_circuit->flip_selected_elements(selected_elements, true);
+                    current_circuit->flip_selected_elements(selected_elements, selected_signs, true);
                     level_set->touch(current_level_index);
                 }
             }
@@ -3936,7 +4014,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     dragged_sign.flip(true);
                 if (!selected_elements.empty())
                 {
-                    current_circuit->flip_selected_elements(selected_elements, false);
+                    current_circuit->flip_selected_elements(selected_elements, selected_signs, false);
                     level_set->touch(current_level_index);
                 }
             }
@@ -4670,7 +4748,7 @@ bool GameState::events()
                             dragged_sign.rotate(false);
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            current_circuit->rotate_selected_elements(selected_elements, false);
+                            current_circuit->rotate_selected_elements(selected_elements, selected_signs, false);
                             level_set->touch(current_level_index);
                         }
                         break;
@@ -4685,7 +4763,7 @@ bool GameState::events()
                             dragged_sign.rotate(true);
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            current_circuit->rotate_selected_elements(selected_elements, true);
+                            current_circuit->rotate_selected_elements(selected_elements, selected_signs, true);
                             level_set->touch(current_level_index);
                         }
                         break;
@@ -4702,7 +4780,7 @@ bool GameState::events()
                         }
                         else if (!current_circuit_is_read_only)
                         {
-                            if (selected_elements.empty())
+                            if (selected_elements.empty() && selected_signs.empty())
                             {
                                 dir_flip = dir_flip.flip(true);
                                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -4713,9 +4791,9 @@ bool GameState::events()
                             else
                             {
                                 if (!keyboard_shift)
-                                    current_circuit->move_selected_elements(selected_elements, DIRECTION_N);
+                                    current_circuit->move_selected_elements(selected_elements, selected_signs, DIRECTION_N);
                                 else
-                                    current_circuit->flip_selected_elements(selected_elements, true);
+                                    current_circuit->flip_selected_elements(selected_elements, selected_signs, true);
 
                                 level_set->touch(current_level_index);
                             }
@@ -4727,12 +4805,17 @@ bool GameState::events()
                         if (!SDL_IsTextInputActive() && keyboard_ctrl)
                         {
                             XYPos pos;
+                            selected_elements.clear();
+                            selected_signs.clear();
                             for (pos.y = 0; pos.y < 9; pos.y++)
                             for (pos.x = 0; pos.x < 9; pos.x++)
                             {
                                 if (!current_circuit->elements[pos.y][pos.x]->is_empty())
                                     selected_elements.insert(pos);
                             }
+                            int index = 0;
+                            for (auto it = current_circuit->signs.begin(); it != current_circuit->signs.end(); it++, index++)
+                                selected_signs.insert(index);
                             break;
                         }
                         if (SDL_IsTextInputActive())
@@ -4745,7 +4828,7 @@ bool GameState::events()
                         }
                         else if (!current_circuit_is_read_only)
                         {
-                            if (selected_elements.empty())
+                            if (selected_elements.empty() && selected_signs.empty())
                             {
                                 dir_flip = dir_flip.flip(false);
                                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -4756,9 +4839,9 @@ bool GameState::events()
                             else
                             {
                                 if (!keyboard_shift)
-                                    current_circuit->move_selected_elements(selected_elements, DIRECTION_W);
+                                    current_circuit->move_selected_elements(selected_elements, selected_signs, DIRECTION_W);
                                 else
-                                    current_circuit->flip_selected_elements(selected_elements, false);
+                                    current_circuit->flip_selected_elements(selected_elements, selected_signs, false);
                                 level_set->touch(current_level_index);
                             }
                         }
@@ -4776,7 +4859,7 @@ bool GameState::events()
                         }
                         else if (!current_circuit_is_read_only)
                         {
-                            if (selected_elements.empty())
+                            if (selected_elements.empty() && selected_signs.empty())
                             {
                                 dir_flip = dir_flip.flip(true);
                                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -4787,9 +4870,9 @@ bool GameState::events()
                             else
                             {
                                 if (!keyboard_shift)
-                                    current_circuit->move_selected_elements(selected_elements, DIRECTION_S);
+                                    current_circuit->move_selected_elements(selected_elements, selected_signs, DIRECTION_S);
                                 else
-                                    current_circuit->flip_selected_elements(selected_elements, true);
+                                    current_circuit->flip_selected_elements(selected_elements, selected_signs, true);
                                 level_set->touch(current_level_index);
                             }
                         }
@@ -4807,7 +4890,7 @@ bool GameState::events()
                         }
                         else if (!current_circuit_is_read_only)
                         {
-                            if (selected_elements.empty())
+                            if (selected_elements.empty() && selected_signs.empty())
                             {
                                 dir_flip = dir_flip.flip(false);
                                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -4818,9 +4901,9 @@ bool GameState::events()
                             else
                             {
                                 if (!keyboard_shift)
-                                    current_circuit->move_selected_elements(selected_elements, DIRECTION_E);
+                                    current_circuit->move_selected_elements(selected_elements, selected_signs, DIRECTION_E);
                                 else
-                                    current_circuit->flip_selected_elements(selected_elements, false);
+                                    current_circuit->flip_selected_elements(selected_elements, selected_signs, false);
                                 level_set->touch(current_level_index);
                             }
                         }
@@ -4828,11 +4911,12 @@ bool GameState::events()
                     case SDL_SCANCODE_X:
                         if (!SDL_IsTextInputActive())
                         {
-                            clipboard.copy(selected_elements, *current_circuit);
+                            clipboard.copy(*current_circuit, selected_elements, selected_signs);
                             if(!current_circuit_is_read_only)
                             {
-                                current_circuit->delete_selected_elements(selected_elements);
+                                current_circuit->delete_selected_elements(selected_elements, selected_signs);
                                 selected_elements.clear();
+                                selected_signs.clear();
                                 level_set->touch(current_level_index);
                             }
                         }
@@ -4840,7 +4924,7 @@ bool GameState::events()
                     case SDL_SCANCODE_C:
                         if (!SDL_IsTextInputActive())
                         {
-                            clipboard.copy(selected_elements, *current_circuit);
+                            clipboard.copy(*current_circuit, selected_elements, selected_signs);
                             if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
                                 mouse_state = MOUSE_STATE_NONE;
                         }
@@ -4861,18 +4945,20 @@ bool GameState::events()
                         }
                         else if (!current_circuit_is_read_only)
                         {
-                            if (!clipboard.elements.empty())
+                            if (!clipboard.elements.empty() || !clipboard.signs.empty())
                                 mouse_state = MOUSE_STATE_PASTING_CLIPBOARD;
                             else
                                 mouse_state = MOUSE_STATE_NONE;
                             selected_elements.clear();
+                            selected_signs.clear();
                         }
                         break;
                     case SDL_SCANCODE_DELETE:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            current_circuit->delete_selected_elements(selected_elements);
+                            current_circuit->delete_selected_elements(selected_elements, selected_signs);
                             selected_elements.clear();
+                            selected_signs.clear();
                             level_set->touch(current_level_index);
                         }
                         else if (mouse_state == MOUSE_STATE_ENTERING_TEXT)
@@ -4894,8 +4980,9 @@ bool GameState::events()
                     case SDL_SCANCODE_BACKSPACE:
                         if (!SDL_IsTextInputActive() && !current_circuit_is_read_only)
                         {
-                            current_circuit->delete_selected_elements(selected_elements);
+                            current_circuit->delete_selected_elements(selected_elements, selected_signs);
                             selected_elements.clear();
+                            selected_signs.clear();
                             level_set->touch(current_level_index);
                         }
                         else if (mouse_state == MOUSE_STATE_ENTERING_TEXT)
@@ -5050,6 +5137,7 @@ bool GameState::events()
                             else
                                 current_circuit->redo(level_set);
                             selected_elements.clear();
+                            selected_signs.clear();
                             level_set->touch(current_level_index);
                         }
                         break;
@@ -5058,6 +5146,7 @@ bool GameState::events()
                         {
                             current_circuit->redo(level_set);
                             selected_elements.clear();
+                            selected_signs.clear();
                             level_set->touch(current_level_index);
                         }
                         break;
@@ -5234,8 +5323,8 @@ bool GameState::events()
                     }
                     if (mouse_state == MOUSE_STATE_AREA_SELECT)
                     {
-                        XYPos tl = ((mouse - grid_offset) / scale) / 32;
-                        XYPos br = select_area_pos / 32;
+                        XYPos tl = ((mouse - grid_offset) / scale);
+                        XYPos br = select_area_pos;
                         if (tl.x > br.x)
                         {
                             int t = tl.x;
@@ -5252,9 +5341,21 @@ bool GameState::events()
                         for (pos.y = 0; pos.y < 9; pos.y++)
                         for (pos.x = 0; pos.x < 9; pos.x++)
                         {
-                            if (pos.x >= tl.x && pos.x <= br.x && pos.y >= tl.y && pos.y <= br.y && !current_circuit->elements[pos.y][pos.x]->is_empty())
+                            if (pos.x >= (tl.x / 32) && pos.x <= (br.x / 32) && pos.y >= (tl.y / 32) && pos.y <= (br.y / 32) && !current_circuit->elements[pos.y][pos.x]->is_empty())
                                 selected_elements.insert(pos);
                         }
+                        int index = 0;
+                        for (auto it = current_circuit->signs.begin(); it != current_circuit->signs.end(); it++, index++)
+                        {
+                            Sign& sign = *it;
+                            if ((sign.pos - tl).inside(br - tl))
+                            {
+                                if (selected_signs.find(index) == selected_signs.end())
+                                    selected_signs.insert(index);
+                            }
+                        }
+
+
                         mouse_state = MOUSE_STATE_NONE;
                     }
                     if (mouse_state == MOUSE_STATE_DRAGGING_SIGN)
@@ -5270,12 +5371,7 @@ bool GameState::events()
                             text_entry_target = TEXT_TARGET_SIGN;
                             text_entry_string = &current_circuit->signs.front().text;
                             text_entry_offset = current_circuit->signs.front().text.size();
-
                             SDL_StartTextInput();
-                            {
-                                SDL_Rect dst_rect = {0, 0, 600, 600};
-                                SDL_SetTextInputRect(&dst_rect);
-                            }
                         }
                     }
                 }
@@ -5529,6 +5625,7 @@ bool GameState::events()
                     if (!current_circuit_is_read_only)
                     {
                         selected_elements.clear();
+                        selected_signs.clear();
                         if (mouse_state == MOUSE_STATE_NONE)
                         {
                             mouse_state = MOUSE_STATE_DELETING;
@@ -5647,6 +5744,7 @@ void GameState::watch_slider(unsigned slider_pos_, Direction slider_direction_, 
 void GameState::set_current_circuit_read_only()
 {
     selected_elements.clear();
+    selected_signs.clear();
     current_circuit_is_read_only = true;
     if (panel_state == PANEL_STATE_EDITOR)
         panel_state = PANEL_STATE_MONITOR;

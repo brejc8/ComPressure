@@ -1264,7 +1264,7 @@ void Circuit::add_sign(Sign sign, bool no_undo)
     signs.push_front(sign);
 }
 
-void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Direction d)
+void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, std::set<int> selected_signs, Direction d)
 {
     XYPos mov(d);
     std::map<XYPos, CircuitElement*> elems;
@@ -1285,6 +1285,24 @@ void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Directi
     }
 
     ammend();
+    int index = 0;
+    for (std::list<Sign>::iterator it = signs.begin(); it != signs.end(); it++, index++)
+    {
+        if (selected_signs.find(index) != selected_signs.end())
+        {
+            Sign& sign = *it;
+            XYPos pos = sign.pos + mov * 32;
+            if (pos.x < 0)
+                pos.x = 0;
+            if (pos.y < 0)
+                pos.y = 0;
+            if (pos.x > 9 * 32 - 1)
+                pos.x = 9 * 32 - 1;
+            if (pos.y > 9 * 32 - 1)
+                pos.y = 9 * 32 - 1;
+            sign.pos = pos;
+        }
+    }
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = old + mov;
@@ -1308,13 +1326,13 @@ void Circuit::move_selected_elements(std::set<XYPos> &selected_elements, Directi
     selected_elements = new_sel;
 }
 
-void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool clockwise)
+void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, std::set<int> selected_signs, bool clockwise)
 {
     std::map<XYPos, CircuitElement*> elems;
-    if (selected_elements.empty())
+    if (selected_elements.empty() && selected_signs.empty())
         return;
     
-    XYPos min = XYPos(9,9);
+    XYPos min = XYPos(8,8);
     XYPos max = XYPos(0,0);
     
     for (const XYPos& old: selected_elements)
@@ -1324,7 +1342,6 @@ void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool 
         max.x = std::max(max.x, old.x);
         max.y = std::max(max.y, old.y);
     }
-    XYPos center = (min + max) / 2;
     
     for (const XYPos& old: selected_elements)
     {
@@ -1338,8 +1355,21 @@ void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool 
         if (selected_elements.find(pos) == selected_elements.end() && !elements[pos.y][pos.x]->is_empty())
             return;
     }
-
+    
     ammend();
+    int index = 0;
+    for (std::list<Sign>::iterator it = signs.begin(); it != signs.end(); it++, index++)
+    {
+        if (selected_signs.find(index) != selected_signs.end())
+        {
+            XYPos mmin = min * 32 + XYPos(16,16);
+            XYPos mmax = max * 32 + XYPos(16,16);
+            Sign& sign = *it;
+            sign.pos = ((sign.pos - mmin) * (clockwise ? DIRECTION_E : DIRECTION_W) + XYPos(clockwise ? mmax.x : mmin.x, clockwise ? mmin.y : mmax.y));
+            sign.direction = direction_rotate(sign.direction, clockwise);
+        }
+    }
+
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = ((old - min) * (clockwise ? DIRECTION_E : DIRECTION_W) + XYPos(clockwise ? max.x : min.x, clockwise ? min.y : max.y));
@@ -1365,10 +1395,10 @@ void Circuit::rotate_selected_elements(std::set<XYPos> &selected_elements, bool 
     selected_elements = new_sel;
 }
 
-void Circuit::flip_selected_elements(std::set<XYPos> &selected_elements, bool vertically)
+void Circuit::flip_selected_elements(std::set<XYPos> &selected_elements, std::set<int> selected_signs, bool vertically)
 {
     std::map<XYPos, CircuitElement*> elems;
-    if (selected_elements.empty())
+    if (selected_elements.empty() && selected_signs.empty())
         return;
     
     XYPos min = XYPos(9,9);
@@ -1396,6 +1426,19 @@ void Circuit::flip_selected_elements(std::set<XYPos> &selected_elements, bool ve
     }
 
     ammend();
+    int index = 0;
+    for (std::list<Sign>::iterator it = signs.begin(); it != signs.end(); it++, index++)
+    {
+        if (selected_signs.find(index) != selected_signs.end())
+        {
+            XYPos mmin = min * 32 + XYPos(16,16);
+            XYPos mmax = max * 32 + XYPos(16,16);
+            Sign& sign = *it;
+            sign.pos = XYPos(vertically ? sign.pos.x : mmax.x - sign.pos.x + mmin.x, vertically ? mmax.y - sign.pos.y + mmin.y : sign.pos.y);
+            sign.direction = direction_flip(sign.direction, vertically);
+        }
+    }
+
     for (const XYPos& old: selected_elements)
     {
         XYPos pos = XYPos(vertically ? old.x : max.x - old.x + min.x, vertically ? max.y - old.y + min.y : old.y);
@@ -1422,7 +1465,7 @@ void Circuit::flip_selected_elements(std::set<XYPos> &selected_elements, bool ve
     selected_elements = new_sel;
 }
 
-void Circuit::delete_selected_elements(std::set<XYPos> &selected_elements)
+void Circuit::delete_selected_elements(std::set<XYPos> &selected_elements, std::set<int> selected_signs)
 {
     bool all_empty = true;
     for (const XYPos& pos: selected_elements)
@@ -1430,10 +1473,19 @@ void Circuit::delete_selected_elements(std::set<XYPos> &selected_elements)
         if (!elements[pos.y][pos.x]->is_empty() && !is_blocked(pos))
             all_empty = false;
     }
-    if (all_empty)
+    if (all_empty && selected_signs.empty())
         return;
 
     ammend();
+    int index = 0;
+    for (std::list<Sign>::iterator it = signs.begin(); it != signs.end(); index++)
+    {
+        if (selected_signs.find(index) != selected_signs.end())
+            it = signs.erase(it);
+        else
+            it++;
+    }
+
     for (const XYPos& pos: selected_elements)
     {
         if (is_blocked(pos))
@@ -1584,6 +1636,14 @@ void Circuit::paste(Clipboard& clipboard, XYPos offset, LevelSet* level_set)
             elements[pos.y][pos.x] = element->copy();
         }
     }
+    for (Sign& sign: clipboard.signs)
+    {
+        signs.push_front(sign);
+        signs.front().pos += offset * 32;
+        signs.front().pos.clamp(XYPos(0,0), XYPos(9*32-1,9*32-1));
+    }
+
+
     remove_circles(level_set);
     elaborate(level_set);
 }
@@ -1665,7 +1725,7 @@ void Circuit::set_custom(bool recurse)
     }
 }
 
-void Clipboard::copy(std::set<XYPos> &selected_elements, Circuit &circuit)
+void Clipboard::copy(Circuit &circuit, std::set<XYPos> &selected_elements, std::set<int> selected_signs)
 {
     for (const ClipboardElement& elem: elements)
     {
@@ -1677,13 +1737,33 @@ void Clipboard::copy(std::set<XYPos> &selected_elements, Circuit &circuit)
     {
         elements.push_back(ClipboardElement(pos, circuit.elements[pos.y][pos.x]->copy()));
     }
+
+    signs.clear();
+    int index = 0;
+    for (std::list<Sign>::iterator it = circuit.signs.begin(); it != circuit.signs.end(); it++, index++)
+    {
+        if (selected_signs.find(index) != selected_signs.end())
+        {
+            signs.push_back(*it);
+        }
+    }
     repos();
 }
 
 void Clipboard::repos()
 {
     if (elements.empty())
+    {
+        if (!signs.empty())
+        {
+            XYPos pos = signs.front().pos / 32;
+            for (Sign& sign: signs)
+            {
+                sign.pos -= pos * 32;
+            }
+        }
         return;
+    }
     XYPos pos = elements.front().pos;
     for (ClipboardElement& elem: elements)
     {
@@ -1693,6 +1773,10 @@ void Clipboard::repos()
     for (ClipboardElement& elem: elements)
     {
         elem.pos -= pos;
+    }
+    for (Sign& sign: signs)
+    {
+        sign.pos -= pos * 32;
     }
 }
 
@@ -1718,6 +1802,14 @@ void Clipboard::rotate(bool clockwise)
         elem.pos.y = clockwise ? oldx : -oldx;
         elem.element->rotate(clockwise);
     }
+    for (Sign& sign: signs)
+    {
+        XYPos pos = sign.pos;
+        sign.pos.x = clockwise ? 32 - pos.y : pos.y;
+        sign.pos.y = clockwise ? pos.x : 32 - pos.x;
+        sign.rotate(clockwise);
+
+    }
     repos();
 }
 
@@ -1731,6 +1823,15 @@ void Clipboard::flip(bool vertically)
         else
             elem.pos.x = -elem.pos.x;
         elem.element->flip(vertically);
+    }
+    for (Sign& sign: signs)
+    {
+        if (vertically)
+            sign.pos.y = 32 - sign.pos.y;
+        else
+            sign.pos.x = 32 - sign.pos.x;
+        sign.flip(vertically);
+
     }
     repos();
 }

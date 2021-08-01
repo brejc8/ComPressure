@@ -1178,6 +1178,8 @@ void ScoreTable::fetch_scores(SaveObjectMap* omap, uint64_t user_id, std::set<ui
         bool fri = (friends.find(score.second) != friends.end()) || (score.second == user_id);
         if ((user_id == CHARLES_ID )|| fri || (i < visible))
         {
+            if (score.second == CHARLES_ID || score.second == 0)
+                continue;
             SaveObjectMap* omap = new SaveObjectMap;
             omap->add_num("steam_id", score.second);
             omap->add_string("steam_username", db.players[score.second].steam_username);
