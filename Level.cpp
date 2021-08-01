@@ -902,6 +902,8 @@ unsigned LevelSet::import_level(LevelSet* other_set, int level_index)
     new_level->global = old_level->global;
     new_level->description = old_level->description;
     new_level->substep_count = old_level->substep_count;
+    new_level->dialogue = old_level->dialogue;
+    new_level->hints = old_level->hints;
 
     for (unsigned i = 0; i < 4; i++)
         new_level->pin_order[i] = old_level->pin_order[i];
