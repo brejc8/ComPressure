@@ -1828,8 +1828,6 @@ void GameState::render(bool saving)
 
             {
                 std::string text = sign.text;
-                if (frame_index % 60 < 30 && (&sign == &current_circuit->signs.front()) && (mouse_state == MOUSE_STATE_ENTERING_TEXT) && (text_entry_target == TEXT_TARGET_SIGN))
-                    text.insert(text_entry_offset, std::string((const char*)u8"\u258F"));
                 render_text(((sign.get_pos() + mouse_grid * 32) + XYPos(4,4)) * scale + grid_offset, text.c_str(), SDL_Color{0xff,0xff,0xff}, scale);
             }
         }

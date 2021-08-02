@@ -1526,7 +1526,7 @@ void Circuit::flip_selected_elements(std::set<XYPos> &selected_elements, std::se
     if (selected_elements.empty() && selected_signs.empty())
         return;
     
-    XYPos min = XYPos(9,9);
+    XYPos min = XYPos(8,8);
     XYPos max = XYPos(0,0);
     
     for (const XYPos& old: selected_elements)
