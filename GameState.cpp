@@ -1189,6 +1189,36 @@ static int max_help_page(int next_dialogue_level)
     return 12;
 }
 
+void GameState::form_custom_icon(CircuitElement& element)
+{
+    PixelData* pixel_data = element.get_pixel_data();
+    if (pixel_data)
+    {
+        if (!element.getimage_fg_texture())
+        {
+            SDL_Texture* my_canvas = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 192, 24);
+            SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_BLEND);
+            uint8_t* pixels;
+            int pitch;
+            SDL_LockTexture(my_canvas, NULL, (void**)&pixels, &pitch);
+
+            uint32_t colours[9] = {0xFFFFFFFF, 0x8595a1FF, 0x75725fFF, 0xd2aa9aFF, 0x844c30FF, 0x422536FF, 0x000000FF, 0x4c4a4eFF, 0xFF00};
+
+            for (int y = 0; y < 24; y++)
+            for (int x = 0; x < 24*8; x++)
+            {
+                int colour = (*pixel_data)[y][x];
+                {
+                    uint32_t *line = (uint32_t*)&pixels[y * pitch];
+                    line[x] = colours[colour];
+                }
+            }
+            SDL_UnlockTexture(my_canvas);
+            element.setimage_fg_texture(new GameStateWrappedTexture(my_canvas));
+        }
+    }
+}
+
 
 void GameState::render_grid(int scale, XYPos grid_offset)
 {
@@ -1308,6 +1338,7 @@ void GameState::render_grid(int scale, XYPos grid_offset)
         src_pos = current_circuit->elements[pos.y][pos.x]->getimage_fg();
         if (src_pos != XYPos(-1,-1))
         {
+            form_custom_icon(*current_circuit->elements[pos.y][pos.x]);
             WrappedTexture* w_tex = current_circuit->elements[pos.y][pos.x]->getimage_fg_texture();
             SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
             SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
@@ -1494,17 +1525,15 @@ void GameState::render(bool saving)
             {
                 if (x == 32*5)
                     x += 32;
-                int l_index;
-                sub->get_subcircuit(&l_index);
+                const char* name = sub->get_name();
                 if (!sub->get_custom() || sub->get_read_only())
                     editable = false;
                 
                 unsigned color = editable ? 1 : 4;
-                
+                form_custom_icon(*sub);
                 WrappedTexture* w_tex = sub->getimage_fg_texture();
                 SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
-                const char* l_name = l_index < 0 ? "Lost level" : level_set->levels[l_index]->name.c_str();
-                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, l_name, tex);
+                render_button(XYPos(x * scale, 0 * scale), sub->getimage_fg(), color, name, tex);
                 x += 32;
             }
         }
@@ -1765,6 +1794,8 @@ void GameState::render(bool saving)
             }
 
             src_pos = element->getimage_fg();
+            
+            form_custom_icon(*element);
             WrappedTexture* w_tex = element->getimage_fg_texture();
             if (src_pos != XYPos(-1,-1))
             {
@@ -2954,6 +2985,7 @@ void GameState::render(bool saving)
             src_pos = sub_circuit->elements[pos.y][pos.x]->getimage_fg();
             if (src_pos != XYPos(-1,-1))
             {
+                form_custom_icon(*sub_circuit->elements[pos.y][pos.x]);
                 WrappedTexture* w_tex = sub_circuit->elements[pos.y][pos.x]->getimage_fg_texture();
                 SDL_Texture* tex = w_tex ? w_tex->get_texture() : sdl_texture ;
                 SDL_Rect src_rect =  {src_pos.x, src_pos.y, 24, 24};
@@ -5986,32 +6018,6 @@ void GameState::set_level_set(LevelSet* new_level_set)
     {
         SDL_Texture* my_canvas = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 192, 24);
         SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_BLEND);
-//        SDL_SetRenderTarget(sdl_renderer, my_canvas);
-
-//        SDL_SetTextureBlendMode(my_canvas, SDL_BLENDMODE_NONE);
-//        SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0x00, 0x00);
-//        SDL_RenderClear(sdl_renderer);
-        
-//         {
-//             SDL_Rect src_rect = {192, 800 + 4 * 24, 192, 24};
-//             SDL_Rect dst_rect = {0, 0, 192, 24};
-//             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-//         }
-//         for (int a = 0; a < 4; a++)
-//         {
-//             if ((level_set->levels[i]->connection_mask >> a) & 1)
-//             {
-//                 SDL_Rect src_rect = {192, 800 + a * 24, 192, 24};
-//                 SDL_Rect dst_rect = {0, 0, 192, 24};
-//                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-//             }
-//         }
-//         {
-//             SDL_Rect src_rect = {192, 800 + 5 * 24, 192, 24};
-//             SDL_Rect dst_rect = {0, 0, 192, 24};
-//             SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-//         }
-        
         uint8_t* pixels;
         int pitch;
         SDL_LockTexture(my_canvas, NULL, (void**)&pixels, &pitch);
@@ -6028,20 +6034,8 @@ void GameState::set_level_set(LevelSet* new_level_set)
             }
         }
         SDL_UnlockTexture(my_canvas);
-//         for (int y = 0; y < 24; y++)
-//         for (int x = 0; x < 24; x++)
-//         {
-//             int colour = level_set->levels[i]->icon_pixels_fg[y][x];
-//             SDL_Rect src_rect = {503, 80 + colour, 1, 1};
-//             for (int r = 0; r < 8; r++)
-//             {
-//                 SDL_Rect dst_rect = {x + r * 24, y, 1, 1};
-//                 SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, &dst_rect);
-//             }
-//         }
         level_set->levels[i]->setimage_fg_texture(new GameStateWrappedTexture(my_canvas));
     }
-//    SDL_SetRenderTarget(sdl_renderer, NULL);
 }
 
 GameStateWrappedTexture::~GameStateWrappedTexture()

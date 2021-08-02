@@ -308,6 +308,7 @@ public:
     void render_text_wrapped(XYPos tl, const char* string, int width, int myscale);
     void render_text(XYPos tl, const char* string, SDL_Color color = {0xff,0xff,0xff}, int myscale = 0);
     void update_scale(int ewscale);
+    void form_custom_icon(CircuitElement& element);
     void render_grid(int scale, XYPos grid_offset);
     void render(bool saving = false);
     void advance();

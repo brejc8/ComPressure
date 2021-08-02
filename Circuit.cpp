@@ -573,8 +573,9 @@ XYPos CircuitElementEmpty::getimage(void)
 
 CircuitElementSubCircuit::~CircuitElementSubCircuit()
 {
-    if (circuit)
-        delete circuit;
+    delete circuit;
+    delete texture;
+
 }
 
 CircuitElementSubCircuit::CircuitElementSubCircuit(DirFlip dir_flip_, int level_index_, LevelSet* level_set, bool read_only_):
@@ -601,6 +602,43 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap, bool rea
     {
         circuit = new Circuit(omap->get_item("circuit")->get_map());
         custom = true;
+        if (level_index == -2)
+            name = omap->get_string("name");
+
+        for (unsigned y = 0; y < 24; y++)
+            for (unsigned x = 0; x < 24*8; x++)
+                icon_pixels[y][x] = 8;
+
+        if (omap->has_key("icon_bg"))
+        {
+            SaveObjectList* icon_list_y = omap->get_item("icon_bg")->get_list();
+            for (unsigned y = 0; y < icon_list_y->get_count() && y < 24; y++)
+            {
+                SaveObjectList* icon_list_x = icon_list_y->get_item(y)->get_list();
+                for (unsigned x = 0; x < icon_list_x->get_count() && x < 24; x++)
+                {
+                    for (int i = 0; i < 8; i++)
+                    {
+                        XYPos pos = DirFlip(i).trans(XYPos(x,y), 24);
+                        icon_pixels[pos.y][pos.x + i * 24] = icon_list_x->get_num(x);
+                    }
+                }
+            }
+        }
+        if (omap->has_key("icon"))
+        {
+            SaveObjectList* icon_list_y = omap->get_item("icon")->get_list();
+            for (unsigned y = 0; y < icon_list_y->get_count() && y < 24; y++)
+            {
+                SaveObjectList* icon_list_x = icon_list_y->get_item(y)->get_list();
+                for (unsigned x = 0; x < icon_list_x->get_count() && x < 24*8; x++)
+                {
+                    uint8_t colour = icon_list_x->get_num(x);
+                    if (colour != 8)
+                        icon_pixels[y][x] = colour;
+                }
+            }
+        }
     }
 }
 
@@ -615,6 +653,9 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(CircuitElementSubCircuit& oth
     {
         circuit = new Circuit(*other.circuit);
     }
+    for (unsigned y = 0; y < 24; y++)
+        for (unsigned x = 0; x < 24*8; x++)
+            icon_pixels[y][x] = other.icon_pixels[y][x];
 }
 
 void CircuitElementSubCircuit::save(SaveObjectMap* omap)
@@ -624,6 +665,55 @@ void CircuitElementSubCircuit::save(SaveObjectMap* omap)
     if (custom)
     {
         omap->add_item("circuit", circuit->save());
+        if (level_index == -2)
+        {
+            omap->add_string("name", name);
+
+            uint8_t base_pixels[24][24];
+
+            SaveObjectList* y_list = new SaveObjectList;
+            for (unsigned y = 0; y < 24; y++)
+            {
+                SaveObjectList* x_list = new SaveObjectList;
+                for (unsigned x = 0; x < 24; x++)
+                {
+                    int colour = icon_pixels[y][x];
+                    for (int i = 0; i < 8; i++)
+                    {
+                        XYPos npos = DirFlip(i).trans(XYPos(x,y), 24);
+                        if (colour != icon_pixels[npos.y][npos.x + i * 24])
+                        {
+                            colour = 8;
+                            break;
+                        }
+                    }
+                    base_pixels[y][x] = colour;
+                    x_list->add_num(colour);
+                }
+                while (x_list->get_count() && x_list->get_num(x_list->get_count() - 1) == 8)
+                    x_list->pop_back();
+                y_list->add_item(x_list);
+            }
+            omap->add_item("icon_bg", y_list);
+
+            y_list = new SaveObjectList;
+            for (unsigned y = 0; y < 24; y++)
+            {
+                SaveObjectList* x_list = new SaveObjectList;
+                for (unsigned x = 0; x < 24*8; x++)
+                {
+                    XYPos npos = DirFlip(x / 24).trans_inv(XYPos(x%24,y), 24);
+                    if (base_pixels[npos.y][npos.x] != icon_pixels[y][x])
+                        x_list->add_num(icon_pixels[y][x]);
+                    else
+                        x_list->add_num(8);
+                }
+                while (x_list->get_count() && x_list->get_num(x_list->get_count() - 1) == 8)
+                    x_list->pop_back();
+                y_list->add_item(x_list);
+            }
+            omap->add_item("icon", y_list);
+        }
     }
 }
 
@@ -646,15 +736,17 @@ void CircuitElementSubCircuit::reset()
 void CircuitElementSubCircuit::elaborate(LevelSet* level_set, std::set<unsigned> seen)
 {
     level_index = level_set->find_level(level_index, name);
-
+    
     if (custom || (level_index >= 0 && seen.find(level_index) == seen.end()))
     {
         if (level_index >= 0)
             level = level_set->levels[level_index];
+        if (custom && (level_index >= LEVEL_COUNT))
+            set_custom();
     }
     else
     {
-        level_index = -1;
+        level_index = -2;
         custom = true;
         level = NULL;
     }
@@ -664,8 +756,7 @@ void CircuitElementSubCircuit::elaborate(LevelSet* level_set, std::set<unsigned>
     if (!custom)
     {
         assert (level_index >= 0);
-        if (circuit)
-            delete circuit;
+        delete circuit;
 //        level->circuit->remove_circles(level_set);
         circuit = new Circuit(*level->circuit);
     }
@@ -681,6 +772,7 @@ void CircuitElementSubCircuit::retire()
 {
     if (!custom && circuit)
     {
+        delete texture;
         delete circuit;
         circuit = NULL;
     }
@@ -724,6 +816,8 @@ XYPos CircuitElementSubCircuit::getimage(void)
 
 XYPos CircuitElementSubCircuit::getimage_fg(void)
 {
+    if (level_index == -2)
+        return XYPos(dir_flip.as_int() * 24, 0);
     if (level_index < 0)
         return XYPos(dir_flip.as_int() * 24 + 192, 944);
     assert(level);
@@ -732,10 +826,25 @@ XYPos CircuitElementSubCircuit::getimage_fg(void)
 
 WrappedTexture* CircuitElementSubCircuit::getimage_fg_texture(void)
 {
+    if (level_index == -2)
+        return texture;
     if (level_index < 0)
         return NULL;
     assert(level);
     return level->getimage_fg_texture();
+}
+
+void CircuitElementSubCircuit::setimage_fg_texture(WrappedTexture* tex)
+{
+    delete texture;
+    texture = tex;
+}
+
+PixelData* CircuitElementSubCircuit::get_pixel_data()
+{
+    if (level_index == -2)
+        return &icon_pixels;
+    return NULL;
 }
 
 void CircuitElementSubCircuit::sim_prep(PressureAdjacent adj_, FastSim& fast_sim)
@@ -749,8 +858,26 @@ void CircuitElementSubCircuit::sim_prep(PressureAdjacent adj_, FastSim& fast_sim
 void CircuitElementSubCircuit::set_custom(bool recurse)
 {
     custom = true;
+    if (level_index >= LEVEL_COUNT)
+    {
+        level_index = -2;
+        name  = level->name;
+        for (unsigned y = 0; y < 24; y++)
+           for (unsigned x = 0; x < 24*8; x++)
+               icon_pixels[y][x] = level->icon_pixels[y][x];
+    }
+   
     if (recurse)
         circuit->set_custom(true);
+}
+
+const char* CircuitElementSubCircuit::get_name()
+{
+    if (level_index == -2)
+        return name.c_str();
+    if (level_index == -1)
+        return "Lost Level";
+    return level->name.c_str();
 }
 
 
@@ -767,12 +894,10 @@ void CircuitElementSubCircuit::reindex_deleted_level(LevelSet* level_set, int de
         if (!custom)
         {
             elaborate(level_set);
-            custom = true;
             if (circuit)
                 delete circuit;
             circuit = new Circuit(*level->circuit);
-            level = NULL;
-            level_index = -1;
+            set_custom();
         }
     }
     if (custom)

@@ -331,6 +331,7 @@ public:
     int64_t get_steam_used() {return std::min(int64_t(INT32_MAX), (steam_used + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR);}
 };
 
+typedef uint8_t PixelData[24][24*8];
 
 class CircuitElement
 {
@@ -353,6 +354,8 @@ public:
     virtual XYPos getimage(void) = 0;
     virtual XYPos getimage_fg(void) {return XYPos(-1,-1);}
     virtual WrappedTexture* getimage_fg_texture() {return NULL;}
+    virtual void setimage_fg_texture(WrappedTexture*) {}
+    virtual PixelData* get_pixel_data() {return NULL;};
     virtual SDL_Rect getimage_bg(void) {return SDL_Rect{0, 0, 0, 0};}
     virtual bool is_empty() {return false;}
     virtual Pressure get_moved(PressureAdjacent adj) {return 0;}
@@ -362,6 +365,7 @@ public:
     virtual Circuit* get_subcircuit(int *level_index_ = NULL) {return NULL;}
     virtual bool get_custom() {return false;}
     virtual void set_custom(bool recurse = false) {}
+    virtual const char* get_name() {return NULL;}
     virtual bool get_read_only() {return true;}
     virtual void set_read_only(bool read_only_) {}
     virtual void rotate(bool clockwise) = 0;
@@ -491,6 +495,8 @@ public:
     Circuit* circuit = NULL;
     bool custom = false;
     bool read_only = false;
+    PixelData icon_pixels;
+    WrappedTexture* texture = NULL;
 
     CircuitElementSubCircuit(DirFlip dir_flip_, int level_index_, LevelSet* level_set, bool read_only_ = false);
     CircuitElementSubCircuit(SaveObjectMap*, bool read_only_ = false);
@@ -509,11 +515,14 @@ public:
     SDL_Rect getimage_bg(void);
     XYPos getimage_fg(void);
     WrappedTexture* getimage_fg_texture();
+    void setimage_fg_texture(WrappedTexture*);
+    PixelData* get_pixel_data();
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     CircuitElementType get_type() {return CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT;}
     Circuit* get_subcircuit(int *level_index_ = NULL) {if (level_index_) *level_index_ = level_index; return circuit;}
     virtual bool get_custom() {return custom;}
     virtual void set_custom(bool recurse = false);
+    virtual const char* get_name();
     virtual bool get_read_only() {return read_only;}
     virtual void set_read_only(bool read_only_) {read_only = read_only_;}
     void rotate(bool clockwise) {dir_flip = dir_flip.rotate(clockwise);};
