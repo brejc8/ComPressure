@@ -2257,6 +2257,8 @@ void GameState::render(bool saving)
                 SDL_Rect dst_rect = {(port_index * 48 + int(current_level->current_simpoint.force[port_index])/ 3) * scale + panel_offset.x, (101 + 16 + 7) * scale + panel_offset.y, 16 * scale, 16 * scale};
                 render_texture(src_rect, dst_rect);
             }
+            render_number_2digit(XYPos((port_index * 48 + 3 + int(current_level->current_simpoint.force[port_index])/ 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), current_level->current_simpoint.force[port_index], scale);
+
             //render_number_2digit(XYPos((port_index * 48 + current_level->current_simpoint.force[port_index] + 3) * scale + panel_offset.x, (101 + 16 + 7 + 5) * scale + panel_offset.y), current_level->current_simpoint.force[port_index]*3);
             
             render_number_pressure(XYPos((port_index * 48 + 8 + (number_high_precision ? 2 : 6)) * scale + panel_offset.x, (101 + 16 + 20 + 5) * scale + panel_offset.y), current_level->ports[port_index].value, scale);
