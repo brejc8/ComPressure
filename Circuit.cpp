@@ -1182,9 +1182,9 @@ void Circuit::render_prep()
     for (pos.y = 0; pos.y < 10; pos.y++)
     for (pos.x = 0; pos.x < 10; pos.x++)
     {
-        if (touched_ns[pos.y][pos.x] == 1)
+        if (touched_ns[pos.y][pos.x] < 3)
             last_vented += connections_ns[pos.y][pos.x].value;
-        if (touched_ew[pos.y][pos.x] == 1)
+        if (touched_ew[pos.y][pos.x] < 3)
             last_vented += connections_ew[pos.y][pos.x].value;
     }
 
@@ -1202,8 +1202,8 @@ void Circuit::sim_prep(PressureAdjacent adj, FastSim& fast_sim)
     }
 
     touched_ns[0][4] = 1;
-    touched_ew[4][9] = 1;
-    touched_ns[9][4] = 1;
+    touched_ew[4][9] = 2;
+    touched_ns[9][4] = 2;
     touched_ew[4][0] = 1;
 
     for (pos.y = 0; pos.y < 9; pos.y++)
@@ -1211,13 +1211,13 @@ void Circuit::sim_prep(PressureAdjacent adj, FastSim& fast_sim)
     {
         unsigned con = elements[pos.y][pos.x]->getconnections();
         if ((con >> DIRECTION_N) & 1)
-            touched_ns[pos.y][pos.x]++;
+            touched_ns[pos.y][pos.x] |= 2;
         if ((con >> DIRECTION_E) & 1)
-            touched_ew[pos.y][pos.x+1]++;
+            touched_ew[pos.y][pos.x+1] |= 1;
         if ((con >> DIRECTION_S) & 1)
-            touched_ns[pos.y+1][pos.x]++;
+            touched_ns[pos.y+1][pos.x] |= 1;
         if ((con >> DIRECTION_W) & 1)
-            touched_ew[pos.y][pos.x]++;
+            touched_ew[pos.y][pos.x] |= 2;
 
         PressureAdjacent adjl(connections_ns[pos.y][pos.x],
                                  connections_ew[pos.y][pos.x+1],
@@ -1234,30 +1234,30 @@ void Circuit::sim_prep(PressureAdjacent adj, FastSim& fast_sim)
     for (pos.y = 0; pos.y < 10; pos.y++)
     for (pos.x = 0; pos.x < 10; pos.x++)
     {
-        if (touched_ns[pos.y][pos.x] == 2)
+        if (touched_ns[pos.y][pos.x] == 3)
         {
             fast_sim.add_pressure(connections_ns[pos.y][pos.x]);
-        }
-        else if (touched_ns[pos.y][pos.x] == 1)
-        {
-            fast_sim.add_pressure_vented(connections_ns[pos.y][pos.x]);
         }
         else if (touched_ns[pos.y][pos.x] == 0)
         {
             connections_ns[pos.y][pos.x].clear();
         }
+        else
+        {
+            fast_sim.add_pressure_vented(connections_ns[pos.y][pos.x]);
+        }
 
-        if (touched_ew[pos.y][pos.x] == 2)
+        if (touched_ew[pos.y][pos.x] == 3)
         {
             fast_sim.add_pressure(connections_ew[pos.y][pos.x]);
-        }
-        else if (touched_ew[pos.y][pos.x] == 1)
-        {
-            fast_sim.add_pressure_vented(connections_ew[pos.y][pos.x]);
         }
         else if (touched_ew[pos.y][pos.x] == 0)
         {
             connections_ew[pos.y][pos.x].clear();
+        }
+        else
+        {
+            fast_sim.add_pressure_vented(connections_ew[pos.y][pos.x]);
         }
     }
 
