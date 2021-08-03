@@ -170,7 +170,7 @@ public:
     public:
         Pressure values[4] = {-1, -1, -1, -1};
         unsigned marker = 0;
-    } test_pressure_histroy[192];
+    } test_pressure_histroy[200];
     int test_pressure_histroy_index = 0;
     int test_pressure_histroy_sample_counter = 0;
     unsigned test_pressure_histroy_speed = 50;

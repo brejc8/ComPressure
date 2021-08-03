@@ -169,6 +169,9 @@ public:
     XYPos select_area_pos;
     Clipboard clipboard;
 
+    bool test_alt_graph = false;
+    bool monitor_alt_graph = false;
+
     bool show_debug = false;
     unsigned debug_last_time = 0;
     unsigned debug_frames = 0;

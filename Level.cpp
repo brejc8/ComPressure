@@ -614,7 +614,7 @@ void Level::advance(unsigned ticks)
         {
             for (int p = 0; p < 4; p++)
                 test_pressure_histroy[test_pressure_histroy_index].values[p] = ports[p].value;
-            test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 192;
+            test_pressure_histroy_index = (test_pressure_histroy_index + 1) % 200;
             test_pressure_histroy[test_pressure_histroy_index].marker = 0;
 
         }
