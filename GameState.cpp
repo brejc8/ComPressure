@@ -1381,13 +1381,13 @@ void GameState::render_grid(int scale, XYPos grid_offset)
     for (pos.y = 0; pos.y < 10; pos.y++)                        // Print pressure numbers
     for (pos.x = 0; pos.x < 9; pos.x++)
     {
-        int f = (frame_index / 10 + pos.x + pos.y *3) % 5;
+        int f = (frame_index / 3 + pos.x + pos.y *3) % 5;
         uint8_t touched = current_circuit->touched_ns[pos.y][pos.x];
         if (touched == 0)
             continue;
         Pressure vented = (touched < 3) ? (current_circuit->connections_ns[pos.y][pos.x].value) : 0;
         unsigned value = pressure_as_percent(current_circuit->connections_ns[pos.y][pos.x].value);
-        if (vented > 20)
+        if (vented > 1000)
         {
             int i = 0;
             if (vented > 5000) i++;
@@ -1395,7 +1395,7 @@ void GameState::render_grid(int scale, XYPos grid_offset)
             if (vented > 30000) i++;
             if (vented > 100000) i++;
             SDL_Rect src_rect = {256 + f * 24, ((touched == 1 )? 768 : (768 + 24)) + (4 * 24 * i), 24, 24};
-            SDL_Rect dst_rect = {(pos.x * 32  + 3  + int(rand % 3)) * scale + grid_offset.x, (pos.y * 32 - ((touched == 2 ) ? 24 : 0)) * scale + grid_offset.y, 24 * scale, 24 * scale};
+            SDL_Rect dst_rect = {(pos.x * 32  + 4  + int(rand % 3)*0) * scale + grid_offset.x, (pos.y * 32 - ((touched == 2 ) ? 24 : 0)) * scale + grid_offset.y, 24 * scale, 24 * scale};
             render_texture(src_rect, dst_rect);
         }
         render_number_2digit(XYPos((pos.x * 32  + 11) * scale + grid_offset.x, (pos.y * 32 - 3) * scale + grid_offset.y), value, scale, 6);
@@ -1403,21 +1403,21 @@ void GameState::render_grid(int scale, XYPos grid_offset)
     for (pos.y = 0; pos.y < 9; pos.y++)
     for (pos.x = 0; pos.x < 10; pos.x++)
     {
-        int f = (frame_index / 10 + pos.x + pos.y *3) % 5;
+        int f = (frame_index / 3 + pos.x + pos.y *3) % 5;
         uint8_t touched = current_circuit->touched_ew[pos.y][pos.x];
         if (touched == 0)
             continue;
         Pressure vented = (touched < 3) ? (current_circuit->connections_ew[pos.y][pos.x].value) : 0;
         unsigned value = pressure_as_percent(current_circuit->connections_ew[pos.y][pos.x].value);
-        if (vented > 20)
+        if (vented > 1000)
         {
             int i = 0;
-            if (vented > 5000) i++;
             if (vented > 10000) i++;
-            if (vented > 30000) i++;
+            if (vented > 20000) i++;
+            if (vented > 50000) i++;
             if (vented > 100000) i++;
             SDL_Rect src_rect = {256 + f * 24, ((touched == 1 )? 816 : 840) + (4 * 24 * i), 24, 24};
-            SDL_Rect dst_rect = {(pos.x * 32  - ((touched == 2 ) ? 24 : 0)) * scale + grid_offset.x, (pos.y * 32 + 3 + int(rand % 3)) * scale + grid_offset.y, 24 * scale, 24 * scale};
+            SDL_Rect dst_rect = {(pos.x * 32  - ((touched == 2 ) ? 24 : 0)) * scale + grid_offset.x, (pos.y * 32 + 4 + int(rand % 3)*0) * scale + grid_offset.y, 24 * scale, 24 * scale};
             render_texture(src_rect, dst_rect);
         }
         render_number_2digit(XYPos((pos.x * 32  - 5) * scale + grid_offset.x, (pos.y * 32 + 13) * scale + grid_offset.y), value, scale, 6);
