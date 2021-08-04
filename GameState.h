@@ -152,6 +152,8 @@ public:
 
     unsigned frame_index = 0;
     unsigned game_speed = 20;
+    uint8_t steam_frame_ns[10][10] = {};
+    uint8_t steam_frame_ew[10][10] = {};
 
     unsigned late_frames = 0;
     unsigned time_last_progress = 0;
