@@ -1394,7 +1394,7 @@ void GameState::render_grid(int scale, XYPos grid_offset)
             if (vented > 10000) i++;
             if (vented > 30000) i++;
             if (vented > 100000) i++;
-            SDL_Rect src_rect = {256 + f * 24, (touched == 1 )? 768 : (768 + 24) + (4 * 24 * i), 24, 24};
+            SDL_Rect src_rect = {256 + f * 24, ((touched == 1 )? 768 : (768 + 24)) + (4 * 24 * i), 24, 24};
             SDL_Rect dst_rect = {(pos.x * 32  + 3  + int(rand % 3)) * scale + grid_offset.x, (pos.y * 32 - ((touched == 2 ) ? 24 : 0)) * scale + grid_offset.y, 24 * scale, 24 * scale};
             render_texture(src_rect, dst_rect);
         }
@@ -1416,7 +1416,7 @@ void GameState::render_grid(int scale, XYPos grid_offset)
             if (vented > 10000) i++;
             if (vented > 30000) i++;
             if (vented > 100000) i++;
-            SDL_Rect src_rect = {256 + f * 24, (touched == 1 )? 816 : 840 + (4 * 24 * i), 24, 24};
+            SDL_Rect src_rect = {256 + f * 24, ((touched == 1 )? 816 : 840) + (4 * 24 * i), 24, 24};
             SDL_Rect dst_rect = {(pos.x * 32  - ((touched == 2 ) ? 24 : 0)) * scale + grid_offset.x, (pos.y * 32 + 3 + int(rand % 3)) * scale + grid_offset.y, 24 * scale, 24 * scale};
             render_texture(src_rect, dst_rect);
         }
