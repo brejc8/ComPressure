@@ -819,7 +819,7 @@ XYPos CircuitElementSubCircuit::getimage_fg(void)
     if (level_index == -2)
         return XYPos(dir_flip.as_int() * 24, 0);
     if (level_index < 0)
-        return XYPos(dir_flip.as_int() * 24 + 192, 944);
+        return XYPos(dir_flip.as_int() * 24, 1144);
     assert(level);
     return level->getimage_fg(dir_flip);
 }
