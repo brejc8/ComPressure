@@ -3512,6 +3512,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 deletable_level_set = NULL;
                 set_level_set(edited_level_set);
                 set_level(new_index);
+                show_dialogue = true;
                 return;
             }
         }
