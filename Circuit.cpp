@@ -746,8 +746,8 @@ void CircuitElementSubCircuit::elaborate(LevelSet* level_set, std::set<unsigned>
     }
     else
     {
-        level_index = -2;
-        custom = true;
+        level_index = LEVEL_COUNT;
+        set_custom();
         level = NULL;
     }
 
