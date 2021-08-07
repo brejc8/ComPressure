@@ -4751,7 +4751,7 @@ void GameState::mouse_motion()
     }
     
     
-    if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level && (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)))
+    if (panel_state == PANEL_STATE_LEVEL_SELECT && editing_level && (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) && !(show_dialogue || show_dialogue_hint))
     {
         XYPos pixel_pos = ((mouse - panel_offset) / scale) - XYPos(8, 32 + 8);
         if (pixel_pos.inside(XYPos(24*8, 24*8)))
