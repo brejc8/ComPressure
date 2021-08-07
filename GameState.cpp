@@ -4784,6 +4784,14 @@ void GameState::mouse_motion()
     }
 }
 
+void replace_string_all(std::string& subject, const std::string search, const std::string replace)
+{
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+         subject.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+}
 
 bool GameState::events()
 {
@@ -5034,6 +5042,12 @@ bool GameState::events()
                                     break;
                                 std::string new_text(new_clip);
                                 SDL_free(new_clip);
+                                
+                                replace_string_all(new_text, ":PortN:", "\xf0\x9f\xa1\x85");
+                                replace_string_all(new_text, ":PortE:", "\xf0\x9f\xa1\x86");
+                                replace_string_all(new_text, ":PortS:", "\xf0\x9f\xa1\x87");
+                                replace_string_all(new_text, ":PortW:", "\xf0\x9f\xa1\x84");
+                                
                                 text_entry_string->insert(text_entry_offset, new_text);
                                 text_entry_offset += new_text.size();
                             }
