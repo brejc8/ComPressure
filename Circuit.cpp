@@ -1968,3 +1968,11 @@ void Clipboard::elaborate(LevelSet* level_set)
         elem.element->elaborate(level_set);
     }
 }
+
+void Clipboard::reindex_deleted_level(LevelSet* level_set, int level_index)
+{
+    for (ClipboardElement& elem: elements)
+    {
+        elem.element->reindex_deleted_level(level_set, level_index);
+    }
+}

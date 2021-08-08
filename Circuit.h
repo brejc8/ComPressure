@@ -662,5 +662,6 @@ public:
     void rotate(bool clockwise);
     void flip(bool vertically);
     void elaborate(LevelSet* level_set);
+    void reindex_deleted_level(LevelSet* level_set, int level_index);
 
 };

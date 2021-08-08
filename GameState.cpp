@@ -5619,6 +5619,7 @@ bool GameState::events()
                             }
                             else if (confirm_what == CONFIRM_DELETE_LEVEL)
                             {
+                                clipboard.reindex_deleted_level(edited_level_set, current_level_index);
                                 edited_level_set->delete_level(current_level_index);
                                 editing_level = false;
                                 set_level(current_level_index - 1);
