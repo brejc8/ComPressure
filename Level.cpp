@@ -202,12 +202,12 @@ SaveObject* Level::save(bool lite)
         omap->add_num("best_steam", best_steam);
         omap->add_num("last_steam", last_steam);
         if (best_design)
-            omap->add_item("best_design", best_design->save_all(true));
+            omap->add_item("best_design", best_design->save_all(LEVEL_COUNT, true));
 
         SaveObjectList* slist = new SaveObjectList;
         for (unsigned i = 0; i < 4; i++)
             if (saved_designs[i])
-                slist->add_item(saved_designs[i]->save_one(level_index));
+                slist->add_item(saved_designs[i]->save_all(LEVEL_COUNT, true));
             else
                 slist->add_item(new SaveObjectNull);
         omap->add_item("saved_designs", slist);
