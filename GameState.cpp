@@ -6067,10 +6067,13 @@ void GameState::deal_with_design_fetch()
         {
             SaveObjectMap* omap = design_from_server.resp->get_map();
             
+            
+            LevelSet* new_level_set = new LevelSet(omap->get_item("levels"), true);
             if (free_level_set_on_return)
                 delete level_set;
+
             deletable_level_set = NULL;
-            set_level_set(new LevelSet(omap->get_item("levels"), true));
+            set_level_set(new_level_set);
             free_level_set_on_return = true;
 
             set_current_circuit_read_only();
