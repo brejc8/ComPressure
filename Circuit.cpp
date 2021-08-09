@@ -602,7 +602,7 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap, bool rea
     {
         circuit = new Circuit(omap->get_item("circuit")->get_map());
         custom = true;
-        if (level_index == -2)
+        if ((level_index == -2) && omap->has_key("name"))
             name = omap->get_string("name");
 
         for (unsigned y = 0; y < 24; y++)
