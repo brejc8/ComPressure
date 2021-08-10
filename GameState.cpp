@@ -5885,15 +5885,23 @@ void GameState::check_clipboard()
     std::string new_value;
     std::string comp;
     bool has_image = false;
-    if (clip::has(clip::image_format()))
+    try 
     {
-        clip::image_spec spec;
-        if (clip::get_image_spec(spec))
+        if (clip::has(clip::image_format()))
         {
-            if (spec.width == 360 && spec.height == 360)
-                has_image = true;
+            clip::image_spec spec;
+            if (clip::get_image_spec(spec))
+            {
+                if (spec.width == 360 && spec.height == 360)
+                    has_image = true;
+            }
         }
     }
+    catch (const std::runtime_error& error)
+    {
+        std::cerr << error.what() << "\n";
+    }
+
 
     if (has_image)
     {
