@@ -189,6 +189,7 @@ GameState::GameState(const char* filename)
     }
     
     set_level_set(edited_level_set);
+    clip::set_error_handler(NULL);
 }
     
 SaveObject* GameState::save(bool lite)
@@ -5885,23 +5886,15 @@ void GameState::check_clipboard()
     std::string new_value;
     std::string comp;
     bool has_image = false;
-    try 
+    if (clip::has(clip::image_format()))
     {
-        if (clip::has(clip::image_format()))
+        clip::image_spec spec;
+        if (clip::get_image_spec(spec))
         {
-            clip::image_spec spec;
-            if (clip::get_image_spec(spec))
-            {
-                if (spec.width == 360 && spec.height == 360)
-                    has_image = true;
-            }
+            if (spec.width == 360 && spec.height == 360)
+                has_image = true;
         }
     }
-    catch (const std::runtime_error& error)
-    {
-        std::cerr << error.what() << "\n";
-    }
-
 
     if (has_image)
     {
