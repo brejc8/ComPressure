@@ -26,29 +26,30 @@ class Score
 {
 public:
     int64_t score = 0;
-    std::string save;
+    std::string c_save;
     Score(){}
     Score(const Score& other)
     {
         score = other.score;
-        save = other.save;
+        c_save = other.c_save;
     }
     ~Score()
     {
     }
     void update_design(SaveObject* sobj)
     {
-        save = sobj->to_string();
+        c_save = compress_string(sobj->to_string());
     }
 
-    void update_design(std::string& save_str)
+    void update_design(std::string st)
     {
-        save = save_str;
+        c_save = st;
     }
 
     SaveObject* get_design()
     {
-        return SaveObject::load(save);
+        std::string s = decompress_string(c_save);
+        return SaveObject::load(s);
     }
 };
     
@@ -73,7 +74,7 @@ public:
             uint64_t id = score.second;
             score_map->add_num("id", id);
             score_map->add_num("score", user_score[id].score);
-            score_map->add_string("design", user_score[id].save);
+            score_map->add_string("design", user_score[id].c_save);
             score_list->add_item(score_map);
         }
         return score_list;
