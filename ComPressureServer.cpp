@@ -65,7 +65,7 @@ public:
    
     }
     
-    SaveObject* save()
+    SaveObject* save(bool lite)
     {
         SaveObjectList* score_list = new SaveObjectList;
         for(auto const &score : sorted_scores)
@@ -74,7 +74,8 @@ public:
             uint64_t id = score.second;
             score_map->add_num("id", id);
             score_map->add_num("score", user_score[id].score);
-            score_map->add_string("design", user_score[id].c_save);
+            if (!lite)
+                score_map->add_string("design", user_score[id].c_save);
             score_list->add_item(score_map);
         }
         return score_list;
@@ -169,20 +170,11 @@ public:
     
 };
 
-class ChatMessage
-{
-public:
-    uint64_t steam_id;
-    std::string text;
-};
-
 class Player
 {
 public:
     std::string steam_username;
     int top_level = 0;
-//    bool priv;
-//    std::list<ChatMessage> messages;
 };
 
 class CustomLevel
@@ -224,13 +216,13 @@ public:
         delete sobj;
     }
 
-    SaveObject* save()
+    SaveObject* save(bool lite)
     {
         SaveObjectMap* omap = new SaveObjectMap;
         
-        omap->add_item("accuracy_scores", accuracy_scores.save());
-        omap->add_item("price_scores", price_scores.save());
-        omap->add_item("steam_scores", steam_scores.save());
+        omap->add_item("accuracy_scores", accuracy_scores.save(lite));
+        omap->add_item("price_scores", price_scores.save(lite));
+        omap->add_item("steam_scores", steam_scores.save(lite));
         
         omap->add_item("design", sobj->dup());
         omap->add_string("name", name);
@@ -382,7 +374,7 @@ public:
 
     }
 
-    SaveObject* save()
+    SaveObject* save(bool lite)
     {
         SaveObjectMap* omap = new SaveObjectMap;
         
@@ -413,7 +405,7 @@ public:
         SaveObjectList* level_list = new SaveObjectList;
         for (int i = 0; i < highest; i++)
         {
-            level_list->add_item(levels[i].save());
+            level_list->add_item(levels[i].save(lite));
         }
         omap->add_item("levels", level_list);
 
@@ -421,7 +413,7 @@ public:
         level_list = new SaveObjectList;
         for (int i = 0; i < highest; i++)
         {
-            level_list->add_item(levels_price[i].save());
+            level_list->add_item(levels_price[i].save(lite));
         }
         omap->add_item("levels_price", level_list);
 
@@ -429,14 +421,14 @@ public:
         level_list = new SaveObjectList;
         for (int i = 0; i < highest; i++)
         {
-            level_list->add_item(levels_steam[i].save());
+            level_list->add_item(levels_steam[i].save(lite));
         }
         omap->add_item("levels_steam", level_list);
 
         level_list = new SaveObjectList;
         for (CustomLevel &clevel :custom_levels)
         {
-            level_list->add_item(clevel.save());
+            level_list->add_item(clevel.save(lite));
         }
         omap->add_item("custom_levels", level_list);
 
@@ -1147,17 +1139,24 @@ int main(int argc, char *argv[])
         {
             old_time = new_time;
             std::ofstream outfile ("db.save");
-            SaveObject* savobj = db.save();
+            SaveObject* savobj = db.save(false);
             savobj->save(outfile);
-            delete savobj;
+            std::ofstream outfile_lite ("db.save.lite");
+            SaveObject* savobj_lite = db.save(true);
+            savobj_lite->save(outfile_lite);
+            delete savobj_lite;
         }
     }
     close(sockid);
     {
         std::ofstream outfile ("db.save");
-        SaveObject* savobj = db.save();
+        SaveObject* savobj = db.save(false);
         savobj->save(outfile);
         delete savobj;
+        std::ofstream outfile_lite ("db.save.lite");
+        SaveObject* savobj_lite = db.save(true);
+        savobj_lite->save(outfile_lite);
+        delete savobj_lite;
     }
     return 0;
 }
