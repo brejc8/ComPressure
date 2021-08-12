@@ -447,3 +447,5 @@ inline bool is_leading_utf8_byte(char c)
 {
     return (c & 0xC0) != 0x80;
 }
+
+uint64_t checksum(std::string s);

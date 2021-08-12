@@ -112,6 +112,7 @@ public:
     ServerResp server_levels_from_server;
     ServerResp scores_from_server;
     ServerResp design_from_server;
+    ServerResp paste_from_server;
 
     LevelSet* level_set_accuracy;
     LevelSet* level_set_price;
@@ -282,12 +283,14 @@ public:
     void fetch_from_server(SaveObject* send, ServerResp* resp);
     void save_to_server(bool sync = false);
     void score_submit(int level_index, bool sync = false);
+    void paste_submit(int level, uint64_t paste_id);
     void global_design_submit(int level_index);
     void score_fetch(int level);
     void score_fetch(std::string name);
     void server_levels_fetch();
     void design_fetch(uint64_t design_steam_id, int level_index);
     void design_fetch(uint64_t level_steam_id, std::string name);
+    void paste_fetch(uint64_t paste_id);
     void server_level_fetch(std::string name);
 
     ~GameState();
@@ -330,6 +333,7 @@ public:
     void check_clipboard();
     void deal_with_scores();
     void deal_with_server_levels_from_server();
+    void deal_with_paste_from_server();
     void deal_with_design_fetch();
 
     void set_steam_user(uint64_t id, const char* name)

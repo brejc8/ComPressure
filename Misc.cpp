@@ -43,3 +43,15 @@ XYPos DirFlip::trans_inv(XYPos pos, int size)
     }
     return pos;
 }
+
+uint64_t checksum(std::string s)
+{
+    uint64_t rep = 0;
+    for (char& c : s)
+    {
+        rep ^=  (rep & 1) << 62;
+        rep >>= 1;
+        rep ^= uint8_t(c);
+    }
+    return rep;
+}

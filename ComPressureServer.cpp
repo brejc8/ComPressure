@@ -257,6 +257,8 @@ public:
     std::vector<ScoreTable> levels_steam;
     std::list<CustomLevel> custom_levels;
 
+    std::map<uint64_t, std::string> paste_designs;
+
     void update_name(uint64_t steam_id, std::string& steam_username)
     {
         players[steam_id].steam_username = steam_username;
@@ -372,6 +374,17 @@ public:
             }
         }
 
+        if (omap->has_key("pastes"))
+        {
+            SaveObjectList* level_list = omap->get_item("pastes")->get_list();
+            for (unsigned i = 0; i < level_list->get_count(); i++)
+            {
+                SaveObjectMap* paste_map = level_list->get_item(i)->get_map();
+                uint64_t paste_id = paste_map->get_num("paste_id");
+                paste_designs[paste_id] = paste_map->get_string("design");
+            }
+        }
+
     }
 
     SaveObject* save(bool lite)
@@ -431,6 +444,16 @@ public:
             level_list->add_item(clevel.save(lite));
         }
         omap->add_item("custom_levels", level_list);
+
+        level_list = new SaveObjectList;
+        for(auto &paste_pair : paste_designs)
+        {
+            SaveObjectMap* paste_map = new SaveObjectMap;
+            paste_map->add_num("paste_id", paste_pair.first);
+            paste_map->add_string("design", paste_pair.second);
+            level_list->add_item(paste_map);
+        }
+        omap->add_item("pastes", level_list);
 
         return omap;
     }
@@ -871,6 +894,14 @@ public:
 
                         printf("global_design_submit: %s %lld\n", steam_username.c_str(), omap->get_num("steam_id"));
                     }
+                    else if (command == "paste_submit")
+                    {
+                        std::string steam_username = omap->get_string("steam_username");
+                        uint64_t paste_id = omap->get_num("paste_id");
+                        SaveObject* save_object = omap->get_item("levels");
+                        db.paste_designs[paste_id] = compress_string(omap->to_string());
+                        printf("paste_submit: %s %llu\n", steam_username.c_str(), paste_id);
+                    }
                     else if (command == "score_fetch")
                     {
                         std::string steam_username;
@@ -921,6 +952,21 @@ public:
                         outbuf.append((char*)&length, 4);
                         outbuf.append(comp);
                         delete design;
+                    }
+                    else if (command == "paste_fetch")
+                    {
+                        std::string steam_username;
+                        omap->get_string("steam_username", steam_username);
+                        uint64_t paste_id = omap->get_num("paste_id");
+                        printf("paste_fetch: %s %lld \n", steam_username.c_str(), paste_id);
+                        if (!db.paste_designs[paste_id].empty())
+                        {
+                            std::string dec = decompress_string(db.paste_designs[paste_id]);
+                            std::string comp = compress_string_zlib(dec);
+                            uint32_t length = comp.length();
+                            outbuf.append((char*)&length, 4);
+                            outbuf.append(comp);
+                        }
                     }
                     else if (command == "server_levels_fetch")
                     {
@@ -1141,6 +1187,7 @@ int main(int argc, char *argv[])
             std::ofstream outfile ("db.save");
             SaveObject* savobj = db.save(false);
             savobj->save(outfile);
+            delete savobj;
             std::ofstream outfile_lite ("db.save.lite");
             SaveObject* savobj_lite = db.save(true);
             savobj_lite->save(outfile_lite);
@@ -1158,6 +1205,7 @@ int main(int argc, char *argv[])
         savobj_lite->save(outfile_lite);
         delete savobj_lite;
     }
+    delete level_desc;
     return 0;
 }
 

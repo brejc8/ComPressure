@@ -381,6 +381,18 @@ void GameState::score_submit(int level, bool sync)
     post_to_server(omap, sync);
 }
 
+void GameState::paste_submit(int level, uint64_t paste_id)
+{
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "paste_submit");
+    omap->add_num("paste_id", paste_id);
+    omap->add_num("level_index", level);
+    omap->add_item("levels", edited_level_set->save_one(level));
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    post_to_server(omap, false);
+}
+
 void GameState::global_design_submit(int level)
 {
     SaveObjectMap* omap = new SaveObjectMap;
@@ -468,6 +480,18 @@ void GameState::design_fetch(uint64_t level_steam_id, int level_index)
     omap->add_num("level_steam_id", level_steam_id);
     omap->add_num("level_index", level_index);
     fetch_from_server(omap, &design_from_server);
+}
+
+void GameState::paste_fetch(uint64_t paste_id)
+{
+    if (paste_from_server.working)
+        return;
+    SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_string("command", "paste_fetch");
+    omap->add_num("steam_id", steam_id);
+    omap->add_string("steam_username", steam_username);
+    omap->add_num("paste_id", paste_id);
+    fetch_from_server(omap, &paste_from_server);
 }
 
 void GameState::design_fetch(uint64_t level_steam_id, std::string name)
@@ -1502,6 +1526,7 @@ void GameState::render(bool saving)
         check_clipboard();
     deal_with_scores();
     deal_with_server_levels_from_server();
+    deal_with_paste_from_server();
     current_circuit->render_prep();
 
     SDL_RenderClear(sdl_renderer);
@@ -4265,7 +4290,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                         reply += stream.str();
                         reply += "\n";
                     }
-                    else
+                    else if (clicks == 1)
                     {
                         std::string comp;
                         comp = compress_string_zstd(stream.str());
@@ -4290,8 +4315,37 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                         reply += conv.to_bytes(s32);
                         reply += "\n";
                     }
+                    else
+                    {
+                        uint64_t paste_id = checksum(stream.str());
+                        paste_submit(current_level_index, paste_id);
+                        
+                        SaveObjectMap* pmap = new SaveObjectMap;
+                        pmap->add_num("paste_id", paste_id);
+                        std::string comp;
+                        comp = compress_string_zstd(pmap->to_string());
+                        delete pmap;
+                        std::u32string s32;
 
-//                    SDL_SetClipboardText(reply.c_str());
+                        s32 += 0x1F4A8;                 // steam puff
+                        unsigned spaces = 2;
+                        for(char& c : comp)
+                        {
+                            if (spaces >= 80)
+                            {
+                                s32 += '\n';
+                                spaces = 0;
+                            }
+                            spaces++;
+                            s32 += uint32_t(0x2800 + (unsigned char)(c));
+
+                        } 
+                        s32 += 0x1F6D1;                 // stop sign
+
+                        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+                        reply += conv.to_bytes(s32);
+                        reply += "\n";
+                    }
                     clip::set_text(reply);
                 }
             }
@@ -5957,9 +6011,16 @@ void GameState::check_clipboard()
         }
         std::istringstream decomp_stream(decomp);
         omap = SaveObject::load(decomp_stream)->get_map();
-        clipboard_level_index = omap->get_num("level_index");
-        LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
-        clipboard_level_set = new_set;
+        if (omap->has_key("paste_id"))
+        {
+            paste_fetch(omap->get_num("paste_id"));
+        }
+        else
+        {
+            clipboard_level_index = omap->get_num("level_index");
+            LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
+            clipboard_level_set = new_set;
+        }
     }
     catch (const std::runtime_error& error)
     {
@@ -6057,6 +6118,31 @@ void GameState::deal_with_server_levels_from_server()
             delete server_levels_from_server.resp;
         server_levels_from_server.resp = NULL;
         server_levels_from_server.done = false;
+    }
+}
+
+void GameState::deal_with_paste_from_server()
+{
+    if (paste_from_server.done && !paste_from_server.error)
+    {
+        try 
+        {
+            SaveObjectMap* omap = paste_from_server.resp->get_map();
+            if (!clipboard_level_set)
+            {
+                clipboard_level_index = omap->get_num("level_index");
+                LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
+                clipboard_level_set = new_set;
+            }
+        }
+        catch (const std::runtime_error& error)
+        {
+            std::cerr << error.what() << "\n";
+        }
+        if (paste_from_server.resp)
+            delete paste_from_server.resp;
+        paste_from_server.resp = NULL;
+        paste_from_server.done = false;
     }
 }
 
