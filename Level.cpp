@@ -157,7 +157,7 @@ Level::Level(int level_index_, SaveObject* sobj, unsigned version, bool inspecte
 {
     pin_order[0] = -1; pin_order[1] = -1; pin_order[2] = -1; pin_order[3] = -1;
     SaveObjectMap* omap = sobj->get_map();
-    circuit = new Circuit(omap->get_item("circuit")->get_map());
+    circuit = new Circuit(omap->get_item("circuit")->get_map(), version);
     if (omap->has_key("best_design"))
         best_design = new LevelSet(omap->get_item("best_design"), version, true);
     if (omap->has_key("saved_designs"))
@@ -725,12 +725,14 @@ LevelSet::LevelSet(SaveObject* sobj, unsigned version, bool inspect)
 {
     read_only = inspect;
     SaveObjectList* slist = sobj->get_list();
+    int spos = 0;
     for (int i = 0; i < LEVEL_COUNT; i++)
     {
         SaveObject *sobj = NULL;
-        if (i < slist->get_count())
+        if (is_version_level(version, i) && spos < slist->get_count())
         {
-            sobj = slist->get_item(i);
+            sobj = slist->get_item(spos);
+            spos++;
             if (sobj->is_null())
                 sobj = NULL;
         }
@@ -739,9 +741,10 @@ LevelSet::LevelSet(SaveObject* sobj, unsigned version, bool inspect)
         else
             levels.push_back(new Level(i, inspect));
     }
-    for (int i = LEVEL_COUNT; i < slist->get_count(); i++)
+    for (int i = LEVEL_COUNT; spos < slist->get_count(); i++)
     {
-        SaveObject *sobj = slist->get_item(i);
+        SaveObject *sobj = slist->get_item(spos);
+        spos++;
         if (!sobj->is_null())
             levels.push_back(new Level(i, sobj, version, inspect));
         else

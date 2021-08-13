@@ -338,7 +338,7 @@ class CircuitElement
 public:
     SaveObject* save(void);
     virtual void save(SaveObjectMap*) = 0;
-    static CircuitElement* load(SaveObject*, bool read_only = false);
+    static CircuitElement* load(SaveObject*, unsigned version, bool read_only = false);
     virtual CircuitElement* copy() = 0;
     virtual ~CircuitElement(){}
 
@@ -499,7 +499,7 @@ public:
     WrappedTexture* texture = NULL;
 
     CircuitElementSubCircuit(DirFlip dir_flip_, int level_index_, LevelSet* level_set, bool read_only_ = false);
-    CircuitElementSubCircuit(SaveObjectMap*, bool read_only_ = false);
+    CircuitElementSubCircuit(SaveObjectMap*, unsigned version, bool read_only_ = false);
     CircuitElementSubCircuit(CircuitElementSubCircuit& other);
     ~CircuitElementSubCircuit();
 
@@ -586,7 +586,7 @@ public:
     Pressure last_vented = 0;
     Pressure last_moved = 0;
 
-    Circuit(SaveObjectMap* omap);
+    Circuit(SaveObjectMap* omap, unsigned version);
     Circuit(Circuit& other);
     Circuit();
     ~Circuit();

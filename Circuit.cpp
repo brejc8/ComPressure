@@ -23,7 +23,7 @@ SaveObject* CircuitElement::save()
     return omap;
 }
 
-CircuitElement* CircuitElement::load(SaveObject* obj, bool read_only)
+CircuitElement* CircuitElement::load(SaveObject* obj, unsigned version, bool read_only)
 {
     if (obj->is_num())
     {
@@ -43,7 +43,7 @@ CircuitElement* CircuitElement::load(SaveObject* obj, bool read_only)
         case CIRCUIT_ELEMENT_TYPE_SOURCE:
             return new CircuitElementSource(omap);
         case CIRCUIT_ELEMENT_TYPE_SUBCIRCUIT:
-            return new CircuitElementSubCircuit(omap, read_only);
+            return new CircuitElementSubCircuit(omap, version, read_only);
         case CIRCUIT_ELEMENT_TYPE_EMPTY:
             return new CircuitElementEmpty(omap);
         default:
@@ -589,18 +589,18 @@ CircuitElementSubCircuit::CircuitElementSubCircuit(DirFlip dir_flip_, int level_
     elaborate(level_set);
 }
 
-CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap, bool read_only_):
+CircuitElementSubCircuit::CircuitElementSubCircuit(SaveObjectMap* omap, unsigned version, bool read_only_):
     read_only(read_only_)
 {
     dir_flip = Direction(omap->get_num("direction"));
-    level_index = Direction(omap->get_num("level_index"));
+    level_index = version_reindex_level(version, Direction(omap->get_num("level_index")));
     level = NULL;
     circuit = NULL;
     if (omap->has_key("read_only"))
         read_only = true;
     if (omap->has_key("circuit"))
     {
-        circuit = new Circuit(omap->get_item("circuit")->get_map());
+        circuit = new Circuit(omap->get_item("circuit")->get_map(), version);
         custom = true;
         if ((level_index == -2) && omap->has_key("name"))
             name = omap->get_string("name");
@@ -992,7 +992,7 @@ void Sign::flip(bool vertically)
 }
 
 
-Circuit::Circuit(SaveObjectMap* omap)
+Circuit::Circuit(SaveObjectMap* omap, unsigned version)
 {
     SaveObjectList* slist_y = omap->get_item("elements")->get_list();
     XYPos pos;
@@ -1002,7 +1002,7 @@ Circuit::Circuit(SaveObjectMap* omap)
         for (pos.x = 0; pos.x < 9; pos.x++)
         {
             if (pos.x < slist_x->get_count())
-                elements[pos.y][pos.x] = CircuitElement::load(slist_x->get_item(pos.x));
+                elements[pos.y][pos.x] = CircuitElement::load(slist_x->get_item(pos.x), version);
             else
                 elements[pos.y][pos.x] = new CircuitElementEmpty();
         }

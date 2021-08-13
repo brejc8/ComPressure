@@ -315,6 +315,11 @@ public:
     {
         SaveObjectMap* omap = sobj->get_map();
         SaveObjectList* player_list = omap->get_item("players")->get_list();
+
+        unsigned load_game_version = 0;
+        if (omap->has_key("version"))
+            load_game_version = omap->get_num("version");
+
         for (unsigned i = 0; i < player_list->get_count(); i++)
         {
             SaveObjectMap* omap = player_list->get_item(i)->get_map();
@@ -335,47 +340,43 @@ public:
         }
 
         SaveObjectList* level_list = omap->get_item("levels")->get_list();
-        if (level_list->get_count() > levels.size())
-            levels.resize(level_list->get_count());
+        levels.resize(LEVEL_COUNT);
         for (unsigned i = 0; i < level_list->get_count(); i++)
         {
             SaveObject* sobj = level_list->get_item(i);
-            levels[i].load(sobj);
+            levels[version_reindex_level(load_game_version, i)].load(sobj);
         }
 
         if (omap->has_key("levels_price"))
         {
             SaveObjectList* level_list = omap->get_item("levels_price")->get_list();
-            if (level_list->get_count() > levels_price.size())
-                levels_price.resize(level_list->get_count());
+            levels_price.resize(LEVEL_COUNT);
             for (unsigned i = 0; i < level_list->get_count(); i++)
             {
                 SaveObject* sobj = level_list->get_item(i);
-                levels_price[i].load(sobj);
+                levels_price[version_reindex_level(load_game_version, i)].load(sobj);
             }
         }
 
         if (omap->has_key("levels_steam"))
         {
             SaveObjectList* level_list = omap->get_item("levels_steam")->get_list();
-            if (level_list->get_count() > levels_steam.size())
-                levels_steam.resize(level_list->get_count());
+            levels_steam.resize(LEVEL_COUNT);
             for (unsigned i = 0; i < level_list->get_count(); i++)
             {
                 SaveObject* sobj = level_list->get_item(i);
-                levels_steam[i].load(sobj);
+                levels_steam[version_reindex_level(load_game_version, i)].load(sobj);
             }
         }
 
         if (omap->has_key("levels_steam"))
         {
             SaveObjectList* level_list = omap->get_item("levels_steam")->get_list();
-            if (level_list->get_count() > levels_steam.size())
-                levels_steam.resize(level_list->get_count());
+            levels_steam.resize(LEVEL_COUNT);
             for (unsigned i = 0; i < level_list->get_count(); i++)
             {
                 SaveObject* sobj = level_list->get_item(i);
-                levels_steam[i].load(sobj);
+                levels_steam[version_reindex_level(load_game_version, i)].load(sobj);
             }
         }
 
@@ -469,7 +470,7 @@ public:
             level_list->add_item(paste_map);
         }
         omap->add_item("pastes", level_list);
-
+        omap->add_num("version", COMPRESSURE_VERSION);
         return omap;
     }
 

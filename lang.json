@@ -144,6 +144,9 @@
                 {"who":"charles", "text":"What!?! That would be low pressure steam! We do not work with low pressure steam! I did not make my fortune by supplying people with low pressure steam!\n\nNever mind all that low pressure nonsense. When West control is High Pressure, connect the North generator, otherwise connect the South generator."}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                 {"who":"nicola", "text":"Lady Chavvington's notes talk about a steam connection between the laboratory and Lady Easley's residence that was used for communication."},
                 {"who":"charles", "text":"Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these walls."},
                 {"who":"nicola", "text":"I think we can still establish a connection without delivering any steam out. According to these notes..."},
@@ -212,10 +215,13 @@
                 {"who":"nicola", "text":"Everyone assumed she died..."},
                 {"who":"charles", "text":"Hmm... Yes... On reflection, that would explain the flowers and cards expressing sympathy for my loss. I was touched by people's concern for the loss of my High Pressure Steam.\n\nNevertheless. The sooner you complete the steam calculation machine, the sooner we can get to the bottom of this. Continue the research post haste."},
                 {"who":"ada", "text":"June 27th\nTogether with Lord Moorhouse such progress has been made in our research into steam computation. Our previous designs suffered from inaccuracies. Only when the valves were perfectly balanced and produced an output of 50, was the result perfect. With this I was struck with an idea.\n\nI could sense how open any valve is, by placing a second valve which vented the steam and adjusting its openness. Only when the two valves are equally open, will the pressure between them be precisely 50. All I had to do is to adjust the value until this was the case."},
-                {"who":"ada", "text":"Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.\n\nLord Moorhouse is most shy yet smart as a whip, alas often he becomes too afraid to share his innovations."}
+                {"who":"ada", "text":"Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me."}
             ],
             [
-                {"who":"nicola", "text":"Well it works. We can now sense how open a valve is, but I don't see how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse."},
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+            ],
+            [
+                {"who":"nicola", "text":"According to Lady Chavvington, combining these two sensor designs into one creates a highly accurate buffer. I guess that’s useful, but I don’t how how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse."},
                 {"who":"nicola", "text":"Lord Moorhouse. Thank you for allowing us to call upon you. In her absence, we are attempting to continue the steam computation work of Lady Chavvington. Only you know the construction of the pressure adding unit and we beg you share it with us."},
                 {"who":"george", "text":"I do agree. Having thought on this, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of addition in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand."},
                 {"who":"nicola", "text":"Lady Chavvington is alive and well, staying with her sister."},
@@ -412,6 +418,9 @@
                 {"who":"nicola", "text":"When the input is high, we connect the North. We know how to do that from the \"Normally Open\" design. And when the input is low, we connect the South. That's our \"Normally Closed\" design."}
             ],
             [
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                 {"who":"nicola", "text":"Well, let's start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. To connect to atmosphere, we simply leave the pipe end open.\n\nAs Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio."}
             ],
             [
@@ -434,6 +443,9 @@
             ],
             [
                 {"who":"nicola", "text":"If we pass the output through our encryption component, we can determine what the input must have been.\n\nWhen the two inputs on the comparator are equal, the output is neither pressurised, nor vented. If we get too much wobble, we should go back to our comparator design and make it less strong."}
+            ],
+            [
+                {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
             ],
             [
                 {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
@@ -664,6 +676,9 @@
                 {"who":"charles", "text":"什么！？！ 那就是低压蒸汽了， 我们可不用低压蒸汽！ 我可不是靠给人们提供低压蒸汽挣钱的！\n\n总之别管那些没用的低压蒸汽。 当西控制室给高压蒸汽时，接北蒸汽厂，否则接南蒸汽厂。"}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                 {"who":"nicola", "text":"Chavvington女士的笔记提到， 实验室和Easley女士的住所之间连接有用来通讯的管道。"},
                 {"who":"charles", "text":"是的， 不过我已经把它拆了。 太多高压蒸汽不知道导哪儿去了， 所以现在有了新规定， 只有按量供应给付费客户的蒸汽才允许离开我们工厂， 其他所有高压蒸汽都不能通过这些墙导出去。"},
                 {"who":"nicola", "text":"但根据这些笔记， 我想还是有办法在不导出蒸汽的情况下建立一个连接的……"},
@@ -733,6 +748,9 @@
                 {"who":"charles", "text":"嗯……好吧……我想了想， 这可能就解释了为什么会有人给我送花和卡片， 对我的损失表示同情。 我真的因人们对我失去高压蒸汽的担心感到很感动……\n\n不过这些都是无关的。 你越早完成蒸汽计算器， 我们就能越早弄清真相。 赶紧继续研究。"},
                 {"who":"ada", "text":"6月27日\n我和Moorhouse先生在蒸汽计算方面取得了进展。 我们以前的设计不够精确， 只有当阀门完全平衡产生50 PSI的输出时， 结果才是精确的。 对于这一点我突然想到了一个主意。\n\n通过放置另一个阀门并调整其开度， 我可以探测任何阀门的开度。 因为只有当两个阀门开度相等时， 它们之间的压强才会精确到50 PSI。 我所要做的就是不断调整数值， 直到出现这种情况。"},
                 {"who":"ada", "text":"利用这一方法， Moorhouse先生设计出了一个蒸汽压强加法器。 我十分希望他能向我透露他是怎么制作的。\n\nMoorhouse先生非常内向， 也十分聪明。 唉， 他总是害怕分享他的创新成果。"}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"好的， 它起作用了。 我们现在可以探测阀门的开度， 但还不清楚这对蒸汽计算有什么帮助。 我想我们得问问Moorhouse先生。"},
@@ -932,6 +950,9 @@
                 {"who":"nicola", "text":"当输入高压时， 连接北部， 这就是“常开开关”的设计。 当输入低压时， 连接南方， 这就是“常闭开关”的设计。"}
             ],
             [
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                 {"who":"nicola", "text":"让我们从基础部分开始。 当输入较高时， 将输出连接到蒸汽源； 当输入较低时， 将输出连接到大气。 只需保持管道末端打开就能连接到大气。\n\n正如Chavvington女士所指出的， 阀门是给出的是模拟信号。 当数值在0到100之间时， 阀门会部分打开， 并可以生成准确的比率。"}
             ],
             [
@@ -954,6 +975,9 @@
             ],
             [
                 {"who":"nicola", "text":"令输出通过加密器， 得出的结果应该和输入一样。\n\n当比较器上的两个输入相等时， 输出既不会导气， 也不会排气。 如果输出总是振荡， 应当回去调整比较器设计， 使它产生的输出不过于强大。"}
+            ],
+            [
+                {"who":"nicola", "text":"可以使用与解密器一样的设计。 不断调整底部阀门的开度， 直到它们之间的压强正好为50。 鉴别器正好能实现这一点。"}
             ],
             [
                 {"who":"nicola", "text":"可以使用与解密器一样的设计。 不断调整底部阀门的开度， 直到它们之间的压强正好为50。 鉴别器正好能实现这一点。"}
@@ -1182,6 +1206,9 @@
                 {"who":"charles", "text":"什麼！？！ 那就是低壓蒸汽了， 我們可不用低壓蒸汽！ 我可不是靠給人們提供低壓蒸汽賺錢的！\n\n總之別管那些沒用的低壓蒸汽。 當西控制室給高壓蒸汽時，接北蒸汽廠，否則接南蒸汽廠。"}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                 {"who":"nicola", "text":"Chavvington女士的筆記提到， 實驗室和Easley女士的住所之間有通訊管道連接。"},
                 {"who":"charles", "text":"是的， 不過我已經把它拆了。 太多高壓蒸汽不知道導哪裡去了， 所以現在有了新規定， 只有供應給按量付費客戶的蒸汽才允許離開我們工廠， 其他所有高壓蒸汽都不能通過這些牆導出去。"},
                 {"who":"nicola", "text":"但根據這些筆記， 我想還是有辦法在不導出蒸汽的情況下建立一個連接的……"},
@@ -1251,6 +1278,9 @@
                 {"who":"charles", "text":"嗯……好吧……我想了想， 這就解釋了為什麼會有人送我花和卡片， 對我表示同情。 我本來很感動人們對我失去高壓蒸汽感到擔心……\n\n不過這些都無關啦。 你越早完成蒸汽計算器， 我們就能越早弄清真相。 趕緊繼續研究。"},
                 {"who":"ada", "text":"6月27日\n我和Moorhouse先生在蒸汽計算方面取得了進展。 我們以前的設計不夠精確， 只有當閥門完全平衡產生 50 PSI 的輸出時， 結果才是精確的。 對於這一點我突然想到了一個主意。\n\n通過放置另一個閥門並調整其開度， 我可以探測任何閥門的開度。 因為只有當兩個閥門開度相等時， 它們之間的壓強才會精確到 50 PSI。 我所要做的就是不斷調整數值， 直到這個情況出現。"},
                 {"who":"ada", "text":"利用這個方法， Moorhouse先生設計出了一個蒸汽壓強加法器。 我十分希望他能向我透露他是怎麼製作的。\n\nMoorhouse先生非常內向， 也十分聰明。 唉， 他總是害怕分享他的創新成果。"}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"好的， 它起作用了。 我們現在可以探測閥門的開度， 但還不清楚這對蒸汽計算有什麼幫助。 我想我們得問問Moorhouse先生。"},
@@ -1450,6 +1480,9 @@
                 {"who":"nicola", "text":"當輸入高壓時， 連接北端， 這就是「常開開關」的設計。 當輸入低壓時， 連接南端， 這就是「常閉開關」的設計。"}
             ],
             [
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                 {"who":"nicola", "text":"讓我們從基礎部分開始。 當輸入是高壓時， 將輸出連接到蒸汽源； 當輸入是低壓時， 將輸出連接到大氣。 只需保持管道末端打開就能連接到大氣。\n\n正如Chavvington女士所指出的， 閥門是類比的。 當數值在0到100之間時， 閥門會依照比例打開部分。"}
             ],
             [
@@ -1472,6 +1505,9 @@
             ],
             [
                 {"who":"nicola", "text":"令輸出通過加密器， 得出的結果應該和輸入一樣。\n\n當比較器上的兩個輸入相等時， 輸出既不會導氣， 也不會排氣。 如果輸出總是振盪， 應當回去調整比較器設計， 使它產生的輸出不過於強大。"}
+            ],
+            [
+                {"who":"nicola", "text":"可以使用與解密器一樣的設計。 不斷調整底部閥門的開度， 直到它們之間的壓強正好為50。 鑑別器正好能實現這一點。"}
             ],
             [
                 {"who":"nicola", "text":"可以使用與解密器一樣的設計。 不斷調整底部閥門的開度， 直到它們之間的壓強正好為50。 鑑別器正好能實現這一點。"}
@@ -1699,6 +1735,9 @@
                 {"who":"charles", "text":"What!?! That would be low pressure steam! We do not work with low pressure steam! I did not make my fortune by supplying people with low pressure steam!\n\nNever mind all that low pressure nonsense. When West control is High Pressure, connect the North generator, otherwise connect the South generator."}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                 {"who":"nicola", "text":"Lady Chavvington's notes talk about a steam connection between the laboratory and Lady Easley's residence that was used for communication."},
                 {"who":"charles", "text":"Yes, I had it removed. New procedures. Too much of our High Pressure Steam was going missing. The only steam permitted to leave our facility is metered and provided to paying customers. None of my High Pressure Steam may leave these walls."},
                 {"who":"nicola", "text":"I think we can still establish a connection without delivering any steam out. According to these notes..."},
@@ -1768,6 +1807,9 @@
                 {"who":"charles", "text":"Hmm... Yes... On reflection, that would explain the flowers and cards expressing sympathy for my loss. I was touched by people's concern for the loss of my High Pressure Steam.\n\nNevertheless. The sooner you complete the steam calculation machine, the sooner we can get to the bottom of this. Continue the research post haste."},
                 {"who":"ada", "text":"June 27th\nTogether with Lord Moorhouse such progress has been made in our research into steam computation. Our previous designs suffered from inaccuracies. Only when the valves were perfectly balanced and produced an output of 50, was the result perfect. With this I was struck with an idea.\n\nI could sense how open any valve is, by placing a second valve which vented the steam and adjusting its openness. Only when the two valves are equally open, will the pressure between them be precisely 50. All I had to do is to adjust the value until this was the case."},
                 {"who":"ada", "text":"Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.\n\nLord Moorhouse is most shy yet smart as a whip, alas often he becomes too afraid to share his innovations."}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"Well it works. We can now sense how open a valve is, but I don't see how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse."},
@@ -1967,6 +2009,9 @@
                 {"who":"nicola", "text":"When the input is high, we connect the North. We know how to do that from the \"Normally Open\" design. And when the input is low, we connect the South. That's our \"Normally Closed\" design."}
             ],
             [
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                 {"who":"nicola", "text":"Well, let's start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. To connect to atmosphere, we simply leave the pipe end open.\n\nAs Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio."}
             ],
             [
@@ -1989,6 +2034,9 @@
             ],
             [
                 {"who":"nicola", "text":"If we pass the output through our encryption component, we can determine what the input must have been.\n\nWhen the two inputs on the comparator are equal, the output is neither pressurised, nor vented. If we get too much wobble, we should go back to our comparator design and make it less strong."}
+            ],
+            [
+                {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
             ],
             [
                 {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
@@ -2217,6 +2265,9 @@
                 {"who": "charles", "text": "Was!?! Das wäre Niederdruckdampf! Wir arbeiten nicht mit Niederdruckdampf! Ich habe mein Vermögen nicht damit gemacht, Leute mit Niederdruckdampf zu versorgen!\n\nVergessen Sie diesen ganzen Niederdruck-Quatsch. Wenn die West-Steuerung auf Hochdruck steht, schließen Sie den Nord-Generator an, ansonsten den Süd-Generator."}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                 {"who": "nicola", "text": "Lady Chavvingtons Notizen sprechen von einer Dampfverbindung zwischen dem Labor und Lady Easleys Residenz, die zur Kommunikation genutzt wurde."},
                 {"who": "charles", "text": "Ja, ich habe es entfernen lassen. Neues Vorgehen. Zu viel von unserem Hochdruckdampf ging verloren. Der einzige Dampf, der unsere Anlage verlassen darf, wird dosiert und an zahlende Kunden geliefert. Keiner meiner Hochdruckdämpfe darf diesen Raum verlassen."},
                 {"who": "nicola", "text": "Ich denke, wir können noch eine Verbindung herstellen, ohne Dampf abzulassen. Laut diesen Notizen..."},
@@ -2286,6 +2337,9 @@
                 {"who": "charles", "text": "Hmm... Ja... Wenn ich darüber nachdenke, würde das die Blumen und Karten erklären, die mein Mitgefühl für meinen Verlust ausdrücken. Ich war gerührt von der Sorge der Leute um den Verlust meines Hochdruckdampfes. Je eher Sie die Dampfberechnungsmaschine fertigstellen, desto eher können wir der Sache auf den Grund gehen. Setzen Sie die Nachforschungen zügig fort."},
                 {"who": "ada", "text": "27. Juni\nZusammen mit Lord Moorhouse wurden solche Fortschritte in unserer Forschung zur Dampfberechnung gemacht. Unsere früheren Konstruktionen litten unter Ungenauigkeiten. Nur wenn die Ventile perfekt ausbalanciert waren und eine Leistung von 50 erzeugten, war das Ergebnis perfekt. Dabei kam mir eine Idee.\n\nIch konnte spüren, wie offen ein beliebiges Ventil ist, indem ich ein zweites Ventil, das den Dampf ablässt, anbrachte und dessen Offenheit einstellte. Nur wenn beide Ventile gleich offen sind, ist der Druck zwischen ihnen genau 50. Ich musste nur den Wert so lange einstellen, bis dies der Fall war."},
                 {"who": "ada", "text": "Damit konnte Lord Moorhouse ein dampfdruckbeaufschlagendes Bauteil herstellen, das er mir hoffentlich verraten wird.\n\nLord Moorhouse ist sehr schüchtern, aber sehr schlau, leider hat er oft zu viel Angst, seine Innovationen zu teilen."}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who": "nicola", "text": "Nun, es funktioniert. Wir können jetzt spüren, wie offen ein Ventil ist, aber ich sehe nicht, wie uns das der Dampfberechnung näher bringt. Ich nehme an, wir müssen Lord Moorhouse fragen."},
@@ -2485,6 +2539,9 @@
                 {"who": "nicola", "text": "Wenn der Eingang hoch ist, verbinden wir den Norden. Wie das geht, wissen wir von der Konstruktion \"Normalerweise offen\". Und wenn der Eingang niedrig ist, verbinden wir den Süden. Das ist unser \"Normalerweise geschlossen\"-Design."}
             ],
             [
+                {"who": "nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                 {"who": "nicola", "text": "Nun, beginnen wir mit den Grundlagen. Wenn der Eingang hoch ist, werden wir den Ausgang mit einer Dampfquelle verbinden. Wenn er niedrig ist, werden wir eine Verbindung zur Atmosphäre herstellen. Um eine Verbindung zur Atmosphäre herzustellen, lassen wir das Rohrende einfach offen. Wie Lady Chavvington bemerkte, sind die Ventile analog und es scheint, wenn die Werte zwischen 0 und 100 liegen, werden die Ventile teilweise geöffnet und stellen das exakte Verhältnis wieder her."}
             ],
             [
@@ -2507,6 +2564,9 @@
             ],
             [
                 {"who": "nicola", "text": "Wenn wir den Ausgang durch unsere Verschlüsselungskomponente leiten, können wir feststellen, wie der Eingang gewesen sein muss.\n\nWenn die beiden Eingänge am Komparator gleich sind, wird der Ausgang weder unter Druck gesetzt, noch entlüftet. Wenn wir zu viel Wobble erhalten, sollten wir zu unserem Komparatorentwurf zurückgehen und ihn weniger stark machen."}
+            ],
+            [
+                {"who": "nicola", "text": "Wir können denselben Trick wie bei unserem Entschlüsselungsentwurf anwenden. Wir erhöhen oder verringern den Betrag, den wir das Bodenventil öffnen, bis der Druck zwischen ihnen genau 50 beträgt. Wir haben einen Amp50, der dies tut."}
             ],
             [
                 {"who": "nicola", "text": "Wir können denselben Trick wie bei unserem Entschlüsselungsentwurf anwenden. Wir erhöhen oder verringern den Betrag, den wir das Bodenventil öffnen, bis der Druck zwischen ihnen genau 50 beträgt. Wir haben einen Amp50, der dies tut."}
@@ -2736,6 +2796,9 @@
                 {"who": "charles", "text": "何だって!?! それだと「低圧蒸気」が生成されるじゃろう！\nワシらは「低圧蒸気」で仕事をしているわけではないぞ！\nワシは人々に「低圧蒸気」を提供して財を成した覚えはこれっぽっちも無い！\n\n「低圧蒸気」のことは気にしなくていいぞ。\n西側が「高圧」の場合は 「北」の蒸気発生装置を接続し - そうでなければ「南」の蒸気発生装置を接続するのじゃ。"}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                 {"who": "nicola", "text": "チャヴィントン夫人のノートには、\nラボとイーズリー夫人のご住居との間に\n「連絡用の蒸気接続機関」があったことが書かれていますね。"},
                 {"who": "charles", "text": "今は撤去して、新しいものを採用しておる。\nあまりにも多くの高圧蒸気がかつて損なわれてきた。\nワシたちの施設から排出される蒸気は、\nしっかりその使用量を計量し、代金を払ってくれる顧客にのみ提供されるべきじゃ。\n\nワシの「高圧蒸気」はこの壁から出してはイカンぞ。"},
                 {"who": "nicola", "text": "蒸気を出さずとも、まだ蒸気接続機関を使用できそうですよ。\nこの日記によれば..."},
@@ -2805,6 +2868,9 @@
                 {"who": "charles", "text": "ふむ....そうじゃな...。\nよくよく振り返ってみると、\nワシの高圧蒸気機関が失われたことを悼む花束やカードが送られたんじゃった。\n高圧蒸気機関が失われたことを心配してくれた市民の方々にはワシは心を打たれた。\n\nそれでも、早く新しい蒸気コンピュータを完成させることができれば、\nすぐにでも真相を暴くことができるじゃろうて。さあ、急いで研究を続けるのじゃ。"},
                 {"who": "ada", "text": "『6月27日 \nムーアハウス卿と共に行っていた、蒸気計算の研究に大きな進展があった。\n以前のデザインは、不正確な要素で多かった。\nバルブのバランスが均一、且つ出力が「50」の時しか完璧な結果にならなかったのだ。\n\nこのことから、私は思いついた。蒸気を排出するもう一つのバルブを設置し、\nその開度を調整することで、当該バルブの開度を把握できるということを。\n2つのバルブが同程度開いている時のみ、バルブ間の圧力は正確に「50」になる。\nあとは、そうなるように入力値を調整すればよいはずだ。"},
                 {"who": "ada", "text": "この発見によって、ムーアハウス卿は「蒸気圧を加える部品」を作ることができた。\n\nムーアハウス卿はとてもシャイな反面、頭が切れるお方ではあるが、\n自ら思いついた革新的な技術の共有を\nひどく恐れる傾向にあることは大変残念だ。』"}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who": "nicola", "text": "うまくいきましたね。\nこれで、バルブの開度が正確に把握できるようにはなりましたが、\nこれでどうやって蒸気コンピュータを作ればいいかよく分かりませんね。\n\nムーアハウス卿に聞いてみましょうか。"},
@@ -3004,6 +3070,9 @@
                 {"who": "nicola", "text": "入力値が高い場合、北側を接続します。\nその方法は、「常時 開」のデザインで既に理解していますよね。\n\nそして、 逆に入力値が低い場合は、南側を接続します。\nこれが「常時 閉」のデザインです。"}
             ],
             [
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                 {"who": "nicola", "text": "さて、まずは基本的なことから始めましょう。\n「入力値が大きい」ときは、出力を蒸気源に接続します。\n「入力値が小さい」ときは、大き気へと接続します。\n大気に接続する際、単にパイプの端を開放したままにしておきます。\n\nチャヴィントン夫人が指摘したように、バルブは「アナログ式」で、\n値が0から100の間にあるときは、部分的に開き、正確な比率を再現するようです。"}
             ],
             [
@@ -3026,6 +3095,9 @@
             ],
             [
                 {"who": "nicola", "text": "出力を「暗号化」コンポーネントに通すと、\n入力が何であったかを判断することができます。\n\n「比較器」の2つの入力が等しい場合、出力は「加圧」や「排気」を実行しません。\n\n数値の揺れが大きすぎる場合は、\n「比較器」のデザインに戻り、その強度を下げる必要があるでしょう。"}
+            ],
+            [
+                {"who": "nicola", "text": "「復号化」デザインで使用した手法が有効でしょう。\n両バルブ間の圧力がちょうど「50」になるまで、下バルブの開度を増減させましょう。\n\nこの動作を行う「Amp50」デザインを我々は持っています。"}
             ],
             [
                 {"who": "nicola", "text": "「復号化」デザインで使用した手法が有効でしょう。\n両バルブ間の圧力がちょうど「50」になるまで、下バルブの開度を増減させましょう。\n\nこの動作を行う「Amp50」デザインを我々は持っています。"}
@@ -3255,6 +3327,9 @@
                  {"who":"charles", "text":"Quoi !?! Ce serait de la Vapeur à Basse Pression ! Nous ne travaillons pas avec de la Vapeur à Basse pression ! Je n'ai pas fait fortune en fournissant aux gens de la Vapeur à Basse Pression !\n\nPeu importent tout ces absurdités de basse pression. Lorsque le contrôle Ouest est Haute Pression, connectez le générateur Nord, sinon connectez le générateur Sud."}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                  {"who":"nicola", "text":"Les notes de Lady Chavvington parlent d'une connexion vapeur entre le laboratoire et la résidence de Lady Easley qui a été utilisée pour la communication."},
                  {"who":"charles", "text":"Oui, je l'ai faite supprimer. Nouvelles procédures. Une trop grande partie de notre vapeur haute pression disparaissait. La seule vapeur autorisée à quitter notre installation est mesurée et fournie aux clients payants. Ma Vapeur à Haute Pression ne doit pas quitter ces murs."},
                  {"who":"nicola", "text":"Je pense que nous pouvons toujours établir une connexion sans fournir de vapeur. D'après ces notes..."},
@@ -3325,6 +3400,9 @@
                  {"who":"ada", "text":"27 juin\nEn collaboration avec Lord Moorhouse, de tels progrès ont été réalisés dans nos recherches sur le calcul à vapeur. Nos dispositifs précédentes souffraient d'imprécisions. Ce n'est que lorsque les vannes étaient parfaitement équilibrées et produisaient une puissance de 50 que le résultat était parfait. Avec cela, j'ai été frappé par une idée."},
 				 {"who":"ada", "text":"Je pouvais sentir à quel point n'importe quelle vanne était ouverte en plaçant une deuxième vanne qui évacuait la vapeur et en ajustant son ouverture. Ce n'est que lorsque les deux vannes sont également ouvertes que la pression entre elles sera précisément de 50. Il ne me restait plus qu'à ajuster la valeur jusqu'à ce que ce soit le cas."},
                  {"who":"ada", "text":"En utilisant cela, Lord Moorhouse a pu créer un composant d'ajout de pression de vapeur, que j'espère qu'il me révélera.\n\nLord Moorhouse est le plus timide mais intelligent comme un fouet, hélas souvent, il a trop peur de partager ses innovations."}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                  {"who":"nicola", "text":"Eh bien ça marche. Nous pouvons maintenant sentir à quel point une vanne est ouverte, mais je ne vois pas en quoi cela nous rapproche du calcul de la vapeur. Je suppose que nous devons demander à Lord Moorhouse."},
@@ -3524,6 +3602,9 @@
                  {"who":"nicola", "text":"Quand l'entrée est haute, on connecte le Nord. Nous savons comment faire cela grâce à la dispositif \"Normalement ouverte\". Et quand l'entrée est faible, on connecte le Sud. C'est notre dispositif \"Normalement fermée\"."}
             ],
             [
+                 {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                  {"who":"nicola", "text":"Eh bien, commençons par les bases. Lorsque l'entrée est élevée, nous allons connecter la sortie à une source de vapeur. Quand il est bas, nous nous connecterons à l'atmosphère. Pour se connecter à l'atmosphère, nous laissons simplement l'extrémité du tuyau ouverte.\n\nComme l'a noté Lady Chavvington, les vannes sont analogiques et il apparaît que lorsque les valeurs sont comprises entre 0 et 100, les vannes s'ouvrent partiellement et recréent le rapport exact."}
             ],
             [
@@ -3546,6 +3627,9 @@
             ],
             [
                  {"who":"nicola", "text":"Si nous passons la sortie via notre composant de cryptage, nous pouvons déterminer ce que l'entrée doit avoir été.\n\nLorsque les deux entrées du comparateur sont égales, la sortie n'est ni pressurisée, ni ventilée. Si nous obtenons trop d'oscillations, nous devrions revenir à la dispositif de notre comparateur et la rendre moins puissante."}
+            ],
+            [
+                 {"who":"nicola", "text":"Nous pouvons utiliser la même astuce que dans notre dispositif de décryptage. Nous augmentons ou diminuons la quantité que nous ouvrons la vanne inférieure jusqu'à ce que la pression entre eux soit exactement de 50. Nous avons un Amp50 qui fait cela."}
             ],
             [
                  {"who":"nicola", "text":"Nous pouvons utiliser la même astuce que dans notre dispositif de décryptage. Nous augmentons ou diminuons la quantité que nous ouvrons la vanne inférieure jusqu'à ce que la pression entre eux soit exactement de 50. Nous avons un Amp50 qui fait cela."}
@@ -3774,6 +3858,9 @@
                 {"who":"charles", "text":"Что!?! Это будет пар низкого давления! Мы не работаем с паром низкого давления! Я заработал состояние не на снабжении людей паром низкого давления!\n\nНе бери в голову всю эту чушь о низком давлении. Если западное управление установлено на высокое давление, подключите северный генератор, в противном случае подключите южный генератор ."}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                 {"who":"nicola", "text":"Заметки леди Чаввингтон говорят о паровой связи между лабораторией и резиденцией леди Изли, которая использовалась для связи."},
                 {"who":"charles", "text":"Да, я его удалил. Новые процедуры. Слишком много пара высокого давления пропало. Единственный пар, которому разрешено покидать наш объект, дозируется и предоставляется платным клиентам. Ни один из моих паров высокого давления не может покидать эти стены."},
                 {"who":"nicola", "text":"Я думаю, что мы все еще можем установить соединение без выхода пара. Согласно этим примечаниям ..."},
@@ -3843,6 +3930,9 @@
                 {"who":"charles", "text":"Hmm ... Да ... Поразмыслив, это объяснило бы цветы и открытки, выражающие сочувствие к моей потере. Меня тронуло беспокойство людей о потере моего пара высокого давления.\n\nТем не менее. Чем раньше вы завершите работу с машиной расчета пара, тем скорее мы сможем разобраться в этом. Продолжайте поспешить над публикацией исследования."},
                 {"who":"ada", "text":"27 июня\nСовместно с лордом Мурхаусом мы добились такого прогресса в исследованиях паровых вычислений. Наши предыдущие проекты страдали неточностями. Только когда клапаны были идеально сбалансированы и производили 50, результат был идеальным. В связи с этим меня осенила идея.\n\nЯ мог почувствовать, насколько открыт любой клапан, установив второй клапан, который выпускал пар, и отрегулировав его открытость. Только когда два клапана будут одинаково открыты, давление между ними будет равно 50. Все, что мне нужно было сделать, это отрегулировать значение до тех пор, пока это не произойдет ."},
                 {"who":"ada", "text":"Используя это, лорд Мурхаус смог создать компонент, увеличивающий давление пара, который, я надеюсь, он мне откроет.\n\nЛорд Мурхаус самый застенчивый, но умный как кнут, но, увы, часто он слишком боится делиться своими нововведениями."}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"Ну, это работает. Теперь мы можем почувствовать, насколько открыт клапан, но я не понимаю, как это приближает нас к вычислению пара. Я полагаю, мы должны спросить лорда Мурхауса."},
@@ -4042,6 +4132,9 @@
                 {"who":"nicola", "text":"Когда вход высокий, мы подключаем Север. Мы знаем, как это сделать, из «нормально открытого» дизайна. А когда на входе низкий, подключаем юг. Это наш \"нормально закрытый\" дизайн."}
             ],
             [
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                 {"who":"nicola", "text":"Ну, давайте начнем с основ. Когда вход высокий, мы подключим выход к источнику пара. Когда он будет низким, мы подключимся к атмосфере. Чтобы подключиться к атмосфере, мы просто оставляем конец трубы открытым.\n\nКак отметила леди Чаввингтон, клапаны являются аналоговыми, и если значения находятся в диапазоне от 0 до 100, клапаны частично открываются и воссоздают точное соотношение ."}
             ],
             [
@@ -4064,6 +4157,9 @@
             ],
             [
                 {"who":"nicola", "text":"Если мы передаем вывод через наш компонент шифрования, мы можем определить, каким должен был быть ввод.\n\nКогда два входа компаратора равны, на выходе нет ни давления, ни вентиляции. Если мы получим слишком сильное колебание, мы должны вернуться к нашей конструкции компаратора и сделать его менее сильным."}
+            ],
+            [
+                {"who":"nicola", "text":"Мы можем использовать тот же трюк, что и в нашем дизайне дешифрования. Мы увеличиваем или уменьшаем степень открытия нижнего клапана до тех пор, пока давление между ними не станет ровно 50. У нас есть Amp50, который делает это."}
             ],
             [
                 {"who":"nicola", "text":"Мы можем использовать тот же трюк, что и в нашем дизайне дешифрования. Мы увеличиваем или уменьшаем степень открытия нижнего клапана до тех пор, пока давление между ними не станет ровно 50. У нас есть Amp50, который делает это."}
@@ -4293,6 +4389,9 @@
                 {"who":"charles", "text":"¡¿¡Qué!?! ¡Eso sería vapor de baja presión! ¡No trabajamos con vapor de baja presión! ¡No hice mi fortuna suministrando vapor a baja presión a la gente! \n\nNo te preocupes por todas esas tonterías de baja presión. Cuando el control occidental es Alta presión, conecte el generador del norte, de lo contrario, conecte el generador del sur."}
             ],
             [
+                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+            ],
+            [
                 {"who":"nicola", "text":"Las notas de Lady Chavvington hablan de una conexión de vapor entre el laboratorio y la residencia de Lady Easley que se utilizó para la comunicación."},
                 {"who":"charles", "text":"Sí, lo quité. Nuevos procedimientos. Faltaba demasiado de nuestro vapor de alta presión. El único vapor que se permite salir de nuestras instalaciones es medido y proporcionado a los clientes que pagan. Ninguno de mi vapor de alta presión puede salir de estas paredes."},
                 {"who":"nicola", "text":"Creo que aún podemos establecer una conexión sin generar ninguna salida. Según estas notas ..."},
@@ -4362,6 +4461,9 @@
                 {"who":"charles", "text":"Hmm ... Sí ... Reflexionando, eso explicaría las flores y tarjetas que expresan su simpatía por mi pérdida. Me conmovió la preocupación de la gente por la pérdida de mi vapor de alta presión. \n\nNo obstante. Cuanto antes complete el máquina de cálculo de vapor, antes podremos llegar al fondo de esto. Continúe la investigación después de la prisa."},
                 {"who":"ada", "text":"27 de junio \nJunto con Lord Moorhouse se ha logrado tal progreso en nuestra investigación sobre el cálculo de vapor. Nuestros diseños anteriores adolecían de imprecisiones. Sólo cuando las válvulas estaban perfectamente equilibradas y producían una salida de 50, el resultado era perfecto. Con esto yo estaba tuve una idea. \n\nPude sentir cuán abierta está cualquier válvula, colocando una segunda válvula que ventila el vapor y ajustando su apertura. Solo cuando las dos válvulas estén igualmente abiertas, la presión entre ellas será exactamente 50. Todos Lo que tenía que hacer era ajustar el valor hasta que este fuera el caso."},
                 {"who":"ada", "text":"Con esto, Lord Moorhouse pudo crear un componente de adición de presión de vapor, que espero que me revele. \n\nLord Moorhouse es muy tímido pero inteligente como un látigo, por desgracia, a menudo tiene demasiado miedo de compartir sus innovaciones."}
+            ],
+            [
+                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"Bueno, funciona. Ahora podemos sentir cuán abierta está una válvula, pero no veo cómo esto nos acerca al cálculo de vapor. Supongo que debemos preguntarle a Lord Moorhouse."},
@@ -4561,6 +4663,9 @@
                 {"who":"nicola", "text":"Cuando la entrada es alta, conectamos el norte. Sabemos cómo hacerlo desde el diseño \" Normalmente abierto \". Y cuando la entrada es baja, conectamos el Sur. Ese es nuestro diseño \" Normalmente cerrado \"."}
             ],
             [
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+            ],
+            [
                 {"who":"nicola", "text":"Bueno, comencemos con lo básico. Cuando la entrada sea alta, conectaremos la salida a una fuente de vapor. Cuando esté baja, nos conectaremos a la atmósfera. Para conectarnos a la atmósfera, simplemente dejamos abierto el extremo de la tubería. \n\nComo señaló Lady Chavvington, las válvulas son analógicas y parece que cuando los valores están entre 0 y 100, las válvulas se abrirán parcialmente y recrearán la proporción exacta."}
             ],
             [
@@ -4583,6 +4688,9 @@
             ],
             [
                 {"who":"nicola", "text":"Si pasamos la salida a través de nuestro componente de cifrado, podemos determinar cuál debe haber sido la entrada. \n\nCuando las dos entradas en el comparador son iguales, la salida no está presurizada ni ventilada. Si obtenemos demasiada oscilación, deberíamos volver al diseño de nuestro comparador y hacerlo menos sólido."}
+            ],
+            [
+                {"who":"nicola", "text":"Podemos usar el mismo truco que en nuestro diseño de descifrado. Aumentamos o disminuimos la cantidad que abrimos la válvula inferior hasta que la presión entre ellas sea exactamente 50. Tenemos un Amp50 que hace esto."}
             ],
             [
                 {"who":"nicola", "text":"Podemos usar el mismo truco que en nuestro diseño de descifrado. Aumentamos o disminuimos la cantidad que abrimos la válvula inferior hasta que la presión entre ellas sea exactamente 50. Tenemos un Amp50 que hace esto."}

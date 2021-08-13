@@ -5,14 +5,14 @@
 #include <stdlib.h>
 
 
-#define LEVEL_COUNT 40
+#define LEVEL_COUNT 42
 #define HISTORY_POINT_COUNT 200
 
 #ifndef CHARLES_ID
 #define CHARLES_ID 0
 #endif
 
-#define COMPRESSURE_VERSION 0
+#define COMPRESSURE_VERSION 1
 
 extern SaveObjectList* level_desc;
 
@@ -240,3 +240,29 @@ public:
     void delete_level(int level_index);
     int find_level(int level_index, std::string name);
 };
+
+inline bool is_version_level(unsigned version, int level_index)
+{
+    if (version < 1 && level_index == 5)
+        return false;
+    if (version < 1 && level_index == 15)
+        return false;
+    return true;
+}
+
+inline int version_reindex_level(unsigned version, int level_index)
+{
+    if (level_index < 0)
+        return level_index;
+    int count = 0;
+    while (true)
+    {
+        if (is_version_level(version, count))
+        {
+            if (!level_index)
+                return count;
+            level_index--;
+        }
+        count++;
+    }
+}

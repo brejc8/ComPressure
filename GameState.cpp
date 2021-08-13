@@ -94,11 +94,11 @@ GameState::GameState(const char* filename)
             edited_level_set = level_set_accuracy;
             level_set = edited_level_set;
 
-            next_dialogue_level = omap->get_num("next_dialogue_level");
+            next_dialogue_level = version_reindex_level(load_game_version, omap->get_num("next_dialogue_level"));
             highest_level = next_dialogue_level - 1;
             if (omap->has_key("highest_level"))
-                highest_level = omap->get_num("highest_level");
-            current_level_index = omap->get_num("current_level_index");
+                highest_level = version_reindex_level(load_game_version, omap->get_num("highest_level"));
+            current_level_index = version_reindex_level(load_game_version, omap->get_num("current_level_index"));
             if (!edited_level_set->is_playable(current_level_index, highest_level))
                 current_level_index = 0;
             game_speed = omap->get_num("game_speed");
@@ -1204,19 +1204,19 @@ void GameState::update_scale(int newscale)
 
 static int max_help_page(int next_dialogue_level)
 {
-    if (next_dialogue_level <= 1)
+    if (next_dialogue_level <= version_reindex_level(0,1))
         return 2;
-    if (next_dialogue_level <= 2)
+    if (next_dialogue_level <= version_reindex_level(0,2))
         return 4;
-    if (next_dialogue_level <= 3)
+    if (next_dialogue_level <= version_reindex_level(0,3))
         return 5;
-    if (next_dialogue_level <= 4)
+    if (next_dialogue_level <= version_reindex_level(0,4))
         return 6;
-    if (next_dialogue_level <= 6)
+    if (next_dialogue_level <= version_reindex_level(0,6))
         return 7;
-    if (next_dialogue_level <= 8)
+    if (next_dialogue_level <= version_reindex_level(0,8))
         return 9;
-    if (next_dialogue_level <= 24)
+    if (next_dialogue_level <= version_reindex_level(0,24))
         return 11;
     return 12;
 }
@@ -1558,7 +1558,7 @@ void GameState::render(bool saving)
     {
         highest_level++;
         level_win_animation = 100;
-        if (highest_level == 20)
+        if (highest_level == version_reindex_level(0,20))
             number_high_precision = true;
     }
     
@@ -1627,7 +1627,7 @@ void GameState::render(bool saving)
             render_button(XYPos(9 * 32 * scale, 0), XYPos(400, 160), 0, "Delete level");
             render_button(XYPos(10 * 32 * scale, 0), XYPos(352, 136), 0, "Return");
         }
-        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > 24)
+        else if (current_level_index >= LEVEL_COUNT && next_dialogue_level > version_reindex_level(0,24))
         {
             if (current_level->global)
                 render_button(XYPos(10 * 32 * scale, 0), XYPos(400, 160), 0, "Delete");
@@ -1993,15 +1993,15 @@ void GameState::render(bool saving)
         {                                                                                               // Top Menu
             bool flash_next_level = (next_dialogue_level == highest_level) && (frame_index % 60 < 30) && (highest_level < LEVEL_COUNT);
             render_button(XYPos((8 + 32 * 11) * scale, 8 * scale), XYPos(256 + (flash_next_level ? 24 : 0), 112), panel_state == PANEL_STATE_LEVEL_SELECT, "Level select");
-            if (!current_circuit_is_read_only && (next_dialogue_level > 1) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
+            if (!current_circuit_is_read_only && (next_dialogue_level > version_reindex_level(0,1)) && (!flash_editor_menu || (current_level_index != 1) ||(frame_index % 60 < 30) || show_dialogue))
                 render_button(XYPos((8 + 32 * 12) * scale, 8 * scale), XYPos(256+24*2, 112), panel_state == PANEL_STATE_EDITOR, "Design");
-            if (next_dialogue_level > 4)
+            if (next_dialogue_level > version_reindex_level(0,4))
                 render_button(XYPos((8 + 32 * 13) * scale, 8 * scale), XYPos(256+24*3, 112), panel_state == PANEL_STATE_MONITOR, "Test");
-            if (next_dialogue_level > 6)
+            if (next_dialogue_level > version_reindex_level(0,6))
                 render_button(XYPos((8 + 32 * 14) * scale, 8 * scale), XYPos(256+24*4, 112), panel_state == PANEL_STATE_TEST, "Experiment");
             render_button(XYPos((8 + 32 * 15) * scale, (8) * scale), XYPos(0, 0), panel_state == PANEL_STATE_SCORES, "Scores");
         }
-        if (next_dialogue_level > 4)
+        if (next_dialogue_level > version_reindex_level(0,4))
         {                                                                                               // Speed arrows
             render_box(XYPos((8 + 32 * 16) * scale, (8) * scale), XYPos(64, 32), 3, scale);
             SDL_Rect src_rect = {256, 136, 53, 5};
@@ -2079,7 +2079,7 @@ void GameState::render(bool saving)
         if (tip_revealed >= current_level_index && edited_level_set->levels[current_level_index]->help_design)
             render_button(XYPos(buttons_offset.x + 64 * scale, buttons_offset.y), XYPos(352, 160), 0, "Reveal a solution");   // Help
         render_button(XYPos(buttons_offset.x + 96 * scale, buttons_offset.y), XYPos(280, 376), level_select_requirements_visible, "Requirements");                  // Requirements
-        if (next_dialogue_level > 32)
+        if (next_dialogue_level > version_reindex_level(0,32))
         {
             switch (test_mode)
             {
@@ -2095,7 +2095,7 @@ void GameState::render(bool saving)
             }
         }
 
-        if (next_dialogue_level > 24 && !current_circuit_is_read_only)
+        if (next_dialogue_level > version_reindex_level(0,24) && !current_circuit_is_read_only)
             render_button(XYPos(buttons_offset.x + 7*32 * scale, buttons_offset.y), XYPos(376, 160), 0, "New design");          // New
 
         if (scoring_mode_dialogue)
@@ -2198,16 +2198,16 @@ void GameState::render(bool saving)
         if (mouse_state == MOUSE_STATE_PLACING_VALVE)
             flash_valve = false;
 
-        if (next_dialogue_level > 2)
+        if (next_dialogue_level > version_reindex_level(0,2))
             render_button(XYPos(panel_offset.x + 0 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160), mouse_state == MOUSE_STATE_PLACING_VALVE || (flasher && flash_valve && (current_level_index == 2)), "Valve");
         render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 24), mouse_state == MOUSE_STATE_PLACING_SOURCE || (flasher && flash_steam_inlet), "Steam Inlet");
 
-        if (next_dialogue_level > 1)
+        if (next_dialogue_level > version_reindex_level(0,1))
         {
             render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(400, 112), 0, "Rotate left");
             render_button(XYPos(panel_offset.x + 3 * 32 * scale, panel_offset.y), XYPos(400+24, 112), 0, "Rotate right");
         }
-        if (next_dialogue_level > 6)
+        if (next_dialogue_level > version_reindex_level(0,6))
         {
             render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 184), 0, "Reflect\nvertically");
             render_button(XYPos(panel_offset.x + 5 * 32 * scale, panel_offset.y), XYPos(400+24, 184), 0, "Reflect\nhorizontally");
@@ -2218,13 +2218,13 @@ void GameState::render(bool saving)
         else
             render_button(XYPos(panel_offset.x + 6 * 32 * scale, panel_offset.y), XYPos(280, 376), editor_requirements_visible, "Requirements");
 
-        if (next_dialogue_level > 8)
+        if (next_dialogue_level > version_reindex_level(0,8))
             render_button(XYPos(panel_offset.x + 7 * 32 * scale, panel_offset.y), XYPos(544 + dir_flip.get_n() * 24, 160 + 48), mouse_state == MOUSE_STATE_PLACING_SIGN, "Add sign");
 
 
         int level_index = 0;
 
-        if (next_dialogue_level > 8)
+        if (next_dialogue_level > version_reindex_level(0,8))
         for (pos.y = 0; pos.y < visible_rows; pos.y++)
         for (pos.x = 0; pos.x < 8; pos.x++)
         {
@@ -2335,7 +2335,7 @@ void GameState::render(bool saving)
         render_button(XYPos(panel_offset.x + 1 * 32 * scale, panel_offset.y), XYPos(448 + 1 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_1, "Repeat 1 test");
         render_button(XYPos(panel_offset.x + 2 * 32 * scale, panel_offset.y), XYPos(448 + 2 * 24, 176), current_level->monitor_state == MONITOR_STATE_PLAY_ALL, "Run all tests");
         
-        if ((next_dialogue_level > 8) && !current_level_set_is_inspected)
+        if ((next_dialogue_level > version_reindex_level(0,8)) && !current_level_set_is_inspected)
         {
             render_button(XYPos(panel_offset.x + 4 * 32 * scale, panel_offset.y), XYPos(400, 136), 0, "Export to\nclipboard");
             if (clipboard_level_set)
@@ -3212,7 +3212,7 @@ void GameState::render(bool saving)
             render_button(XYPos((160 + 32 + 64) * scale, (90 + 32 + 48)  * scale), XYPos(256+24, 256), 0, "Info");
 
             render_button(XYPos((160 + 32) * scale, (90 + 96 + 32)  * scale), XYPos(280, 304), 0, "Select language");
-            if (highest_level >= 20)
+            if (highest_level >= version_reindex_level(0,20))
                 render_button(XYPos((160 + 32 + 64) * scale, (90 + 96 + 32)  * scale), XYPos(number_high_precision ? 280 : 256, 400), 0, "Number resolution");
 
             render_box(XYPos((160 + 32 + 128) * scale, (90 + 32)  * scale), XYPos(32, 128), 1, scale);
@@ -3481,7 +3481,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
                 confirm_box_pos = XYPos(32*10 - 16, 32);
                 return;
             }
-            else if (i == 10 && (next_dialogue_level > 24 && !current_level->global) && (current_level_index >= LEVEL_COUNT))
+            else if (i == 10 && (next_dialogue_level > version_reindex_level(0,24) && !current_level->global) && (current_level_index >= LEVEL_COUNT))
             {
                 editing_level = true;
                 pixel_colour = 0;
@@ -3596,7 +3596,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
     if (current_circuit_is_read_only)
         return;
 
-    if ((next_dialogue_level > 1) && (panel_state == PANEL_STATE_LEVEL_SELECT))
+    if ((next_dialogue_level > version_reindex_level(0,1)) && (panel_state == PANEL_STATE_LEVEL_SELECT))
         panel_state = PANEL_STATE_EDITOR;
 
     if (mouse_state == MOUSE_STATE_NONE)
@@ -3865,18 +3865,18 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     panel_state = PANEL_STATE_LEVEL_SELECT;
                     break;
                 case 1:
-                    if (!(next_dialogue_level > 1) || current_circuit_is_read_only)
+                    if (!(next_dialogue_level > version_reindex_level(0,1)) || current_circuit_is_read_only)
                         break;
                     panel_state = PANEL_STATE_EDITOR;
                     flash_editor_menu = false;
                     break;
                 case 2:
-                    if (!(next_dialogue_level > 4))
+                    if (!(next_dialogue_level > version_reindex_level(0,4)))
                         break;
                     panel_state = PANEL_STATE_MONITOR;
                     break;
                 case 3:
-                    if (!(next_dialogue_level > 6))
+                    if (!(next_dialogue_level > version_reindex_level(0,6)))
                         break;
                     panel_state = PANEL_STATE_TEST;
                     break;
@@ -3887,7 +3887,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 case 5:
                 case 6:
                 {
-                    if (next_dialogue_level > 4)
+                    if (next_dialogue_level > version_reindex_level(0,4))
                         watch_slider(panel_offset.x + (5 * 32 + 8) * scale, DIRECTION_E, 49,  &game_speed, 0, 10);
                     break;
                 }
@@ -3982,11 +3982,11 @@ void GameState::mouse_click_in_panel(unsigned clicks)
         {
             level_select_requirements_visible = !level_select_requirements_visible;
         }
-        else if ((button_pos - XYPos(6*32,0)).inside(XYPos(32,32)) && next_dialogue_level > 32)  // Scoring mode
+        else if ((button_pos - XYPos(6*32,0)).inside(XYPos(32,32)) && next_dialogue_level > version_reindex_level(0,32))  // Scoring mode
         {
             scoring_mode_dialogue = true;
         }
-        else if ((button_pos - XYPos(7*32,0)).inside(XYPos(32,32)) && next_dialogue_level > 24 && !current_circuit_is_read_only)  // New
+        else if ((button_pos - XYPos(7*32,0)).inside(XYPos(32,32)) && next_dialogue_level > version_reindex_level(0,24) && !current_circuit_is_read_only)  // New
         {
             set_level(edited_level_set->new_user_level());
             set_level_set(edited_level_set);
@@ -4095,11 +4095,11 @@ void GameState::mouse_click_in_panel(unsigned clicks)
         XYPos panel_grid_pos = panel_pos / 32;
         if (panel_grid_pos.y == 0)
         {
-            if (panel_grid_pos.x == 0 && (next_dialogue_level > 2))
+            if (panel_grid_pos.x == 0 && (next_dialogue_level > version_reindex_level(0,2)))
                 mouse_state = MOUSE_STATE_PLACING_VALVE;
             else if (panel_grid_pos.x == 1)
                 mouse_state = MOUSE_STATE_PLACING_SOURCE;
-            else if (panel_grid_pos.x == 2 && next_dialogue_level > 1)
+            else if (panel_grid_pos.x == 2 && next_dialogue_level > version_reindex_level(0,1))
             {
                 dir_flip = dir_flip.rotate(false);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -4112,7 +4112,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     level_set->touch(current_level_index);
                 }
             }
-            else if (panel_grid_pos.x == 3 && next_dialogue_level > 1)
+            else if (panel_grid_pos.x == 3 && next_dialogue_level > version_reindex_level(0,1))
             {
                 dir_flip = dir_flip.rotate(true);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -4125,7 +4125,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     level_set->touch(current_level_index);
                 }
             }
-            else if (panel_grid_pos.x == 4 && next_dialogue_level > 6)
+            else if (panel_grid_pos.x == 4 && next_dialogue_level > version_reindex_level(0,6))
             {
                 dir_flip = dir_flip.flip(true);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -4138,7 +4138,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     level_set->touch(current_level_index);
                 }
             }
-            else if (panel_grid_pos.x == 5 && next_dialogue_level > 6)
+            else if (panel_grid_pos.x == 5 && next_dialogue_level > version_reindex_level(0,6))
             {
                 dir_flip = dir_flip.flip(false);
                 if (mouse_state == MOUSE_STATE_PASTING_CLIPBOARD)
@@ -4155,7 +4155,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 mouse_state = MOUSE_STATE_LOCKING_BLOCKS;
             else if (panel_grid_pos.x == 6 && !editing_level)
                 editor_requirements_visible = !editor_requirements_visible;
-            else if (panel_grid_pos.x == 7 && next_dialogue_level > 8)
+            else if (panel_grid_pos.x == 7 && next_dialogue_level > version_reindex_level(0,8))
                 mouse_state = MOUSE_STATE_PLACING_SIGN;
             return;
         }
@@ -4202,7 +4202,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
             }
 
-            else if ((next_dialogue_level > 8) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
+            else if ((next_dialogue_level > version_reindex_level(0,8)) && panel_grid_pos.x == 4 && !current_level_set_is_inspected)
             {
                 if (keyboard_ctrl)
                 {
@@ -4358,7 +4358,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                     clip::set_text(reply);
                 }
             }
-            else if ((next_dialogue_level > 8) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
+            else if ((next_dialogue_level > version_reindex_level(0,8)) && panel_grid_pos.x == 5 && !current_level_set_is_inspected && clipboard_level_set)
             {
                 set_level_set(clipboard_level_set);
                 deletable_level_set = NULL;
@@ -4371,7 +4371,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
             }
 
             panel_grid_pos = (panel_pos - XYPos(32 * 5 + 16, 0)) / 16;
-            if ((next_dialogue_level > 8) && !current_level_set_is_inspected)
+            if ((next_dialogue_level > version_reindex_level(0,8)) && !current_level_set_is_inspected)
             {
                 if (panel_grid_pos.y == 0)
                 {
@@ -4738,7 +4738,7 @@ void GameState::mouse_motion()
             if ((pos - sign.get_pos()).inside(sign.get_size()))
             {
                 current_circuit->remove_sign(it, !first_deletion);
-                if ((next_dialogue_level > 1) && (panel_state == PANEL_STATE_LEVEL_SELECT))
+                if ((next_dialogue_level > version_reindex_level(0,1)) && (panel_state == PANEL_STATE_LEVEL_SELECT))
                     panel_state = PANEL_STATE_EDITOR;
                 first_deletion = false;
                 return;
@@ -4755,7 +4755,7 @@ void GameState::mouse_motion()
         if (current_circuit->elements[grid.y][grid.x]->is_empty())
             return;
 
-        if ((next_dialogue_level > 1) && (panel_state == PANEL_STATE_LEVEL_SELECT))
+        if ((next_dialogue_level > version_reindex_level(0,1)) && (panel_state == PANEL_STATE_LEVEL_SELECT))
             panel_state = PANEL_STATE_EDITOR;
 
         current_circuit->set_element_empty(grid, !first_deletion);
@@ -4877,21 +4877,21 @@ bool GameState::events()
                         mouse_state = MOUSE_STATE_NONE;
                         break;
                     case SDL_SCANCODE_1:
-                        if (!SDL_IsTextInputActive() && next_dialogue_level > 4)
+                        if (!SDL_IsTextInputActive() && next_dialogue_level > version_reindex_level(0,4))
                         {
                             current_level->set_monitor_state(MONITOR_STATE_PAUSE);
                             level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_2:
-                        if (!SDL_IsTextInputActive() && next_dialogue_level > 4)
+                        if (!SDL_IsTextInputActive() && next_dialogue_level > version_reindex_level(0,4))
                         {
                             current_level->set_monitor_state(MONITOR_STATE_PLAY_1);
                             level_set->touch(current_level_index);
                         }
                         break;
                     case SDL_SCANCODE_3:
-                        if (!SDL_IsTextInputActive() && next_dialogue_level > 4)
+                        if (!SDL_IsTextInputActive() && next_dialogue_level > version_reindex_level(0,4))
                             current_level->set_monitor_state(MONITOR_STATE_PLAY_ALL);
                         break;
                     case SDL_SCANCODE_TAB:
@@ -4906,7 +4906,7 @@ bool GameState::events()
                         break;
                     }
                     case SDL_SCANCODE_Q:
-                        if (next_dialogue_level <= 1)
+                        if (next_dialogue_level <= version_reindex_level(0,1))
                             break;
                         if (!SDL_IsTextInputActive())
                             dir_flip = dir_flip.rotate(false);
@@ -4921,7 +4921,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_E:
-                        if (next_dialogue_level <= 1)
+                        if (next_dialogue_level <= version_reindex_level(0,1))
                             break;
                         if (!SDL_IsTextInputActive())
                             dir_flip = dir_flip.rotate(true);
@@ -4936,7 +4936,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_W:
-                        if (next_dialogue_level <= 3)
+                        if (next_dialogue_level <= version_reindex_level(0,3))
                             break;
                         if (SDL_IsTextInputActive())
                         {
@@ -4968,7 +4968,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_A:
-                        if (next_dialogue_level <= 3)
+                        if (next_dialogue_level <= version_reindex_level(0,3))
                             break;
                         if (!SDL_IsTextInputActive() && keyboard_ctrl)
                         {
@@ -5015,7 +5015,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_S:
-                        if (next_dialogue_level <= 3)
+                        if (next_dialogue_level <= version_reindex_level(0,3))
                             break;
                         if (SDL_IsTextInputActive())
                         {
@@ -5046,7 +5046,7 @@ bool GameState::events()
                         }
                         break;
                     case SDL_SCANCODE_D:
-                        if (next_dialogue_level <= 3)
+                        if (next_dialogue_level <= version_reindex_level(0,3))
                             break;
                         if (SDL_IsTextInputActive())
                         {
@@ -5418,7 +5418,7 @@ bool GameState::events()
                         keyboard_ctrl |= 2;
                         break;
                     case SDL_SCANCODE_SPACE:
-                        if (next_dialogue_level > 4)
+                        if (next_dialogue_level > version_reindex_level(0,4))
                         {
                             if (!SDL_IsTextInputActive() && current_level->monitor_state != MONITOR_STATE_PAUSE)
                             {
@@ -5623,7 +5623,7 @@ bool GameState::events()
                         {
                             display_about = true;
                         }
-                        if ((pos - XYPos(0, 96)).inside(XYPos(32, 32)) && highest_level >= 20)
+                        if ((pos - XYPos(0, 96)).inside(XYPos(32, 32)) && highest_level >= version_reindex_level(0,20))
                         {
                             number_high_precision = !number_high_precision;
                         }
@@ -6027,10 +6027,10 @@ void GameState::check_clipboard()
         }
         else
         {
-            clipboard_level_index = omap->get_num("level_index");
             unsigned load_game_version = 0;
             if (omap->has_key("version"))
                 load_game_version = omap->get_num("version");
+            clipboard_level_index = version_reindex_level(load_game_version,omap->get_num("level_index"));
             LevelSet* new_set = new LevelSet(omap->get_item("levels"), load_game_version, true);
             clipboard_level_set = new_set;
         }
@@ -6143,10 +6143,10 @@ void GameState::deal_with_paste_from_server()
             SaveObjectMap* omap = paste_from_server.resp->get_map();
             if (!clipboard_level_set)
             {
-                clipboard_level_index = omap->get_num("level_index");
                 unsigned load_game_version = 0;
                 if (omap->has_key("version"))
                     load_game_version = omap->get_num("version");
+                clipboard_level_index = version_reindex_level(load_game_version,omap->get_num("level_index"));
                 LevelSet* new_set = new LevelSet(omap->get_item("levels"), load_game_version, true);
                 clipboard_level_set = new_set;
             }
@@ -6186,7 +6186,7 @@ void GameState::deal_with_design_fetch()
             if (omap->has_key("level_name"))
                 set_level(omap->get_string("level_name"));
             else
-                set_level(omap->get_num("level_index"));
+                set_level(version_reindex_level(load_game_version,omap->get_num("level_index")));
         }
         catch (const std::runtime_error& error)
         {
