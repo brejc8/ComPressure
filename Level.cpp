@@ -151,7 +151,7 @@ Level::Level(int level_index_, bool hidden_):
     init_tests();
 }
 
-Level::Level(int level_index_, SaveObject* sobj, bool inspected_):
+Level::Level(int level_index_, SaveObject* sobj, unsigned version, bool inspected_):
     level_index(level_index_),
     inspected(inspected_)
 {
@@ -159,7 +159,7 @@ Level::Level(int level_index_, SaveObject* sobj, bool inspected_):
     SaveObjectMap* omap = sobj->get_map();
     circuit = new Circuit(omap->get_item("circuit")->get_map());
     if (omap->has_key("best_design"))
-        best_design = new LevelSet(omap->get_item("best_design"), true);
+        best_design = new LevelSet(omap->get_item("best_design"), version, true);
     if (omap->has_key("saved_designs"))
     {
         SaveObjectList* slist = omap->get_item("saved_designs")->get_list();
@@ -169,7 +169,7 @@ Level::Level(int level_index_, SaveObject* sobj, bool inspected_):
             {
                 SaveObject *sobj = slist->get_item(i);
                 if (!sobj->is_null())
-                    saved_designs[i] = new LevelSet(sobj, true);
+                    saved_designs[i] = new LevelSet(sobj, version, true);
             }
         }
     }
@@ -379,7 +379,7 @@ void Level::init_tests(SaveObjectMap* omap)
             }
         }
         if (desc->has_key("help_design") && !inspected && !hidden)
-            help_design = new LevelSet(desc->get_item("help_design"), true);
+            help_design = new LevelSet(desc->get_item("help_design"), COMPRESSURE_VERSION, true);
         if (desc->has_key("global"))
             global = true;
         if (desc->has_key("description"))
@@ -721,7 +721,7 @@ void Level::set_best_design(LevelSet* new_best)
     }
 }
 
-LevelSet::LevelSet(SaveObject* sobj, bool inspect)
+LevelSet::LevelSet(SaveObject* sobj, unsigned version, bool inspect)
 {
     read_only = inspect;
     SaveObjectList* slist = sobj->get_list();
@@ -735,7 +735,7 @@ LevelSet::LevelSet(SaveObject* sobj, bool inspect)
                 sobj = NULL;
         }
         if (sobj)
-            levels.push_back(new Level(i, sobj, inspect));
+            levels.push_back(new Level(i, sobj, version, inspect));
         else
             levels.push_back(new Level(i, inspect));
     }
@@ -743,7 +743,7 @@ LevelSet::LevelSet(SaveObject* sobj, bool inspect)
     {
         SaveObject *sobj = slist->get_item(i);
         if (!sobj->is_null())
-            levels.push_back(new Level(i, sobj, inspect));
+            levels.push_back(new Level(i, sobj, version, inspect));
         else
             levels.push_back(new Level(i, inspect));
     }
@@ -832,7 +832,7 @@ Pressure LevelSet::test_level(int level_index)
 void LevelSet::record_best_score(int level_index)
 {
     SaveObject* sobj = save_one(level_index);
-    levels[level_index]->set_best_design(new LevelSet(sobj, true));
+    levels[level_index]->set_best_design(new LevelSet(sobj, COMPRESSURE_VERSION, true));
     delete sobj;
 }
 
@@ -840,7 +840,7 @@ void LevelSet::save_design(int level_index, unsigned save_slot)
 {
     SaveObject* sobj = save_one(level_index);
     delete levels[level_index]->saved_designs[save_slot];
-    levels[level_index]->saved_designs[save_slot] =  new LevelSet(sobj, true);
+    levels[level_index]->saved_designs[save_slot] =  new LevelSet(sobj, COMPRESSURE_VERSION, true);
     delete sobj;
 }
 

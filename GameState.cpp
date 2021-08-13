@@ -77,14 +77,17 @@ GameState::GameState(const char* filename)
         {
             SaveObjectMap* omap;
             omap = SaveObject::load(loadfile)->get_map();
-            level_set_accuracy = new LevelSet(omap->get_item("levels"));
+            unsigned load_game_version = 0;
+            if (omap->has_key("version"))
+                load_game_version = omap->get_num("version");
+            level_set_accuracy = new LevelSet(omap->get_item("levels"), load_game_version);
             if (omap->has_key("levels_price"))
-                level_set_price = new LevelSet(omap->get_item("levels_price"));
+                level_set_price = new LevelSet(omap->get_item("levels_price"), load_game_version);
             else
                 level_set_price = new LevelSet();
             
             if (omap->has_key("levels_steam"))
-                level_set_steam = new LevelSet(omap->get_item("levels_steam"));
+                level_set_steam = new LevelSet(omap->get_item("levels_steam"), load_game_version);
             else
                 level_set_steam = new LevelSet();
             
@@ -195,6 +198,7 @@ GameState::GameState(const char* filename)
 SaveObject* GameState::save(bool lite)
 {
     SaveObjectMap* omap = new SaveObjectMap;
+    omap->add_num("version", COMPRESSURE_VERSION);
     omap->add_item("levels", level_set_accuracy->save_all(highest_level, lite));
     omap->add_item("levels_price", level_set_price->save_all(highest_level, lite));
     omap->add_item("levels_steam", level_set_steam->save_all(highest_level, lite));
@@ -375,6 +379,7 @@ void GameState::score_submit(int level, bool sync)
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "score_submit");
     omap->add_num("level_index", level);
+    omap->add_num("version", COMPRESSURE_VERSION);
     omap->add_item("levels", edited_level_set->levels[level]->best_design->save_all(highest_level, true));
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
@@ -387,6 +392,7 @@ void GameState::paste_submit(int level, uint64_t paste_id)
     omap->add_string("command", "paste_submit");
     omap->add_num("paste_id", paste_id);
     omap->add_num("level_index", level);
+    omap->add_num("version", COMPRESSURE_VERSION);
     omap->add_item("levels", edited_level_set->save_one(level));
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
@@ -398,6 +404,7 @@ void GameState::global_design_submit(int level)
     SaveObjectMap* omap = new SaveObjectMap;
     omap->add_string("command", "global_design_submit");
     omap->add_num("level_index", level);
+    omap->add_num("version", COMPRESSURE_VERSION);
     omap->add_item("levels", edited_level_set->save_one(level));
     omap->add_num("steam_id", steam_id);
     omap->add_string("steam_username", steam_username);
@@ -4201,6 +4208,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 {
                     SaveObjectMap* omap = new SaveObjectMap;
                     omap->add_num("level_index", current_level_index);
+                    omap->add_num("version", COMPRESSURE_VERSION);
                     omap->add_item("levels", edited_level_set->save_one(current_level_index));
                     std::ostringstream stream;
                     omap->save(stream);
@@ -4269,6 +4277,7 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 {
                     SaveObjectMap* omap = new SaveObjectMap;
                     omap->add_num("level_index", current_level_index);
+                    omap->add_num("version", COMPRESSURE_VERSION);
                     omap->add_item("levels", edited_level_set->save_one(current_level_index));
                     std::ostringstream stream;
                     if (keyboard_shift)
@@ -5362,6 +5371,7 @@ bool GameState::events()
                     {
                         SaveObjectMap* omap = new SaveObjectMap;
                         omap->add_num("level_index", current_level_index);
+                        omap->add_num("version", COMPRESSURE_VERSION);
                         omap->add_item("levels", edited_level_set->save_one(current_level_index));
                         std::ostringstream stream;
                         omap->save(stream);
@@ -6018,7 +6028,10 @@ void GameState::check_clipboard()
         else
         {
             clipboard_level_index = omap->get_num("level_index");
-            LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
+            unsigned load_game_version = 0;
+            if (omap->has_key("version"))
+                load_game_version = omap->get_num("version");
+            LevelSet* new_set = new LevelSet(omap->get_item("levels"), load_game_version, true);
             clipboard_level_set = new_set;
         }
     }
@@ -6131,7 +6144,10 @@ void GameState::deal_with_paste_from_server()
             if (!clipboard_level_set)
             {
                 clipboard_level_index = omap->get_num("level_index");
-                LevelSet* new_set = new LevelSet(omap->get_item("levels"), true);
+                unsigned load_game_version = 0;
+                if (omap->has_key("version"))
+                    load_game_version = omap->get_num("version");
+                LevelSet* new_set = new LevelSet(omap->get_item("levels"), load_game_version, true);
                 clipboard_level_set = new_set;
             }
         }
@@ -6154,8 +6170,10 @@ void GameState::deal_with_design_fetch()
         {
             SaveObjectMap* omap = design_from_server.resp->get_map();
             
-            
-            LevelSet* new_level_set = new LevelSet(omap->get_item("levels"), true);
+            unsigned load_game_version = 0;
+            if (omap->has_key("version"))
+                load_game_version = omap->get_num("version");
+            LevelSet* new_level_set = new LevelSet(omap->get_item("levels"), load_game_version, true);
             if (free_level_set_on_return)
                 delete level_set;
 

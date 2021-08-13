@@ -12,6 +12,8 @@
 #define CHARLES_ID 0
 #endif
 
+#define COMPRESSURE_VERSION 0
+
 extern SaveObjectList* level_desc;
 
 class WrappedTexture
@@ -191,7 +193,7 @@ public:
     bool global_score_graph_set = false;
     unsigned global_score_graph_time = 0;
 
-    Level(int level_index_, SaveObject* sobj, bool inspected);
+    Level(int level_index_, SaveObject* sobj, unsigned version, bool inspected);
     Level(int level_index_, bool hidden_ = false);
     ~Level();
     SaveObject* save(bool lite = false);
@@ -219,7 +221,7 @@ class LevelSet
 public:
     std::vector<Level*> levels;
     bool read_only = false;
-    LevelSet(SaveObject* sobj, bool inspect = false);
+    LevelSet(SaveObject* sobj, unsigned version, bool inspect = false);
     LevelSet();
     ~LevelSet();
     SaveObject* save_all(int level_index, bool lite = false);
