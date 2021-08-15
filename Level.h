@@ -5,14 +5,14 @@
 #include <stdlib.h>
 
 
-#define LEVEL_COUNT 42
+#define LEVEL_COUNT 43
 #define HISTORY_POINT_COUNT 200
 
 #ifndef CHARLES_ID
 #define CHARLES_ID 0
 #endif
 
-#define COMPRESSURE_VERSION 1
+#define COMPRESSURE_VERSION 2
 
 extern SaveObjectList* level_desc;
 
@@ -246,6 +246,8 @@ inline bool is_version_level(unsigned version, int level_index)
     if (version < 1 && level_index == 5)
         return false;
     if (version < 1 && level_index == 15)
+        return false;
+    if (version < 2 && level_index == 21)
         return false;
     return true;
 }

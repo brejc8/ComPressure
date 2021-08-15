@@ -218,10 +218,10 @@
                 {"who":"ada", "text":"Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me."}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
-                {"who":"nicola", "text":"According to Lady Chavvington, combining these two sensor designs into one creates a highly accurate buffer. I guess that’s useful, but I don’t how how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse."},
+                {"who":"nicola", "text":"According to Lady Chavvington, combining these two sensor designs into one creates a highly accurate buffer. I guess that’s useful, but I don’t how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse."},
                 {"who":"nicola", "text":"Lord Moorhouse. Thank you for allowing us to call upon you. In her absence, we are attempting to continue the steam computation work of Lady Chavvington. Only you know the construction of the pressure adding unit and we beg you share it with us."},
                 {"who":"george", "text":"I do agree. Having thought on this, the advancement of knowledge must continue despite her collusion with Charles against me. I will disclose the secret of addition in exchange for the assurance that she is safe from him. Hearing the rumours that pass through these halls, I suspect her dead by his hand."},
                 {"who":"nicola", "text":"Lady Chavvington is alive and well, staying with her sister."},
@@ -278,9 +278,13 @@
                 {"who":"ada", "text":"Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this commotion. We shall return in a few days and I already look forward to inspecting your discoveries."},
                 {"who":"george", "text":"Thank you, and safe journey.\n\nNicola, could you find me that x2 pressure amplifier."},
                 {"who":"nicola", "text":"It's right here.\n\nThe construction is simple, yet I find the operation stunningly useful."},
-                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a minimum and maximum value, I do believe we can construct an amplifier which will zoom into any given range."},
-                {"who":"nicola", "text":"We shall name it the Zoom element."},
-                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the South our minimum. The East output will tell us where the West input lies within the range."}
+                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a maximum value, I do believe we can construct an amplifier which will scale for any given maximum."},
+                {"who":"nicola", "text":"We shall name it the Scale element."},
+                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the East output will tell us where the West input lies."}
+            ],
+            [
+                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range witha minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Good, now we can zoom into any pressure range we choose. What I need next is a way of detecting if we are within a range. Take a look at this \"steam speedometer\".\n\nAda made it for Charles to measure the amount of steam passing through it. When steam passes through a long pipe, it will lose some pressure. The faster the steam is passing through, the more pressure it loses. If the two sides are at same pressure, there must be no moving steam. She even put some valves in the pipe to increase the resistance and make the difference greater."},
@@ -427,7 +431,7 @@
                 {"who":"nicola", "text":"This time, when the input is high pressure, we want it to be connected to atmosphere. When the input is low is when we supply the steam. Our switch design was able to select between two values. Those values could be steam and atmosphere."}
             ],
             [
-                {"who":"nicola", "text":"We can use valves to measure which of North and South is higher. If North is higher, we connect the output to steam. If South is higher, we connect it to atmosphere.\n\nRemember, the steam in the output pipe will not drain away by itself, we need to  actively release it using a valve."}
+                {"who":"nicola", "text":"We can use valves to measure which of North and South is higher. If North is higher, we connect the output to steam. If South is higher, we connect it to atmosphere.\n\nRemember, the steam in the output pipe will not drain away by itself, we need to actively release it using a valve."}
             ],
             [
                 {"who":"nicola", "text":"I guess we already have a comparator, and we have a source of a precise value of 50."}
@@ -448,7 +452,7 @@
                 {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
             ],
             [
-                {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the bottom valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
+                {"who":"nicola", "text":"We can use the same trick as in our decrypt design. We increase or decrease the amount we open the top valve until the pressure between them is exactly 50. We have an Amp50 which does this."}
             ],
             [
                 {"who":"nicola", "text":"We open one valve to the value of the West input minus the South input, we can then open a second valve to the same level of openness by looking for when the pressure between them is 50."}
@@ -464,6 +468,9 @@
             ],
             [
                 {"who":"nicola", "text":"For a change a wobble is actually desirable. Amplifiers in a ring configuration will make the design unstable and will wobble up and down."}
+            ],
+            [
+                {"who":"nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                 {"who":"nicola", "text":"When West is higher than South, start adding more steam. When West is lower than North, start releasing more steam."}
@@ -750,7 +757,7 @@
                 {"who":"ada", "text":"利用这一方法， Moorhouse先生设计出了一个蒸汽压强加法器。 我十分希望他能向我透露他是怎么制作的。\n\nMoorhouse先生非常内向， 也十分聪明。 唉， 他总是害怕分享他的创新成果。"}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"好的， 它起作用了。 我们现在可以探测阀门的开度， 但还不清楚这对蒸汽计算有什么帮助。 我想我们得问问Moorhouse先生。"},
@@ -810,9 +817,13 @@
                 {"who":"ada", "text":"别再说这些了， 我也得向你道歉。 为表达我的善意， 请随意使用我的……我们的实验室。 Easley女士已经有实验室的权限了。 我认为Charles和我需要在这场骚乱后休息一下。 我们将在几天后回来， 希望能够看到你们的进展。"},
                 {"who":"george", "text":"好的， 一路平安。\n\nNicola， 你能帮我找找那个乘二器吗？"},
                 {"who":"nicola", "text":"就在这儿。\n\n它的构造很简单， 但我发现这个设计模式非常有用。"},
-                {"who":"george", "text":"的确。 这个装置只能把数值从0到50这一范围放大到0到100。 我认为在给定值的范围时， 可以制造一个把值放大到任何范围的元件。"},
-                {"who":"nicola", "text":"我们可以把它命名为放大器。"},
-                {"who":"george", "text":"是的， 但首先我们应该先制造出来。 北输入给出取值范围的上限， 南输入给出取值范围的下限。 东输出表示西输入在取值范围内的位置。"}
+                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a maximum value, I do believe we can construct an amplifier which will scale for any given maximum."},
+                {"who":"nicola", "text":"We shall name it the Scale element."},
+                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the East output will tell us where the West input lies."}
+            ],
+            [
+                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range witha minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"很好， 现在我们可以放大任何压强范围。 接下来需要一种探测压强是否在某个范围内的元件。 看看这个“蒸汽速度表”。\n\nAda为Charles造了这个来测量蒸汽量。 当蒸汽通过长管道时， 它的压强会有所损失。 蒸汽的流速越快， 压强损失就越大。 如果两边的压强相同， 蒸汽就不会流动。 她甚至在管道里放了一些阀门来增加阻抗， 使差别更加明显。"},
@@ -996,6 +1007,9 @@
             ],
             [
                 {"who":"nicola", "text":"这次我们反而需要振荡了。 将比较器连成环会使设计不稳定， 输出值会上下摆动。"}
+            ],
+            [
+                {"who":"nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                 {"who":"nicola", "text":"当西部高于南部时， 将输出连接到蒸汽源。 当西部低于北部时， 将输出连接到大气。"}
@@ -1280,7 +1294,7 @@
                 {"who":"ada", "text":"利用這個方法， Moorhouse先生設計出了一個蒸汽壓強加法器。 我十分希望他能向我透露他是怎麼製作的。\n\nMoorhouse先生非常內向， 也十分聰明。 唉， 他總是害怕分享他的創新成果。"}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"好的， 它起作用了。 我們現在可以探測閥門的開度， 但還不清楚這對蒸汽計算有什麼幫助。 我想我們得問問Moorhouse先生。"},
@@ -1340,9 +1354,13 @@
                 {"who":"ada", "text":"別再說這些了， 我也得向你道歉。 為表達我的善意， 請隨意使用我的……我們的實驗室。 Easley女士已經有實驗室的權限了。 我認為Charles和我需要在這場騷亂後休息一下。 我們將在幾天後回來， 希望到時能看到你們的進展。"},
                 {"who":"george", "text":"好的， 一路平安。\n\nNicola， 你能幫我找找那個乘二器嗎？"},
                 {"who":"nicola", "text":"就在這裡。\n\n它的構造很簡單， 但我發現這個設計模式非常有用。"},
-                {"who":"george", "text":"的確。 這個裝置只能把數值從0到50這一範圍放大到0到100。 我認為在給定值的範圍時， 可以製造一個把值放大到任何範圍的元件。"},
-                {"who":"nicola", "text":"我們可以把它命名為放大器。"},
-                {"who":"george", "text":"是的， 但首先我們應該先製造出來。 北輸入給出取值範圍的上限， 南輸入給出取值範圍的下限。 東輸出表示西輸入在取值範圍內的位置。"}
+                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a maximum value, I do believe we can construct an amplifier which will scale for any given maximum."},
+                {"who":"nicola", "text":"We shall name it the Scale element."},
+                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the East output will tell us where the West input lies."}
+            ],
+            [
+                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range witha minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"很好， 現在我們可以放大任何壓強範圍。 接下來需要一種探測壓強是否在某個範圍內的元件。 看看這個「蒸汽計速器」。\n\nAda為Charles造了這個來測量通過的蒸汽量。 當蒸汽通過長管道時， 它的壓強會有所損失。 蒸汽的流速越快， 壓強損失就越大。 如果兩邊的壓強相同， 蒸汽就不會流動。 她甚至在管道裡放了一些閥門來增加阻抗， 使差別更加明顯。"},
@@ -1526,6 +1544,9 @@
             ],
             [
                 {"who":"nicola", "text":"這次我們反而需要震盪了。 將放大器排成環狀會使設計不穩定， 輸出值會上下震盪。"}
+            ],
+            [
+                {"who":"nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                 {"who":"nicola", "text":"當西端高於南端時， 增加輸出的蒸汽。 當西端低於北端時， 減少輸出的蒸汽。"}
@@ -1809,7 +1830,7 @@
                 {"who":"ada", "text":"Using this, Lord Moorhouse was able to create a steam pressure adding component, which I hope he will reveal to me.\n\nLord Moorhouse is most shy yet smart as a whip, alas often he becomes too afraid to share his innovations."}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"Well it works. We can now sense how open a valve is, but I don't see how this gets us closer to steam computation. I suppose we must ask Lord Moorhouse."},
@@ -1869,9 +1890,13 @@
                 {"who":"ada", "text":"Speak no more of this, for I must be forgiven also. As a gesture of good will, feel free to use my... our laboratory. Lady Easley already has access. I do believe Charles and I need a bit of a break from all this commotion. We shall return in a few days and I already look forward to inspecting your discoveries."},
                 {"who":"george", "text":"Thank you, and safe journey.\n\nNicola, could you find me that x2 pressure amplifier."},
                 {"who":"nicola", "text":"It's right here.\n\nThe construction is simple, yet I find the operation stunningly useful."},
-                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a minimum and maximum value, I do believe we can construct an amplifier which will zoom into any given range."},
-                {"who":"nicola", "text":"We shall name it the Zoom element."},
-                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the South our minimum. The East output will tell us where the West input lies within the range."}
+                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a maximum value, I do believe we can construct an amplifier which will scale for any given maximum."},
+                {"who":"nicola", "text":"We shall name it the Scale element."},
+                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the East output will tell us where the West input lies."}
+            ],
+            [
+                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range witha minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Good, now we can zoom into any pressure range we choose. What I need next is a way of detecting if we are within a range. Take a look at this \"steam speedometer\".\n\nAda made it for Charles to measure the amount of steam passing through it. When steam passes through a long pipe, it will lose some pressure. The faster the steam is passing through, the more pressure it loses. If the two sides are at same pressure, there must be no moving steam. She even put some valves in the pipe to increase the resistance and make the difference greater."},
@@ -2018,7 +2043,7 @@
                 {"who":"nicola", "text":"This time, when the input is high pressure, we want it to be connected to atmosphere. When the input is low is when we supply the steam. Our switch design was able to select between two values. Those values could be steam and atmosphere."}
             ],
             [
-                {"who":"nicola", "text":"We can use valves to measure which of North and South is higher. If North is higher, we connect the output to steam. If South is higher, we connect it to atmosphere.\n\nRemember, the steam in the output pipe will not drain away by itself, we need to  actively release it using a valve."}
+                {"who":"nicola", "text":"We can use valves to measure which of North and South is higher. If North is higher, we connect the output to steam. If South is higher, we connect it to atmosphere.\n\nRemember, the steam in the output pipe will not drain away by itself, we need to actively release it using a valve."}
             ],
             [
                 {"who":"nicola", "text":"I guess we already have a comparator, and we have a source of a precise value of 50."}
@@ -2055,6 +2080,9 @@
             ],
             [
                 {"who":"nicola", "text":"For a change a wobble is actually desirable. Amplifiers in a ring configuration will make the design unstable and will wobble up and down."}
+            ],
+            [
+                {"who":"nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                 {"who":"nicola", "text":"When West is higher than South, start adding more steam. When West is lower than North, start releasing more steam."}
@@ -2339,7 +2367,7 @@
                 {"who": "ada", "text": "Damit konnte Lord Moorhouse ein dampfdruckbeaufschlagendes Bauteil herstellen, das er mir hoffentlich verraten wird.\n\nLord Moorhouse ist sehr schüchtern, aber sehr schlau, leider hat er oft zu viel Angst, seine Innovationen zu teilen."}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who": "nicola", "text": "Nun, es funktioniert. Wir können jetzt spüren, wie offen ein Ventil ist, aber ich sehe nicht, wie uns das der Dampfberechnung näher bringt. Ich nehme an, wir müssen Lord Moorhouse fragen."},
@@ -2585,6 +2613,9 @@
             ],
             [
                 {"who": "nicola", "text": "Zur Abwechslung ist ein Wobbeln eigentlich erwünscht. Verstärker in einer Ringkonfiguration machen die Konstruktion instabil und wackeln auf und ab."}
+            ],
+            [
+                {"who": "nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                 {"who": "nicola", "text": "Wenn West höher als Süd ist, beginnen Sie, mehr Dampf hinzuzufügen. Wenn West niedriger ist als Nord, beginnen Sie, mehr Dampf abzulassen."}
@@ -2870,7 +2901,7 @@
                 {"who": "ada", "text": "この発見によって、ムーアハウス卿は「蒸気圧を加える部品」を作ることができた。\n\nムーアハウス卿はとてもシャイな反面、頭が切れるお方ではあるが、\n自ら思いついた革新的な技術の共有を\nひどく恐れる傾向にあることは大変残念だ。』"}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who": "nicola", "text": "うまくいきましたね。\nこれで、バルブの開度が正確に把握できるようにはなりましたが、\nこれでどうやって蒸気コンピュータを作ればいいかよく分かりませんね。\n\nムーアハウス卿に聞いてみましょうか。"},
@@ -3116,6 +3147,9 @@
             ],
             [
                 {"who": "nicola", "text": "たまには「数値のぐらつき」を利用するのも悪くないかもしれません。\n「増幅器」を「リング状」に配置すると、\nデザイン全体が不安定となり、数値の上下にふらつくようになります。"}
+            ],
+            [
+                {"who": "nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                 {"who": "nicola", "text": "西側が南側よりも高い場合は、より多くの蒸気を貯蓄し始めます。\n西側が北側より低い場合は、より多くの蒸気が放出されるでしょう。"}
@@ -3402,7 +3436,7 @@
                  {"who":"ada", "text":"En utilisant cela, Lord Moorhouse a pu créer un composant d'ajout de pression de vapeur, que j'espère qu'il me révélera.\n\nLord Moorhouse est le plus timide mais intelligent comme un fouet, hélas souvent, il a trop peur de partager ses innovations."}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                  {"who":"nicola", "text":"Eh bien ça marche. Nous pouvons maintenant sentir à quel point une vanne est ouverte, mais je ne vois pas en quoi cela nous rapproche du calcul de la vapeur. Je suppose que nous devons demander à Lord Moorhouse."},
@@ -3462,9 +3496,13 @@
                  {"who":"ada", "text":"Ne parlons plus de ceci, car je dois être pardonnée aussi. En guise de geste de bonne volonté, n'hésitez pas à utiliser mon... notre laboratoire. Lady Easley y a déjà accès. Je crois que Charles et moi avons besoin d'un peu de répit après toute cette agitation. Nous reviendrons dans quelques jours et j'ai déjà hâte d'inspecter vos découvertes."},
                  {"who":"george", "text":"Merci et bon voyage.\n\nNicola, pourriez-vous me trouver cet amplificateur qui double la pression."},
                  {"who":"nicola", "text":"C'est ici.\n\nLa construction est simple, mais je trouve l'opération incroyablement utile."},
-                 {"who":"george", "text":"En effet. Cet appareil amplifie les valeurs d'une plage spécifique de 0 à 50 à la plage de 0 à 100. Étant données une valeur minimale et maximale, je pense que nous pouvons construire un amplificateur qui zoomera dans n'importe quelle plage donnée."},
-                 {"who":"nicola", "text":"Nous l'appellerons l'élément Zoom."},
-                 {"who":"george", "text":"Bien, même si nous devrions d'abord l'inventer. Le Nord peut être notre maximum et le Sud notre minimum. La sortie Est nous indiquera où se situe l'entrée Ouest dans la plage."}
+                 {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a maximum value, I do believe we can construct an amplifier which will scale for any given maximum."},
+                 {"who":"nicola", "text":"We shall name it the Scale element."},
+                 {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the East output will tell us where the West input lies."}
+            ],
+            [
+                 {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
+                 {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range witha minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
             ],
             [
                  {"who":"george", "text":"Bon, maintenant nous pouvons zoomer sur n'importe quelle plage de pression que nous choisissons. Ce dont j'ai besoin ensuite, c'est d'un moyen de détecter si nous sommes dans une plage. Jetez un œil à ce \"compteur de vitesse à vapeur\".\n\nAda a demandé à Charles de mesurer la quantité de vapeur qui la traversait. Lorsque la vapeur passe dans un long tuyau, elle perd de la pression. Plus la vapeur passe vite, plus elle perd de la pression. Si les deux côtés sont à la même pression, il ne doit pas y avoir de vapeur en mouvement. Elle a même mis des vannes dans le tuyau pour augmenter la résistance et faire la différence plus grande."},
@@ -3648,6 +3686,9 @@
             ],
             [
                  {"who":"nicola", "text":"Pour changer, une oscillation est en fait souhaitable. Les amplificateurs dans une configuration en anneau rendront la dispositif instable et vacilleront de haut en bas."}
+            ],
+            [
+                 {"who":"nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                  {"who":"nicola", "text":"Lorsque l'Ouest est plus haut que le Sud, commencez à ajouter plus de vapeur. Lorsque l'Ouest est plus bas que le Nord, commencez à libérer plus de vapeur."}
@@ -3932,7 +3973,7 @@
                 {"who":"ada", "text":"Используя это, лорд Мурхаус смог создать компонент, увеличивающий давление пара, который, я надеюсь, он мне откроет.\n\nЛорд Мурхаус самый застенчивый, но умный как кнут, но, увы, часто он слишком боится делиться своими нововведениями."}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"Ну, это работает. Теперь мы можем почувствовать, насколько открыт клапан, но я не понимаю, как это приближает нас к вычислению пара. Я полагаю, мы должны спросить лорда Мурхауса."},
@@ -3992,9 +4033,13 @@
                 {"who":"ada", "text":"Не говори больше об этом, потому что я тоже должен быть прощен. В качестве жеста доброй воли воспользуйтесь моей ... нашей лабораторией. У леди Изли уже есть доступ. Я действительно верю, что нам с Чарльзом нужно немного отдохнуть от всей этой суматохи. Мы вернемся через несколько дней, и я с нетерпением жду возможности ознакомиться с вашими открытиями."},
                 {"who":"george", "text":"Спасибо и удачного пути.\n\nНикола, не могли бы вы найти мне этот усилитель давления x2 ."},
                 {"who":"nicola", "text":"Это прямо здесь.\n\nКонструкция проста, но я считаю эту операцию потрясающе полезной ."},
-                {"who":"george", "text":"Действительно. Хотя это устройство усиливает значения от определенного диапазона от 0 до 50 до диапазона от 0 до 100. Учитывая минимальное и максимальное значение, я верю, что мы можем сконструировать усилитель, который будет увеличивать любой заданный диапазон."},
-                {"who":"nicola", "text":"Мы назовем его элементом Zoom."},
-                {"who":"george", "text":"Вполне, хотя сначала мы должны это изобрести. Север может быть нашим максимумом, а Юг - минимумом. Выходные данные Востока сообщат нам, где входные данные Запада находятся в пределах диапазона."}
+                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a maximum value, I do believe we can construct an amplifier which will scale for any given maximum."},
+                {"who":"nicola", "text":"We shall name it the Scale element."},
+                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the East output will tell us where the West input lies."}
+            ],
+            [
+                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range witha minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Good, теперь мы можем увеличить любой диапазон давления по нашему выбору. Что мне нужно дальше, так это способ определить, находимся ли мы в пределах досягаемости. Взгляните на этот «паровой спидометр».\n\nАда попросила Чарльза измерить количество пара, проходящего через него. Когда пар проходит по длинной трубе, он теряет некоторое давление. Чем быстрее проходит пар, тем большее давление он теряет. Если обе стороны находятся под одинаковым давлением, движущийся пар не должен быть. Она даже вставила несколько клапанов в трубу, чтобы увеличить сопротивление и сделать разницу больше."},
@@ -4178,6 +4223,9 @@
             ],
             [
                 {"who":"nicola", "text":"Для изменения действительно желательно колебание. Усилители в кольцевой конфигурации сделают конструкцию нестабильной и будут раскачиваться вверх и вниз ."}
+            ],
+            [
+                {"who":"nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                 {"who":"nicola", "text":"Когда Запад выше Юга, начинайте добавлять больше пара. Когда запад ниже севера, начните выпускать больше пара."}
@@ -4463,7 +4511,7 @@
                 {"who":"ada", "text":"Con esto, Lord Moorhouse pudo crear un componente de adición de presión de vapor, que espero que me revele. \n\nLord Moorhouse es muy tímido pero inteligente como un látigo, por desgracia, a menudo tiene demasiado miedo de compartir sus innovaciones."}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
             ],
             [
                 {"who":"nicola", "text":"Bueno, funciona. Ahora podemos sentir cuán abierta está una válvula, pero no veo cómo esto nos acerca al cálculo de vapor. Supongo que debemos preguntarle a Lord Moorhouse."},
@@ -4523,9 +4571,13 @@
                 {"who":"ada", "text":"No hables más de esto, porque yo también debo ser perdonado. Como un gesto de buena voluntad, siéntete libre de usar mi ... nuestro laboratorio. Lady Easley ya tiene acceso. Creo que Charles y yo necesitamos un poco de descanso de toda esta conmoción. Regresaremos en unos días y ya espero con ansias inspeccionar tus descubrimientos."},
                 {"who":"george", "text":"Gracias y buen viaje. \n\nNicola, ¿podrías encontrarme ese amplificador de presión x2?"},
                 {"who":"nicola", "text":"Está justo aquí. \n\nLa construcción es simple, pero encuentro la operación increíblemente útil."},
-                {"who":"george", "text":"De hecho. Aunque este dispositivo amplifica valores desde un rango específico de 0 a 50 hasta el rango de 0 a 100. Dado un valor mínimo y máximo, creo que podemos construir un amplificador que se acerque a cualquier rango dado."},
-                {"who":"nicola", "text":"Lo llamaremos el elemento Zoom."},
-                {"who":"george", "text":"Absolutamente, aunque deberíamos inventarlo primero. El norte puede ser nuestro máximo y el sur nuestro mínimo. La salida del este nos dirá dónde se encuentra la entrada del oeste dentro del rango."}
+                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a maximum value, I do believe we can construct an amplifier which will scale for any given maximum."},
+                {"who":"nicola", "text":"We shall name it the Scale element."},
+                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the East output will tell us where the West input lies."}
+            ],
+            [
+                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range witha minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Bien, ahora podemos acercarnos a cualquier rango de presión que elijamos. Lo que necesito a continuación es una forma de detectar si estamos dentro de un rango. Echa un vistazo a este \" velocímetro de vapor \". \n\nAda lo hizo para Charles para medir la cantidad de vapor que pasa a través de él. Cuando el vapor pasa a través de una tubería larga, pierde algo de presión. Cuanto más rápido pasa el vapor, más presión pierde. Si los dos lados están a la misma presión, debe haber sin vapor en movimiento. Incluso puso algunas válvulas en la tubería para aumentar la resistencia y hacer la diferencia mayor."},
@@ -4709,6 +4761,9 @@
             ],
             [
                 {"who":"nicola", "text":"Para variar, un bamboleo es realmente deseable. Los amplificadores en una configuración de anillo harán que el diseño sea inestable y se bamboleará hacia arriba y hacia abajo."}
+            ],
+            [
+                {"who":"nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
             ],
             [
                 {"who":"nicola", "text":"Cuando el Oeste es más alto que el Sur, comience a agregar más vapor. Cuando el Oeste sea más bajo que el Norte, comience a liberar más vapor."}
