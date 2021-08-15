@@ -455,21 +455,24 @@ public:
         omap->add_item("levels_steam", level_list);
 
         level_list = new SaveObjectList;
-        for (CustomLevel &clevel :custom_levels)
+        if (!lite)
         {
-            level_list->add_item(clevel.save(lite));
+            for (CustomLevel &clevel :custom_levels)
+            {
+                level_list->add_item(clevel.save(lite));
+            }
+            omap->add_item("custom_levels", level_list);
+            level_list = new SaveObjectList;
+            for(auto &paste_pair : paste_designs)
+            {
+                SaveObjectMap* paste_map = new SaveObjectMap;
+                paste_map->add_num("paste_id", paste_pair.first);
+                paste_map->add_string("design", paste_pair.second);
+                level_list->add_item(paste_map);
+            }
+            omap->add_item("pastes", level_list);
         }
-        omap->add_item("custom_levels", level_list);
 
-        level_list = new SaveObjectList;
-        for(auto &paste_pair : paste_designs)
-        {
-            SaveObjectMap* paste_map = new SaveObjectMap;
-            paste_map->add_num("paste_id", paste_pair.first);
-            paste_map->add_string("design", paste_pair.second);
-            level_list->add_item(paste_map);
-        }
-        omap->add_item("pastes", level_list);
         omap->add_num("version", COMPRESSURE_VERSION);
         return omap;
     }
