@@ -2749,7 +2749,9 @@ void GameState::render(bool saving)
             table_pos.y += 16;
         }
 
-        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256, 120), 5, scale);
+        render_box(XYPos(panel_offset.x, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(256-32-8, 120), 5, scale);
+        if (next_dialogue_level > version_reindex_level(0,32))
+            render_button(XYPos(panel_offset.x + (256-32-8) * scale, panel_offset.y + (32 + 32 + 8 + 112) * scale), XYPos(304, 112), 0, "User levels");
         XYPos graph_pos(8 * scale + panel_offset.x, (32 + 32 + 8 + 112 + 9) * scale + panel_offset.y);
         {
             SDL_Rect src_rect = {524, 80, 13, 101};
@@ -4651,6 +4653,12 @@ void GameState::mouse_click_in_panel(unsigned clicks)
                 }
             }
         }
+        if (next_dialogue_level > version_reindex_level(0,32))
+        {
+            if ((panel_pos - XYPos(256-32-8, 32 + 32 + 8 + 112)).inside(XYPos(32,32)))
+                show_server_levels = true;
+        }
+
         return;
     }
 }
