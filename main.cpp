@@ -71,25 +71,25 @@ void SteamGameManager::OnGameOverlayActivated( GameOverlayActivated_t* pCallback
 
 void SteamGameManager::update_achievements(GameState* game_state)
 {
-    if (game_state->highest_level >= 6)
+    if (game_state->highest_level >= version_reindex_level(0,6))
         set_achievements(0);
 
-    if (game_state->highest_level >= 12)
+    if (game_state->highest_level >= version_reindex_level(0,12))
         set_achievements(1);
 
-    if (game_state->highest_level >= 19)
+    if (game_state->highest_level >= version_reindex_level(0,19))
         set_achievements(2);
 
-    if (game_state->highest_level >= 25)
+    if (game_state->highest_level >= version_reindex_level(0,25))
         set_achievements(3);
 
-    if (game_state->highest_level >= 31)
+    if (game_state->highest_level >= version_reindex_level(0,31))
         set_achievements(4);
 
-    if (game_state->highest_level >= 37)
+    if (game_state->highest_level >= version_reindex_level(0,37))
         set_achievements(5);
 
-    if (game_state->highest_level >= 39)
+    if (game_state->highest_level >= version_reindex_level(0,39))
         set_achievements(6);
 
     if (needs_send)
