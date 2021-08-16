@@ -423,7 +423,7 @@
                 {"who":"nicola", "text":"When the input is high, we connect the North. We know how to do that from the \"Normally Open\" design. And when the input is low, we connect the South. That's our \"Normally Closed\" design."}
             ],
             [
-                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connects a steam inlet to the East. The other valve connects the East port to air."}
             ],
             [
                 {"who":"nicola", "text":"Well, let's start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. To connect to atmosphere, we simply leave the pipe end open.\n\nAs Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio."}
@@ -963,7 +963,7 @@
                 {"who":"nicola", "text":"当输入高压时， 连接北部， 这就是“常开开关”的设计。 当输入低压时， 连接南方， 这就是“常闭开关”的设计。"}
             ],
             [
-                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connects a steam inlet to the East. The other valve connects the East port to air."}
             ],
             [
                 {"who":"nicola", "text":"让我们从基础部分开始。 当输入较高时， 将输出连接到蒸汽源； 当输入较低时， 将输出连接到大气。 只需保持管道末端打开就能连接到大气。\n\n正如Chavvington女士所指出的， 阀门是给出的是模拟信号。 当数值在0到100之间时， 阀门会部分打开， 并可以生成准确的比率。"}
@@ -2038,7 +2038,7 @@
                 {"who":"nicola", "text":"When the input is high, we connect the North. We know how to do that from the \"Normally Open\" design. And when the input is low, we connect the South. That's our \"Normally Closed\" design."}
             ],
             [
-                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connects a steam inlet to the East. The other valve connects the East port to air."}
             ],
             [
                 {"who":"nicola", "text":"Well, let's start with the basics. When the input is high, we will connect the output to a steam source. When it is low, we will connect to the atmosphere. To connect to atmosphere, we simply leave the pipe end open.\n\nAs Lady Chavvington noted, the valves are analogue and it appears when values are between 0 and 100, the valves will partly open and recreate the exact ratio."}
@@ -2572,7 +2572,7 @@
                 {"who": "nicola", "text": "Wenn der Eingang hoch ist, verbinden wir den Norden. Wie das geht, wissen wir von der Konstruktion \"Normalerweise offen\". Und wenn der Eingang niedrig ist, verbinden wir den Süden. Das ist unser \"Normalerweise geschlossen\"-Design."}
             ],
             [
-                {"who": "nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                {"who": "nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connects a steam inlet to the East. The other valve connects the East port to air."}
             ],
             [
                 {"who": "nicola", "text": "Nun, beginnen wir mit den Grundlagen. Wenn der Eingang hoch ist, werden wir den Ausgang mit einer Dampfquelle verbinden. Wenn er niedrig ist, werden wir eine Verbindung zur Atmosphäre herstellen. Um eine Verbindung zur Atmosphäre herzustellen, lassen wir das Rohrende einfach offen. Wie Lady Chavvington bemerkte, sind die Ventile analog und es scheint, wenn die Werte zwischen 0 und 100 liegen, werden die Ventile teilweise geöffnet und stellen das exakte Verhältnis wieder her."}
@@ -3107,7 +3107,7 @@
                 {"who": "nicola", "text": "入力値が高い場合、北側を接続します。\nその方法は、「常時 開」のデザインで既に理解していますよね。\n\nそして、 逆に入力値が低い場合は、南側を接続します。\nこれが「常時 閉」のデザインです。"}
             ],
             [
-                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connects a steam inlet to the East. The other valve connects the East port to air."}
             ],
             [
                 {"who": "nicola", "text": "さて、まずは基本的なことから始めましょう。\n「入力値が大きい」ときは、出力を蒸気源に接続します。\n「入力値が小さい」ときは、大き気へと接続します。\n大気に接続する際、単にパイプの端を開放したままにしておきます。\n\nチャヴィントン夫人が指摘したように、バルブは「アナログ式」で、\n値が0から100の間にあるときは、部分的に開き、正確な比率を再現するようです。"}
@@ -3647,7 +3647,7 @@
                  {"who":"nicola", "text":"Quand l'entrée est haute, on connecte le Nord. Nous savons comment faire cela grâce à la dispositif \"Normalement ouverte\". Et quand l'entrée est faible, on connecte le Sud. C'est notre dispositif \"Normalement fermée\"."}
             ],
             [
-                 {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                 {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connects a steam inlet to the East. The other valve connects the East port to air."}
             ],
             [
                  {"who":"nicola", "text":"Eh bien, commençons par les bases. Lorsque l'entrée est élevée, nous allons connecter la sortie à une source de vapeur. Quand il est bas, nous nous connecterons à l'atmosphère. Pour se connecter à l'atmosphère, nous laissons simplement l'extrémité du tuyau ouverte.\n\nComme l'a noté Lady Chavvington, les vannes sont analogiques et il apparaît que lorsque les valeurs sont comprises entre 0 et 100, les vannes s'ouvrent partiellement et recréent le rapport exact."}
@@ -4185,7 +4185,7 @@
                 {"who":"nicola", "text":"Когда вход высокий, мы подключаем Север. Мы знаем, как это сделать, из «нормально открытого» дизайна. А когда на входе низкий, подключаем юг. Это наш \"нормально закрытый\" дизайн."}
             ],
             [
-                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connects a steam inlet to the East. The other valve connects the East port to air."}
             ],
             [
                 {"who":"nicola", "text":"Ну, давайте начнем с основ. Когда вход высокий, мы подключим выход к источнику пара. Когда он будет низким, мы подключимся к атмосфере. Чтобы подключиться к атмосфере, мы просто оставляем конец трубы открытым.\n\nКак отметила леди Чаввингтон, клапаны являются аналоговыми, и если значения находятся в диапазоне от 0 до 100, клапаны частично открываются и воссоздают точное соотношение ."}
@@ -4724,7 +4724,7 @@
                 {"who":"nicola", "text":"Cuando la entrada es alta, conectamos el norte. Sabemos cómo hacerlo desde el diseño \" Normalmente abierto \". Y cuando la entrada es baja, conectamos el Sur. Ese es nuestro diseño \" Normalmente cerrado \"."}
             ],
             [
-                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connects a steam inlet to the East. The other valve connects the East port to air."}
             ],
             [
                 {"who":"nicola", "text":"Bueno, comencemos con lo básico. Cuando la entrada sea alta, conectaremos la salida a una fuente de vapor. Cuando esté baja, nos conectaremos a la atmósfera. Para conectarnos a la atmósfera, simplemente dejamos abierto el extremo de la tubería. \n\nComo señaló Lady Chavvington, las válvulas son analógicas y parece que cuando los valores están entre 0 y 100, las válvulas se abrirán parcialmente y recrearán la proporción exacta."}
