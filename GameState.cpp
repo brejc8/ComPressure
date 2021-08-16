@@ -109,6 +109,8 @@ GameState::GameState(const char* filename)
                 next_help_highlight = omap->get_num("next_help_highlight");
             else
                 next_help_highlight = 12;
+            if (omap->has_key("fade_type"))
+                fade_type = omap->get_num("fade_type");
             flash_editor_menu = omap->get_num("flash_editor_menu");
             flash_steam_inlet = omap->get_num("flash_steam_inlet");
             flash_valve = omap->get_num("flash_valve");
@@ -223,6 +225,7 @@ SaveObject* GameState::save(bool lite)
     omap->add_num("discord_joined", discord_joined);
     omap->add_string("language", language_name);
     omap->add_num("number_high_precision", number_high_precision);
+    omap->add_num("fade_type", fade_type);
     return omap;
 }
 
@@ -1637,11 +1640,13 @@ void GameState::render(bool saving)
 
     }
 
-    if (mouse_state == MOUSE_STATE_PIPE && (frame_index % 20 < 10))
+    if (mouse_state == MOUSE_STATE_PIPE && ((fade_type != 0) || frame_index % 20 < 10))
     {
         Connections con;
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
+        if (fade_type == 2)
+            SDL_SetTextureAlphaMod(sdl_texture, ((cos(double(frame_index) / 20)+1) / 2)  * 256);
         if (pipe_start_ns)
         {
             mouse_rel.x -= 16;
@@ -1714,6 +1719,8 @@ void GameState::render(bool saving)
 //             SDL_Rect dst_rect = {(pipe_start_grid_pos.x * 32 - 4)  * scale + grid_offset.x, (pipe_start_grid_pos.y * 32 + 16 - 4) * scale + grid_offset.y, 8 * scale, 8 * scale};
 //             render_texture(src_rect, dst_rect);
         }
+        if (fade_type == 2)
+            SDL_SetTextureAlphaMod(sdl_texture, 255);
     }
     if (mouse_state == MOUSE_STATE_PIPE_DRAGGING)
     {
@@ -1724,6 +1731,8 @@ void GameState::render(bool saving)
         it++;
         n3 = *it;
         it++;
+        if (fade_type == 2)
+            SDL_SetTextureAlphaMod(sdl_texture, ((cos(double(frame_index) / 20)+1) / 2)  * 256);
         for (;it != pipe_drag_list.end(); ++it)
         {
             n1 = n2;
@@ -1733,7 +1742,7 @@ void GameState::render(bool saving)
             XYPos d2 = n3 - n2;
             XYPos d = d1 + d2;
 
-            if (frame_index % 20 < 10)
+            if ((fade_type != 0) || frame_index % 20 < 10)
             {
                 Connections con = Connections(0);
 
@@ -1768,6 +1777,8 @@ void GameState::render(bool saving)
                 render_texture(src_rect, dst_rect);
             }
         }
+        if (fade_type == 2)
+            SDL_SetTextureAlphaMod(sdl_texture, 255);
     }
     else if (mouse_state == MOUSE_STATE_PLACING_VALVE)
     {
@@ -5375,6 +5386,9 @@ bool GameState::events()
                         break;
                     case SDL_SCANCODE_F5:
                         show_debug = !show_debug;
+                        break;
+                    case SDL_SCANCODE_F6:
+                        fade_type = (fade_type + 1) % 3;
                         break;
                     case SDL_SCANCODE_F7:
                     {
