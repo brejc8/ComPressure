@@ -1125,7 +1125,7 @@
             "Select language"           :   "語言",
             "Number resolution"         :   "小數精確度",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
-                                            "如果您在遊玩過程中遇到困難， 可以前來Discord上與優秀的高壓蒸汽協會成員一同討論您遇到的挑戰。 按下Esc並點擊“加入Discord伺服器”來加入。",
+                                            "如果您在遊玩過程中遇到困難， 可以上Discord與優秀的高壓蒸汽協會成員一同討論您遇到的挑戰。 按下Esc並點「加入Discord伺服器」來加入。",
             "Cross":      "交叉",
             "50":      "50源",
             "Normally Open":      "常開開關",
@@ -1193,8 +1193,8 @@
             "每關有四個可保存設計的欄位， 最佳設計也會自動保存以便使用。 設計可以利用剪貼簿匯入與匯出。\n\n進入分數頁面可展示全球分數分布曲線與您和您的好友的分數。 您可以自由查看您與您的好友的設計。",
             "在同時從蒸汽源導入蒸汽並排放蒸汽至大氣的情況下， 適當調整導氣與排氣的比例可以產生特定的壓強。 閥門的開度由「＋」端與「－」端的差值決定。\n\n開度 = ( P - N )%\n\n其中P代表「＋」端壓強， N代表「－」端壓強。 左端下方的閥門開度為40% (60 - 20)。",
             "左圖的設計產生的壓強， 可用導氣閥開度除以二者開度的和來近似計算。\n\n壓強 = 100 * S / (S + V)\n\n其中S表示導氣閥的開度， V表示排氣閥的開度。 左圖中， 導氣閥開度為40% (40 - 0)， 排氣閥開度也為40% (60 - 20)。\n二者之間的輸出值是100 * 40% / (40% + 40%) = 50， 即 50 PSI。",
-            "有三種計分模式可供選擇。\n預設模式（精確度模式）是用最差情況下與預期輸出的差值來計分排名。\n\n價格模式是用造價多少來排名。 管道開口各花費£1， 閥門花費£5， 蒸汽源花費£10， 集成元件額外花費£4。\n\n蒸汽量模式是計算蒸汽源的蒸汽消耗量來排名。",
-            "玩家可製造自製關卡， 繪製關卡圖示、 設計測資並透過剪貼簿分享。 測試測資可以透過+或-按鈕來增加或刪去， 每個狀態的時長都可自行調整。 如果在運行所有測資時有些狀態可被跳過， 也可透過對應按鈕來設置。 設計可只在當前測資下重設， 也可在所有測資下重設。 可利用管道圖示選擇需要的管道以及輸出管道。 輸入值均可在實驗頁面更改。 "
+            "有三種計分模式可供選擇。\n預設模式（精確度模式）是用最差情況下與預期輸出的差值來計分排名。\n\n價格模式是用造價多少來排名。 管道開口各花費￡1， 閥門花費￡5， 蒸汽源花費￡10， 集成元件額外花費￡4。\n\n蒸汽量模式是計算蒸汽源的蒸汽消耗量來排名。",
+            "玩家可設計自製關卡， 繪製關卡圖示、 設計測資並透過剪貼簿分享。 測試測資可以透過+或-按鈕來增加或刪去， 每個狀態的時長都可自行調整。 如果在運行所有測資時有些狀態可被跳過， 也可透過對應按鈕來設置。 設計可只在當前測資下重設， 也可在所有測資下重設。 可利用管道圖示選擇需要的管道以及輸出管道。 輸入值均可在實驗頁面更改。 "
         ],
         "dialogue":
         [
@@ -1220,7 +1220,7 @@
                 {"who":"charles", "text":"什麼！？！ 那就是低壓蒸汽了， 我們可不用低壓蒸汽！ 我可不是靠給人們提供低壓蒸汽賺錢的！\n\n總之別管那些沒用的低壓蒸汽。 當西控制室給高壓蒸汽時，接北蒸汽廠，否則接南蒸汽廠。"}
             ],
             [
-                {"who":"charles", "text":"As much as I hate the very idea, it is sometimes necessary to discharge steam. Take the pressure vessel on the East. We want to connect it to a steam inlet when the North is at High Pressure. When South is at High Pressure we will release the steam to atmosphere. We call the process of releasing steam \"venting\"."}
+                {"who":"charles", "text":"雖然我很討厭這個想法， 但有時候還是必須放掉蒸汽。 東端有一個蒸汽容器。 在北端處於高壓時， 我們想要將它連接到一個蒸汽源。 而在南端處於高壓時， 將東端的蒸汽排放到大氣中。 我們稱這個操作為「排氣」。"}
             ],
             [
                 {"who":"nicola", "text":"Chavvington女士的筆記提到， 實驗室和Easley女士的住所之間有通訊管道連接。"},
@@ -1254,7 +1254,7 @@
             [
                 {"who":"charles", "text":"很好！ 有了這個裝置， 我就不會讓那些生產低壓蒸汽的人進入我們的專屬協會。"},
                 {"who":"nicola", "text":"協會裡到目前為止有多少成員？"},
-                {"who":"charles", "text":"嗯……一個……正如我所說的「專屬」……\n\n無論如何， 我現在必須離開， 以免錯過我的酒會！"},
+                {"who":"charles", "text":"嗯…… 一個…… 正如我所說的「專屬」……\n\n無論如何， 我現在必須離開， 以免錯過我的酒會！"},
                 {"who":"nicola", "text":"最後……\n\n根據Chavvington女士的筆記， 還有第二條通訊管道被安裝， 通往了Moorhouse先生的住所！ 如果Charles知道了， 他不會高興的。 你看："},
                 {"who":"ada", "text":"6月17日\n\n隨著通往Moorhouse先生莊園的管道逐漸完工， 我開始研製一種裝置， 將高壓值（0-100）壓縮到低壓系統可接受的範圍（0-50）。 令我驚訝的是， 由Moorhouse先生的低壓蒸汽提供蒸汽源， 但仍然使用 100 PSI 作為參考壓強時， 緩衝器能夠將輸入壓強精確地縮到一半。\n\n這些特性在數學領域可能有著驚人的用途。"},
                 {"who":"nicola", "text":"真的嗎！？！那怎麼可能呢？"}
@@ -1265,10 +1265,10 @@
             [
                 {"who":"nicola", "text":"試試看這能不能起作用。\n\n80 PSI [你好]\n55 PSI [請求會面]\n57 PSI [在Madingley大廳進行下午茶]"},
                 {"who":"george", "text":"……\n23 PSI [拒絕]\n……\n6  PSI [6]\n12 PSI [/]\n7  PSI [7]"},
-                {"who":"nicola", "text":"什麼？！？ 6/7？ 讓我查一下筆記。\n……\n6月7日的所有內容都是關於壓強翻轉器的設計。 如果壓強翻轉了，他怎麼能和我們溝通呢……翻轉的……翻轉？……對了！\n\n抱歉， 之前我的所在地使用的日月順序是相反的。 這才是正確的筆記。"},
+                {"who":"nicola", "text":"什麼？！？ 6/7？ 讓我查一下筆記。\n……\n6月7日的所有內容都是關於壓強翻轉器的設計。 如果壓強翻轉了，他怎麼能和我們溝通呢…… 翻轉的…… 翻轉？…… 對了！\n\n抱歉， 之前我的所在地使用的日月順序是相反的。 這才是正確的筆記。"},
                 {"who":"ada", "text":"7月6日\n\n我懷疑我們的通訊管道被破壞了！ 經過幾天的懇求， Moorhouse先生終於同意了與我一同進行研究工作。 我們通過通訊管道交換了各自實驗室門的密碼。 但在幾小時後， 我就收到了一張他手寫的便條， 告知我他的實驗室已被洗劫一空， 不願再接受我的合作了。 我趕緊前往我的實驗室， 發現也已經被人闖入了！ 許多工作成果都已經遺失了。"},
                 {"who":"ada", "text":"我把密碼保存地很安全， 而Charles也肯定不會做出這種事。 我立刻把實驗室的門換掉了。 Charles寧死也不願開Moorhouse的低壓蒸汽門。"},
-                {"who":"ada", "text":"我感覺這裡不再安全了。 我聯繫了我姐姐， 告知她我很快就會前往她家。 這正適合測試我的新加密系統， 因為它能保持我們的通訊安全。 Charles曾答應過會通過管道向姐姐的住所發送訊號， 但我仍然沒有收到。 他有時真的很健忘。"},
+                {"who":"ada", "text":"我感覺這裡不再安全了。 我聯繫了我姊姊， 告知她我很快就會前往她家。 這正適合測試我的新加密系統， 因為它能保持我們的通訊安全。 Charles曾答應過會通過管道向姊姊的住所發送訊號， 但我仍然沒有收到。 他有時真的很健忘。"},
                 {"who":"nicola", "text":"那是她最後一篇筆記。\n\n哦等等！ 我以為這根管道不會通向哪裡， 所以把這些元件都用到我們的其他設計中了。 還好有些管道是是焊住的， 它們還留在原處。 加密部分似乎基本上還可以正常工作。"}
             ],
             [
@@ -1278,29 +1278,29 @@
                 {"who":"nicola", "text":"至少我們知道了他的比較器到哪裡去了。"}
             ],
             [
-                {"who":"nicola", "text":"簡直不可思議！ 我們可以用這種方法提高所有設計的精度。 Chavvington女士的姐姐一定有更多關於這些技術的資訊。\n\n80 PSI [你好]"},
+                {"who":"nicola", "text":"簡直不可思議！ 我們可以用這種方法提高所有設計的精度。 Chavvington女士的姊姊一定有更多關於這些技術的資訊。\n\n80 PSI [你好]"},
                 {"who":"ada", "text":"80 PSI [你好]\n93 PSI [這裡是 Ada Chavvington]\n"},
                 {"who":"nicola", "text":"60 PSI [誰?]\n73 PSI [重複]"},
                 {"who":"ada", "text":"25 PSI [A], 28 PSI [D], 25 PSI [A]\n24 PSI [_]\n27 PSI [C], 32 PSI [H], 25 PSI [A], 46 PSI [V], 46 PSI [V], 33 PSI [I], 38 PSI [N], 31 PSI [G], 44 PSI [T], 39 PSI [O], 38 PSI [N]"},
-                {"who":"nicola", "text":"怎麼會這樣？ 我們得馬上通知Chavvington先生。\n……\nChavvington先生！ 我們與Chavvington女士的姐姐的住處聯繫上了， 但另一端的人卻自稱就是Chavvington女士本人！"},
+                {"who":"nicola", "text":"怎麼會這樣？ 我們得馬上通知Chavvington先生。\n……\nChavvington先生！ 我們與Chavvington女士的姊姊的住處聯繫上了， 但另一端的人卻自稱就是Chavvington女士本人！"},
                 {"who":"charles", "text":"啊， 那應該就是Ada吧。"},
-                {"who":"nicola", "text":"但……但是Chavvington先生， 你說Ada離世了。"},
-                {"who":"charles", "text":"胡說八道！ Ada好好活著呢， 現在和她姐姐住在一起。 等我們解決了高壓蒸汽不知去向的問題後她才回來。"},
+                {"who":"nicola", "text":"但…… 但是Chavvington先生， 你說Ada離世了。"},
+                {"who":"charles", "text":"胡說八道！ Ada好好活著呢， 現在和她姊姊住在一起。 等我們解決了高壓蒸汽不知去向的問題後她才回來。"},
                 {"who":"nicola", "text":"但你說她「離去」了。"},
-                {"who":"charles", "text":"對啊， 她「離」開這裡「去」她姐姐的……"},
+                {"who":"charles", "text":"對啊， 她「離」開這裡「去」她姊姊的……"},
                 {"who":"nicola", "text":"每個人都覺得她離世了……"},
-                {"who":"charles", "text":"嗯……好吧……我想了想， 這就解釋了為什麼會有人送我花和卡片， 對我表示同情。 我本來很感動人們對我失去高壓蒸汽感到擔心……\n\n不過這些都無關啦。 你越早完成蒸汽計算器， 我們就能越早弄清真相。 趕緊繼續研究。"},
+                {"who":"charles", "text":"嗯…… 好吧…… 我想了想， 這就解釋了為什麼會有人送我花和卡片， 對我表示同情。 我本來很感動人們對我失去高壓蒸汽感到擔心……\n\n不過這些都無關啦。 你越早完成蒸汽計算器， 我們就能越早弄清真相。 趕緊繼續研究。"},
                 {"who":"ada", "text":"6月27日\n我和Moorhouse先生在蒸汽計算方面取得了進展。 我們以前的設計不夠精確， 只有當閥門完全平衡產生 50 PSI 的輸出時， 結果才是精確的。 對於這一點我突然想到了一個主意。\n\n通過放置另一個閥門並調整其開度， 我可以探測任何閥門的開度。 因為只有當兩個閥門開度相等時， 它們之間的壓強才會精確到 50 PSI。 我所要做的就是不斷調整數值， 直到這個情況出現。"},
                 {"who":"ada", "text":"利用這個方法， Moorhouse先生設計出了一個蒸汽壓強加法器。 我十分希望他能向我透露他是怎麼製作的。\n\nMoorhouse先生非常內向， 也十分聰明。 唉， 他總是害怕分享他的創新成果。"}
             ],
             [
-                {"who":"nicola", "text":"Well it works. At low pressures the design reproduces the incoming value precisely. But it fails to reach the high values. Lady Chavvington describes a second sensor which works well at reproducing high pressure values, but fails on low pressures."},
+                {"who":"nicola", "text":"成功了。 這個設計在輸入是低壓時可以精確地重現輸入值， 但是很難達到高壓。 Chavvington女士有提過另一個設計是可以完好地重現高壓， 但在低壓時表現不佳。"}
             ],
             [
                 {"who":"nicola", "text":"好的， 它起作用了。 我們現在可以探測閥門的開度， 但還不清楚這對蒸汽計算有什麼幫助。 我想我們得問問Moorhouse先生。"},
                 {"who":"nicola", "text":"Moorhouse先生， 謝謝您允許我們前來拜訪。 在Chavvington女士離開的情況下， 我們正試圖繼續完成她的蒸汽計算工作。 現在只有您知道加法器的結構， 請問能否向我們透露它的結構？"},
                 {"who":"george", "text":"當然可以。 儘管她與Charles串通一同針對我， 知識的發展也不能因此停步。 我會將加法器的原理公之於眾， 以確保她不受他的傷害。 那些傳聞讓我懷疑她已經死於他手。"},
-                {"who":"nicola", "text":"Chavvington女士還活著， 現在和她姐姐住在一起。"},
+                {"who":"nicola", "text":"Chavvington女士還活著， 現在和她姊姊住在一起。"},
                 {"who":"george", "text":"這樣我就放心了。 一想到她可能還要在那高壓蒸汽的危險環境裡待上很久， 我就徹夜難眠。 假如有高壓蒸汽罐爆炸， 將會造成極大的破壞， 後果難以想像。 在擺脫這種高壓恐怖之前， 我是不會停下的……\n\n哦……我剛剛說到哪裡了？ 對了是加法器。 在你做它之前， 你必須先做一個減法器。 閥門的開度等於「＋」端的壓強減去「－」端的壓強。 先製造一個兩端有壓強差的閥門， 然後測量它的開度就可以得出結果。"},
                 {"who":"george", "text":"但現在你該走了。 既然Ada還活著， 我就要準備一件重要的任務。"}
             ],
@@ -1313,7 +1313,7 @@
                 {"who":"nicola", "text":"80 PSI [你好]\n94 PSI [這邊是 Charles Chavvington]\n76 PSI [我親愛的天使]\n52 PSI [我的心嚮往著你]\n68 PSI [我熱切地等待你的歸來]\n70 PSI [沒有你我的生命就沒有意義]"},
                 {"who":"charles", "text":"好極了， 看來現在減法器已經做好了！ 正如我已離去的妻子所說……"},
                 {"who":"nicola", "text":"先生！ 你不要再用那個詞了！ 人們都開始認為你是殺人犯了……"},
-                {"who":"charles", "text":"嗯……好吧。 正如……不再和我們待在一起的Ada所說， 「加法器就是反向的減法器。 輸出端減去其中一個輸入應該等於另一個輸入。」 但是應該減去哪個輸入？\n\n她有一段時間很沮喪， 因為當一個輸入為零時， 她的設計會卡住； 而交換輸入後， 另一個輸入為零也會使設計卡住。 後來她靈光一現， 意識到需要把兩種方法結合。"}
+                {"who":"charles", "text":"嗯…… 好吧。 正如…… 不再和我們待在一起的Ada所說， 「加法器就是反向的減法器。 輸出端減去其中一個輸入應該等於另一個輸入。」 但是應該減去哪個輸入？\n\n她有一段時間很沮喪， 因為當一個輸入為零時， 她的設計會卡住； 而交換輸入後， 另一個輸入為零也會使設計卡住。 後來她靈光一現， 意識到需要把兩種方法結合。"}
             ],
             [
                 {"who":"annie", "text":"為什麼你們沒有回覆我的訊息？"},
@@ -1351,16 +1351,16 @@
             [
                 {"who":"ada", "text":"謝謝你， Gertrude。 要不是你這麼快就解決了它， 它可能就會帶來災難了。"},
                 {"who":"george", "text":"對此我也十分欽佩。 Ada， 我對指控你洗劫我的實驗室感到十分抱歉。 Gertrude和Nicola能幫助我進行設計嗎？ 我認為他們的意見會很有建設性。"},
-                {"who":"ada", "text":"別再說這些了， 我也得向你道歉。 為表達我的善意， 請隨意使用我的……我們的實驗室。 Easley女士已經有實驗室的權限了。 我認為Charles和我需要在這場騷亂後休息一下。 我們將在幾天後回來， 希望到時能看到你們的進展。"},
+                {"who":"ada", "text":"別再說這些了， 我也得向你道歉。 為表達我的善意， 請隨意使用我的…… 我們的實驗室。 Easley女士已經有實驗室的權限了。 我認為Charles和我需要在這場騷亂後休息一下。 我們將在幾天後回來， 希望到時能看到你們的進展。"},
                 {"who":"george", "text":"好的， 一路平安。\n\nNicola， 你能幫我找找那個乘二器嗎？"},
                 {"who":"nicola", "text":"就在這裡。\n\n它的構造很簡單， 但我發現這個設計模式非常有用。"},
-                {"who":"george", "text":"Indeed. Although this device amplifies values from a specific range of 0 to 50 to the range of 0 to 100. Given a maximum value, I do believe we can construct an amplifier which will scale for any given maximum."},
-                {"who":"nicola", "text":"We shall name it the Scale element."},
-                {"who":"george", "text":"Quite, although we should invent it first. The North can be our maximum and the East output will tell us where the West input lies."}
+                {"who":"george", "text":"的確。 這個裝置只能把數值從0到50這一範圍放大成0到100。 不過我相信， 給定一個最大值， 我們可以製造一個元件按比例把它放大到100。"},
+                {"who":"nicola", "text":"我們可以把它命名為「等比放大器」。"},
+                {"who":"george", "text":"是的， 但首先我們應該把它製造出來。 北端代表那個最大值， 東端要表示出西端在0到最大值之間的位置。"}
             ],
             [
-                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
+                {"who":"nicola", "text":"那沒有很難嘛。 但假如我們想要放大的範圍不是從0開始呢？"},
+                {"who":"george", "text":"這是個很有趣的想法。 Gertrude， 你可以製造一個放大器， 把任意範圍放大成0到100嗎？\n\n北端是這個範圍的最大值， 南端是這個範圍的最小值。"}
             ],
             [
                 {"who":"george", "text":"很好， 現在我們可以放大任何壓強範圍。 接下來需要一種探測壓強是否在某個範圍內的元件。 看看這個「蒸汽計速器」。\n\nAda為Charles造了這個來測量通過的蒸汽量。 當蒸汽通過長管道時， 它的壓強會有所損失。 蒸汽的流速越快， 壓強損失就越大。 如果兩邊的壓強相同， 蒸汽就不會流動。 她甚至在管道裡放了一些閥門來增加阻抗， 使差別更加明顯。"},
@@ -1398,7 +1398,7 @@
                 {"who":"ada", "text":"高壓……?"},
                 {"who":"charles", "text":"高壓蒸汽！"},
                 {"who":"ada", "text":"親愛的， 我對你與George的重歸於好感到高興， 但你們兩個不是應該在計劃程式部分的設計嗎？"},
-                {"who":"charles", "text":"早就完成了！ George正在完善這個詩……或者該說是這份需求。"},
+                {"who":"charles", "text":"早就完成了！ George正在完善這個詩…… 或者該說是這份需求。"},
                 {"who":"ada", "text":"哦！ 我們必須趕緊完成最大值器， 然後就該去見我們的工程師了。\n\n這次輸出兩個輸入中的較大值。"}
             ],
             [
@@ -1427,7 +1427,7 @@
                 {"who":"charles", "text":"George和我剛把一台最棒的詩歌朗誦器送給了Easley女士。 它被設置成朗誦George對她的感情。\n\n只要有足夠的調整， 就可以把這樣的裝置縮小到馬的大小。"},
                 {"who":"ada", "text":"聽起來不錯。 但我希望你們有翻轉壓強， 因為Annie記錄的的編碼都是相反的。"},
                 {"who":"george", "text":"什麼！？！ Nicola！ 我剛發送給她的訊息是什麼？"},
-                {"who":"nicola", "text":"嗯……看起來你稱讚了她華麗的鬍鬚十分吸引人……請求得到她的淫穢蝕刻畫……並指示她在黎明時攻擊敵人。"},
+                {"who":"nicola", "text":"嗯…… 看起來你稱讚了她華麗的鬍鬚十分吸引人…… 請求得到她的淫穢蝕刻畫…… 並指示她在黎明時攻擊敵人。"},
                 {"who":"george", "text":"...\n好的， 我回我的住處去喝瓶白蘭地。"},
                 {"who":"ada", "text":"Charles！ 去幫幫他!\n\n他們離開了， 但你們兩個還可以來幫幫忙。 Charles本該在這堵牆上安裝兩根管道， 但現在只有一根。 我需要把南北兩方和東西兩方連接起來。 在新管道安裝好之前有沒有辦法做到這一點？"},
                 {"who":"nicola", "text":"我有個好主意。 幸好我們活在有時脈的世界裡。"}
@@ -1454,7 +1454,7 @@
             [
                 {"who":"nicola", "text":"Chavvington女士！ 我搜遍了整個城市， 也找不到……"},
                 {"who":"ada", "text":"我們知道他們在哪裡！ George透過不斷改變蒸汽開關給我們發送了訊息。 他們被鎖在Cogsworth鐘錶廠的蒸汽房裡。 我們現在就去那裡！"},
-                {"who":"charles", "text":"[嘭][嘭][嘭]\n把我們救出來！ 房間裡充滿了高壓蒸汽！ 我要被我愛的東西殺死了， 這可真是殘酷的諷刺。"},
+                {"who":"charles", "text":"[砰][砰][砰]\n把我們救出來！ 房間裡充滿了高壓蒸汽！ 我要被我愛的東西殺死了， 這可真是殘酷的諷刺。"},
                 {"who":"nicola", "text":"這扇門沒辦法用鑰匙打開了！ 看來有人朝門鎖開過槍， 裡面的管道破裂了！ 我對撬鎖一無所知， 更別說是斷了的鎖。"}
             ],
             [
@@ -1498,7 +1498,7 @@
                 {"who":"nicola", "text":"當輸入高壓時， 連接北端， 這就是「常開開關」的設計。 當輸入低壓時， 連接南端， 這就是「常閉開關」的設計。"}
             ],
             [
-                {"who":"nicola", "text":"We need two valves and one steam inlet. One valve is switched by the North port and connect a steam inlet to the East. The other valve connects the East port to air."}
+                {"who":"nicola", "text":"我們需要兩個閥門和一個蒸汽源。 一個閥門由北端控制， 連接蒸汽源和東端。 另一個閥門連接東端和大氣。"}
             ],
             [
                 {"who":"nicola", "text":"讓我們從基礎部分開始。 當輸入是高壓時， 將輸出連接到蒸汽源； 當輸入是低壓時， 將輸出連接到大氣。 只需保持管道末端打開就能連接到大氣。\n\n正如Chavvington女士所指出的， 閥門是類比的。 當數值在0到100之間時， 閥門會依照比例打開部分。"}
@@ -1546,7 +1546,7 @@
                 {"who":"nicola", "text":"這次我們反而需要震盪了。 將放大器排成環狀會使設計不穩定， 輸出值會上下震盪。"}
             ],
             [
-                {"who":"nicola", "text":"Take a look at our Mul2 design. In this case, instead of using 50, we can use any pressure from the North."}
+                {"who":"nicola", "text":"回去看看乘二器的設計。 這裡我們可以把50源換成北端的壓強。"}
             ],
             [
                 {"who":"nicola", "text":"當西端高於南端時， 增加輸出的蒸汽。 當西端低於北端時， 減少輸出的蒸汽。"}
