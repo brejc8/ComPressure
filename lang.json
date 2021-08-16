@@ -47,6 +47,7 @@
             "Info"                      :   "Info",
             "Select language"           :   "Select language",
             "Number resolution"         :   "Number resolution",
+            "User levels"               :   "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button.",
             "Cross"                     :   "Cross",
@@ -585,6 +586,7 @@
             "Info"                      :   "关于",
             "Select language"           :   "语言",
             "Number resolution"         :   "Number resolution",
+            "User levels"               :   "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "如果您在游玩过程中遇到困难， 可以前来Discord上与优秀的高压蒸汽协会成员一同讨论您遇到的挑战。 按下Esc并点击“加入Discord服务器”来加入。",
 
@@ -1124,6 +1126,7 @@
             "Info"                      :   "關於",
             "Select language"           :   "語言",
             "Number resolution"         :   "小數精確度",
+            "User levels"               :   "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "如果您在遊玩過程中遇到困難， 可以上Discord與優秀的高壓蒸汽協會成員一同討論您遇到的挑戰。 按下Esc並點「加入Discord伺服器」來加入。",
             "Cross":      "交叉",
@@ -1661,6 +1664,7 @@
             "Info"                      :   "Informace",
             "Select language"           :   "Vybrat jazyk",
             "Number resolution"         :   "Number resolution",
+            "User levels"               :   "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "Pokud se vám nedaří, zkuste probrat své problémy s odborníky Spolku pro Vysokotlakou Páru na našem Discordu. Zmáčkněte Esc a klikněte na tlačítko \"Přidejte se k našemu Discordu\".",
 
@@ -2197,6 +2201,7 @@
             "Info"                      : "Info",
             "Select language"           : "Sprache auswählen",
             "Number resolution"         : "Number resolution",
+            "User levels"               : "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "Wenn Sie nicht weiterkommen, können Sie Ihre Herausforderungen mit den klügsten Köpfen der High Pressure Steam Society auf Discord besprechen. Drücken Sie Esc und klicken Sie auf die Schaltfläche \"Join our Discord group\".",
             "Cross"                     : "Kreuz",
@@ -2730,6 +2735,7 @@
             "Info" : "クレジット",
             "Select language" : "言語選択",
             "Number resolution" : "Number resolution",
+            "User levels"               :   "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "もし「デザイン」で悩んだら、\n「Discord」にある高圧蒸気アカデミーの知識人の皆さんと議論するのをオススメするよ。\n「Esc」キーから「Discord に参加」を押してみたまえ。",
             "Cross" : "交差",
@@ -3264,6 +3270,7 @@
             "Info"                      :   "Infos",
             "Select language"           :   "Sélectionner la langue",
             "Number resolution"         :   "Précision des nombres",
+            "User levels"               :   "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "Si vous êtes bloquée, envisagez de discuter de vos défis avec les esprits les plus brillants de notre Société de la Vapeur à Haute Pression sur Discord. Appuyez sur Échap et cliquez sur le bouton \"Rejoindre notre groupe Discord\".",
             "Cross"                     :   "Croix",
@@ -3803,6 +3810,7 @@
             "Info"                      :    "Информация",
             "Select language"           :    "Выбрать язык",
             "Number resolution"         :    "Числовое разрешение",
+            "User levels"               :   "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                                                                         "Если вы застряли, подумайте о том, чтобы обсудить свои проблемы с лучшими умами нашего Steam Society высокого давления на Discord. Нажмите Esc и нажмите кнопку \"Присоединяйтесь к нашей группе Discord\".",
             "Cross"                     :    "Крест",
@@ -4340,6 +4348,7 @@
             "Info"                      :   "Info",
             "Select language"           :   "Select language",
             "Number resolution"         :   "Number resolution",
+            "User levels"               :   "User levels",
             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button." :
                                             "If you are stuck, consider discussing your challenges with the brightest minds of our High Pressure Steam Society on Discord. Press Esc and click the \"Join our Discord group\" button.",
             "Cross"                     :   "Cross",
