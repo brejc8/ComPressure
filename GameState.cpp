@@ -3830,6 +3830,7 @@ void GameState::mouse_click_in_grid(unsigned clicks)
         current_circuit->undo(level_set);
         selected_elements.clear();
         selected_signs.clear();
+        level_set->touch(current_level_index);
         first_deletion = true;
     }
     else if (mouse_state == MOUSE_STATE_LOCKING_BLOCKS)
