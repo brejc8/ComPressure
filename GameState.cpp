@@ -603,7 +603,6 @@ void GameState::advance()
 
 
     {
-        current_level->circuit->clean();
         if (skip_to_next_subtest)
         {
             count = current_level->substep_count - current_level->substep_index;
@@ -636,6 +635,7 @@ void GameState::advance()
             if (skip_to_subtest_index < 0 || skip_to_subtest_index == current_level->sim_point_index)
                 skip_to_next_subtest = false;
         }
+        current_level->circuit->clean();
     }
     if (!current_level->server_refreshed && !current_level_set_is_inspected && current_level->best_design)
     {
