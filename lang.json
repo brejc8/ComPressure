@@ -285,7 +285,7 @@
             ],
             [
                 {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Good, now we can zoom into any pressure range we choose. What I need next is a way of detecting if we are within a range. Take a look at this \"steam speedometer\".\n\nAda made it for Charles to measure the amount of steam passing through it. When steam passes through a long pipe, it will lose some pressure. The faster the steam is passing through, the more pressure it loses. If the two sides are at same pressure, there must be no moving steam. She even put some valves in the pipe to increase the resistance and make the difference greater."},
@@ -825,7 +825,7 @@
             ],
             [
                 {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"很好， 现在我们可以放大任何压强范围。 接下来需要一种探测压强是否在某个范围内的元件。 看看这个“蒸汽速度表”。\n\nAda为Charles造了这个来测量蒸汽量。 当蒸汽通过长管道时， 它的压强会有所损失。 蒸汽的流速越快， 压强损失就越大。 如果两边的压强相同， 蒸汽就不会流动。 她甚至在管道里放了一些阀门来增加阻抗， 使差别更加明显。"},
@@ -1900,7 +1900,7 @@
             ],
             [
                 {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Good, now we can zoom into any pressure range we choose. What I need next is a way of detecting if we are within a range. Take a look at this \"steam speedometer\".\n\nAda made it for Charles to measure the amount of steam passing through it. When steam passes through a long pipe, it will lose some pressure. The faster the steam is passing through, the more pressure it loses. If the two sides are at same pressure, there must be no moving steam. She even put some valves in the pipe to increase the resistance and make the difference greater."},
@@ -3509,7 +3509,7 @@
             ],
             [
                  {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                 {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
+                 {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
             ],
             [
                  {"who":"george", "text":"Bon, maintenant nous pouvons zoomer sur n'importe quelle plage de pression que nous choisissons. Ce dont j'ai besoin ensuite, c'est d'un moyen de détecter si nous sommes dans une plage. Jetez un œil à ce \"compteur de vitesse à vapeur\".\n\nAda a demandé à Charles de mesurer la quantité de vapeur qui la traversait. Lorsque la vapeur passe dans un long tuyau, elle perd de la pression. Plus la vapeur passe vite, plus elle perd de la pression. Si les deux côtés sont à la même pression, il ne doit pas y avoir de vapeur en mouvement. Elle a même mis des vannes dans le tuyau pour augmenter la résistance et faire la différence plus grande."},
@@ -4047,7 +4047,7 @@
             ],
             [
                 {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Good, теперь мы можем увеличить любой диапазон давления по нашему выбору. Что мне нужно дальше, так это способ определить, находимся ли мы в пределах досягаемости. Взгляните на этот «паровой спидометр».\n\nАда попросила Чарльза измерить количество пара, проходящего через него. Когда пар проходит по длинной трубе, он теряет некоторое давление. Чем быстрее проходит пар, тем большее давление он теряет. Если обе стороны находятся под одинаковым давлением, движущийся пар не должен быть. Она даже вставила несколько клапанов в трубу, чтобы увеличить сопротивление и сделать разницу больше."},
@@ -4586,7 +4586,7 @@
             ],
             [
                 {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be out maximum and South be our minimum of the range."}
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Bien, ahora podemos acercarnos a cualquier rango de presión que elijamos. Lo que necesito a continuación es una forma de detectar si estamos dentro de un rango. Echa un vistazo a este \" velocímetro de vapor \". \n\nAda lo hizo para Charles para medir la cantidad de vapor que pasa a través de él. Cuando el vapor pasa a través de una tubería larga, pierde algo de presión. Cuanto más rápido pasa el vapor, más presión pierde. Si los dos lados están a la misma presión, debe haber sin vapor en movimiento. Incluso puso algunas válvulas en la tubería para aumentar la resistencia y hacer la diferencia mayor."},
