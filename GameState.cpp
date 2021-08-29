@@ -603,6 +603,7 @@ void GameState::advance()
 
 
     {
+        current_circuit->clean();
         if (skip_to_next_subtest)
         {
             count = current_level->substep_count - current_level->substep_index;

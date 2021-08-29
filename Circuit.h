@@ -73,6 +73,14 @@ public:
         value += move_next;
         move_next = 0;
     }
+
+    void clean(void)
+    {
+        if (value < 0)
+            value = 0;
+        if (value > (PRESSURE_SCALAR * 100))
+            value = (PRESSURE_SCALAR * 100);
+    }
     
     CircuitPressure(Pressure value_):
         value(value_)
@@ -327,6 +335,12 @@ public:
         for (CircuitPressure* con : fast_pressures_vent)
             con->post();
     }
+    void clean()
+    {
+        for (CircuitPressure* con : fast_pressures)
+            con->clean();
+    }
+    
     void reset_steam_used() {steam_used = 0;}
     int64_t get_steam_used() {return std::min(int64_t(INT32_MAX), (steam_used + PRESSURE_SCALAR / 2) / PRESSURE_SCALAR);}
 };
@@ -618,6 +632,7 @@ public:
     void sim_prep(PressureAdjacent adj, FastSim& fast_sim);
     void prep(PressureAdjacent);
     void sim_pre(PressureAdjacent);
+    void clean(){fast_sim.clean();}
     void remove_circles(LevelSet* level_set, std::set<unsigned> seen = {});
     void updated_ports() {fast_prepped = false;};
     void ammend();
