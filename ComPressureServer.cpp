@@ -592,8 +592,9 @@ public:
     {
         SaveObjectList* resp = new SaveObjectList;
 
-        for (CustomLevel &clevel :custom_levels)
+        for (std::list<CustomLevel>::reverse_iterator i = custom_levels.rbegin(); i != custom_levels.rend(); ++i)
         {
+            CustomLevel &clevel = *i;
             SaveObjectMap* omap = new SaveObjectMap;
             omap->add_string("name", clevel.name);
             resp->add_item(omap);
