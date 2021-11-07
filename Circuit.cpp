@@ -1826,6 +1826,8 @@ void Circuit::copy_in(Circuit* other)
         delete elements[pos.y][pos.x];
         elements[pos.y][pos.x] = other->elements[pos.y][pos.x]->copy();
         blocked[pos.y][pos.x] = other->blocked[pos.y][pos.x];
+        if (blocked[pos.y][pos.x])
+            elements[pos.y][pos.x]->set_read_only(true);
     }
     signs = other->signs;
 }
