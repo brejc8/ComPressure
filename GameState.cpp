@@ -841,10 +841,7 @@ int GameState::render_line_wrapped(XYPos tl, std::string text, int width, int my
                 return cpos.y - tl.y;
             start = last_space + 1;
         }
-        else
-        {
-            last_space = next_space;
-        }
+        last_space = next_space;
     }
 
 }
