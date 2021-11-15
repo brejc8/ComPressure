@@ -104,7 +104,7 @@
             "Pressure at different points is visible on pipe connections. Note how each pipe has a little resistance.",
             "Valves allow steam to pass through them if the (+) side of the valve is at a higher pressure than the (-) side. The higher it is, the more the valve is open. Steam on the (+) and (-) sides is not consumed.\n\nHere, the (-) side is vented to atmosphere and thus at 0 pressure. With (+) at 100 PSI and (-) at 0 PSI, the valve is 100% open. If (+) is at 75 and (-) is at 25, the valve will be 50% open.",
             "If the pressure on the (+) side is equal or lower than the (-) side, the valve becomes closed and no steam will pass through.",
-            "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is lower than 100 PSI.\n\nAs before, the openness of the valve is the pressure on the (+) side minus the pressture on the (-) side.",
+            "By pressurising (+) side with a steam inlet, the valve will become open only if the pressure on the (-) side is lower than 100 PSI.\n\nAs before, the openness of the valve is the pressure on the (+) side minus the pressure on the (-) side.",
             "Applying high pressure to the (-) side will close the valve as the pressure on the (-) side becomes equal or higher than the (+) side.",
             "The test menu allows you to inspect how well your design is performing. The first three buttons pause the testing, repeatedly run a single test and run all tests respectively. You can also use hotkeys 1, 2 and 3.\n\nThe current scores for individual tests are shown with the scores of best design seen below. On the right is the final score formed from the worst of all tests.",
             "The next panel shows the sequence of inputs and expected outputs for the current test. The current phase is highlighted. The output recorded on the last run is shown to the right. You can press Space to fast forward to the next phase.\n\nThe score is based on how close the output is to the target value. The graph shows the output value during the final stage of the test. The faded line in the graph shows the path of the best design so far.",
@@ -2907,7 +2907,7 @@
                 {"who": "ada", "text": "この発見によって、ムーアハウス卿は「蒸気圧を加える部品」を作ることができた。\n\nムーアハウス卿はとてもシャイな反面、頭が切れるお方ではあるが、\n自ら思いついた革新的な技術の共有を\nひどく恐れる傾向にあることは大変残念だ。』"}
             ],
             [
-                {"who":"nicola", "text":"低圧では、設計は入力値を正確に再現しますが、高い値には到達しません。 LadyChavvingtonは、高圧値の再現には適しているが、低圧では失敗する2番目のセンサーについて説明しています。"}
+                {"who":"nicola", "text":"低圧では、設計は入力値を正確に再現しますが、 高い値には到達しません。 LadyChavvingtonは、高圧値の再現には適しているが、 低圧では失敗する2番目のセンサーについて説明しています。"}
             ],
             [
                 {"who": "nicola", "text": "うまくいきましたね。\nこれで、バルブの開度が正確に把握できるようにはなりましたが、\nこれでどうやって蒸気コンピュータを作ればいいかよく分かりませんね。\n\nムーアハウス卿に聞いてみましょうか。"},
@@ -2972,7 +2972,12 @@
                 {"who": "george", "text": "確かにその通りだが、まず我々がそれを開発すべきだろう。\n\n北を「最大」、南が「最小」となるように設定してみようか。\n東側の出力が、範囲内のどこに\n西側の入力が存在するかを教えてくれるだろう。"}
             ],
             [
-                {"who": "george", "text": "よし、これで任意の圧力範囲にズームできるようになった。\n次に必要となるのは、その範囲内にあるかどうかを検出する方法だろう。\n\nこの「蒸気速度計」で見てみよう。\nこれは、エイダがチャールズの為に作ったもので、\n中を通る蒸気の量を測定するためのものだ。\n\n長いパイプの中を蒸気が通ると、ある程度の圧力が失われる。\n蒸気が速く通過すればするほど、より多くの圧力が失われるのだ。\n圧力の量が同じであれば、蒸気の動きはないはずだ。\n彼女はパイプの中にいくつかバルブを配置して抵抗を増やし、\nその圧力差を大きくしていたのだ。"},
+                {"who":"nicola", "text":"それはそれほど難しいことではありませんでしたが、 ゼロから始まらない範囲にズームインしたい場合はどうでしょうか。"},
+                {"who":"george", "text":"それは興味深い考えです。 Gertrude、 最小値と最大値を0〜100の範囲にスケーリングするズーム要素を作成できますか？\n\n北を最大、南を最小の範囲とします。"}
+            ],
+            [
+                {"who": "george", "text": "よし、これで任意の圧力範囲にズームできるようになった。\n次に必要となるのは、その範囲内にあるかどうかを検出する方法だろう。\n\nこの「蒸気速度計」で見てみよう。\nこれは、エイダがチャールズの為に作ったもので、\n中を通る蒸気の量を測定するためのものだ。"},
+                {"who": "george", "text": "長いパイプの中を蒸気が通ると、ある程度の圧力が失われる。\n蒸気が速く通過すればするほど、より多くの圧力が失われるのだ。\n圧力の量が同じであれば、蒸気の動きはないはずだ。 \n彼女はパイプの中にいくつかバルブを配置して抵抗を増やし、\nその圧力差を大きくしていたのだ。"},
                 {"who": "george", "text": "私が必要としているのは、\n西側の基準入力が2つの圧力間にあるかどうかを判断する方法だ。\n\n基準入力値は北側よりも低く、南側よりも高くなければならないだろう。"}
             ],
             [
@@ -3070,7 +3075,7 @@
                 {"who": "charles", "text": "ゲルトルード!\nワシたちの命を救ってくれただけでなく、\n高圧蒸気機関を使ってくれたこと、感謝してもしきれんぞい！"},
                 {"who": "ada", "text": "ダーリン、この恐ろしい状況にはどうやって巻き込まれたの?" },
                 {"who": "charles", "text": "ジョージとワシは、「オールド・ブラス」という酒場で数杯飲んでいたんじゃが、\n急に視界がばやけての。 次にこの部屋で目を覚ました時、\nコグスワースが「私の人生に台無しにした」とワシらを非難していたのを覚えておる。\nアカデミーを解雇された後、彼の出資者たちは疑問を抱き始めた。\nヤツの目的は、ワシらを黙らせ、出資者たちの資産を奪い、\nそして逃亡に必要な時間を稼ぐことだったのじゃ。\n\n_ _ _ 早く飛行場へ！逃がしてはならん！"},
-                {"who": "george", "text": "このパイプは西から東へ出発コードを送信する。 それぞれ3つのコードが設定されていて、「2ティック毎」にコードが「1つ」ずつ送信されるようになっているのだ。\n\nコグスワースのコード「27、39、31」を見れば、\n彼がここにいて逃げようとしていることがわかるだろう。"},
+                {"who": "george", "text": "このパイプは西から東へ出発コードを送信する。 それぞれ3つのコードが設定されていて、「2ティック毎」にコードが「1つ」ずつ送信されるようになっているのだ。 \n\nコグスワースのコード「27、39、31」を見れば、\n彼がここにいて逃げようとしていることがわかるだろう。"},
                 {"who": "ada", "text": "それだと手遅れになるわ。\nコードを送信してる合間に、彼は出発許可を得て、逃げられてしまうわ。\n\n飛行場の管理者に、彼を逃がさないよう伝達しなければならないわね。"},
                 {"who": "george", "text": "残念だが、マネージャーはコグスワースのマシンに置き換えられてしまった。\nおそらく危険な装置だろう。\n\nコグスワースの出発コードを許すわけにはいかないが、\n飛行場を混乱させることもあってはならないだろう。\n彼に気づかれないように事を成す必要があるな。\n\n信号を数ティック遅らせ、表示された瞬間に削除できるとしたら？\nそうすれば、ヤツを探し、捕まえる時間が確保できるだろう。"}
             ],
