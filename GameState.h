@@ -151,7 +151,7 @@ public:
     bool skip_to_next_subtest = false;
     int skip_to_subtest_index = -1;
 
-    unsigned fade_type = 0;
+    unsigned fade_type = 2;
     unsigned frame_index = 0;
     unsigned game_speed = 20;
     uint8_t steam_frame_ns[10][10] = {};

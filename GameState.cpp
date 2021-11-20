@@ -1644,7 +1644,7 @@ void GameState::render(bool saving)
         XYPos mouse_grid = ((mouse - grid_offset) / scale) / 32;
         XYPos mouse_rel = ((mouse - grid_offset) / scale) - (pipe_start_grid_pos * 32);
         if (fade_type == 2)
-            SDL_SetTextureAlphaMod(sdl_texture, ((cos(double(frame_index) / 20)+1) / 2)  * 256);
+            SDL_SetTextureAlphaMod(sdl_texture, ((cos(double(frame_index) / 20)+2) / 3)  * 256);
         if (pipe_start_ns)
         {
             mouse_rel.x -= 16;
@@ -1730,7 +1730,7 @@ void GameState::render(bool saving)
         n3 = *it;
         it++;
         if (fade_type == 2)
-            SDL_SetTextureAlphaMod(sdl_texture, ((cos(double(frame_index) / 20)+1) / 2)  * 256);
+            SDL_SetTextureAlphaMod(sdl_texture, ((cos(double(frame_index) / 20)+2) / 3)  * 256);
         for (;it != pipe_drag_list.end(); ++it)
         {
             n1 = n2;
