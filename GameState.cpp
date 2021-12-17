@@ -2770,18 +2770,23 @@ void GameState::render(bool saving)
         
         if (level->global_score_graph_set)
         {
+            bool you_done = false;
             int64_t my_score = level->global_fetched_score;
             for (int i = 0; i < 200-1; i++)
             {
                 int top;
                 int size;
                 unsigned colour = 6;
+                bool you = false;
                 if (test_mode == TEST_MODE_ACCURACY)
                 {
                     int v1 = pressure_as_percent(level->global_score_graph[i]);
                     int v2 = pressure_as_percent(level->global_score_graph[i + 1]);
                     if ((level->global_score_graph[i] >= my_score) && (level->global_score_graph[i + 1] <= my_score))
+                    {
                         colour = 3;
+                        you = true;
+                    }
                     top = 100 - std::max(v1, v2);
                     size = abs(v1 - v2) + 1;
                 }
@@ -2790,7 +2795,10 @@ void GameState::render(bool saving)
                     int64_t v1 = level->global_score_graph[i];
                     int64_t v2 = level->global_score_graph[i + 1];
                     if ((v1 <= my_score) && (v2 >= my_score))
+                    {
                         colour = 3;
+                        you = true;
+                    }
                     int64_t range = level->global_score_graph[199];
                     if (!range)
                         range = 1;
@@ -2802,6 +2810,14 @@ void GameState::render(bool saving)
                 SDL_Rect src_rect = {503, 80 + (int)colour, 1, 1};
                 SDL_Rect dst_rect = {i * scale + graph_pos.x, top * scale + graph_pos.y, 1 * scale, size * scale};
                 render_texture(src_rect, dst_rect);
+
+                if (you && !you_done)
+                {
+                    you_done = true;
+                    src_rect = {256, 160, 16, 16};
+                    dst_rect = {(i - 8) * scale + graph_pos.x, top * scale + graph_pos.y, 16 * scale, 16 * scale};
+                    render_texture(src_rect, dst_rect);
+                }
             }
         }
         if (!level->global_score_graph_set || SDL_TICKS_PASSED(SDL_GetTicks(), level->global_score_graph_time + 1000 * 10))
