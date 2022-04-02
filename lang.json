@@ -3373,7 +3373,7 @@
                  {"who":"charles", "text":"Quoi !?! Ce serait de la Vapeur à Basse Pression ! Nous ne travaillons pas avec de la Vapeur à Basse pression ! Je n'ai pas fait fortune en fournissant aux gens de la Vapeur à Basse Pression !\n\nPeu importent tout ces absurdités de basse pression. Lorsque le contrôle Ouest est Haute Pression, connectez le générateur Nord, sinon connectez le générateur Sud."}
             ],
             [
-                {"who":"charles", "text":"So sehr ich die Idee auch hasse, es ist manchmal notwendig, Dampf abzulassen. Nehmen Sie den Druckbehälter im Osten. Wir möchten ihn an einen Dampfeinlass anschließen, wenn der Norden unter Hochdruck steht. Wenn im Süden Hochdruck herrscht, werden wir den Dampf an die Atmosphäre abgeben Wir nennen den Prozess der Dampfabgabe \"Entlüftung\"."}
+                {"who":"charles", "text":"Même si je déteste l'idée, il est parfois nécessaire d'évacuer de la vapeur. Prenez la sortie Est. On veut la raccorder à une arrivée de vapeur quand le Nord est en Haute Pression. Lorsque le sud est à haute pression, nous libérons la vapeur dans l'atmosphère. Nous appelons le processus de libération de la vapeur \"ventilation\""}
             ],
             [
                  {"who":"nicola", "text":"Les notes de Lady Chavvington parlent d'une connexion vapeur entre le laboratoire et la résidence de Lady Easley qui a été utilisée pour la communication."},
@@ -3652,7 +3652,7 @@
                  {"who":"nicola", "text":"Quand l'entrée est haute, on connecte le Nord. Nous savons comment faire cela grâce à la dispositif \"Normalement ouverte\". Et quand l'entrée est faible, on connecte le Sud. C'est notre dispositif \"Normalement fermée\"."}
             ],
             [
-                 {"who":"nicola", "text":"Necesitamos dos válvulas y una entrada de vapor. Una válvula es conmutada por el puerto Norte y conecta una entrada de vapor al Este. La otra válvula conecta el puerto Este al aire."}
+                 {"who":"nicola", "text":"Nous avons besoin de deux valves et d'une arrivée de vapeur. L'une des valves est activée par le port Nord et relie une entrée de vapeur à l'Est. L'autre relie le port Est à l'air"}
             ],
             [
                  {"who":"nicola", "text":"Eh bien, commençons par les bases. Lorsque l'entrée est élevée, nous allons connecter la sortie à une source de vapeur. Quand il est bas, nous nous connecterons à l'atmosphère. Pour se connecter à l'atmosphère, nous laissons simplement l'extrémité du tuyau ouverte.\n\nComme l'a noté Lady Chavvington, les vannes sont analogiques et il apparaît que lorsque les valeurs sont comprises entre 0 et 100, les vannes s'ouvrent partiellement et recréent le rapport exact."}

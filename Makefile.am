@@ -29,7 +29,6 @@ ComPressure_SOURCES =  GameState.cpp GameState.h \
                     Circuit.cpp Circuit.h \
                     Level.cpp Level.h \
                     Compress.cpp Compress.h \
-                    english.string japanese.string \
                     clip/clip.cpp clip/image.cpp $(EXTRA_SRC)
                     
 ComPressure_CXXFLAGS = @CXXFLAGS@ @SDL2_CFLAGS@ @SDL2_image_CFLAGS@ @SDL2_mixer_CFLAGS@ @SDL2_net_CFLAGS@ @SDL2_ttf_CFLAGS@ @ZLIB_CFLAGS@ @ZSTD_CFLAGS@ -I. $(STEAM_FLAGS)
