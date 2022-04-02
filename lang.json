@@ -3513,8 +3513,8 @@
                  {"who":"george", "text":"Tout à fait, bien qu'il faille d'abord l'inventer, le Nord peut être notre maximum et la sortie Est nous dira où se trouve l'entrée Ouest."}
             ],
             [
-                 {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                 {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
+                 {"who":"nicola", "text":"Ce n'était pas si dur, mais que faire si l'on veut se rapporter à un intervalle qui ne commence pas à 0 ?"},
+                 {"who":"george", "text":"C'est une question intéressante. Gertrude, pourriez-vous construire un composant de zoom ? Il faudrait pouvoir prendre n'importe quel minimum (au Sud) et maximum (au Nord), et dilater l'intervalle dans celui de 0 à 100"}
             ],
             [
                  {"who":"george", "text":"Bon, maintenant nous pouvons zoomer sur n'importe quelle plage de pression que nous choisissons. Ce dont j'ai besoin ensuite, c'est d'un moyen de détecter si nous sommes dans une plage. Jetez un œil à ce \"compteur de vitesse à vapeur\".\n\nAda a demandé à Charles de mesurer la quantité de vapeur qui la traversait. Lorsque la vapeur passe dans un long tuyau, elle perd de la pression. Plus la vapeur passe vite, plus elle perd de la pression. Si les deux côtés sont à la même pression, il ne doit pas y avoir de vapeur en mouvement. Elle a même mis des vannes dans le tuyau pour augmenter la résistance et faire la différence plus grande."},
@@ -4051,8 +4051,8 @@
                 {"who":"george", "text":"Вполне, хотя мы должны сначала изобрести это. Север может быть нашим максимумом, а выход на Восток скажет нам, где находится вход Запада."}
             ],
             [
-                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
+                {"who":"nicola", "text":"Это было не так сложно, но что, если мы хотим увеличить диапазон, который не начинается с нуля?"},
+                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100? \n\nLet North be our maximum and South be our minimum of the range."}
             ],
             [
                 {"who":"george", "text":"Good, теперь мы можем увеличить любой диапазон давления по нашему выбору. Что мне нужно дальше, так это способ определить, находимся ли мы в пределах досягаемости. Взгляните на этот «паровой спидометр».\n\nАда попросила Чарльза измерить количество пара, проходящего через него. Когда пар проходит по длинной трубе, он теряет некоторое давление. Чем быстрее проходит пар, тем большее давление он теряет. Если обе стороны находятся под одинаковым давлением, движущийся пар не должен быть. Она даже вставила несколько клапанов в трубу, чтобы увеличить сопротивление и сделать разницу больше."},
@@ -4590,8 +4590,8 @@
                 {"who":"george", "text":"Claro, aunque deberíamos inventarlo primero: el norte puede ser nuestro máximo y la salida del este nos dirá dónde está la entrada del oeste."}
             ],
             [
-                {"who":"nicola", "text":"That wasn't that difficult, but what if we wish to zoom into a range which does not begin at zero?"},
-                {"who":"george", "text":"That is an interesting idea. Gertrude, would you be able to construct a Zoom element which scales any range with a minimum and a maximum to the range 0 to 100?\n\nLet North be our maximum and South be our minimum of the range."}
+                {"who":"nicola", "text":"Eso no fue tan difícil, pero ¿qué sucede si deseamos acercarnos a un rango que no comienza en cero?"},
+                {"who":"george", "text":"Esa es una idea interesante. Gertrude, ¿serías capaz de construir un elemento Zoom que escale cualquier rango con un mínimo y un máximo al rango de 0 a 100?\n\nSea Norte nuestro máximo y Sur nuestro mínimo del rango."}
             ],
             [
                 {"who":"george", "text":"Bien, ahora podemos acercarnos a cualquier rango de presión que elijamos. Lo que necesito a continuación es una forma de detectar si estamos dentro de un rango. Echa un vistazo a este \" velocímetro de vapor \". \n\nAda lo hizo para Charles para medir la cantidad de vapor que pasa a través de él. Cuando el vapor pasa a través de una tubería larga, pierde algo de presión. Cuanto más rápido pasa el vapor, más presión pierde. Si los dos lados están a la misma presión, debe haber sin vapor en movimiento. Incluso puso algunas válvulas en la tubería para aumentar la resistencia y hacer la diferencia mayor."},
