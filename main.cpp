@@ -14,6 +14,12 @@
 #include <fstream>
 
 #include "GameState.h"
+#include "Level.h"
+
+#ifdef _WIN32
+    #include <filesystem>
+#endif
+
 
 #ifndef NO_STEAM
 #define STEAM
@@ -110,9 +116,14 @@ static int save_thread_func(void *ptr)
 
     std::string my_save_filename = save_filename + std::to_string(save_index);
 
+#ifdef _WIN32
+    std::ofstream outfile1 (std::filesystem::path((char8_t*)save_filename.c_str()));
+    std::ofstream outfile2 (std::filesystem::path((char8_t*)my_save_filename.c_str()));
+#else
     std::ofstream outfile1 (save_filename.c_str());
-    omap->save(outfile1);
     std::ofstream outfile2 (my_save_filename.c_str());
+#endif
+    omap->save(outfile1);
     omap->save(outfile2);
     delete omap;
     save_index = (save_index + 1) % 10;
@@ -128,17 +139,16 @@ void mainloop()
     save_filename = std::string(save_path) + "test_compressure.save";
 #endif
     SDL_free(save_path);
-    const char* load_filename = save_filename.c_str();
 
-    
+    GameState* game_state;
     {
-        std::ifstream test_loadfile(save_filename);
-        if (test_loadfile.fail() || test_loadfile.eof())
-            load_filename = "compressure.save";
-        test_loadfile.close();
+#ifdef _WIN32
+        std::ifstream loadfile(std::filesystem::path((char8_t*)save_filename.c_str()));
+#else
+        std::ifstream loadfile(save_filename.c_str());
+#endif
+        game_state = new GameState(loadfile);
     }
-
-    GameState* game_state = new GameState(load_filename);
 #ifdef STEAM
     SteamGameManager steam_manager;
     game_state->set_steam_user(SteamUser()->GetSteamID().CSteamID::ConvertToUint64(), SteamFriends()->GetPersonaName());
@@ -172,7 +182,7 @@ void mainloop()
             SaveObject* omap = game_state->save();
             SDL_WaitThread(save_thread, NULL);
             game_state->save_to_server();
-            SDL_Thread *thread = SDL_CreateThread(save_thread_func, "save_thread", (void *)omap);
+            save_thread = SDL_CreateThread(save_thread_func, "save_thread", (void *)omap);
             frame = 0;
         }
         else
@@ -186,7 +196,11 @@ void mainloop()
 	}
     SDL_HideWindow(game_state->sdl_window);
     SDL_WaitThread(save_thread, NULL);
-    game_state->save(save_filename.c_str());
+    
+    SaveObject* omap = game_state->save();
+    save_thread = SDL_CreateThread(save_thread_func, "save_thread", (void *)omap);
+    SDL_WaitThread(save_thread, NULL);
+
     game_state->save_to_server(true);
     delete game_state;
 }

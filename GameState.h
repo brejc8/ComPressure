@@ -276,7 +276,7 @@ public:
     
 
     void load_lang();
-    GameState(const char* filename);
+    GameState(std::ifstream& loadfile);
     SaveObject* save(bool lite = false);
     void save(std::ostream& outfile, bool lite = false);
     void save(const char* filename, bool lite = false);

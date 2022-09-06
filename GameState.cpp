@@ -28,6 +28,7 @@
     #define NOMINMAX
     #include <windows.h>
     #include <shellapi.h>
+    #include <filesystem>
 #endif
 
 static void DisplayWebsite(const char* url)
@@ -66,13 +67,12 @@ void GameState::load_lang()
     }
 }
 
-GameState::GameState(const char* filename)
+GameState::GameState(std::ifstream& loadfile)
 {
     load_lang();
     bool load_was_good = false;
     try 
     {
-        std::ifstream loadfile(filename);
         if (!loadfile.fail() && !loadfile.eof())
         {
             SaveObjectMap* omap;
