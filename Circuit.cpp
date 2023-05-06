@@ -231,56 +231,6 @@ XYPos CircuitElementPipe::getimage(void)
     return XYPos((connections % 4) * 32, (connections / 4) * 32);
 }
 
-static void sim_pre_2links(CircuitPressure& a, CircuitPressure& b)
-{
-    Pressure mov = (a.value - b.value) / 2;
-    a.move(-mov);
-    b.move(mov);
-}
-
-
-static void sim_pre_3links(CircuitPressure& a, CircuitPressure& b, CircuitPressure& c)
-{
-    Pressure mov = (a.value - b.value) / 3;
-    a.move(-mov);
-    b.move(mov);
-
-    mov = (a.value - c.value) / 3;
-    a.move(-mov);
-    c.move(mov);
-
-    mov = (b.value - c.value) / 3;
-    b.move(-mov);
-    c.move(mov);
-}
-
-static void sim_pre_4links(CircuitPressure& a, CircuitPressure& b, CircuitPressure& c, CircuitPressure& d)
-{
-    Pressure mov = (a.value - b.value) / 4;
-    a.move(-mov);
-    b.move(mov);
-
-    mov = (a.value - c.value) / 4;
-    a.move(-mov);
-    c.move(mov);
-
-    mov = (b.value - c.value) / 4;
-    b.move(-mov);
-    c.move(mov);
-
-    mov = (a.value - d.value) / 4;
-    a.move(-mov);
-    d.move(mov);
-
-    mov = (b.value - d.value) / 4;
-    b.move(-mov);
-    d.move(mov);
-
-    mov = (c.value - d.value) / 4;
-    c.move(-mov);
-    d.move(mov);
-}
-
 void CircuitElementPipe::extend_pipe(Connections con)
 {
     if (connections == CONNECTIONS_NONE) connections = con;
@@ -511,7 +461,7 @@ void CircuitElementValve::sim(PressureAdjacent adj)
     if (mul < 0)
         mul = 0;
 
-                                                            // base resistence is 8 pipes
+    // base resistence is 8 pipes
     Pressure mov = (int64_t(adj.W.value - adj.E.value) * mul) / (int64_t(100) * 2 * resistence * PRESSURE_SCALAR);
     adj.W.move(-mov);
     adj.E.move(mov);

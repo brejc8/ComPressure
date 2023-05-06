@@ -192,17 +192,10 @@ class FastSim
         {}
         void sim()
         {
-            Pressure mov = (a.value - b.value) / 3;
-            a.move(-mov);
-            b.move(mov);
-
-            mov = (a.value - c.value) / 3;
-            a.move(-mov);
-            c.move(mov);
-
-            mov = (b.value - c.value) / 3;
-            b.move(-mov);
-            c.move(mov);
+            Pressure all = (a.value + b.value + c.value) / 3;
+            a.move(all - a.value);
+            b.move(all - b.value);
+            c.move(all - c.value);
         }
     };
 
@@ -221,29 +214,11 @@ class FastSim
         {}
         void sim()
         {
-            Pressure mov = (a.value - b.value) / 4;
-            a.move(-mov);
-            b.move(mov);
-
-            mov = (a.value - c.value) / 4;
-            a.move(-mov);
-            c.move(mov);
-
-            mov = (b.value - c.value) / 4;
-            b.move(-mov);
-            c.move(mov);
-
-            mov = (a.value - d.value) / 4;
-            a.move(-mov);
-            d.move(mov);
-
-            mov = (b.value - d.value) / 4;
-            b.move(-mov);
-            d.move(mov);
-
-            mov = (c.value - d.value) / 4;
-            c.move(-mov);
-            d.move(mov);
+            Pressure all = (a.value + b.value + c.value + d.value) / 4;
+            a.move(all - a.value);
+            b.move(all - b.value);
+            c.move(all - c.value);
+            d.move(all - d.value);
         }
     };
 
@@ -420,8 +395,8 @@ public:
 
 class CircuitElementValve : public CircuitElement
 {
-    const int resistence = 8;
-
+    // Make it constexpr so that compiler can optimize away division in sim.
+    static constexpr int resistence = 8;
     Pressure pressure = 0;
     int openness = 0;
     int moved_pos = 0;
