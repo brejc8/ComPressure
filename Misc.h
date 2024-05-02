@@ -2,9 +2,9 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include <cassert>
+#include <cstdint>
 #include <iostream>
-#include <math.h>
-#include <assert.h>
 
 #define BREAKPOINT __asm__ volatile("int $0x03");
 
